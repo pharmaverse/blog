@@ -1,0 +1,699 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Notes</title>
+<link>https://stefanthoma.github.io/quarto-blog/index.html</link>
+<atom:link href="https://stefanthoma.github.io/quarto-blog/index.xml" rel="self" type="application/rss+xml"/>
+<description></description>
+<image>
+<url>https://stefanthoma.github.io/quarto-blog/frontimage.png</url>
+<title>Notes</title>
+<link>https://stefanthoma.github.io/quarto-blog/index.html</link>
+<height>141</height>
+<width>144</width>
+</image>
+<generator>quarto-1.2.335</generator>
+<lastBuildDate>Tue, 14 Mar 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Run Script on Shiny</title>
+  <dc:creator>Stefan Thoma</dc:creator>
+  <link>https://stefanthoma.github.io/quarto-blog/posts/2023-03-14_shiny_script_upload/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>I recently co-created a shiny application for the <code>admiral</code> hackathon in February 2023. The concept of the app seems quite promising for teaching data-manipulation in general, so I decided to publish the code on GitHub and write this short post for anyone interested.</p>
+<p>But from the beginning: The <code>admiral</code> hackathon was an event designed to make statistical programmers from the pharmaceutical industry more comfortable with the <code>admiral</code> R package. This package allows users to efficiently transform data from one data standard (sdtm) to another (adam).</p>
+<p>Hackathon participants formed groups of up to five people and were then tasked to create R-scripts that map the <code>sdtm</code> data to <code>adam</code> according to specifics defined in the metadata.</p>
+<p>The purpose of the shiny app was threefold:</p>
+<ol type="1">
+<li><p>Allow participants to easily register as a team.</p></li>
+<li><p>Let participants upload their R-scripts, so that the <code>admiral</code> team can see how the <code>admiral</code> package is being used – and how the functions and the documentation could be improved.</p></li>
+<li><p>Run participants R-scripts on the cloud and compare the produced file to a solution file. Let participants autonomously get feedback on their work.</p></li>
+</ol>
+<p>In this blog post I want to highlight some of the thoughts that went into this application. Please keep in mind that this work was done under tight time restraints.</p>
+<p>The <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/?_ga=2.75919894.2036952320.1679990144-1584712930.1674550185">hackathon application</a> is still online (although data-upload is switched off) and the <a href="https://github.com/StefanThoma/hackathon_app">GitHub repository</a> is publicly available. I have also uploaded to GitHub a <code>.zip</code> file of the workspace to which hackathon participants had access via <a href="https://posit.cloud">posit cloud</a>. For more context you can watch <a href="https://www.cdisc.org/events/webinar/admiral-hackathon-kickoff">recordings of the hackathon-meetings</a>.</p>
+<section id="permanent-data" class="level2">
+<h2 class="anchored" data-anchor-id="permanent-data">Permanent Data</h2>
+<p>The biggest challenge you have to consider for this app is the permanent data storage. Shiny apps run on a server. Although we can write files on this server, whenever the app restarts, the files are lost. Therefore, a <a href="https://shiny.rstudio.com/articles/persistent-data-storage.html#local-vs-remote">persistent data storage solution</a> is required.</p>
+<section id="google-drive" class="level3">
+<h3 class="anchored" data-anchor-id="google-drive">Google drive</h3>
+<p>I decided to leverage Google drive using the <code>googledrive</code> package. This allowed me to save structured data (the team registry and the submission scores) as well as unstructured data (their R-script files).</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Authentication
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To access Google drive using the <code>googledrive</code> package we need to authenticate. This can be done interactively using the command <code>googledrive::drive_auth()</code> which takes you to the Google login page. After login you receive an authentication token requested by R.</p>
+<p>For non-interactive authentication this token must be stored locally. In our case where the shiny app must access the token once deployed, the token must be stored on the project level.</p>
+<p>I have included the authentication procedure I followed in the <code>R</code> folder in <code>google_init.R</code>. You can find more extensive <a href="https://googledrive.tidyverse.org/reference/drive_auth.html">documentation of the non-interactive authentication</a>.</p>
+</div>
+</div>
+<p>The initial concept was: Each team gets their own folder including the most recent submission for each task, and a <code>.csv</code> file containing team information. To keep track of the submissions and the respective scores we wrote a <code>.csv</code> file in the <code>mock-hackathon</code> folder, so one folder above the team folders.</p>
+<p>Saving the team info as a <code>.csv</code> file worked fine as each team received their own file which – once created – was not touched anymore. As each upload for every team should simply add a row to the <code>submissions.csv</code> file, appending the file would be ideal. This was not possible using the <code>googledrive</code> package. Instead, for each submission, the <code>submissions</code> file was downloaded, appended, and uploaded again. Unfortunately, this lead to a data loss, as the file was continuously overwritten, especially when two teams would submit simultaneously.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Recover the lost data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Whenever the <code>submissions.csv</code> file was uploaded, the previous version was sent to the Google drive bin. We ended up with over 3000 <code>submissions.csv</code> files containing a lot of redundant information. I had to write the following chunk to first get the unique file IDs of the 3000 <code>submissions.csv</code> files, create an empty <code>submissions</code> data-frame, and then download each file and add its information to the <code>submisisons</code> data-frame. To keep the data-frame as light as possible, after each append I deleted all duplicate submissions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;"># get all task_info.csv ID's</span></span>
+<span id="cb1-2"><span class="co" style="color: #5E5E5E;"># each row identifies one file in the trash</span></span>
+<span id="cb1-3">task_info_master <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">drive_find</span>(</span>
+<span id="cb1-4">  <span class="at" style="color: #657422;">pattern =</span> <span class="st" style="color: #20794D;">"task_info.csv"</span>,</span>
+<span id="cb1-5">  <span class="at" style="color: #657422;">trashed =</span> <span class="cn" style="color: #8f5902;">TRUE</span></span>
+<span id="cb1-6">)</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># set up empty df to store all submissions</span></span>
+<span id="cb2-2">origin <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">tibble</span>(</span>
+<span id="cb2-3">  <span class="at" style="color: #657422;">score =</span> <span class="fu" style="color: #4758AB;">numeric</span>(),</span>
+<span id="cb2-4">  <span class="at" style="color: #657422;">task =</span> <span class="fu" style="color: #4758AB;">character</span>(),</span>
+<span id="cb2-5">  <span class="at" style="color: #657422;">team =</span> <span class="fu" style="color: #4758AB;">character</span>(),</span>
+<span id="cb2-6">  <span class="at" style="color: #657422;">email =</span> <span class="fu" style="color: #4758AB;">character</span>(),</span>
+<span id="cb2-7">  <span class="at" style="color: #657422;">time =</span> <span class="fu" style="color: #4758AB;">character</span>()</span>
+<span id="cb2-8">)</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;"># downloads, reads, and returns one csv file given a file id</span></span>
+<span id="cb2-11">get_file <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="cf" style="color: #003B4F;">function</span>(row) {</span>
+<span id="cb2-12">  tf <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">tempfile</span>()</span>
+<span id="cb2-13">  row <span class="sc" style="color: #5E5E5E;">%&gt;%</span></span>
+<span id="cb2-14">    <span class="fu" style="color: #4758AB;">as_id</span>() <span class="sc" style="color: #5E5E5E;">%&gt;%</span></span>
+<span id="cb2-15">    <span class="fu" style="color: #4758AB;">drive_download</span>(<span class="at" style="color: #657422;">path =</span> tf)</span>
+<span id="cb2-16">  new <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">read_csv</span>(tf) <span class="sc" style="color: #5E5E5E;">%&gt;%</span></span>
+<span id="cb2-17">    <span class="fu" style="color: #4758AB;">select</span>(score, task, team) <span class="sc" style="color: #5E5E5E;">%&gt;%</span></span>
+<span id="cb2-18">    <span class="fu" style="color: #4758AB;">distinct</span>()</span>
+<span id="cb2-19">}</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># quick and dirty for loop to subsequently download each file, extract information</span></span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;">#  merge with previous information and squash it (using distinct()).</span></span>
+<span id="cb3-3"><span class="cf" style="color: #003B4F;">for</span> (i <span class="cf" style="color: #003B4F;">in</span> <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">:</span><span class="fu" style="color: #4758AB;">nrow</span>(task_info_master)) {</span>
+<span id="cb3-4">  origin <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">rbind</span>(origin, <span class="fu" style="color: #4758AB;">get_file</span>(<span class="at" style="color: #657422;">row =</span> task_info_master[i, ])) <span class="sc" style="color: #5E5E5E;">%&gt;%</span></span>
+<span id="cb3-5">    <span class="fu" style="color: #4758AB;">distinct</span>()</span>
+<span id="cb3-6"></span>
+<span id="cb3-7">  <span class="co" style="color: #5E5E5E;"># save progress in a separate file after every 100 downloaded and merged sheets</span></span>
+<span id="cb3-8">  <span class="cf" style="color: #003B4F;">if</span> (i <span class="sc" style="color: #5E5E5E;">%%</span> <span class="dv" style="color: #AD0000;">100</span> <span class="sc" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>) {</span>
+<span id="cb3-9">    <span class="fu" style="color: #4758AB;">print</span>(i)</span>
+<span id="cb3-10">    <span class="fu" style="color: #4758AB;">write_csv</span>(origin, <span class="fu" style="color: #4758AB;">paste</span>(<span class="st" style="color: #20794D;">"prog_data/task_info_prog_"</span>, i, <span class="st" style="color: #20794D;">".csv"</span>, <span class="at" style="color: #657422;">sep =</span> <span class="st" style="color: #20794D;">""</span>))</span>
+<span id="cb3-11">    <span class="co" style="color: #5E5E5E;"># update on progress</span></span>
+<span id="cb3-12">    <span class="fu" style="color: #4758AB;">message</span>(i <span class="sc" style="color: #5E5E5E;">/</span> <span class="fu" style="color: #4758AB;">nrow</span>(task_info_master) <span class="sc" style="color: #5E5E5E;">*</span> <span class="dv" style="color: #AD0000;">100</span>)</span>
+<span id="cb3-13">  }</span>
+<span id="cb3-14">}</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>If you want to stay in the Google framework, I recommend using the <code>googlesheets4</code> package for structured data. <code>googlesheets4</code> allows appending new information to an already existing sheet without the need to download the file first. As both packages follow the same style, going from one to the other is really simple. <code>googlesheets4</code> requires authentication as well. However, you can reuse the cached token from the <code>googledrive</code> authentication by setting <code>gs4_auth(token = drive_token())</code>.</p>
+</section>
+<section id="security-concerns" class="level3">
+<h3 class="anchored" data-anchor-id="security-concerns">Security concerns</h3>
+<p>Connecting a public shiny app to your Google account introduces a security vulnerability in general. Especially so, because we implemented the upload of files to the Google drive. And even more problematic: We run a user generated script and display some of its output. A malicious party might be able to extract the authentication token of our Google account or could upload malware to the drive.</p>
+<p>To reduce risk, I simply created an un-associated Google account to host the drive. There are certainly better options available, but this seemed a reasonable solution for basically zero effort.</p>
+</section>
+</section>
+<section id="register-team" class="level2">
+<h2 class="anchored" data-anchor-id="register-team">Register team</h2>
+<p>We wanted to allow users to sign up as teams using the shiny app. The app provides a simple interface where users could input a team name and the number of members. This in turn would open two fields for each user to input their name and email address.</p>
+<p>We do simple checks to make sure at least one valid email address is supplied, and that the group name is acceptable. The group name cannot be empty, already taken, or contain vulgar words.</p>
+<p>The team registration itself was adding the team information to the Google sheets file <code>event_info</code> into the sheet <code>teams</code> and to create a team folder in which to store the uploaded R files.</p>
+<p>The checks and registration is implemented in the <code>register_team()</code> function stored in <code>interact_with_google.R</code>.</p>
+</section>
+<section id="upload-source-script" class="level2">
+<h2 class="anchored" data-anchor-id="upload-source-script">upload &amp; source script</h2>
+<p>To upload a script, participants had to select their team first. The input options were based on the existing folders on the Google-drive in the <code>mock_hackathon</code> folder. To upload a particular script participants had to also select the task to be solved. The uploaded script is then uploaded to the team folder following a standardised script naming convention.</p>
+<p>There are different aspects to be aware of when sourcing scripts on a shiny server. For example, you have to anticipate the packages users will include in their uploaded scripts, as their scripts will load but not install packages. Further, you should keep the global environment of your shiny app separate from the environment in which the script is sourced. This is possible by supplying an environment to the <code>source()</code> function, e.g: <code>source(path_to_script, local = new.env())</code></p>
+<p>Another thing we had to consider was to replicate the exact folder-structure on the shiny server that participants were working with when creating the scripts, as they were required to source some scripts and to save their file into a specific folder. This was relatively straight forward as we provided participants with a folder structure in the posit cloud instance they were using. They had access to the <code>sdtm</code> folder in which the data was stored, and the <code>adam</code> folder into which they saved their solutions. The structure also included a folder with metadata which was also available on the shiny server. For some tasks, participants required some <code>adam</code>-datasets stored in the <code>adam</code> folder, essentially the output from previous tasks. On the shiny server this was solved by copying the required <code>adam</code> dataset from the <code>key</code> folder (where our solutions to the tasks were stored) to the <code>adam</code> folder. After sourcing the content in the <code>adam</code> folder was deleted.</p>
+</section>
+<section id="compare-to-solution-file" class="level2">
+<h2 class="anchored" data-anchor-id="compare-to-solution-file">compare to solution file</h2>
+<p>We want to compare the file created by participants with our solution (key) file stored in the <code>key</code> folder. The <code>diffdf::diffdf()</code> function allows for easy comparison of two data-frames and directly provides extensive feedback for the user:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;">library</span>(dplyr)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">df1 <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">tibble</span>(</span>
+<span id="cb8-2">  <span class="at" style="color: #657422;">numbers =</span> <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">:</span><span class="dv" style="color: #AD0000;">10</span>,</span>
+<span id="cb8-3">  <span class="at" style="color: #657422;">letters =</span> LETTERS[<span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">:</span><span class="dv" style="color: #AD0000;">10</span>]</span>
+<span id="cb8-4">)</span>
+<span id="cb8-5">df2 <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">tibble</span>(</span>
+<span id="cb8-6">  <span class="at" style="color: #657422;">numbers =</span> <span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">:</span><span class="dv" style="color: #AD0000;">10</span>,</span>
+<span id="cb8-7">  <span class="at" style="color: #657422;">letters =</span> letters[<span class="dv" style="color: #AD0000;">1</span><span class="sc" style="color: #5E5E5E;">:</span><span class="dv" style="color: #AD0000;">10</span>]</span>
+<span id="cb8-8">)</span>
+<span id="cb8-9"></span>
+<span id="cb8-10">diffdf<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">diffdf</span>(df1, df2)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in diffdf::diffdf(df1, df2): 
+Not all Values Compared Equal</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Differences found between the objects!
+
+A summary is given below.
+
+Not all Values Compared Equal
+All rows are shown in table below
+
+  =============================
+   Variable  No of Differences 
+  -----------------------------
+   letters          10         
+  -----------------------------
+
+
+All rows are shown in table below
+
+  ========================================
+   VARIABLE  ..ROWNUMBER..  BASE  COMPARE 
+  ----------------------------------------
+   letters         1         A       a    
+   letters         2         B       b    
+   letters         3         C       c    
+   letters         4         D       d    
+   letters         5         E       e    
+   letters         6         F       f    
+   letters         7         G       g    
+   letters         8         H       h    
+   letters         9         I       i    
+   letters        10         J       j    
+  ----------------------------------------</code></pre>
+</div>
+</div>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-03-28 09:02:09 UTC</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/StefanThoma/quarto-blog/tree/main/posts/2023-03-14_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/StefanThoma/quarto-blog/tree/main/posts/2023-03-14_shiny_run_script/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+  author = {Stefan Thoma},
+  editor = {},
+  title = {Run {Script} on {Shiny}},
+  date = {2023-03-14},
+  url = {https://stefanthoma.github.io/quarto-blog//posts/2023-03-14_shiny_script_upload},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
+Stefan Thoma. 2023. <span>“Run Script on Shiny.”</span> March 14, 2023.
+<a href="https://stefanthoma.github.io/quarto-blog//posts/2023-03-14_shiny_script_upload">https://stefanthoma.github.io/quarto-blog//posts/2023-03-14_shiny_script_upload</a>.
+</div></div></section></div> ]]></description>
+  <category>R</category>
+  <category>shiny</category>
+  <category>teaching</category>
+  <guid>https://stefanthoma.github.io/quarto-blog/posts/2023-03-14_shiny_script_upload/index.html</guid>
+  <pubDate>Tue, 14 Mar 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://stefanthoma.github.io/quarto-blog/posts/2023-03-14_shiny_script_upload/metacore.png" medium="image" type="image/png" height="167" width="144"/>
+</item>
+<item>
+  <title>Using CICD to check spelling in quarto documents</title>
+  <dc:creator>Stefan Thoma</dc:creator>
+  <link>https://stefanthoma.github.io/quarto-blog/posts/2023-01-09_CICD-spelling/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>As a data scientist or R programmer, you may be familiar with the benefits of version control systems like GitHub for tracking changes to your code base and collaborating with others. But did you know that you can also use GitHub to automate the testing, building, and deployment of your R projects? This process, known as continuous integration and deployment (CICD), can save you time and effort by ensuring that your code is always in a deploy-able state and by automatically delivering new updates to your users. In this blog post, we will show you how to set up CICD for your quarto documents on GitHub, including configuring a build pipeline and integrating a spelling checker. By the end of this tutorial, you will have a workflow in place that helps you catch spelling mistakes before they make it into your final documents.</p>
+<section id="cicd" class="level2">
+<h2 class="anchored" data-anchor-id="cicd">CICD</h2>
+<p>CICD is often used in GitHub projects for package development where it helps to maintain a certain code-quality and style consistency across different contributors and developers. For R projects other than packages CICD is used much less frequently. I belief that setting up CICD pipelines for less complex projects with only very few contributors is still useful to ensure consistent style, spelling, and more.</p>
+<p>As I am occasionally involved in creating teaching materials in R using quarto, I wanted to implement some CICD checks for quarto documents. As most out-of-the-box CICD pipelines are designed for package development, existing pipelines needed some adjustment to work with other R projects.</p>
+</section>
+<section id="aim" class="level2">
+<h2 class="anchored" data-anchor-id="aim">Aim</h2>
+<p>When creating teaching materials in R I rely on GitHub for version control. Generally, I have a <code>main</code>-branch which deploys to a GitHub-page displaying the rendered content. The development of materials happens on the <code>devel</code> branch with a pending merge request to the <code>main</code> branch. Whenever a chapter or a section is ready to be published, I merge the branches. I wanted to create a pipeline that runs a spell-check on all my quarto files on the merge request with <code>main</code>, i.e.: Whenever I push to <code>devel</code> I want GitHub to run the CICD pipeline to check my spelling. As an example, I will show how to implement spelling CICD on this blog-project.</p>
+</section>
+<section id="spell-check" class="level2">
+<h2 class="anchored" data-anchor-id="spell-check">Spell-check</h2>
+<p>Because R is all I know, I would like to use an R-package to do the spell-checking. The <code>spelling</code> package is well suited for the task, as it allows to spell-check all files at once. Before we try to implement the CICD pipeline, the spell-checker has to work locally, so we first install and load the package:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;">install.packages</span>(spelling)</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;">library</span>(tidyverse)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ─────────────── tidyverse 1.3.2.9000 ──
+✔ dplyr     1.1.0.9000     ✔ readr     2.1.3     
+✔ forcats   0.5.2          ✔ stringr   1.5.0     
+✔ ggplot2   3.4.0          ✔ tibble    3.1.8     
+✔ lubridate 1.9.0          ✔ tidyr     1.2.1     
+✔ purrr     1.0.1          
+── Conflicts ────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the ]8;;http://conflicted.r-lib.org/conflicted package]8;; to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;">library</span>(spelling)</span></code></pre></div>
+</div>
+<p>If you are working on a package, you can directly use the function <code>spell_check_package()</code> and the <code>spelling</code> package will do so. If you are working on any other R project you have to use the <code>spell_check_files()</code> function and you have to include a path to the files you want to check. Let’s check just this file:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;"># 2023-01-09_CICD-spelling/</span></span>
+<span id="cb5-2">spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(<span class="at" style="color: #657422;">path =</span> <span class="st" style="color: #20794D;">"index.qmd"</span>) <span class="sc" style="color: #5E5E5E;">%&gt;%</span></span>
+<span id="cb5-3">  <span class="fu" style="color: #4758AB;">head</span>()</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  WORD      FOUND IN
+aff       index.qmd:348,349,350
+callout   index.qmd:114
+CICD      index.qmd:2,6,8,9,16,27,28,31,33,34,35,37,38,46,47,53,70,122,139,167,170,172,173,174,176,278,322,411,412,415
+cran      index.qmd:103
+de        index.qmd:349,350,357,367,391,400,401,414
+desc      index.qmd:261,305,399</code></pre>
+</div>
+</div>
+<p>It looks like there are a few words that spelling did not recognize. We should carefully look through the full list and decide whether any mistakes were made. We would not want the GitHub action to prohibit a merge request for any of these words, as there are no typos present (I hope). Therefore, we want to add these words to a file that include words to be ignored by the <code>spelling</code> package.</p>
+<p>If you are working on a package, this is easy, you can use the <code>spelling::update_wordlist()</code> function. We simply save the list of words as a <em>.txt</em> file. For now, we save it in the working directory.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;">write</span>(spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(<span class="at" style="color: #657422;">path =</span> <span class="st" style="color: #20794D;">"index.qmd"</span>)[[<span class="dv" style="color: #AD0000;">1</span>]], <span class="st" style="color: #20794D;">"WORDLIST.txt"</span>)</span></code></pre></div>
+</div>
+<p>The file looks like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fu" style="color: #4758AB;">read_lines</span>(<span class="st" style="color: #20794D;">"WORDLIST.txt"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "aff"            "callout"        "CICD"           "cran"          
+ [5] "de"             "desc"           "dic"            "djnavarro"     
+ [9] "doch"           "eval"           "frami"          "FRAMI"         
+[13] "german"         "github"         "hört"           "https"         
+[17] "hunspell"       "ìnst"           "jeder"          "JetBrains"     
+[21] "JW"             "lang"           "lockfile"       "md"            
+[25] "nur"            "png"            "pre"            "qmd"           
+[29] "qmd's"          "readme"         "readr"          "renv"          
+[33] "repo"           "Rproj"          "Rscript"        "StefanThoma"   
+[37] "subfolders"     "testthat"       "Thoma"          "tidyverse"     
+[41] "ubuntu"         "verowokjnsthet" "versteht"       "versthet"      
+[45] "von"            "wordlist"       "WORDLIST"       "yaml"          
+[49] "yml"            "zitat"          "Zitat"         </code></pre>
+</div>
+</div>
+<p>Now we can tell <code>spelling</code> to ignore the words in this file from typo-detection:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(</span>
+<span id="cb10-2">  <span class="at" style="color: #657422;">path =</span> <span class="st" style="color: #20794D;">"index.qmd"</span>,</span>
+<span id="cb10-3">  <span class="at" style="color: #657422;">ignore =</span> <span class="fu" style="color: #4758AB;">read_lines</span>(<span class="st" style="color: #20794D;">"WORDLIST.txt"</span>)</span>
+<span id="cb10-4">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No spelling errors found.</code></pre>
+</div>
+</div>
+<p>You can find a more comprehensive guide to the <code>spelling</code> package <a href="https://cran.r-project.org/web/packages/spelling/spelling.pdf">in the package manual.</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><span class="co" style="color: #5E5E5E;"># we can get all qmd's in a project by</span></span>
+<span id="cb12-2"><span class="fu" style="color: #4758AB;">list.files</span>(</span>
+<span id="cb12-3">  <span class="at" style="color: #657422;">path =</span> <span class="st" style="color: #20794D;">"../.."</span>, <span class="co" style="color: #5E5E5E;"># first setting the path to the project</span></span>
+<span id="cb12-4">  <span class="at" style="color: #657422;">recursive =</span> <span class="cn" style="color: #8f5902;">TRUE</span>, <span class="co" style="color: #5E5E5E;"># include subfolders</span></span>
+<span id="cb12-5">  <span class="at" style="color: #657422;">pattern =</span> <span class="st" style="color: #20794D;">".*.qmd$"</span></span>
+<span id="cb12-6">) <span class="co" style="color: #5E5E5E;"># include only files ending in .qmd</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "index.qmd"                                     
+[2] "posts/2023-01-09_CICD-spelling/index.qmd"      
+[3] "posts/2023-01-09_welcome/index.qmd"            
+[4] "posts/2023-03-14_shiny_script_upload/index.qmd"</code></pre>
+</div>
+</div>
+<div class="callout-caution callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+path
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The structure of this project is such that each blog-post <code>.qmd</code> file is two folders down from the <code>.Rproj</code> file. The working directory of the .qmd blog-post file is where the file is located. If I want to list files or save files in a higher order folder I need to adjust my path to first go two folders up. I do this by adding <code>"../.."</code> to my file paths.</p>
+<p>The working directory of the CICD pipeline is by default on project level, therefore, the <code>"../.."</code> is not required.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">wordlist <span class="ot" style="color: #003B4F;">&lt;-</span> <span class="fu" style="color: #4758AB;">list.files</span>(</span>
+<span id="cb14-2">  <span class="at" style="color: #657422;">path =</span> <span class="st" style="color: #20794D;">"../.."</span>,</span>
+<span id="cb14-3">  <span class="at" style="color: #657422;">recursive =</span> <span class="cn" style="color: #8f5902;">TRUE</span>,</span>
+<span id="cb14-4">  <span class="at" style="color: #657422;">full.names =</span> <span class="cn" style="color: #8f5902;">TRUE</span>,</span>
+<span id="cb14-5">  <span class="at" style="color: #657422;">pattern =</span> <span class="st" style="color: #20794D;">".*.qmd$"</span></span>
+<span id="cb14-6">) <span class="sc" style="color: #5E5E5E;">%&gt;%</span></span>
+<span id="cb14-7">  spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>()</span></code></pre></div>
+</div>
+<p>Now you should take a good look at the output and fix any typos spotted.</p>
+<p>What remains is a list of words to be ignored. They can now be saved into a project level <code>WORDLIST_EXAMPLE.txt</code> file to be accessed later by our CICD workflow.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;">write</span>(<span class="at" style="color: #657422;">x =</span> wordlist[[<span class="dv" style="color: #AD0000;">1</span>]], <span class="at" style="color: #657422;">file =</span> <span class="st" style="color: #20794D;">"../../inst/WORDLIST_EXAMPLE.txt"</span>)</span></code></pre></div>
+</div>
+<p>Check again with <code>WORDLIST_EXAMPLE.txt</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="fu" style="color: #4758AB;">list.files</span>(</span>
+<span id="cb16-2">  <span class="at" style="color: #657422;">path =</span> <span class="st" style="color: #20794D;">"../.."</span>,</span>
+<span id="cb16-3">  <span class="at" style="color: #657422;">recursive =</span> <span class="cn" style="color: #8f5902;">TRUE</span>,</span>
+<span id="cb16-4">  <span class="at" style="color: #657422;">full.names =</span> <span class="cn" style="color: #8f5902;">TRUE</span>,</span>
+<span id="cb16-5">  <span class="at" style="color: #657422;">pattern =</span> <span class="st" style="color: #20794D;">".*.qmd$"</span></span>
+<span id="cb16-6">) <span class="sc" style="color: #5E5E5E;">%&gt;%</span></span>
+<span id="cb16-7">  spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(<span class="at" style="color: #657422;">ignore =</span> <span class="fu" style="color: #4758AB;">read_lines</span>(<span class="st" style="color: #20794D;">"../../inst/WORDLIST_EXAMPLE.txt"</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No spelling errors found.</code></pre>
+</div>
+</div>
+<p>Looks like it worked — great!</p>
+<section id="append-wordlist" class="level3">
+<h3 class="anchored" data-anchor-id="append-wordlist">Append WORDLIST</h3>
+<p>It makes sense to check the spelling locally before you push to your <code>develop</code> branch. For this purpose I create an r-script where I can run the spell-check for the project and where I can also append the <code>WORDLIST.txt</code> file if needed.</p>
+<div class="cell" data-file="CICD-Spellcheck.R">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="co" style="color: #5E5E5E;">#-------------------------- spell-check ----------------------------------------</span></span>
+<span id="cb18-2"></span>
+<span id="cb18-3"><span class="co" style="color: #5E5E5E;"># create empty wordlist:</span></span>
+<span id="cb18-4"><span class="co" style="color: #5E5E5E;"># write("", file =   "../../inst/WORDLIST_EXAMPLE.txt")</span></span>
+<span id="cb18-5"><span class="co" style="color: #5E5E5E;"># check spelling:</span></span>
+<span id="cb18-6">spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(<span class="fu" style="color: #4758AB;">list.files</span>(<span class="at" style="color: #657422;">pattern =</span> <span class="st" style="color: #20794D;">".*.qmd$"</span>, <span class="at" style="color: #657422;">recursive =</span> <span class="cn" style="color: #8f5902;">TRUE</span>),</span>
+<span id="cb18-7">  <span class="at" style="color: #657422;">ignore =</span> readr<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">read_lines</span>(<span class="st" style="color: #20794D;">"inst/WORDLIST_EXAMPLE.txt"</span>)</span>
+<span id="cb18-8">)</span>
+<span id="cb18-9"></span>
+<span id="cb18-10"><span class="co" style="color: #5E5E5E;"># now check those words and whether or not they are really mistakes.</span></span>
+<span id="cb18-11"><span class="co" style="color: #5E5E5E;"># once you fixed all mistaked you can:</span></span>
+<span id="cb18-12">words <span class="ot" style="color: #003B4F;">&lt;-</span> spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(<span class="fu" style="color: #4758AB;">list.files</span>(<span class="at" style="color: #657422;">pattern =</span> <span class="st" style="color: #20794D;">".*.qmd$"</span>, <span class="at" style="color: #657422;">recursive =</span> <span class="cn" style="color: #8f5902;">TRUE</span>),</span>
+<span id="cb18-13">  <span class="at" style="color: #657422;">ignore =</span> readr<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">read_lines</span>(<span class="st" style="color: #20794D;">"inst/WORDLIST_EXAMPLE.txt"</span>)</span>
+<span id="cb18-14">)</span>
+<span id="cb18-15"><span class="co" style="color: #5E5E5E;"># now you can add words to the wordlist</span></span>
+<span id="cb18-16"><span class="co" style="color: #5E5E5E;">#-- uncomment the following line</span></span>
+<span id="cb18-17"><span class="co" style="color: #5E5E5E;"># write(words[[1]], file =   "inst/WORDLIST_EXAMPLE.txt", append = TRUE)</span></span>
+<span id="cb18-18"></span>
+<span id="cb18-19">spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(<span class="fu" style="color: #4758AB;">list.files</span>(<span class="at" style="color: #657422;">pattern =</span> <span class="st" style="color: #20794D;">".*.qmd$"</span>, <span class="at" style="color: #657422;">recursive =</span> <span class="cn" style="color: #8f5902;">TRUE</span>),</span>
+<span id="cb18-20">  <span class="at" style="color: #657422;">ignore =</span> readr<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">read_lines</span>(<span class="st" style="color: #20794D;">"inst/WORDLIST_EXAMPLE.txt"</span>)</span>
+<span id="cb18-21">)</span></code></pre></div>
+</div>
+</section>
+</section>
+<section id="setup-cicd-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="setup-cicd-workflow">Setup CICD Workflow</h2>
+<p>Now this needs to be implemented in the CICD pipeline. To implement GitHub CICD I create a folder <code>.github</code> in the project directory, and the folder <code>workflows</code> within the <code>.github</code> folder. This is where CICD pipelines are stored.</p>
+<p>CICD pipelines are written in <code>yaml</code> format, it should look like this:</p>
+<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb19-1"><span class="co" style="color: #5E5E5E;">#| eval: false</span></span>
+<span id="cb19-2"><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Spellcheck</span></span>
+<span id="cb19-3"><span class="fu" style="color: #4758AB;">on</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb19-4"><span class="at" style="color: #657422;">  </span><span class="fu" style="color: #4758AB;">pull_request</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">{</span><span class="fu" style="color: #4758AB;">branches</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">[</span><span class="st" style="color: #20794D;">'main'</span><span class="kw" style="color: #003B4F;">]}</span></span>
+<span id="cb19-5"><span class="fu" style="color: #4758AB;">jobs</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb19-6"><span class="at" style="color: #657422;">  </span><span class="fu" style="color: #4758AB;">Spelling</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb19-7"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">runs-on</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> ubuntu-latest</span></span>
+<span id="cb19-8"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">container</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">{</span><span class="fu" style="color: #4758AB;">image</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="st" style="color: #20794D;">"rocker/tidyverse:4.2.1"</span><span class="kw" style="color: #003B4F;">}</span></span>
+<span id="cb19-9"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">steps</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb19-10"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Checkout repo</span></span>
+<span id="cb19-11"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">uses</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> actions/checkout@v3</span></span>
+<span id="cb19-12"></span>
+<span id="cb19-13"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Install spelling</span></span>
+<span id="cb19-14"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> if (!require("spelling")) install.packages("spelling")</span></span>
+<span id="cb19-15"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span>
+<span id="cb19-16"></span>
+<span id="cb19-17"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Run Spelling Check test</span></span>
+<span id="cb19-18"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST_EXAMPLE.txt"))</span></span>
+<span id="cb19-19"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span></code></pre></div>
+<p>The first few lines define the name of the workflow (<code>Spellcheck</code>) and when it should be executed.<br>
+</p>
+<p>In this case, the action runs on pull requests to the <code>main</code> branch.</p>
+<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb20-1"><span class="co" style="color: #5E5E5E;">#| eval: false</span></span>
+<span id="cb20-2"><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Spellcheck</span></span>
+<span id="cb20-3"><span class="fu" style="color: #4758AB;">on</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb20-4"><span class="at" style="color: #657422;">  </span><span class="fu" style="color: #4758AB;">pull_request</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">{</span><span class="fu" style="color: #4758AB;">branches</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">[</span><span class="st" style="color: #20794D;">'main'</span><span class="kw" style="color: #003B4F;">]}</span></span></code></pre></div>
+<p>Then, we define the job to run:</p>
+<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb21-1"><span class="fu" style="color: #4758AB;">jobs</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb21-2"><span class="at" style="color: #657422;">  </span><span class="fu" style="color: #4758AB;">Spelling</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb21-3"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">runs-on</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> ubuntu-latest</span></span>
+<span id="cb21-4"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">container</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">{</span><span class="fu" style="color: #4758AB;">image</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="st" style="color: #20794D;">"rocker/tidyverse:4.2.1"</span><span class="kw" style="color: #003B4F;">}</span></span>
+<span id="cb21-5"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">steps</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb21-6"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Checkout repo</span></span>
+<span id="cb21-7"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">uses</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> actions/checkout@v3</span></span>
+<span id="cb21-8"></span>
+<span id="cb21-9"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Install spelling</span></span>
+<span id="cb21-10"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> if (!require("spelling")) install.packages("spelling")</span></span>
+<span id="cb21-11"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span>
+<span id="cb21-12"></span>
+<span id="cb21-13"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Run Spelling Check test</span></span>
+<span id="cb21-14"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST_EXAMPLE.txt"))</span></span>
+<span id="cb21-15"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span>
+<span id="cb21-16"><span class="at" style="color: #657422;">        </span></span></code></pre></div>
+<p>We run just one job called <code>Spelling</code>.</p>
+<p>It is run on a <a href="https://blog.djnavarro.net/posts/2023-01-01_playing-with-docker/">docker image</a> deployed by GitHub. We use a particular docker image that comes with R and tidyverse pre-installed, this eases the use of R in this image.</p>
+<p>The actual workflow is defined in the <code>steps</code> (which can be named) — here we only have three steps.</p>
+<ul>
+<li><p><code>actions/checkout@v3</code> loads the GitHub repository so the subsequent steps can reference the repo.</p></li>
+<li><p>Next, the <em>Install spelling</em> step installs the R package <code>spelling</code>. This is written in R code, so we need to specify that we run the command in R. We do this with the instruction <code>shell: Rscript {0}</code>.</p></li>
+<li><p>At last, we run the spell check in R. By default, the code is executed in the project level directory, so we do not need to adjust the path in the <code>list.files()</code> function to go up the project directory. The same goes for the <code>ìnst/WORDLIST_EXAMPLE.txt</code> file.</p></li>
+</ul>
+<p>Now while this works, it will not throw an error if typos are spotted. We can remedy this by writing code that throws an error if there is a typo. The <code>testthat</code> package is designed to test R code for packages. We use its <code>test_that()</code> function together with the <code>expect_equal()</code> function where we can specify the test we want to conduct. Our test is simple: As the <code>object</code> argument we run the spell-check from above. The output we expect is a spell-check that did not result in any error. We have to supply such an object representing a flawless spell-check in the <code>expected</code> argument. To always get such an object we simply spell-check the <code>WORDLIST_EXAMPLE.txt</code> file using itself as the list of words to ignore:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1">testthat<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">test_that</span>(</span>
+<span id="cb22-2">  <span class="at" style="color: #657422;">desc =</span> <span class="st" style="color: #20794D;">"No Typo"</span>,</span>
+<span id="cb22-3">  <span class="at" style="color: #657422;">code =</span> testthat<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">expect_equal</span>(</span>
+<span id="cb22-4">    <span class="at" style="color: #657422;">object =</span> spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(</span>
+<span id="cb22-5">      <span class="at" style="color: #657422;">path =</span> <span class="fu" style="color: #4758AB;">list.files</span>(</span>
+<span id="cb22-6">        <span class="at" style="color: #657422;">path =</span> <span class="st" style="color: #20794D;">"../.."</span>, <span class="at" style="color: #657422;">pattern =</span> <span class="st" style="color: #20794D;">".*.qmd$"</span>,</span>
+<span id="cb22-7">        <span class="at" style="color: #657422;">recursive =</span> <span class="cn" style="color: #8f5902;">TRUE</span>, <span class="at" style="color: #657422;">full.names =</span> <span class="cn" style="color: #8f5902;">TRUE</span></span>
+<span id="cb22-8">      ),</span>
+<span id="cb22-9">      <span class="at" style="color: #657422;">ignore =</span> readr<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">read_lines</span>(<span class="st" style="color: #20794D;">"../../inst/WORDLIST_EXAMPLE.txt"</span>)</span>
+<span id="cb22-10">    ),</span>
+<span id="cb22-11">    <span class="at" style="color: #657422;">expected =</span> spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(</span>
+<span id="cb22-12">      <span class="at" style="color: #657422;">path =</span> <span class="st" style="color: #20794D;">"../../inst/WORDLIST_EXAMPLE.txt"</span>,</span>
+<span id="cb22-13">      <span class="at" style="color: #657422;">ignore =</span> readr<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">read_lines</span>(<span class="st" style="color: #20794D;">"../../inst/WORDLIST_EXAMPLE.txt"</span>)</span>
+<span id="cb22-14">    )</span>
+<span id="cb22-15">  )</span>
+<span id="cb22-16">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test passed 🌈</code></pre>
+</div>
+</div>
+<p>We can now implement this test into our CICD workflow:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb24-1"><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Spellcheck</span></span>
+<span id="cb24-2"><span class="fu" style="color: #4758AB;">on</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb24-3"><span class="at" style="color: #657422;">  </span><span class="fu" style="color: #4758AB;">pull_request</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">{</span><span class="fu" style="color: #4758AB;">branches</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">[</span><span class="st" style="color: #20794D;">'main'</span><span class="kw" style="color: #003B4F;">]}</span></span>
+<span id="cb24-4"><span class="fu" style="color: #4758AB;">jobs</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb24-5"><span class="at" style="color: #657422;">  </span><span class="fu" style="color: #4758AB;">Spelling</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb24-6"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">runs-on</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> ubuntu-latest</span></span>
+<span id="cb24-7"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">container</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">{</span><span class="fu" style="color: #4758AB;">image</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="st" style="color: #20794D;">"rocker/tidyverse:4.2.1"</span><span class="kw" style="color: #003B4F;">}</span></span>
+<span id="cb24-8"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">steps</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb24-9"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Checkout repo</span></span>
+<span id="cb24-10"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">uses</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> actions/checkout@v3</span></span>
+<span id="cb24-11"></span>
+<span id="cb24-12"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Install spelling</span></span>
+<span id="cb24-13"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> if (!require("spelling")) install.packages("spelling")</span></span>
+<span id="cb24-14"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span>
+<span id="cb24-15"></span>
+<span id="cb24-16"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Run Spelling Check test</span></span>
+<span id="cb24-17"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST_EXAMPLE.txt"))</span></span>
+<span id="cb24-18"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span>
+<span id="cb24-19"></span>
+<span id="cb24-20"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Install testthat</span></span>
+<span id="cb24-21"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> if (!require("testthat")) install.packages("testthat")</span></span>
+<span id="cb24-22"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span>
+<span id="cb24-23"></span>
+<span id="cb24-24"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> test typos</span></span>
+<span id="cb24-25"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> testthat::test_that(desc = "No Typo", code = {</span></span>
+<span id="cb24-26"><span class="at" style="color: #657422;">        no_problem &lt;- spelling::spell_check_files(path = "inst/WORDLIST_EXAMPLE.txt", ignore = readr::read_lines("inst/WORDLIST_EXAMPLE.txt"))</span></span>
+<span id="cb24-27"><span class="at" style="color: #657422;">        spellcheck &lt;- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST_EXAMPLE.txt"))</span></span>
+<span id="cb24-28"><span class="at" style="color: #657422;">        testthat::expect_equal(object = spellcheck, expected = no_problem)</span></span>
+<span id="cb24-29"><span class="at" style="color: #657422;">        })</span></span>
+<span id="cb24-30"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span></code></pre></div>
+</div>
+</section>
+<section id="change-language" class="level2">
+<h2 class="anchored" data-anchor-id="change-language">Change language</h2>
+<p>This works fine for English, but what if we write in German? The <code>spelling</code> package depends on the <code>hunspell</code> package. This package comes with the English dictionary pre-installed. Further, it looks at the user library for any other dictionaries requested in the <code>spelling</code> function call.</p>
+<p>We can add dictionaries to the user library in the OS we are using to locally check the spelling in our projects. As soon as we want to spell-check on GitHub (with CICD) it gets a bit more tricky because we need to reference a library file within the CICD workflow.</p>
+<p>Let’s write a file that contains a German quote (by <em>JW von Goethe</em>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><span class="co" style="color: #5E5E5E;"># zitat &lt;- file("Zitat.txt", encoding = "UTF-8")</span></span>
+<span id="cb25-2"><span class="co" style="color: #5E5E5E;"># write(x = "Es hört doch jeder nur, was er verowokjnsthet.", file = "Zitat.txt")</span></span>
+<span id="cb25-3"><span class="fu" style="color: #4758AB;">write_lines</span>(<span class="st" style="color: #20794D;">"Es hört doch jeder nur, was er versthet."</span>, <span class="at" style="color: #657422;">file =</span> <span class="st" style="color: #20794D;">"Zitat.txt"</span>)</span></code></pre></div>
+</div>
+<p>The <code>spelling</code> package does not recognize the language in a file:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1">spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(<span class="st" style="color: #20794D;">"Zitat.txt"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  WORD       FOUND IN
+doch       Zitat.txt:1
+hört      Zitat.txt:1
+jeder      Zitat.txt:1
+nur        Zitat.txt:1
+versthet   Zitat.txt:1</code></pre>
+</div>
+</div>
+<p>We can list the dictionaries that are currently available to the hunspell package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1">hunspell<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">list_dictionaries</span>()</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "en_AU" "en_CA" "en_GB" "en_US"</code></pre>
+</div>
+</div>
+<p>Apparently, only English dictionaries are available at the moment. You can download UTF-8 encoded dictionaries from the <a href="https://github.com/JetBrains/hunspell-dictionaries">LibreOffice GitHub repo fork</a>. For me, the easiest way was to download the entire repo as a <code>.zip</code> folder and then move the dictionary files manually into the repo in which you want to spell-check using that dictionary.</p>
+<p><code>hunspell</code> requires two dictionary files for a language: the <code>.dic</code> and the <code>.aff</code> file. In this example we take the German dictionary files <code>de_DE_frami.aff</code> and <code>de_DE_frami.dic</code> and save them in the <code>inst</code> folder where our <code>WORDLIST_EXAMPLE.txt</code> file is as well. I am not sure why, but sometimes <code>hunspell</code> will look for the file <code>de_CH_FRAMI.dic</code> when we specify <code>lang = "inst/de_CH_frami"</code> so make sure to rename the <code>.dic</code> and <code>.aff</code> files as <code>de_DE_FRAMI.aff</code> and <code>de_DE_FRAMI.dic</code>, just to be sure.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><span class="fu" style="color: #4758AB;">list.files</span>(<span class="st" style="color: #20794D;">"../../inst"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "de_CH_FRAMI.aff"      "de_CH_FRAMI.dic"      "de_DE_FRAMI.aff"     
+[4] "de_DE_FRAMI.dic"      "WORDLIST_EXAMPLE.txt" "WORDLIST.txt"        </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1">spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(<span class="st" style="color: #20794D;">"Zitat.txt"</span>, <span class="at" style="color: #657422;">lang =</span> <span class="st" style="color: #20794D;">"../../inst/de_CH_FRAMI"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  WORD        FOUND IN
+versthet.   Zitat.txt:1</code></pre>
+</div>
+</div>
+<p>Now we just have to fix the error and check again.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><span class="fu" style="color: #4758AB;">write_lines</span>(<span class="st" style="color: #20794D;">"Es hört doch jeder nur, was er versteht."</span>, <span class="at" style="color: #657422;">file =</span> <span class="st" style="color: #20794D;">"Zitat.txt"</span>)</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1">spelling<span class="sc" style="color: #5E5E5E;">::</span><span class="fu" style="color: #4758AB;">spell_check_files</span>(<span class="st" style="color: #20794D;">"Zitat.txt"</span>, <span class="at" style="color: #657422;">lang =</span> <span class="st" style="color: #20794D;">"../../inst/de_CH_FRAMI"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No spelling errors found.</code></pre>
+</div>
+</div>
+<p>The <code>.yml</code> file for the german spell-check would like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode yml code-with-copy"><code class="sourceCode yaml"><span id="cb37-1"><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Spellcheck</span></span>
+<span id="cb37-2"><span class="fu" style="color: #4758AB;">on</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb37-3"><span class="at" style="color: #657422;">  </span><span class="fu" style="color: #4758AB;">pull_request</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">{</span><span class="fu" style="color: #4758AB;">branches</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">[</span><span class="st" style="color: #20794D;">'main'</span><span class="kw" style="color: #003B4F;">]}</span></span>
+<span id="cb37-4"><span class="fu" style="color: #4758AB;">jobs</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb37-5"><span class="at" style="color: #657422;">  </span><span class="fu" style="color: #4758AB;">Spelling</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb37-6"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">runs-on</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> ubuntu-latest</span></span>
+<span id="cb37-7"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">container</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="kw" style="color: #003B4F;">{</span><span class="fu" style="color: #4758AB;">image</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> </span><span class="st" style="color: #20794D;">"rocker/tidyverse:4.2.1"</span><span class="kw" style="color: #003B4F;">}</span></span>
+<span id="cb37-8"><span class="at" style="color: #657422;">    </span><span class="fu" style="color: #4758AB;">steps</span><span class="kw" style="color: #003B4F;">:</span></span>
+<span id="cb37-9"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Checkout repo</span></span>
+<span id="cb37-10"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">uses</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> actions/checkout@v3</span></span>
+<span id="cb37-11"></span>
+<span id="cb37-12"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Install spelling</span></span>
+<span id="cb37-13"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> if (!require("spelling")) install.packages("spelling")</span></span>
+<span id="cb37-14"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span>
+<span id="cb37-15"></span>
+<span id="cb37-16"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Run Spelling Check test</span></span>
+<span id="cb37-17"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt"), lang = "inst/de_CH_frami")</span></span>
+<span id="cb37-18"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span>
+<span id="cb37-19"></span>
+<span id="cb37-20"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Install testthat</span></span>
+<span id="cb37-21"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> if (!require("testthat")) install.packages("testthat")</span></span>
+<span id="cb37-22"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span>
+<span id="cb37-23"></span>
+<span id="cb37-24"><span class="at" style="color: #657422;">      </span><span class="kw" style="color: #003B4F;">-</span><span class="at" style="color: #657422;"> </span><span class="fu" style="color: #4758AB;">name</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> test typos</span></span>
+<span id="cb37-25"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">run</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> testthat::test_that(desc = "No Typo", code = {</span></span>
+<span id="cb37-26"><span class="at" style="color: #657422;">        no_problem &lt;- spelling::spell_check_files(path = "inst/WORDLIST_EXAMPLE.txt", ignore = readr::read_lines("inst/WORDLIST_EXAMPLE.txt"), lang = "inst/de_CH_FRAMI")</span></span>
+<span id="cb37-27"><span class="at" style="color: #657422;">        spellcheck &lt;- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST_EXAMPLE.txt"), lang = "inst/de_CH_FRAMI")</span></span>
+<span id="cb37-28"><span class="at" style="color: #657422;">        testthat::expect_equal(object = spellcheck, expected = no_problem)</span></span>
+<span id="cb37-29"><span class="at" style="color: #657422;">        })</span></span>
+<span id="cb37-30"><span class="at" style="color: #657422;">        </span><span class="fu" style="color: #4758AB;">shell</span><span class="kw" style="color: #003B4F;">:</span><span class="at" style="color: #657422;"> Rscript {0}</span></span></code></pre></div>
+</div>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>You should now be able to run a spell-check on your quarto files. Further, you know how to implement a GitHub CICD pipeline for spell-checks in any language with available dictionary files. This also allows you to implement other R-code based CICD pipelines.</p>
+<p>For your (and my) convenience, I have created book-templates for both <a href="https://github.com/StefanThoma/en_quarto_template">English</a> and <a href="https://github.com/StefanThoma/de_quarto_template">German</a> quarto books. They include CICD pipelines for both spelling and style check, and also implement a CICD publishing workflow. Please read the respective <code>readme.md</code> file for more information.</p>
+<!--------------- appendices go here ----------------->
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+  author = {Stefan Thoma},
+  editor = {},
+  title = {Using {CICD} to Check Spelling in Quarto Documents},
+  date = {2023-03-07},
+  url = {https://stefanthoma.github.io/quarto-blog//posts/2023-01-09_CICD-spelling},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
+Stefan Thoma. 2023. <span>“Using CICD to Check Spelling in Quarto
+Documents.”</span> March 7, 2023. <a href="https://stefanthoma.github.io/quarto-blog//posts/2023-01-09_CICD-spelling">https://stefanthoma.github.io/quarto-blog//posts/2023-01-09_CICD-spelling</a>.
+</div></div></section></div> ]]></description>
+  <category>CICD</category>
+  <category>R</category>
+  <category>GitHub</category>
+  <category>Quarto</category>
+  <guid>https://stefanthoma.github.io/quarto-blog/posts/2023-01-09_CICD-spelling/index.html</guid>
+  <pubDate>Tue, 07 Mar 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://stefanthoma.github.io/quarto-blog/posts/2023-01-09_CICD-spelling/xportr_rev.png" medium="image" type="image/png" height="167" width="144"/>
+</item>
+<item>
+  <title>Hello World</title>
+  <dc:creator>Stefan Thoma</dc:creator>
+  <link>https://stefanthoma.github.io/quarto-blog/posts/2023-01-09_welcome/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>The structure of this Blog is based on the <a href="https://github.com/djnavarro/quarto-blog">GitHub repo</a> of <a href="https://blog.djnavarro.net/">the fantastic blog by Danielle Navarro</a>, please check it out!</p>
+<p>Hi there, and welcome to this blog. I am a statistical programmer. I write this blog to have a reference of what I have done previously, and how I did it. Making this public encourages me to write more explicitly, which in turn will make it easier for me to understand the next time I try to do something similar.</p>
+<!--------------- appendices go here ----------------->
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-03-28 09:02:06 UTC</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/StefanThoma/quarto-blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/StefanThoma/quarto-blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+  author = {Stefan Thoma},
+  editor = {},
+  title = {Hello {World}},
+  date = {2023-01-09},
+  url = {https://stefanthoma.github.io/quarto-blog//posts/2023-01-09_welcome},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
+Stefan Thoma. 2023. <span>“Hello World.”</span> January 9, 2023. <a href="https://stefanthoma.github.io/quarto-blog//posts/2023-01-09_welcome">https://stefanthoma.github.io/quarto-blog//posts/2023-01-09_welcome</a>.
+</div></div></section></div> ]]></description>
+  <category>Blogging</category>
+  <guid>https://stefanthoma.github.io/quarto-blog/posts/2023-01-09_welcome/index.html</guid>
+  <pubDate>Mon, 09 Jan 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://stefanthoma.github.io/quarto-blog/posts/2023-01-09_welcome/admiral.png" medium="image" type="image/png" height="161" width="144"/>
+</item>
+</channel>
+</rss>

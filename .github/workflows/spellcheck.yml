@@ -1,0 +1,26 @@
+name: Spellcheck
+on:
+  pull_request: {branches: ['main']}
+jobs:
+  Spelling:
+    runs-on: ubuntu-latest
+    container: {image: "rocker/tidyverse:4.2.1"}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install spelling
+        run: if (!require("spelling")) install.packages("spelling")
+        shell: Rscript {0}
+
+      - name: Run Spelling Check test
+        run: spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt"))
+        shell: Rscript {0}
+
+      - name: Install testthat
+        run: if (!require("testthat")) install.packages("testthat")
+        shell: Rscript {0}
+
+      - name: test typos
+        run: testthat::test_that(desc = "No Typo", code = testthat::expect_equal(object = spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt")), expected = spelling::spell_check_files(path = "inst/WORDLIST.txt", ignore = readr::read_lines("inst/WORDLIST.txt"))))
+        shell: Rscript {0}
