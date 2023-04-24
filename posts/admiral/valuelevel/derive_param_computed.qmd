@@ -1,0 +1,67 @@
+---
+title: "admiral::derive_param_computed()"
+author:
+  - name: Kangjie Zhang
+
+description: " A valuelevel validation use case, where `admiral` is used to validate a derived parameter"
+date: "2023-04-24"
+categories: [R, admiral, Quarto]
+image: "admiral_rev.png"
+---
+
+<!--------------- my typical setup ----------------->
+
+```{r setup, include=FALSE}
+set.seed(8)
+wide <- 136
+narrow <- 76
+options(width = narrow)
+```
+
+<!--------------- post begins here ----------------->
+
+## Background
+
+Validate a parameter by using `admiral::derive_param_computed`
+
+## Derivation 
+
+derive new parameter/records for ADEX.PARAMCD = ADPCYMG (Actual Dose per Cycle) based on existing parameters - Actual Dose per Cycle (ADPCYMG) = Total Amount of Dose (TOTDOSE) / Number of Cycles (NUMCYC)
+
+## `admiral` fucntion
+
+`admiral::derive_param_computed` can add a parameter computed from the analysis value of other parameters.
+In this example, `ADEX.AVAL when ADEX.PARAPMCD = ADPCYMG` can be derived as:
+
+$$
+AVAL (PARAPMCD = ADPCYMG) = \frac{AVAL (PARAPMCD = TOTDOSE)}{AVAL (PARAPMCD = NUMCYC)}
+$$
+
+``` r
+# read in data
+path_ads <- "xxxx"
+adex <- haven::read_sas(paste0(path_ads, "adex.sas7bdat")) %>% 
+  select(USUBJID, PARAM, PARAMCD, AVAL)
+
+# subset input data to PARAMCD = "TOTDOSE", "NUMCYC"
+adex_TOTDOSE_NUMCYC <- adex %>% filter(PARAMCD %in% c("TOTDOSE", "NUMCYC"))
+# admiral::derive_param_computed()
+val <- 
+  derive_param_computed(
+  adex_TOTDOSE_NUMCYC,
+  by_vars = exprs(USUBJID),
+  parameters = c("TOTDOSE", "NUMCYC"),
+  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,
+  set_values_to = exprs(
+    PARAMCD = "ADPCYMG",
+    PARAM = "Actual Dose per Cycle (mg)"
+  )
+) 
+
+# compare with primary
+diffdf::diffdf(adex %>% filter(PARAMCD == "ADPCYMG"), 
+               val %>% filter(PARAMCD == "ADPCYMG"), 
+               keys = c("USUBJID", "PARAMCD"))
+```
+
+<!--------------- appendices go here ----------------->

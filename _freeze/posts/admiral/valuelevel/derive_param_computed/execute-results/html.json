@@ -1,0 +1,14 @@
+{
+  "hash": "891c3fb2afb165c14b99651cbf110c8d",
+  "result": {
+    "markdown": "---\ntitle: \"admiral::derive_param_computed()\"\nauthor:\n  - name: Kangjie Zhang\n\ndescription: \" A valuelevel validation use case, where `admiral` is used to validate a derived parameter\"\ndate: \"2023-04-24\"\ncategories: [R, admiral, Quarto]\nimage: \"admiral_rev.png\"\n---\n\n\n<!--------------- my typical setup ----------------->\n\n\n\n\n\n<!--------------- post begins here ----------------->\n\n## Background\n\nValidate a parameter by using `admiral::derive_param_computed`\n\n## Derivation \n\nderive new parameter/records for ADEX.PARAMCD = ADPCYMG (Actual Dose per Cycle) based on existing parameters - Actual Dose per Cycle (ADPCYMG) = Total Amount of Dose (TOTDOSE) / Number of Cycles (NUMCYC)\n\n## `admiral` fucntion\n\n`admiral::derive_param_computed` can add a parameter computed from the analysis value of other parameters.\nIn this example, `ADEX.AVAL when ADEX.PARAPMCD = ADPCYMG` can be derived as:\n\n$$\nAVAL (PARAPMCD = ADPCYMG) = \\frac{AVAL (PARAPMCD = TOTDOSE)}{AVAL (PARAPMCD = NUMCYC)}\n$$\n\n``` r\n# read in data\npath_ads <- \"xxxx\"\nadex <- haven::read_sas(paste0(path_ads, \"adex.sas7bdat\")) %>% \n  select(USUBJID, PARAM, PARAMCD, AVAL)\n\n# subset input data to PARAMCD = \"TOTDOSE\", \"NUMCYC\"\nadex_TOTDOSE_NUMCYC <- adex %>% filter(PARAMCD %in% c(\"TOTDOSE\", \"NUMCYC\"))\n# admiral::derive_param_computed()\nval <- \n  derive_param_computed(\n  adex_TOTDOSE_NUMCYC,\n  by_vars = exprs(USUBJID),\n  parameters = c(\"TOTDOSE\", \"NUMCYC\"),\n  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,\n  set_values_to = exprs(\n    PARAMCD = \"ADPCYMG\",\n    PARAM = \"Actual Dose per Cycle (mg)\"\n  )\n) \n\n# compare with primary\ndiffdf::diffdf(adex %>% filter(PARAMCD == \"ADPCYMG\"), \n               val %>% filter(PARAMCD == \"ADPCYMG\"), \n               keys = c(\"USUBJID\", \"PARAMCD\"))\n```\n\n<!--------------- appendices go here ----------------->\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
