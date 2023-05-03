@@ -1,12 +1,12 @@
 ---
-title: "admiral::derive_param_computed()"
+title: "derive_param_computed"
 author:
   - name: Kangjie Zhang
 
-description: " A valuelevel validation use case, where `admiral` is used to validate a derived parameter"
-date: "2023-04-24"
-categories: [R, admiral, Quarto]
-image: "admiral_rev.png"
+description: "Use admiral like a calculator to derive new parameters/rows based on existing ones"
+date: "2023-05-03"
+categories: [R, admiral, Valuelevel]
+image: "derive_param_computed.jpg"
 ---
 
 <!--------------- my typical setup ----------------->
@@ -20,17 +20,22 @@ options(width = narrow)
 
 <!--------------- post begins here ----------------->
 
-## Background
+## Introduction
 
-Validate a parameter by using `admiral::derive_param_computed`
+When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.
 
-## Derivation 
+The `admiral` function `derive_param_computed()` works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code. 
 
-derive new parameter/records for ADEX.PARAMCD = ADPCYMG (Actual Dose per Cycle) based on existing parameters - Actual Dose per Cycle (ADPCYMG) = Total Amount of Dose (TOTDOSE) / Number of Cycles (NUMCYC)
 
-## `admiral` fucntion
+## Example
 
-`admiral::derive_param_computed` can add a parameter computed from the analysis value of other parameters.
+A valuelevel validation use case, where `derive_param_computed()` is used to validate a derived parameter - `PARAMCD = ADPCYMG` (Actual Dose per Cycle) in ADEX dataset. 
+
+### Derivation text
+Actual Dose per Cycle is derived from the Total Amount of Dose (`PARAMCD=TOTDOSE`) / Number of Cycles (`PARAMCD=NUMCYC`)
+
+### Derivation formula
+
 In this example, `ADEX.AVAL when ADEX.PARAPMCD = ADPCYMG` can be derived as:
 
 $$
