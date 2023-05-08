@@ -1,27 +1,47 @@
-# Purpose of Blog Site
+## Purpose
 
-The communications working group is a small team within the (admiral)[https://pharmaverse.github.io/admiral/cran-release/] core team that seeks to promote and showcase admiral functions, documentation and possibilities.  ADaMs only form a small, but essential, part of the Clinical Reporting pipeline and so we also would like this site to highlight other upstream and downstream packages and processes.
+The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts.  These posts will be hosted on this [site](TBL) and promoted on the pharmaverse slack channels as well as on LinkedIn.
 
-As the communication is a small team, we hope that readers, users and maintainers of Clinical Reporting packages are able to write blog pots
+As the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team.
 
+## Spirit of a Blog Post
 
-## Blog Manifesto
+The CWG believes that the following 4 points will help guide the creation of Blog Posts. 
 
-* Short and too the point
-* Levity and personality
-* Self-Contained Examples
-* Able to be easily updated and modified as packages and processes are updated
-* Readability over complexity.
+* **Short**
+* **Personalized**
+* **Self-Contained**
+* **Readable**  
+
+**Short:** Posts should aim to be under (X) read.  We encourage that longer posts be broken up into multiple posts.  Our main medium of promotion, LinkedIn,...
+
+* **Personalized:** Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e. we don't want to just recycle the documentation. How can you add your voice, experience?
+
+* **Self-Contained:**  Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.
+
+* **Readable:** The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity. However, both can be done in the same post!
+
 
 ## What goes in a Blog
 
-* Example Data
-* 
+Depends on the type of post.  The CWG sees 3 types of Posts being made for the site.
+
+1) Focus on packages in the Clinical Reporting Pipeline
+2) Focus on functions from packages in the Clinical Reporting Pipeline
+3) Focus on wider experiences of using R in the Clinical Reporting Pipeline
+
+### Minimum Post Requirements
+
+  * A unique image to help showcase the post.
+  * 
+  * Self-contained data.
+  * Documentation of package versions
+
 
 ## How can I make a Blog Post
 
-
-* Reach out to us through slack or make an issue
-* 
+Step 1: Reach out to us through slack or make an issue
+Step 2: Branch off `main`
+Step 3: Review the Spirit of the Blog Post
 
 
