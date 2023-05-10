@@ -1,9 +1,9 @@
 ---
-title: "derive_param_computed"
+title: "Derive a new parameter computed from the value of other parameters"
 author:
   - name: Kangjie Zhang
 
-description: "Use admiral like a calculator to derive new parameters/rows based on existing ones"
+description: "Use `admiral::derive_param_computed()` like a calculator to derive new parameters/rows based on existing ones"
 date: "2023-05-03"
 categories: [R, admiral, Valuelevel]
 image: "derive_param_computed.jpg"
@@ -36,15 +36,15 @@ Actual Dose per Cycle is derived from the Total Amount of Dose (`PARAMCD=TOTDOSE
 
 ### Derivation formula
 
-In this example, `ADEX.AVAL when ADEX.PARAPMCD = ADPCYMG` can be derived as:
+In this example, `ADEX.AVAL when ADEX.PARAMCD = ADPCYMG` can be derived as:
 
 $$
-AVAL (PARAPMCD = ADPCYMG) = \frac{AVAL (PARAPMCD = TOTDOSE)}{AVAL (PARAPMCD = NUMCYC)}
+AVAL (PARAMCD = ADPCYMG) = \frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCYC)}
 $$
 
 ``` r
 # read in data
-path_ads <- "xxxx"
+path_ads <- ""
 adex <- haven::read_sas(paste0(path_ads, "adex.sas7bdat")) %>% 
   select(USUBJID, PARAM, PARAMCD, AVAL)
 
