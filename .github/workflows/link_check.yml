@@ -10,10 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: switch .qmd to .md
+        run: source("switch.R")
+        shell: Rscript {0}
+        
       - name: Link Checker
         uses: lycheeverse/lychee-action@v1.8.0
         with:
           fail: true
-          include: *.qmd
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
