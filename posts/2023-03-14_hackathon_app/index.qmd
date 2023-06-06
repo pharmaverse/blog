@@ -2,7 +2,7 @@
 title: "Hackathon Feedback Application"
 author:
   - name: Stefan Thoma
-description: "Going through the process of creating a shiny app for a teaching situation where users implement data-transformation instructions. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results."
+description: "Going through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results."
 date: "2023-03-14"
 categories: [R, shiny, teaching, WIP]
 image: "shiny_klee.png"
@@ -23,11 +23,8 @@ long_slug <- "2023-03-14_shiny_run_script"
 
 
 
-I recently co-created a shiny application for the `admiral` hackathon in February 2023.
-The concept of the app seems quite promising for teaching data-manipulation in general, so I decided to publish the code on GitHub and write this short post for anyone interested.
-
-But from the beginning: The `admiral` hackathon was an event designed to make statistical programmers from the pharmaceutical industry more comfortable with the `admiral` R package.
-This package allows users to efficiently transform data from one data standard (sdtm) to another (adam).
+We recently created a shiny application for the `admiral` hackathon in February 2023.
+The `admiral` hackathon was an event designed to make statistical programmers from the pharmaceutical industry more comfortable with the `admiral` R package which allows users to efficiently transform data from one data standard (sdtm) to another (adam).
 
 Hackathon participants formed groups of up to five people and were then tasked to create R-scripts that map the `sdtm` data to `adam` according to specifics defined in the metadata.
 
@@ -156,12 +153,12 @@ However, you can reuse the cached token from the `googledrive` authentication by
 ### Security Concerns
 
 Connecting a public shiny app to your Google account introduces a security vulnerability in general.
-Especially so, because we implemented the upload of files to the Google drive.
+Especially so because we implemented the upload of files to Google drive.
 And even more problematic: We run a user generated script and display some of its output.
 A malicious party might be able to extract the authentication token of our Google account or could upload malware to the drive.
 
-To reduce risk, I simply created an un-associated Google account to host the drive.
-There are certainly better options available, but this seemed a reasonable solution for basically zero effort.
+To reduce the risk, I simply created an un-associated Google account to host the drive.
+There are certainly better options available, but this seemed a reasonable solution achieved with very little effort.
 
 ## Register Team
 
@@ -178,6 +175,85 @@ The checks and registration is implemented in the `register_team()` function sto
 
 ![Screenshot of the register team interface](register_team.png)
 
+The challange here was to adapt the number of input fields depending on the number of team members.
+This means that the team name and email interface must be rendered: 
+First, we check how many team members are part of the group, this is stored in the `input$n_members` input variable.
+Then we create a `tagList` with as many elements as team members. 
+Each element contains two columns, one for the email, one for the member name. 
+This `tagList` is then returned and displayed to the user.
+
+```{r}
+#| eval: false
+  # render email input UI of the register tab
+  output$name_email <- shiny::renderUI({
+    # create field names
+    N <- input$n_members
+    NAME <- sapply(1:N, function(i) {
+      paste0("name", i)
+    })
+    EMAIL <- sapply(1:N, function(i) {
+      paste0("email", i)
+    })
+    
+    output <- tagList()
+
+    
+    firstsecondthird <- c("First", "Second", "Third", "Fourth", "Fifth")
+    for (i in 1:N) {
+      output[[i]] <- tagList()
+      output[[i]] <- fluidRow(
+        shiny::h4(paste(firstsecondthird[i], " Member")),
+        column(6,
+          textInput(NAME[i], "Name"),
+          value = " " # displayed default value
+        ),
+        column(6,
+          textInput(EMAIL[i], "Email"),
+          value = " "
+        )
+      )
+    }
+    output
+  })
+```
+The team information is then uploaded to Google drive. 
+Because some teams have more members than others, we have to create the respective data-frame with the number of team members in mind. 
+
+The following chunk creates the registration data. 
+Noteworthy here the creation of the `NAME` and `EMAIL` variables which depend on the number of members in this team.
+Further, the user input of these fields is extracted via `input[[paste0(NAME[i])]]` within a for-loop.
+
+We also make the data-creation dependent on the press of the `Register Group` button and cache some variables. 
+```{r}
+#| eval: false
+  ## registration 
+  registrationData <-
+    reactive({
+      N <- input$n_members
+      NAME <- sapply(1:N, function(i) {
+        paste0("name", i)
+      })
+      EMAIL <- sapply(1:N, function(i) {
+        paste0("email", i)
+      })
+      names <- character(0)
+      emails <- character(0)
+
+      for (i in 1:N) {
+        names[i] <- input[[paste0(NAME[i])]]
+        emails[i] <- input[[paste0(EMAIL[i])]]
+      }
+      # create df
+      dplyr::tibble(
+        team_name = input$team_name,
+        n_members = N,
+        member_name = names,
+        member_email = emails
+      )
+    }) %>%
+    bindCache(input$team_name, input$n_members, input$name1, input$email1) %>%
+    bindEvent(input$register) # wait for button press
+```
 
 ## Upload & Source Script
 
@@ -196,8 +272,24 @@ This was relatively straight forward as we provided participants with a folder s
 They had access to the `sdtm` folder in which the data was stored, and the `adam` folder into which they saved their solutions.
 The structure also included a folder with metadata which was also available on the shiny server.
 For some tasks, participants required some `adam`-datasets stored in the `adam` folder, essentially the output from previous tasks.
-On the shiny server this was solved by copying the required `adam` dataset from the `key` folder (where our solutions to the tasks were stored) to the `adam` folder.
-After sourcing the content in the `adam` folder was deleted.
+
+This was achieved by first creating a list mapping tasks to the required adam datasets: 
+```{r}
+#| eval: false
+depends_list <- list(
+  "ADADAS" = c("ADSL"),
+  "ADAE" = c("ADSL"),
+  "ADLBC" = c("ADSL"),
+  "ADLBH" = c("ADSL"),
+  "ADLBHY" = c("ADSL"),
+  "ADSL" = NULL,
+  "ADTTE" = c("ADSL", "ADAE"),
+  "ADVS" = c("ADSL")
+)
+```
+This list is sourced from the `R/parameters.R` file when initiating the application.
+We then call the `get_depends()` function sourced from `R/get_depends.R` which copies the required files from the `key` folder (where our solutions to the tasks were stored) to the `adam` folder. 
+After sourcing the uploaded script the content in the `adam` folder is deleted.
 
 ## Compare to Solution File
 
@@ -224,6 +316,7 @@ To compare submissions between participants we implemented a simple scoring func
 The function can be found in the `compare_dfs.R` file:
 
 ```{r}
+#| eval: false
 score_f <- function(df_user, df_key, keys) {
   score <- 10
   diff <- diffdf::diffdf(df_user, df_key, keys = keys)
@@ -231,14 +324,18 @@ score_f <- function(df_user, df_key, keys) {
     return(score)
   }
 
+  # check if there are any differences if the comparison is not strict:
   if (!diffdf::diffdf_has_issues(diffdf::diffdf(df_user,
     df_key,
     keys = keys,
     strict_numeric = FALSE,
     strict_factor = FALSE
   ))) {
+    # if differences are not strict, return score - 1
     return(score - 1)
+    
   }
+  
   return(round(min(max(score - length(diff) / 3, 1), 9), 2))
 }
 ```
@@ -246,11 +343,29 @@ score_f <- function(df_user, df_key, keys) {
 Every comparison starts with a score of `10`.
 We then subtract the length of the comparison object divided by a factor of `3`.
 The length of the comparison object is a simplified way to represent the difference between the two data-frames by one value.
-Finally, the score is bounded by `min(score, 1)`.
+Finally, the score is bounded by `1` using `max(score, 1)`.
 
 The score is not a perfect capture of the quality of the script uploaded but: 1.
 helped participants get an idea of how close their data-frame is to the solution file 2.
 allowed us to raffle prizes based on the merit of submitted r-scripts
+
+## Reactiveness
+
+Some of the app functions can take quite some time to execute, e.g. running the uploaded script. 
+Other tasks, e.g. registering a team, do not intrinsically generate user facing outputs. 
+This would make the app using really frustrating, as users would not know whether the app is correctly working or whether it froze. 
+
+We implemented two small features that made the app more responsive. 
+One is simple loading icons that integrate into the user interface and show that output is being computed -- that something is working. 
+The other is a pop up window which communicates whether team registration was successful, and if not, why not. 
+We further aimed to forward errors generated by the uploaded scripts to the user interface, but errors generated by the application itself should be concealed.
+
+## Conclusion
+
+Although the application was continuously improved during the hackathon it proved to be a useful resource for participants from day one as it allowed groups to set their own pace. 
+It further allowed `admiral` developers to gain insights on package usage of a relatively large sample of potential end users.
+From our perspective, the application provided a great added value to the hackathon and eased the workload of guiding the participants through all the tasks. 
+
 
 <!--------------- appendices go here ----------------->
 
