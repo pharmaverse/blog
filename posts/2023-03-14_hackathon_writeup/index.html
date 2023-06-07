@@ -6,8 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Stefan Thoma">
+<meta name="dcterms.date" content="2023-04-24">
+<meta name="description" content="Let’s have a look at the Admiral Hackathon 2023 together.">
 
-<title>Notes - Clinical Reporting in R</title>
+<title>Notes - Admiral Hackathon 2023 Revisited</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,24 +26,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -61,56 +62,31 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
+<style>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
+      .quarto-title-block .quarto-title-banner {
+        background: #eeeeee;
+      }
+</style>
 
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
-    };
 
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="Notes" href="index.xml"><meta property="og:title" content="Notes - Clinical Reporting in R">
-<meta property="og:description" content="The masses">
-<meta property="og:image" content="https://stefanthoma.github.io/quarto-blog/frontimage.png">
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Notes - Admiral Hackathon 2023 Revisited">
+<meta property="og:description" content="Let’s have a look at the Admiral Hackathon 2023 together.">
+<meta property="og:image" content="https://stefanthoma.github.io/quarto-blog/posts/2023-03-14_hackathon_writeup/community.png">
 <meta property="og:site-name" content="Notes">
-<meta property="og:image:height" content="1006">
-<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="543">
+<meta property="og:image:width" content="544">
 </head>
 
-<body class="nav-fixed">
+<body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Notes</span>
     </a>
   </div>
@@ -133,189 +109,102 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">Clinical Reporting in R</h1>
-            <p class="subtitle lead">The masses</p>
-                      </div>
+    <div class="quarto-title column-body">
+      <h1 class="title">Admiral Hackathon 2023 Revisited</h1>
+                  <div>
+        <div class="description">
+          Let’s have a look at the Admiral Hackathon 2023 together.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">community</div>
+              </div>
+                  </div>
   </div>
     
   
   <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Stefan Thoma </p>
+            </div>
+    </div>
       
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 24, 2023</p>
+      </div>
+    </div>
     
       
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-was-the-intention" id="toc-what-was-the-intention" class="nav-link active" data-scroll-target="#what-was-the-intention">What was the intention</a>
+  <ul class="collapse">
+  <li><a href="#where-you-can-find-the-materials" id="toc-where-you-can-find-the-materials" class="nav-link" data-scroll-target="#where-you-can-find-the-materials">where you can find the materials</a></li>
+  </ul></li>
+  <li><a href="#describe-the-participants-using-the-polls" id="toc-describe-the-participants-using-the-polls" class="nav-link" data-scroll-target="#describe-the-participants-using-the-polls">describe the participants using the polls</a></li>
+  <li><a href="#how-did-the-workshop-go" id="toc-how-did-the-workshop-go" class="nav-link" data-scroll-target="#how-did-the-workshop-go">How did the workshop go?</a></li>
+  <li><a href="#conclusion-future-workshops" id="toc-conclusion-future-workshops" class="nav-link" data-scroll-target="#conclusion-future-workshops">conclusion / future workshops</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Blogging">Blogging <span class="quarto-category-count">(1)</span></div><div class="category" data-category="CICD">CICD <span class="quarto-category-count">(1)</span></div><div class="category" data-category="GitHub">GitHub <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Quarto">Quarto <span class="quarto-category-count">(1)</span></div><div class="category" data-category="R">R <span class="quarto-category-count">(2)</span></div><div class="category" data-category="WIP">WIP <span class="quarto-category-count">(2)</span></div><div class="category" data-category="community">community <span class="quarto-category-count">(1)</span></div><div class="category" data-category="shiny">shiny <span class="quarto-category-count">(1)</span></div><div class="category" data-category="teaching">teaching <span class="quarto-category-count">(1)</span></div></div></div>
+    </div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
-<!-- <!-- mastodon verification -->
-<p>–&gt; <!-- <a rel="me" href="https://fosstodon.org/@djnavarro"></a> --> <!-- <a rel="me" href="https://genart.social/@djnavarro"></a> --></p>
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="what-was-the-intention" class="level2">
+<h2 class="anchored" data-anchor-id="what-was-the-intention">What was the intention</h2>
+<section id="where-you-can-find-the-materials" class="level3">
+<h3 class="anchored" data-anchor-id="where-you-can-find-the-materials">where you can find the materials</h3>
+</section>
+</section>
+<section id="describe-the-participants-using-the-polls" class="level2">
+<h2 class="anchored" data-anchor-id="describe-the-participants-using-the-polls">describe the participants using the polls</h2>
+</section>
+<section id="how-did-the-workshop-go" class="level2">
+<h2 class="anchored" data-anchor-id="how-did-the-workshop-go">How did the workshop go?</h2>
+<p>(link to hackathon app blogpost)</p>
+</section>
+<section id="conclusion-future-workshops" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion-future-workshops">conclusion / future workshops</h2>
+<!--------------- appendices go here ----------------->
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-4">
-<div class="g-col-1" data-index="0" data-categories="Blogging" data-listing-date-sort="1712102400000" data-listing-file-modified-sort="1686123474308" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1">
-<a href="./posts/2023-01-09_welcome/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts/2023-01-09_welcome/admiral.png" class="thumbnail-image card-img" style="height: 250px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hello pharmaverse
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('Blogging'); return false;">
-Blogging
-</div>
-</div>
-<div class="card-text listing-description">
-What am I doing here?
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Ben Straub
-</div>
-<div class="listing-date">
-Apr 3, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="community,WIP" data-listing-date-sort="1682294400000" data-listing-file-modified-sort="1686123474316" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1">
-<a href="./posts/2023-03-14_hackathon_writeup/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts/2023-03-14_hackathon_writeup/community.png" class="thumbnail-image card-img" style="height: 250px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Admiral Hackathon 2023 Revisited
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('community'); return false;">
-community
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('WIP'); return false;">
-WIP
-</div>
-</div>
-<div class="card-text listing-description">
-Let’s have a look at the Admiral Hackathon 2023 together.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Stefan Thoma
-</div>
-<div class="listing-date">
-Apr 24, 2023
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="2" data-categories="R,shiny,teaching,WIP" data-listing-date-sort="1678752000000" data-listing-file-modified-sort="1686123474312" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14">
-<a href="./posts/2023-03-14_hackathon_app/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts/2023-03-14_hackathon_app/shiny_klee.png" class="thumbnail-image card-img" style="height: 250px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hackathon Feedback Application
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('R'); return false;">
-R
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('shiny'); return false;">
-shiny
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('teaching'); return false;">
-teaching
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('WIP'); return false;">
-WIP
-</div>
-</div>
-<div class="card-text listing-description">
-Going through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates…
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Stefan Thoma
-</div>
-<div class="listing-date">
-Mar 14, 2023
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="3" data-categories="CICD,R,GitHub,Quarto" data-listing-date-sort="1678147200000" data-listing-file-modified-sort="1686123474308" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13">
-<a href="./posts/2023-01-09_CICD_spelling/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts/2023-01-09_CICD_spelling/xportr_rev.png" class="thumbnail-image card-img" style="height: 250px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Using CICD to check spelling in quarto documents
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('CICD'); return false;">
-CICD
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('R'); return false;">
-R
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('GitHub'); return false;">
-GitHub
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('Quarto'); return false;">
-Quarto
-</div>
-</div>
-<div class="card-text listing-description">
-This post explains how to use GitHub to automatically check the spelling of your quarto document through the process of continuous integration and deployment (CICD).
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Stefan Thoma
-</div>
-<div class="listing-date">
-Mar 7, 2023
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+  author = {Thoma, Stefan},
+  title = {Admiral {Hackathon} 2023 {Revisited}},
+  date = {2023-04-24},
+  url = {https://stefanthoma.github.io/quarto-blog//posts/2023-03-14_hackathon_writeup},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas" role="listitem">
+Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
+April 24, 2023. <a href="https://stefanthoma.github.io/quarto-blog//posts/2023-03-14_hackathon_writeup">https://stefanthoma.github.io/quarto-blog//posts/2023-03-14_hackathon_writeup</a>.
+</div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
