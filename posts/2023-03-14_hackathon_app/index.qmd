@@ -184,37 +184,37 @@ This `tagList` is then returned and displayed to the user.
 
 ```{r}
 #| eval: false
-  # render email input UI of the register tab
-  output$name_email <- shiny::renderUI({
-    # create field names
-    N <- input$n_members
-    NAME <- sapply(1:N, function(i) {
-      paste0("name", i)
-    })
-    EMAIL <- sapply(1:N, function(i) {
-      paste0("email", i)
-    })
-    
-    output <- tagList()
-
-    
-    firstsecondthird <- c("First", "Second", "Third", "Fourth", "Fifth")
-    for (i in 1:N) {
-      output[[i]] <- tagList()
-      output[[i]] <- fluidRow(
-        shiny::h4(paste(firstsecondthird[i], " Member")),
-        column(6,
-          textInput(NAME[i], "Name"),
-          value = " " # displayed default value
-        ),
-        column(6,
-          textInput(EMAIL[i], "Email"),
-          value = " "
-        )
-      )
-    }
-    output
+# render email input UI of the register tab
+output$name_email <- shiny::renderUI({
+  # create field names
+  N <- input$n_members
+  NAME <- sapply(1:N, function(i) {
+    paste0("name", i)
   })
+  EMAIL <- sapply(1:N, function(i) {
+    paste0("email", i)
+  })
+
+  output <- tagList()
+
+
+  firstsecondthird <- c("First", "Second", "Third", "Fourth", "Fifth")
+  for (i in 1:N) {
+    output[[i]] <- tagList()
+    output[[i]] <- fluidRow(
+      shiny::h4(paste(firstsecondthird[i], " Member")),
+      column(6,
+        textInput(NAME[i], "Name"),
+        value = " " # displayed default value
+      ),
+      column(6,
+        textInput(EMAIL[i], "Email"),
+        value = " "
+      )
+    )
+  }
+  output
+})
 ```
 The team information is then uploaded to Google drive. 
 Because some teams have more members than others, we have to create the respective data-frame with the number of team members in mind. 
@@ -226,33 +226,33 @@ Further, the user input of these fields is extracted via `input[[paste0(NAME[i])
 We also make the data-creation dependent on the press of the `Register Group` button and cache some variables. 
 ```{r}
 #| eval: false
-  ## registration 
-  registrationData <-
-    reactive({
-      N <- input$n_members
-      NAME <- sapply(1:N, function(i) {
-        paste0("name", i)
-      })
-      EMAIL <- sapply(1:N, function(i) {
-        paste0("email", i)
-      })
-      names <- character(0)
-      emails <- character(0)
+## registration
+registrationData <-
+  reactive({
+    N <- input$n_members
+    NAME <- sapply(1:N, function(i) {
+      paste0("name", i)
+    })
+    EMAIL <- sapply(1:N, function(i) {
+      paste0("email", i)
+    })
+    names <- character(0)
+    emails <- character(0)
 
-      for (i in 1:N) {
-        names[i] <- input[[paste0(NAME[i])]]
-        emails[i] <- input[[paste0(EMAIL[i])]]
-      }
-      # create df
-      dplyr::tibble(
-        team_name = input$team_name,
-        n_members = N,
-        member_name = names,
-        member_email = emails
-      )
-    }) %>%
-    bindCache(input$team_name, input$n_members, input$name1, input$email1) %>%
-    bindEvent(input$register) # wait for button press
+    for (i in 1:N) {
+      names[i] <- input[[paste0(NAME[i])]]
+      emails[i] <- input[[paste0(EMAIL[i])]]
+    }
+    # create df
+    dplyr::tibble(
+      team_name = input$team_name,
+      n_members = N,
+      member_name = names,
+      member_email = emails
+    )
+  }) %>%
+  bindCache(input$team_name, input$n_members, input$name1, input$email1) %>%
+  bindEvent(input$register) # wait for button press
 ```
 
 ## Upload & Source Script
@@ -333,9 +333,8 @@ score_f <- function(df_user, df_key, keys) {
   ))) {
     # if differences are not strict, return score - 1
     return(score - 1)
-    
   }
-  
+
   return(round(min(max(score - length(diff) / 3, 1), 9), 2))
 }
 ```
