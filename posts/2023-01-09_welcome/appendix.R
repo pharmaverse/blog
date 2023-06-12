@@ -1,4 +1,3 @@
-
 # markdown helpers --------------------------------------------------------
 
 markdown_appendix <- function(name, content) {
