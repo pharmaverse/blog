@@ -1,6 +1,7 @@
 library(stringr)
 library(tidyverse)
 library(checkmate)
+library(rlang)
 
 #' function to create a new post skeleton
 #'
