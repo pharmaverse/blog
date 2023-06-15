@@ -19,25 +19,58 @@ long_slug <- "2023-04-24_shiny_run_script"
 
 <!--------------- post begins here ----------------->
 
+```{r}
+#| echo: false
+#| message: false
+
+library(readxl)
+library(tidyverse)
+# read data
+list.files()
+introR <- readxl::read_xlsx("Introduction to R for SAS Programmer Workshop.xlsx", skip = 2)
+kickoff <- readxl::read_xlsx("{admiral} hackathon kick off.xlsx", skip = 2)
+checkin <- readxl::read_xlsx("{admiral} hackathon check in.xlsx", skip = 2)
+```
+
+This January and February (2023), the `admiral` development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon.
+The idea was to build a community of `admiral` users, and help participants familiarize themselves with R and `admiral`. 
+
+The hackathon was structured in two parts. 
+First, we offered an introduction to R for SAS programmers, a three hour workshop for R beginners to get them up to speed. 
+Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. 
+This ensured that hackathon participants were familiar with core R concepts. 
+The [workshop recording](https://www.cdisc.org/events/webinar/pre-admiral-hackathon-workshop-introduction-r-sas-programmers) and the [course materials](https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/) are available online. 
+
+The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data.
+Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script.
+Script upload through [the feedback application](https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/) was available all through February, and we offered multiple online meetings throughout the month to discuss challenges and give some tips. 
+If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in [this blogpost](https://pharmaverse.github.io/comms_wg/posts/2023-03-14_hackathon_app/) or check out the [public GitHub repository for such an application](https://github.com/StefanThoma/hackathon_app).
+
+```{r}
+introR$`In which country do you reside in?:` %>% unique()
+introR$`What kind of organization are you working for?:`
+```
+```{r}
+#| echo: false
+ggplot(data = introR %>% 
+         group_by(`What kind of organization are you working for?:`) %>% 
+         summarise(n = n()), 
+       mapping = aes(y = `What kind of organization are you working for?:`, fill = `What kind of organization are you working for?:`, x = n)) + 
+  geom_col() + 
+  ylab("") + 
+  theme_classic() +
+  theme(legend.position = "none") 
+```
 
 
-## What was the intention
+We were really excited to see over **500** people from around 40 countries joining our introduction to R workshop in January! 
 
-
-### where you can find the materials
-
-
-## describe the participants using the polls
-
-
-## How did the workshop go?
-(link to hackathon app blogpost)
 
 ## conclusion / future workshops
 
 
 
-
+Should ask for feedback on hackathon
 
 
 <!--------------- appendices go here ----------------->
