@@ -7,7 +7,7 @@ source("R/help_create_blogpost.R")
 
 create_post(
   post_name = "lbla",
-  post_date = format(Sys.time(), "%Y-%m-%d"),
+  post_date = "2023-06-15",
   description = "",
   author = "Stefan Thoma",
   cover_image = "admiral",

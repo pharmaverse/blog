@@ -35,7 +35,7 @@ create_post <- function(
   checkmate::assert_character(author)
   checkmate::assert_character(post_date)
   if (is.na(as.Date(post_date, format = "%Y-%m-%d"))) {
-    stop('`post_date` has to be in the format "%Y-%m-%d", e.g. 2023-06-15')
+    stop('`post_date` has to be in the format "%Y-%m-%d", e.g. "2023-06-15"')
   }
 
   checkmate::assert_character(description)
