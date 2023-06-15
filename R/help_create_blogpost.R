@@ -1,16 +1,17 @@
 library(stringr)
 library(tidyverse)
+library(checkmate)
 
 #' function to create a new post skeleton
 #'
 #' @param post_name string
 #' @param author string (can be vector for more authors)
-#' @param post_date date in the format "%Y-%m-%d", defaults to today
+#' @param post_date atomic character date in the format "%Y-%m-%d", e.g. "2023-06-15", defaults to today
 #' @param description blog post description, can be left empty and filled later
 #' @param image one of a set of options for default images
 #' @param tags character vector, some of a set of options
 #'
-#' @return
+#' @return just a message when it worked. Side effect: creates skeleton of blogpost
 #' @export
 #'
 #' @examples
@@ -24,6 +25,22 @@ create_post <- function(
     cover_image = c("admiral", "shiny"),
     tags = c("background", "admiral", "coding", "shiny")) {
   # assert inputs
+  rlang::arg_match(cover_image)
+  checkmate::assert_atomic(post_name)
+  checkmate::assert_atomic(description)
+  checkmate::assert_atomic(cover_image)
+  checkmate::assert_atomic(post_date)
+
+  checkmate::assert_character(post_name)
+  checkmate::assert_character(author)
+  checkmate::assert_character(post_date)
+  if (is.na(as.Date(post_date, format = "%Y-%m-%d"))) {
+    stop('`post_date` has to be in the format "%Y-%m-%d", e.g. 2023-06-15')
+  }
+
+  checkmate::assert_character(description)
+  checkmate::assert_character(cover_image)
+  checkmate::assert_character(tags)
 
   # prepare values
   snake_name <- gsub(" ", "_", tolower(gsub("(.)([A-Z])", "\\1 \\2", post_name)))
@@ -85,34 +102,37 @@ create_post <- function(
 #'
 #' @return modified text
 replace <- function(text, key = c("TITLE", "AUTHOR", "DESCR", "DATE", "TAG", "IMG", "SLUG"), replacement) {
+  rlang::arg_match(key)
+
   if (key == "IMG") {
     replacement <- paste(replacement, ".png", sep = "")
   }
 
+  # switch to what key actually looks like
+  key_with <- paste("[", key, "]", sep = "")
 
-  rlang::arg_match(key)
+  # how should replacement be entered?
+  replacement <- case_when(
+    key == "AUTHOR" ~ paste("  - name: ", replacement, sep = ""),
+    key == "TAG" ~ paste(replacement, collapse = ", "),
+    .default = paste('"', replacement, '"', sep = "")
+  )
+
+
+
   if (key == "AUTHOR") {
     where <- str_which(
       string = text,
-      pattern = fixed(paste("[", key, "]", sep = ""))
+      pattern = fixed(key_with)
     )
-    replacement <- paste("  - name: ", replacement, sep = "")
     text <- append(text, values = replacement, after = where)
     text <- text[-where]
   } else {
-    if (key == "TAG") {
-      text <- stringr::str_replace(
-        string = text,
-        pattern = fixed(paste("[", key, "]", sep = "")),
-        replacement = paste(replacement, collapse = ", ")
-      )
-    } else {
-      text <- stringr::str_replace(
-        string = text,
-        pattern = fixed(paste("[", key, "]", sep = "")),
-        replacement = paste('"', replacement, '"', sep = "")
-      )
-    }
+    text <- stringr::str_replace(
+      string = text,
+      pattern = fixed(key_with),
+      replacement = replacement
+    )
   }
   return(text)
 }

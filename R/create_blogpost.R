@@ -13,3 +13,7 @@ create_post(
   cover_image = "admiral",
   tags = "admiral"
 )
+
+
+# remove that post:
+unlink("posts/2023-06-15_lbla", recursive = TRUE)
