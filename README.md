@@ -1,6 +1,6 @@
 ## Purpose
 
-The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts.  These posts will be hosted on this [site](TBL) and promoted on the pharmaverse slack channels as well as on LinkedIn.
+The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts.  These posts will be hosted on this [pharmaverse blog](https://pharmaverse.github.io/comms_wg/) and promoted on the pharmaverse slack channels as well as on LinkedIn.
 
 As the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team.
 
@@ -10,38 +10,47 @@ The CWG believes that the following 4 points will help guide the creation of Blo
 
 * **Short**
 * **Personalized**
-* **Self-Contained**
+* **Reproducible**
 * **Readable**  
 
-**Short:** Posts should aim to be under (X) read.  We encourage that longer posts be broken up into multiple posts.  Our main medium of promotion, LinkedIn,...
+**Short:** Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.  
 
-* **Personalized:** Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e. we don't want to just recycle the documentation. How can you add your voice, experience?
+**Personalized:** Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e. we don't want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.
 
-* **Self-Contained:**  Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.
+**Reproducible:**  Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.
 
-* **Readable:** The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity. However, both can be done in the same post!
+**Readable:** The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity. 
 
 
-## What goes in a Blog
+## What types of posts are allowed on this site?
 
-Depends on the type of post.  The CWG sees 3 types of Posts being made for the site.
+Overall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:
 
-1) Focus on packages in the Clinical Reporting Pipeline
-2) Focus on functions from packages in the Clinical Reporting Pipeline
-3) Focus on wider experiences of using R in the Clinical Reporting Pipeline
+1) Packages in the Clinical Reporting Pipeline
+2) Functions from packages in the Clinical Reporting Pipeline
+3) Wider experiences of using R in the Clinical Reporting Pipeline
+4) Conference experiences and the Clinical Reporting Pipeline
+
+However, it never hurts to ask if you topic might fit into this medium!.
 
 ### Minimum Post Requirements
 
   * A unique image to help showcase the post.
-  * 
-  * Self-contained data.
+  * Working Code
+  * Self-contained data or package data.
   * Documentation of package versions
 
+That is it! After that you can go wild, but we do ask that it is kept short!
 
 ## How can I make a Blog Post
 
-Step 1: Reach out to us through slack or make an issue
+Step 1: Reach out to us through [pharmaverse/slack](pharmaverse.slack.com
+) or make an issue on our [GitHub](https://github.com/pharmaverse/comms_wg/issues).
+
 Step 2: Branch off `main`
-Step 3: Review the Spirit of the Blog Post
+
+Step 3: Review the Spirit of the Blog Post in the Pull Request Template
+
+Step 4: Poke us to do a review!  
 
 

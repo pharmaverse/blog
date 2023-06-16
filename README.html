@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.475">
+<meta name="generator" content="quarto-1.3.354">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -17,7 +17,7 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
 </style>
@@ -47,32 +47,50 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="purpose" class="level2">
 <h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
-<p>The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this <a href="TBL">site</a> and promoted on our slack channels as well as on LinkedIn.</p>
-<p>As the communication is a small team, we hope to make the blog development process easy enough that readers, users and maintainers of Clinical Reporting packages will be able to write blog posts.</p>
+<p>The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this <a href="https://pharmaverse.github.io/comms_wg/">pharmaverse blog</a> and promoted on the pharmaverse slack channels as well as on LinkedIn.</p>
+<p>As the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team.</p>
 </section>
 <section id="spirit-of-a-blog-post" class="level2">
 <h2 class="anchored" data-anchor-id="spirit-of-a-blog-post">Spirit of a Blog Post</h2>
-<p>The CWG has developed a short Manifesto to help guide the creation of Blog Posts.</p>
+<p>The CWG believes that the following 4 points will help guide the creation of Blog Posts.</p>
 <ul>
 <li><strong>Short</strong></li>
 <li><strong>Personalized</strong></li>
-<li><strong>Self-Contained</strong></li>
+<li><strong>Reproducible</strong></li>
 <li><strong>Readable</strong></li>
 </ul>
+<p><strong>Short:</strong> Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.</p>
+<p><strong>Personalized:</strong> Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e.&nbsp;we don’t want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.</p>
+<p><strong>Reproducible:</strong> Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.</p>
+<p><strong>Readable:</strong> The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity.</p>
 </section>
-<section id="what-goes-in-a-blog" class="level2">
-<h2 class="anchored" data-anchor-id="what-goes-in-a-blog">What goes in a Blog</h2>
+<section id="what-types-of-posts-are-allowed-on-this-site" class="level2">
+<h2 class="anchored" data-anchor-id="what-types-of-posts-are-allowed-on-this-site">What types of posts are allowed on this site?</h2>
+<p>Overall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:</p>
+<ol type="1">
+<li>Packages in the Clinical Reporting Pipeline</li>
+<li>Functions from packages in the Clinical Reporting Pipeline</li>
+<li>Wider experiences of using R in the Clinical Reporting Pipeline</li>
+<li>Conference experiences and the Clinical Reporting Pipeline</li>
+</ol>
+<p>However, it never hurts to ask if you topic might fit into this medium!.</p>
+<section id="minimum-post-requirements" class="level3">
+<h3 class="anchored" data-anchor-id="minimum-post-requirements">Minimum Post Requirements</h3>
 <ul>
-<li>Example Data</li>
-<li></li>
+<li>A unique image to help showcase the post.</li>
+<li>Working Code</li>
+<li>Self-contained data or package data.</li>
+<li>Documentation of package versions</li>
 </ul>
+<p>That is it! After that you can go wild, but we do ask that it is kept short!</p>
+</section>
 </section>
 <section id="how-can-i-make-a-blog-post" class="level2">
 <h2 class="anchored" data-anchor-id="how-can-i-make-a-blog-post">How can I make a Blog Post</h2>
-<ul>
-<li>Reach out to us through slack or make an issue</li>
-<li></li>
-</ul>
+<p>Step 1: Reach out to us through <a href="pharmaverse.slack.com">pharmaverse/slack</a> or make an issue on our <a href="https://github.com/pharmaverse/comms_wg/issues">GitHub</a>.</p>
+<p>Step 2: Branch off <code>main</code></p>
+<p>Step 3: Review the Spirit of the Blog Post in the Pull Request Template</p>
+<p>Step 4: Poke us to do a review!</p>
 </section>
 
 </main>
@@ -104,9 +122,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -171,6 +203,92 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
