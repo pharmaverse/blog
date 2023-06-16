@@ -44,8 +44,7 @@ That is it! After that you can go wild, but we do ask that it is kept short!
 
 ## How can I make a Blog Post
 
-Step 1: Reach out to us through [pharmaverse/slack](pharmaverse.slack.com
-) or make an issue on our [GitHub](https://github.com/pharmaverse/comms_wg/issues).
+Step 1: Reach out to us through [pharmaverse/slack](https://pharmaverse.slack.com) or make an issue on our [GitHub](https://github.com/pharmaverse/comms_wg/issues).
 
 Step 2: Branch off `main`
 
