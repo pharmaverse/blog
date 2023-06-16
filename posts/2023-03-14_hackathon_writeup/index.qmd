@@ -25,11 +25,13 @@ long_slug <- "2023-04-24_shiny_run_script"
 
 library(readxl)
 library(tidyverse)
+library(janitor)
+library(patchwork)
 # read data
-list.files()
-introR <- readxl::read_xlsx("Introduction to R for SAS Programmer Workshop.xlsx", skip = 2)
-kickoff <- readxl::read_xlsx("{admiral} hackathon kick off.xlsx", skip = 2)
-checkin <- readxl::read_xlsx("{admiral} hackathon check in.xlsx", skip = 2)
+
+introR <- readxl::read_xlsx("Introduction to R for SAS Programmer Workshop.xlsx", skip = 2) %>% janitor::clean_names()
+kickoff <- readxl::read_xlsx("{admiral} hackathon kick off.xlsx", skip = 2) %>% janitor::clean_names()
+checkin <- readxl::read_xlsx("{admiral} hackathon check in.xlsx", skip = 2) %>% janitor::clean_names()
 ```
 
 This January and February (2023), the `admiral` development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon.
@@ -47,25 +49,99 @@ Script upload through [the feedback application](https://zxqguo-stefan0pascal-th
 If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in [this blogpost](https://pharmaverse.github.io/comms_wg/posts/2023-03-14_hackathon_app/) or check out the [public GitHub repository for such an application](https://github.com/StefanThoma/hackathon_app).
 
 ```{r}
-introR$`In which country do you reside in?:` %>% unique()
-introR$`What kind of organization are you working for?:`
+#| include: false
+introR$in_which_country_do_you_reside_in %>% unique()
+introR$what_kind_of_organization_are_you_working_for
 ```
 
 
+## *Introduction to R* workshop
 
-We were really excited to see over **500** people from around 40 countries joining our introduction to R workshop in January! 
-Below you can see that representatives of many different sorts of organisations joined our workshop: 
+We were really excited to see over **500** people from around 40 countries joining our *introduction to R workshop* in January! 
+To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. 
+Below you can see that representatives of many different sorts of organisations joined our introduction to R workshop: 
+
 ```{r}
 #| echo: false
 ggplot(data = introR %>% 
-         group_by(`What kind of organization are you working for?:`) %>% 
+         group_by(what_kind_of_organization_are_you_working_for) %>% 
          summarise(n = n()), 
-       mapping = aes(y = `What kind of organization are you working for?:`, fill = `What kind of organization are you working for?:`, x = n)) + 
+       mapping = aes(y = what_kind_of_organization_are_you_working_for, fill = what_kind_of_organization_are_you_working_for, x = n)) + 
   geom_col() + 
   ylab("") + 
   theme_classic() +
   theme(legend.position = "none") 
 ```
+216 out of `r sum((introR$is_your_company_using_r_for_clinical_trial_data_analysis %>% table(useNA = "always"))[1:2])` confirmed that their company is already using R for clinial trial data analysis, the remaining 131 did not answer this question. 
+
+The target audience for this workshop were programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.
+```{r}
+#| echo: false
+#introR$how_would_you_rate_your_sas_skills %>% factor(levels = c("Beginner",  "Intermediate","Advanced", "Expert")) %>% table() %>% plot(main = "SAS")
+#introR$how_would_you_rate_your_r_skills %>% factor(levels = c("Beginner",  "Intermediate","Advanced", "Expert")) %>% table() %>% plot(main = "R")
+  
+
+# prepare plot data
+introR %>% rename(
+  R = how_would_you_rate_your_r_skills,
+  SAS = how_would_you_rate_your_sas_skills) %>% 
+  pivot_longer(cols = c(R, SAS), names_to = "lang", values_to = "skill") %>% 
+  mutate(
+  skill =    factor(skill, levels = c("Beginner",  "Intermediate","Advanced", "Expert"))
+  ) %>%
+  select(skill, lang) %>% 
+  drop_na() %>% 
+  
+  # plot it:
+  ggplot(aes(y = skill, fill = lang)) +
+  geom_bar() +  
+  facet_grid(~lang) + 
+  theme_classic() +
+  theme(legend.position = "none")
+  
+
+```
+
+Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (althogh there may be a slight [survivorship bias](https://en.wikipedia.org/wiki/Survivorship_bias)...).
+```{r}
+#| echo: false
+temp_introR <- introR %>%
+  mutate(how_would_you_rate_the_workshop = factor(how_would_you_rate_the_workshop, levels = c("Poor","Fair","Good","Excellent")), 
+         the_workshop_was = factor(the_workshop_was, levels = c("too easy", "just right", "too difficult"))) %>% 
+  select(how_would_you_rate_the_workshop, the_workshop_was) %>% 
+  drop_na()
+
+rate_plot <- temp_introR %>% 
+ggplot(aes(x  =how_would_you_rate_the_workshop)) +
+  geom_bar() + 
+  xlab("") + 
+  theme_classic() +
+  ggtitle("Quality")
+  
+difficulty_plot <- temp_introR %>% 
+  ggplot(aes(x  = the_workshop_was)) +
+  geom_bar() + 
+  xlab("") + 
+  theme_classic() +
+  ggtitle("Difficulty")
+
+
+rate_plot + difficulty_plot
+```
+
+## `admiral` Hackathon 
+
+We did similar polls at the `admiral` hackathon kick-off meeting where we still had 269 poll participants and even more viewers.
+
+```{r}
+kickoff$voter %>% max()
+```
+In the end, we had a total of 44 teams spanning 87 statistical programmers who took part in the admiral hackathon. 
+
+
+A recording of the hackathon readout can be found in the [CDISC Open Source Alliance Quarterly Spotlight](https://www.cdisc.org/events/webinar/cosa-quarterly-spotlight-q1-2023).
+
+Shout-out to our community hero: [Jagadish Katam](https://www.linkedin.com/in/jagadishkatam/) without whom most issues related to the task programming raised by the community would not have been adressed as quickly as they were. Huge thanks from the organisors!
 
 
 
