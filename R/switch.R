@@ -1,4 +1,3 @@
-
 #' fixes link-check problem
 #' Finds whether any files use the string: "(.mailto:" for linking email adresses
 #' then just replaces with: "(mailto:" as is markdown standard
@@ -50,4 +49,3 @@ modify_files(all_qmd)
 all_md <- gsub(".qmd$", ".md", all_qmd)
 # rename all files
 file.rename(all_qmd, all_md)
-
