@@ -1,0 +1,95 @@
+---
+title: "Derive a new parameter computed from the value of other parameters"
+author:
+  - name: Kangjie Zhang
+
+description: "Use `admiral::derive_param_computed()` like a calculator to derive new parameters/rows based on existing ones"
+date: "2023-06-12"
+categories: [R, admiral, Valuelevel]
+image: "derive_param_computed.jpg"
+---
+
+<!--------------- my typical setup ----------------->
+
+```{r setup, include=FALSE}
+set.seed(8)
+wide <- 136
+narrow <- 76
+options(width = narrow)
+```
+
+<!--------------- post begins here ----------------->
+
+## Introduction
+
+When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.
+
+The [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) function [`derive_param_computed()`](https://pharmaverse.github.io/admiral/cran-release/reference/derive_param_computed.html) adds a parameter computed from the analysis value of other parameters.
+
+It works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code.
+
+## Example
+
+A value level validation use case, where `derive_param_computed()` is used to validate a derived parameter - `PARAMCD = ADPCYMG` (Actual Dose per Cycle) in ADEX dataset.
+
+### Derivation
+
+Actual Dose per Cycle is derived from the Total Amount of Dose (`PARAMCD = TOTDOSE`) / Number of Cycles (`PARAMCD = NUMCYC`)
+
+In this example, `ADEX.AVAL when ADEX.PARAMCD = ADPCYMG` can be derived as:
+
+$$
+AVAL (PARAMCD = ADPCYMG) = \frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCYC)}
+$$
+
+### Loading Packages and Creating Example Data
+
+```{r, message = FALSE}
+library(tibble)
+library(dplyr)
+library(diffdf)
+library(admiral)
+
+adex <- tribble(
+  ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,
+  "101",     "TOTDOSE", "Total Amount of Dose (mg)",  180,
+  "101",     "NUMCYC",  "Number of Cycles",           3
+)
+```
+
+### Derive New Parameter
+
+```{r}
+adex_admiral <- derive_param_computed(
+  adex,
+  by_vars = exprs(USUBJID),
+  parameters = c("TOTDOSE", "NUMCYC"),
+  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,
+  set_values_to = exprs(
+    PARAMCD = "ADPCYMG",
+    PARAM = "Actual Dose per Cycle (mg)"
+  )
+)
+```
+
+```{r, echo = FALSE}
+adex_admiral
+```
+
+### Compare
+
+For validation purpose, the [diffdf](https://gowerc.github.io/diffdf/reference/diffdf.html) package is used below to mimic SAS `proc compare`.
+
+```{r, warning = FALSE, message = FALSE}
+adex_expected <- bind_rows(
+  adex,
+  tribble(
+    ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,
+    "101",     "ADPCYMG", "Actual Dose per Cycle (mg)", 60
+  )
+)
+
+diffdf(adex_expected, adex_admiral, keys = c("USUBJID", "PARAMCD"))
+```
+
+<!--------------- appendices go here ----------------->
