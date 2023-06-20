@@ -1,7 +1,7 @@
 name: Style
 on:
   pull_request: {branches: ['main']}
-  
+
 jobs:
   Style:
     runs-on: ubuntu-latest
@@ -12,6 +12,9 @@ jobs:
       - name: Install styler
         run: if (!require("styler")) install.packages("styler")
         shell: Rscript {0}
+      - name: styler version
+        run: packageVersion("styler")
+        shell: Rscript {0}
       - name: Run styler
-        run: styler::style_dir(dry = "fail")
+        run: styler::style_dir()
         shell: Rscript {0}
