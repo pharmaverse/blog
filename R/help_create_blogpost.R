@@ -69,9 +69,6 @@ create_post <- function(
   # read template
   lines_read <- readLines("inst/template/template.txt")
 
-
-
-
   result <- lines_read %>%
     replace(key = "TITLE", replacement = post_name) %>%
     replace(key = "AUTHOR", replacement = author) %>%
