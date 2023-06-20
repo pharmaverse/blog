@@ -18,8 +18,7 @@ library(rlang)
 #' @examples
 #' create_post(post_name = "this is my new example post", author = "Stefan Thoma", cover_image = "admiral", tags = "admiral")
 #'
-create_post <- function(
-                        post_name,
+create_post <- function(post_name,
                         author = Sys.info()["user"],
                         post_date = format(Sys.time(), "%Y-%m-%d"),
                         description = "",
