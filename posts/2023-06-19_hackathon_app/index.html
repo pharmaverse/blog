@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Stefan Thoma">
-<meta name="dcterms.date" content="2023-03-14">
+<meta name="dcterms.date" content="2023-06-19">
 <meta name="description" content="Going through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.">
 
 <title>Hackathon Feedback Application</title>
@@ -107,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Hackathon Feedback Application">
 <meta property="og:description" content="Going through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.">
-<meta property="og:image" content="https://pharmaverse.github.io/comms_wg/posts/2023-03-14_hackathon_app/shiny_klee.png">
+<meta property="og:image" content="https://pharmaverse.github.io/comms_wg/posts/2023-06-19_hackathon_app/shiny_klee.png">
 <meta property="og:image:height" content="1002">
 <meta property="og:image:width" content="1022">
 </head>
@@ -149,8 +149,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
                           <div class="quarto-categories">
                 <div class="quarto-category">R</div>
                 <div class="quarto-category">shiny</div>
-                <div class="quarto-category">teaching</div>
-                <div class="quarto-category">WIP</div>
+                <div class="quarto-category">community</div>
+                <div class="quarto-category">admiral</div>
               </div>
                   </div>
   </div>
@@ -168,7 +168,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">March 14, 2023</p>
+        <p class="date">June 19, 2023</p>
       </div>
     </div>
     
@@ -321,71 +321,71 @@ Recover the Lost Data
 <figcaption class="figure-caption">Screenshot of the register team interface</figcaption>
 </figure>
 </div>
-<p>The challange here was to adapt the number of input fields depending on the number of team members. This means that the team name and email interface must be rendered: First, we check how many team members are part of the group, this is stored in the <code>input$n_members</code> input variable. Then we create a <code>tagList</code> with as many elements as team members. Each element contains two columns, one for the email, one for the member name. This <code>tagList</code> is then returned and displayed to the user.</p>
+<p>The challenge here was to adapt the number of input fields depending on the number of team members. This means that the team name and email interface must be rendered: First, we check how many team members are part of the group, this is stored in the <code>input$n_members</code> input variable. Then we create a <code>tagList</code> with as many elements as team members. Each element contains two columns, one for the email, one for the member name. This <code>tagList</code> is then returned and displayed to the user.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># render email input UI of the register tab</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>name_email <span class="ot">&lt;-</span> shiny<span class="sc">::</span><span class="fu">renderUI</span>({</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># create field names</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    N <span class="ot">&lt;-</span> input<span class="sc">$</span>n_members</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    NAME <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="cf">function</span>(i) {</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">"name"</span>, i)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    EMAIL <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="cf">function</span>(i) {</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">"email"</span>, i)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    output <span class="ot">&lt;-</span> <span class="fu">tagList</span>()</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># render email input UI of the register tab</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>output<span class="sc">$</span>name_email <span class="ot">&lt;-</span> shiny<span class="sc">::</span><span class="fu">renderUI</span>({</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create field names</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">&lt;-</span> input<span class="sc">$</span>n_members</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  NAME <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="cf">function</span>(i) {</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">"name"</span>, i)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  EMAIL <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="cf">function</span>(i) {</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">"email"</span>, i)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  output <span class="ot">&lt;-</span> <span class="fu">tagList</span>()</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    firstsecondthird <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"First"</span>, <span class="st">"Second"</span>, <span class="st">"Third"</span>, <span class="st">"Fourth"</span>, <span class="st">"Fifth"</span>)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      output[[i]] <span class="ot">&lt;-</span> <span class="fu">tagList</span>()</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      output[[i]] <span class="ot">&lt;-</span> <span class="fu">fluidRow</span>(</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        shiny<span class="sc">::</span><span class="fu">h4</span>(<span class="fu">paste</span>(firstsecondthird[i], <span class="st">" Member"</span>)),</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">column</span>(<span class="dv">6</span>,</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>          <span class="fu">textInput</span>(NAME[i], <span class="st">"Name"</span>),</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>          <span class="at">value =</span> <span class="st">" "</span> <span class="co"># displayed default value</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        ),</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        <span class="fu">column</span>(<span class="dv">6</span>,</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>          <span class="fu">textInput</span>(EMAIL[i], <span class="st">"Email"</span>),</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>          <span class="at">value =</span> <span class="st">" "</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    output</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  firstsecondthird <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"First"</span>, <span class="st">"Second"</span>, <span class="st">"Third"</span>, <span class="st">"Fourth"</span>, <span class="st">"Fifth"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    output[[i]] <span class="ot">&lt;-</span> <span class="fu">tagList</span>()</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    output[[i]] <span class="ot">&lt;-</span> <span class="fu">fluidRow</span>(</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>      shiny<span class="sc">::</span><span class="fu">h4</span>(<span class="fu">paste</span>(firstsecondthird[i], <span class="st">" Member"</span>)),</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">6</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">textInput</span>(NAME[i], <span class="st">"Name"</span>),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">value =</span> <span class="st">" "</span> <span class="co"># displayed default value</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">column</span>(<span class="dv">6</span>,</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="fu">textInput</span>(EMAIL[i], <span class="st">"Email"</span>),</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">value =</span> <span class="st">" "</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  output</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The team information is then uploaded to Google drive. Because some teams have more members than others, we have to create the respective data-frame with the number of team members in mind.</p>
 <p>The following chunk creates the registration data. Noteworthy here the creation of the <code>NAME</code> and <code>EMAIL</code> variables which depend on the number of members in this team. Further, the user input of these fields is extracted via <code>input[[paste0(NAME[i])]]</code> within a for-loop.</p>
 <p>We also make the data-creation dependent on the press of the <code>Register Group</code> button and cache some variables.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>  <span class="do">## registration </span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  registrationData <span class="ot">&lt;-</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">reactive</span>({</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      N <span class="ot">&lt;-</span> input<span class="sc">$</span>n_members</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      NAME <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="cf">function</span>(i) {</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">paste0</span>(<span class="st">"name"</span>, i)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>      })</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>      EMAIL <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="cf">function</span>(i) {</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">paste0</span>(<span class="st">"email"</span>, i)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>      })</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      names <span class="ot">&lt;-</span> <span class="fu">character</span>(<span class="dv">0</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>      emails <span class="ot">&lt;-</span> <span class="fu">character</span>(<span class="dv">0</span>)</span>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## registration</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>registrationData <span class="ot">&lt;-</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">reactive</span>({</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    N <span class="ot">&lt;-</span> input<span class="sc">$</span>n_members</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    NAME <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="cf">function</span>(i) {</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">"name"</span>, i)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    EMAIL <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="cf">function</span>(i) {</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">"email"</span>, i)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    names <span class="ot">&lt;-</span> <span class="fu">character</span>(<span class="dv">0</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    emails <span class="ot">&lt;-</span> <span class="fu">character</span>(<span class="dv">0</span>)</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        names[i] <span class="ot">&lt;-</span> input[[<span class="fu">paste0</span>(NAME[i])]]</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        emails[i] <span class="ot">&lt;-</span> input[[<span class="fu">paste0</span>(EMAIL[i])]]</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>      <span class="co"># create df</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">team_name =</span> input<span class="sc">$</span>team_name,</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">n_members =</span> N,</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">member_name =</span> names,</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">member_email =</span> emails</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">%&gt;%</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bindCache</span>(input<span class="sc">$</span>team_name, input<span class="sc">$</span>n_members, input<span class="sc">$</span>name1, input<span class="sc">$</span>email1) <span class="sc">%&gt;%</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bindEvent</span>(input<span class="sc">$</span>register) <span class="co"># wait for button press</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>      names[i] <span class="ot">&lt;-</span> input[[<span class="fu">paste0</span>(NAME[i])]]</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>      emails[i] <span class="ot">&lt;-</span> input[[<span class="fu">paste0</span>(EMAIL[i])]]</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># create df</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">team_name =</span> input<span class="sc">$</span>team_name,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_members =</span> N,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">member_name =</span> names,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">member_email =</span> emails</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  }) <span class="sc">%&gt;%</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bindCache</span>(input<span class="sc">$</span>team_name, input<span class="sc">$</span>n_members, input<span class="sc">$</span>name1, input<span class="sc">$</span>email1) <span class="sc">%&gt;%</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bindEvent</span>(input<span class="sc">$</span>register) <span class="co"># wait for button press</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="upload-source-script" class="level2">
@@ -495,11 +495,10 @@ All rows are shown in table below
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  ))) {</span>
 <span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># if differences are not strict, return score - 1</span></span>
 <span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(score <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">round</span>(<span class="fu">min</span>(<span class="fu">max</span>(score <span class="sc">-</span> <span class="fu">length</span>(diff) <span class="sc">/</span> <span class="dv">3</span>, <span class="dv">1</span>), <span class="dv">9</span>), <span class="dv">2</span>))</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">round</span>(<span class="fu">min</span>(<span class="fu">max</span>(score <span class="sc">-</span> <span class="fu">length</span>(diff) <span class="sc">/</span> <span class="dv">3</span>, <span class="dv">1</span>), <span class="dv">9</span>), <span class="dv">2</span>))</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Every comparison starts with a score of <code>10</code>. We then subtract the length of the comparison object divided by a factor of <code>3</code>. The length of the comparison object is a simplified way to represent the difference between the two data-frames by one value. Finally, the score is bounded by <code>1</code> using <code>max(score, 1)</code>.</p>
 <p>The score is not a perfect capture of the quality of the script uploaded but: 1. helped participants get an idea of how close their data-frame is to the solution file 2. allowed us to raffle prizes based on the merit of submitted r-scripts</p>
@@ -520,13 +519,13 @@ All rows are shown in table below
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
   author = {Thoma, Stefan},
   title = {Hackathon {Feedback} {Application}},
-  date = {2023-03-14},
-  url = {https://pharmaverse.github.io/comms_wg//posts/2023-03-14_hackathon_app},
+  date = {2023-06-19},
+  url = {https://pharmaverse.github.io/comms_wg/posts/2023-06-19_hackathon_app},
   langid = {en}
 }
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Thoma, Stefan. 2023. <span>“Hackathon Feedback Application.”</span>
-March 14, 2023. <a href="https://pharmaverse.github.io/comms_wg//posts/2023-03-14_hackathon_app">https://pharmaverse.github.io/comms_wg//posts/2023-03-14_hackathon_app</a>.
+Thoma, Stefan. 2023. <span>“Hackathon Feedback Application.”</span> June
+19, 2023. <a href="https://pharmaverse.github.io/comms_wg/posts/2023-06-19_hackathon_app">https://pharmaverse.github.io/comms_wg/posts/2023-06-19_hackathon_app</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
