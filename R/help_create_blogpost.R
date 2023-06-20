@@ -19,12 +19,12 @@ library(rlang)
 #' create_post(post_name = "this is my new example post", author = "Stefan Thoma", cover_image = "admiral", tags = "admiral")
 #'
 create_post <- function(
-    post_name,
-    author = Sys.info()["user"],
-    post_date = format(Sys.time(), "%Y-%m-%d"),
-    description = "",
-    cover_image = c("admiral", "shiny"),
-    tags = c("background", "admiral", "coding", "shiny")) {
+                        post_name,
+                        author = Sys.info()["user"],
+                        post_date = format(Sys.time(), "%Y-%m-%d"),
+                        description = "",
+                        cover_image = c("admiral", "shiny"),
+                        tags = c("background", "admiral", "coding", "shiny")) {
   # assert inputs
   rlang::arg_match(cover_image)
   checkmate::assert_atomic(post_name)
