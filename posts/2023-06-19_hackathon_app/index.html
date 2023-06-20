@@ -143,7 +143,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <h1 class="title">Hackathon Feedback Application</h1>
                   <div>
         <div class="description">
-          Going through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.
+          Going through the process of creating a shiny app for the <code>admiral</code> hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.
         </div>
       </div>
                           <div class="quarto-categories">
@@ -209,22 +209,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <!--------------- my typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>We recently created a shiny application for the <code>admiral</code> hackathon in February 2023. The <code>admiral</code> hackathon was an event designed to make statistical programmers from the pharmaceutical industry more comfortable with the <code>admiral</code> R package which allows users to efficiently transform data from one data standard (sdtm) to another (adam).</p>
-<p>Hackathon participants formed groups of up to five people and were then tasked to create R-scripts that map the <code>sdtm</code> data to <code>adam</code> according to specifics defined in the metadata.</p>
+<p>We recently created a shiny application for the <a href="https://cosa.cdisc.org/events/Admiral"><code>admiral</code> hackathon</a> in February 2023. The <a href="https://cosa.cdisc.org/events/Admiral"><code>admiral</code> hackathon</a> was an event designed to make statistical programmers from the pharmaceutical industry more comfortable with the <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> R package which allows users to efficiently transform data from one data standard (SDTM) to another (ADaM).</p>
+<p>Hackathon participants formed groups of up to five people and were then tasked to create R-scripts that map the SDTM data to ADaM according to specifics defined in the metadata.</p>
 <p>The purpose of the shiny app was threefold:</p>
 <ol type="1">
 <li><p>Allow participants to easily register as a team.</p></li>
-<li><p>Let participants upload their R-scripts, so that the <code>admiral</code> team can see how the <code>admiral</code> package is being used – and how the functions and the documentation could be improved.</p></li>
+<li><p>Let participants upload their R-scripts, so that the <a href="https://github.com/pharmaverse/admiral/graphs/contributors"><code>admiral</code> team</a> can see how the <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> package is being used – and how the functions and the documentation could be improved.</p></li>
 <li><p>Run participants R-scripts on the cloud and compare the produced file to a solution file. Let participants autonomously get feedback on their work.</p></li>
 </ol>
 <p>In this blog post I want to highlight some of the thoughts that went into this application. Please keep in mind that this work was done under tight time restraints.</p>
-<p>The <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/?_ga=2.75919894.2036952320.1679990144-1584712930.1674550185">hackathon application</a> is still online (although data-upload is switched off) and the <a href="https://github.com/StefanThoma/hackathon_app">GitHub repository</a> is publicly available. I have also uploaded to GitHub a <code>.zip</code> file of the workspace to which hackathon participants had access via <a href="https://posit.cloud">posit cloud</a>. For more context you can watch <a href="https://www.cdisc.org/events/webinar/admiral-hackathon-kickoff">recordings of the hackathon-meetings</a>.</p>
+<p>The <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/?_ga=2.75919894.2036952320.1679990144-1584712930.1674550185">hackathon application</a> is still online (although data-upload is switched off) and the <a href="https://github.com/StefanThoma/hackathon_app">GitHub repository</a> is publicly available. The application is embedded into this post right after this paragraph. I have also uploaded to GitHub a <code>.zip</code> file of the workspace to which hackathon participants had access via <a href="https://posit.cloud">posit cloud</a>. For more context you can watch <a href="https://www.cdisc.org/events/webinar/admiral-hackathon-kickoff">recordings of the hackathon-meetings</a>.</p>
+<div class="cell">
+<iframe src="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/?_ga=2.75919894.2036952320.1679990144-1584712930.1674550185" width="672" height="400px" data-external="1">
+</iframe>
+</div>
 <section id="permanent-data" class="level2">
 <h2 class="anchored" data-anchor-id="permanent-data">Permanent Data</h2>
 <p>The biggest challenge you have to consider for this app is the permanent data storage. Shiny apps run on a server. Although we can write files on this server, whenever the app restarts, the files are lost. Therefore, a <a href="https://shiny.rstudio.com/articles/persistent-data-storage.html#local-vs-remote">persistent data storage solution</a> is required.</p>
 <section id="google-drive" class="level3">
 <h3 class="anchored" data-anchor-id="google-drive">Google drive</h3>
-<p>I decided to leverage Google drive using the <code>googledrive</code> package. This allowed me to save structured data (the team registry and the submission scores) as well as unstructured data (their R-script files).</p>
+<p>I decided to leverage Google drive using the <a href="https://googledrive.tidyverse.org/"><code>googledrive</code> package</a> package. This allowed me to save structured data (the team registry and the submission scores) as well as unstructured data (their R-script files).</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -235,13 +239,13 @@ Authentication
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>To access Google drive using the <code>googledrive</code> package we need to authenticate. This can be done interactively using the command <code>googledrive::drive_auth()</code> which takes you to the Google login page. After login you receive an authentication token requested by R.</p>
+<p>To access Google drive using the <a href="https://googledrive.tidyverse.org/"><code>googledrive</code> package</a> we need to authenticate. This can be done interactively using the command <code>googledrive::drive_auth()</code> which takes you to the Google login page. After login you receive an authentication token requested by R.</p>
 <p>For non-interactive authentication this token must be stored locally. In our case where the shiny app must access the token once deployed, the token must be stored on the project level.</p>
 <p>I have included the authentication procedure I followed in the <code>R</code> folder in <code>google_init.R</code>. You can find more extensive <a href="https://googledrive.tidyverse.org/reference/drive_auth.html">documentation of the non-interactive authentication</a>.</p>
 </div>
 </div>
 <p>The initial concept was: Each team gets their own folder including the most recent submission for each task, and a <code>.csv</code> file containing team information. To keep track of the submissions and the respective scores we wrote a <code>.csv</code> file in the <code>mock-hackathon</code> folder, so one folder above the team folders.</p>
-<p>Saving the team info as a <code>.csv</code> file worked fine as each team received their own file which – once created – was not touched anymore. As each upload for every team should simply add a row to the <code>submissions.csv</code> file, appending the file would be ideal. This was not possible using the <code>googledrive</code> package. Instead, for each submission, the <code>submissions</code> file was downloaded, appended, and uploaded again. Unfortunately, this lead to a data loss, as the file was continuously overwritten, especially when two teams would submit simultaneously.</p>
+<p>Saving the team info as a <code>.csv</code> file worked fine as each team received their own file which – once created – was not touched anymore. As each upload for every team should simply add a row to the <code>submissions.csv</code> file, appending the file would be ideal. This was not possible using the <a href="https://googledrive.tidyverse.org/"><code>googledrive</code> package</a> package. Instead, for each submission, the <code>submissions</code> file was downloaded, appended, and uploaded again. Unfortunately, this lead to a data loss, as the file was continuously overwritten, especially when two teams would submit simultaneously.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -301,7 +305,7 @@ Recover the Lost Data
 <p>When doing such a time-intensive task, make sure to try it first with only a couple of files to see whether any errors are produced. I am not quite sure how long this took but when I returned from my lunch break everything had finished.</p>
 </div>
 </div>
-<p>If you want to stay in the Google framework, I recommend using the <code>googlesheets4</code> package for structured data. <code>googlesheets4</code> allows appending new information to an already existing sheet without the need to download the file first. As both packages follow the same style, going from one to the other is really simple. <code>googlesheets4</code> requires authentication as well. However, you can reuse the cached token from the <code>googledrive</code> authentication by setting <code>gs4_auth(token = drive_token())</code>.</p>
+<p>If you want to stay in the Google framework, I recommend using the <a href="https://googlesheets4.tidyverse.org/"><code>googlesheets4</code></a> package for structured data. <a href="https://googlesheets4.tidyverse.org/"><code>googlesheets4</code></a> allows appending new information to an already existing sheet without the need to download the file first. As both packages follow the same style, going from one to the other is really simple. <a href="https://googlesheets4.tidyverse.org/"><code>googlesheets4</code></a> requires authentication as well. However, you can reuse the cached token from the <a href="https://googledrive.tidyverse.org/"><code>googledrive</code> package</a> authentication by setting <code>gs4_auth(token = drive_token())</code>.</p>
 </section>
 <section id="security-concerns" class="level3">
 <h3 class="anchored" data-anchor-id="security-concerns">Security Concerns</h3>
@@ -392,8 +396,8 @@ Recover the Lost Data
 <h2 class="anchored" data-anchor-id="upload-source-script">Upload &amp; Source Script</h2>
 <p>To upload a script, participants had to select their team first. The input options were based on the existing folders on the Google-drive in the <code>mock_hackathon</code> folder. To upload a particular script participants had to also select the task to be solved. The uploaded script is then uploaded to the team folder following a standardised script naming convention.</p>
 <p>There are different aspects to be aware of when sourcing scripts on a shiny server. For example, you have to anticipate the packages users will include in their uploaded scripts, as their scripts will load but not install packages. Further, you should keep the global environment of your shiny app separate from the environment in which the script is sourced. This is possible by supplying an environment to the <code>source()</code> function, e.g: <code>source(path_to_script, local = new.env())</code></p>
-<p>Another thing we had to consider was to replicate the exact folder-structure on the shiny server that participants were working with when creating the scripts, as they were required to source some scripts and to save their file into a specific folder. This was relatively straight forward as we provided participants with a folder structure in the posit cloud instance they were using. They had access to the <code>sdtm</code> folder in which the data was stored, and the <code>adam</code> folder into which they saved their solutions. The structure also included a folder with metadata which was also available on the shiny server. For some tasks, participants required some <code>adam</code>-datasets stored in the <code>adam</code> folder, essentially the output from previous tasks.</p>
-<p>This was achieved by first creating a list mapping tasks to the required adam datasets:</p>
+<p>Another thing we had to consider was to replicate the exact folder-structure on the shiny server that participants were working with when creating the scripts, as they were required to source some scripts and to save their file into a specific folder. This was relatively straight forward as we provided participants with a folder structure in the posit cloud instance they were using. They had access to the <code>sdtm</code> folder in which the data was stored, and the <code>adam</code> folder into which they saved their solutions. The structure also included a folder with metadata which was also available on the shiny server.</p>
+<p>For some tasks, participants required some ADaM-datasets stored in the <code>adam</code> folder, essentially the output from previous tasks. This was achieved by first creating a list mapping tasks to the required ADaM datasets:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>depends_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ADADAS"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"ADSL"</span>),</span>
@@ -412,31 +416,17 @@ Recover the Lost Data
 <h2 class="anchored" data-anchor-id="compare-to-solution-file">Compare to Solution File</h2>
 <p>We want to compare the file created by participants with our solution (key) file stored in the <code>key</code> folder. The <code>diffdf::diffdf()</code> function allows for easy comparison of two data-frames and directly provides extensive feedback for the user:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'dplyr'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stats':
-
-    filter, lag</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    intersect, setdiff, setequal, union</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">numbers =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">letters =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">numbers =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">letters =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>diffdf<span class="sc">::</span><span class="fu">diffdf</span>(df1, df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">numbers =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">letters =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">numbers =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">letters =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>diffdf<span class="sc">::</span><span class="fu">diffdf</span>(df1, df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in diffdf::diffdf(df1, df2): 
 Not all Values Compared Equal</code></pre>
@@ -479,26 +469,26 @@ All rows are shown in table below
 <h2 class="anchored" data-anchor-id="score">Score</h2>
 <p>To compare submissions between participants we implemented a simple scoring function (<code>score_f()</code>) based on the table comparison by <code>diffdf()</code>. The function can be found in the <code>compare_dfs.R</code> file:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>score_f <span class="ot">&lt;-</span> <span class="cf">function</span>(df_user, df_key, keys) {</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  score <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  diff <span class="ot">&lt;-</span> diffdf<span class="sc">::</span><span class="fu">diffdf</span>(df_user, df_key, <span class="at">keys =</span> keys)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>diffdf<span class="sc">::</span><span class="fu">diffdf_has_issues</span>(diff)) {</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(score)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check if there are any differences if the comparison is not strict:</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>diffdf<span class="sc">::</span><span class="fu">diffdf_has_issues</span>(diffdf<span class="sc">::</span><span class="fu">diffdf</span>(df_user,</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    df_key,</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">keys =</span> keys,</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">strict_numeric =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">strict_factor =</span> <span class="cn">FALSE</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  ))) {</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># if differences are not strict, return score - 1</span></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(score <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">round</span>(<span class="fu">min</span>(<span class="fu">max</span>(score <span class="sc">-</span> <span class="fu">length</span>(diff) <span class="sc">/</span> <span class="dv">3</span>, <span class="dv">1</span>), <span class="dv">9</span>), <span class="dv">2</span>))</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>score_f <span class="ot">&lt;-</span> <span class="cf">function</span>(df_user, df_key, keys) {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  score <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  diff <span class="ot">&lt;-</span> diffdf<span class="sc">::</span><span class="fu">diffdf</span>(df_user, df_key, <span class="at">keys =</span> keys)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>diffdf<span class="sc">::</span><span class="fu">diffdf_has_issues</span>(diff)) {</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(score)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check if there are any differences if the comparison is not strict:</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>diffdf<span class="sc">::</span><span class="fu">diffdf_has_issues</span>(diffdf<span class="sc">::</span><span class="fu">diffdf</span>(df_user,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    df_key,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">keys =</span> keys,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">strict_numeric =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">strict_factor =</span> <span class="cn">FALSE</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  ))) {</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># if differences are not strict, return score - 1</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(score <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">round</span>(<span class="fu">min</span>(<span class="fu">max</span>(score <span class="sc">-</span> <span class="fu">length</span>(diff) <span class="sc">/</span> <span class="dv">3</span>, <span class="dv">1</span>), <span class="dv">9</span>), <span class="dv">2</span>))</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Every comparison starts with a score of <code>10</code>. We then subtract the length of the comparison object divided by a factor of <code>3</code>. The length of the comparison object is a simplified way to represent the difference between the two data-frames by one value. Finally, the score is bounded by <code>1</code> using <code>max(score, 1)</code>.</p>
 <p>The score is not a perfect capture of the quality of the script uploaded but: 1. helped participants get an idea of how close their data-frame is to the solution file 2. allowed us to raffle prizes based on the merit of submitted r-scripts</p>
@@ -506,11 +496,12 @@ All rows are shown in table below
 <section id="reactiveness" class="level2">
 <h2 class="anchored" data-anchor-id="reactiveness">Reactiveness</h2>
 <p>Some of the app functions can take quite some time to execute, e.g.&nbsp;running the uploaded script. Other tasks, e.g.&nbsp;registering a team, do not intrinsically generate user facing outputs. This would make the app using really frustrating, as users would not know whether the app is correctly working or whether it froze.</p>
-<p>We implemented two small features that made the app more responsive. One is simple loading icons that integrate into the user interface and show that output is being computed – that something is working. The other is a pop up window which communicates whether team registration was successful, and if not, why not. We further aimed to forward errors generated by the uploaded scripts to the user interface, but errors generated by the application itself should be concealed.</p>
+<p>We implemented two small features that made the app more responsive. One is simple loading icons that integrate into the user interface and show that output is being computed – that something is working. The other is a pop up window which communicates whether team registration was successful, and if not, why not.</p>
+<p>We further aimed to forward errors generated by the uploaded scripts to the user interface, but errors generated by the application itself should be concealed.</p>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Although the application was continuously improved during the hackathon it proved to be a useful resource for participants from day one as it allowed groups to set their own pace. It further allowed <code>admiral</code> developers to gain insights on package usage of a relatively large sample of potential end users. From our perspective, the application provided a great added value to the hackathon and eased the workload of guiding the participants through all the tasks.</p>
+<p>Although the application was continuously improved during the hackathon it proved to be a useful resource for participants from day one as it allowed groups to set their own pace. It further allowed <a href="https://github.com/pharmaverse/admiral/graphs/contributors"><code>admiral</code> developers</a> to gain insights on package usage of a relatively large sample of potential end users. From our perspective, the application provided a great added value to the hackathon and eased the workload of guiding the participants through all the tasks.</p>
 <!--------------- appendices go here ----------------->
 
 
