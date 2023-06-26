@@ -1,10 +1,10 @@
 library(stringr)
-library(tidyverse)
+library(dplyr)
 library(checkmate)
 library(rlang)
 
 
-#' function to create a new post skeleton
+#' Function to create a new post skeleton
 #'
 #' @param post_name string
 #' @param author string (can be vector for more authors)
@@ -39,7 +39,7 @@ create_post <- function(post_name,
                           "metacore"
                         )) {
 
-  browser()
+
   path_to_img <- "media"
   available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
 
@@ -109,8 +109,8 @@ create_post <- function(post_name,
 }
 
 
-#' replace key with replacement
-#' helping function for `create_post()`
+#' Replace key with replacement
+#' This is a helping function for `create_post()`
 #'
 #' @param text lines of template
 #' @param key key to replace, one of predefined few

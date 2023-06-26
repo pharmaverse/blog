@@ -44,14 +44,35 @@ That is it! After that you can go wild, but we do ask that it is kept short!
 
 ## How can I make a Blog Post
 
-Step 1: Reach out to us through [pharmaverse/slack](https://pharmaverse.slack.com) or make an issue on our [GitHub](https://github.com/pharmaverse/comms_wg/issues).
+**Step 1:** Reach out to us through [pharmaverse/slack](https://pharmaverse.slack.com) or make an issue on our [GitHub](https://github.com/pharmaverse/comms_wg/issues).
 
-Step 2: Branch off `main`
+**Step 2:** Branch off `main`
 
-Step 3: Create a new Blog Post skeleton using the `create_blog_post.R` script in the `R/` folder. Please read the README.md file in the `R/` folder.
+**Step 3:** Create a new Blog Post skeleton using the `create_blog_post.R` script in the `R/` folder. 
 
-Step 4: Review the Spirit of the Blog Post in the Pull Request Template
+- Open the `create_blogpost.R` file.
 
-Step 5: Poke us to do a review!  
+- Source the script `help_create_blogpost.R` from within the `create_blogpost.R` file.
+
+- Enter your information into the `create_post` function. 
+  Please note that we do not currently allow users to specify their own categories (or `tags`),
+  so you must chose (possibly several) from this list:
+  `c("metadata", "submission", "qc", "ADaMs", "SDTMs", "community", "conferences",
+  "admiral", "roak", "xportr", "metatools", "metacore")`.
 
 
+- Running that function will create a subfolder with a quarto file (`*.qmd`) in the `posts/` folder. 
+  Both should be named based on the supplied `post_date` and `post_name` information. 
+
+- Open the newly created folder and start working within the `*.qmd` file. 
+
+**Step 4:** After you have finished your Blog Post, open the `CICD.R` file in the `R/` folder. 
+Run the script line by line to first check the spelling in your post and then to make sure your code is compatible with our code-style. 
+
+**Step 5:** Push to your branch, create a Pull Request, and review the Spirit of the Blog Post in the Pull Request Template.
+
+**Step 6:** Poke us to do a review!  
+
+Most importantly:
+
+**Step 7:** Have fun :)
