@@ -48,8 +48,10 @@ Step 1: Reach out to us through [pharmaverse/slack](https://pharmaverse.slack.co
 
 Step 2: Branch off `main`
 
-Step 3: Review the Spirit of the Blog Post in the Pull Request Template
+Step 3: Create a new Blog Post skeleton using the `create_blog_post.R` script in the `R/` folder. Please read the README.md file in the `R/` folder.
 
-Step 4: Poke us to do a review!  
+Step 4: Review the Spirit of the Blog Post in the Pull Request Template
+
+Step 5: Poke us to do a review!  
 
 
