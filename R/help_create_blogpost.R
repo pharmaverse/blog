@@ -43,7 +43,7 @@ create_post <- function(post_name,
   path_to_img <- "media"
   available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
 
-  # assert inputs
+  # Assert inputs
   checkmate::matchArg(several.ok = FALSE, cover_image, choices = available_images)
   checkmate::assert_atomic(post_name)
   checkmate::assert_atomic(description)
@@ -61,7 +61,7 @@ create_post <- function(post_name,
   checkmate::assert_character(cover_image)
   checkmate::assert_character(tags)
 
-  # prepare values
+  # Prepare values
   snake_name <- gsub(" ", "_", tolower(gsub("(.)([A-Z])", "\\1 \\2", post_name)))
   short_name <- paste(post_date, snake_name, sep = "_")
 
@@ -72,7 +72,7 @@ create_post <- function(post_name,
   }
 
 
-  # create dir for blogpost
+  # Create dir for blogpost
   new_dir <- paste("posts", short_name, sep = "/")
   if (dir.exists(new_dir)) {
     stop(paste(
@@ -84,7 +84,7 @@ create_post <- function(post_name,
   }
   dir.create(new_dir)
 
-  # read template
+  # Read template
   lines_read <- readLines("inst/template/template.txt")
 
   result <- lines_read %>%
@@ -97,7 +97,7 @@ create_post <- function(post_name,
     replace(key = "SLUG", replacement = short_name)
 
 
-  # write new .qmd file
+  # Write new .qmd file
   writeLines(result, con = paste(file.path(new_dir, snake_name), ".qmd", sep = ""))
   file.create(paste(file.path(new_dir, "appendix"), ".R", sep = ""))
   image_name <- paste(cover_image, ".png", sep = "")
@@ -124,10 +124,10 @@ replace <- function(text, key = c("TITLE", "AUTHOR", "DESCR", "DATE", "TAG", "IM
     replacement <- paste(replacement, ".png", sep = "")
   }
 
-  # switch to what key actually looks like
+  # Switch to what key actually looks like
   key_with <- paste("[", key, "]", sep = "")
 
-  # how should replacement be entered?
+  # How should replacement be entered?
   replacement <- case_when(
     key == "AUTHOR" ~ paste("  - name: ", replacement, sep = ""),
     key == "TAG" ~ paste(replacement, collapse = ", "),
