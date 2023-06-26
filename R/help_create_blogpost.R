@@ -22,8 +22,24 @@ create_post <- function(post_name,
                         author = Sys.info()["user"],
                         post_date = format(Sys.time(), "%Y-%m-%d"),
                         description = "",
-                        cover_image = c("admiral", "shiny"),
-                        tags = c("background", "admiral", "coding", "shiny")) {
+                        cover_image = available_images,
+                        tags = c(
+                          "metadata",
+                          "submission",
+                          "qc",
+                          "ADaMs",
+                          "SDTMs",
+                          "community",
+                          "conferences",
+                          "admiral",
+                          "roak",
+                          "xportr",
+                          "metatools",
+                          "metacore"
+                        )) {
+  path_to_img <- "media"
+  available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
+
   # assert inputs
   rlang::arg_match(cover_image)
   checkmate::assert_atomic(post_name)
@@ -82,7 +98,7 @@ create_post <- function(post_name,
   writeLines(result, con = paste(file.path(new_dir, snake_name), ".qmd", sep = ""))
   file.create(paste(file.path(new_dir, "appendix"), ".R", sep = ""))
   image_name <- paste(cover_image, ".png", sep = "")
-  file.copy(from = file.path("inst", image_name), to = file.path(new_dir, image_name))
+  file.copy(from = file.path(path_to_img, image_name), to = file.path(new_dir, image_name))
 
 
   message("congrats, you just created a new blog post skeleton. Find it here: ")
