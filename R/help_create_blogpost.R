@@ -3,6 +3,7 @@ library(tidyverse)
 library(checkmate)
 library(rlang)
 
+
 #' function to create a new post skeleton
 #'
 #' @param post_name string
@@ -37,11 +38,13 @@ create_post <- function(post_name,
                           "metatools",
                           "metacore"
                         )) {
+
+  browser()
   path_to_img <- "media"
   available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
 
   # assert inputs
-  rlang::arg_match(cover_image)
+  checkmate::matchArg(several.ok = FALSE, cover_image, choices = available_images)
   checkmate::assert_atomic(post_name)
   checkmate::assert_atomic(description)
   checkmate::assert_atomic(cover_image)
