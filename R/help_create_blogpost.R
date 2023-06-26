@@ -104,7 +104,7 @@ create_post <- function(post_name,
   file.copy(from = file.path(path_to_img, image_name), to = file.path(new_dir, image_name))
 
 
-  message("congrats, you just created a new blog post skeleton. Find it here: ")
+  message("Congrats, you just created a new Blog Post skeleton. Find it here: ")
   message(new_dir)
 }
 
@@ -127,13 +127,19 @@ replace <- function(text, key = c("TITLE", "AUTHOR", "DESCR", "DATE", "TAG", "IM
   # Switch to what key actually looks like
   key_with <- paste("[", key, "]", sep = "")
 
-  # How should replacement be entered?
-  replacement <- case_when(
-    key == "AUTHOR" ~ paste("  - name: ", replacement, sep = ""),
-    key == "TAG" ~ paste(replacement, collapse = ", "),
-    .default = paste('"', replacement, '"', sep = "")
-  )
-
+  # Decorate replacement
+  if(packageVersion("dplyr")>="1.1.2"){
+    replacement <- case_when(
+      key == "AUTHOR" ~ paste("  - name: ", replacement, sep = ""),
+      key == "TAG" ~ paste(replacement, collapse = ", "),
+      .default = paste('"', replacement, '"', sep = "")
+    )
+  } else {
+    replacement <- ifelse(
+      key == "AUTHOR", paste("  - name: ", replacement, sep = ""),
+      ifelse(key == "TAG", paste(replacement, collapse = ", "),
+             paste('"', replacement, '"', sep = "")))
+  }
 
 
   if (key == "AUTHOR") {
