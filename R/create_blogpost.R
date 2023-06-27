@@ -11,12 +11,12 @@ c("metadata", "submission", "qc", "ADaMs", "SDTMs", "community", "conferences", 
 
 # Fill in the info, e.g.:
 create_post(
-  post_name = "lbla",
-  post_date = "2023-06-15",
-  description = "",
-  author = "Stefan Thoma",
-  cover_image = "admiral",
-  tags = "admiral"
+  post_name = "lbla", # needs to be character vector (length 1)
+  post_date = "2023-06-15", # needs to be character vector (length 1)
+  description = "", # you can fill the description in later as well
+  author = c("Stefan Thoma"), # one or more authors are permitted
+  cover_image = "admiral", # chose one of the above (see line 8)
+  tags = c("admiral") # chose (multiple) from line 10
 )
 
 

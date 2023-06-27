@@ -1,6 +1,7 @@
 library(stringr)
 library(dplyr)
 library(checkmate)
+library(admiraldev)
 library(rlang)
 
 
@@ -44,22 +45,18 @@ create_post <- function(post_name,
   available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
 
   # Assert inputs
-  checkmate::matchArg(several.ok = FALSE, cover_image, choices = available_images)
-  checkmate::assert_atomic(post_name)
-  checkmate::assert_atomic(description)
-  checkmate::assert_atomic(cover_image)
-  checkmate::assert_atomic(post_date)
+  admiraldev::assert_character_scalar(description)
+  admiraldev::assert_character_scalar(cover_image)
+  admiraldev::assert_character_scalar(post_name)
+  admiraldev::assert_character_scalar(post_date)
+  admiraldev::assert_character_vector(author)
+  rlang::arg_match(multiple = FALSE, cover_image, values = available_images)
+  rlang::arg_match(multiple = TRUE, tags)
 
-  checkmate::assert_character(post_name)
-  checkmate::assert_character(author)
-  checkmate::assert_character(post_date)
+  # check if date is correctly formatted
   if (is.na(as.Date(post_date, format = "%Y-%m-%d"))) {
     stop('`post_date` has to be in the format "%Y-%m-%d", e.g. "2023-06-15"')
   }
-
-  checkmate::assert_character(description)
-  checkmate::assert_character(cover_image)
-  checkmate::assert_character(tags)
 
   # Prepare values
   snake_name <- gsub(" ", "_", tolower(gsub("(.)([A-Z])", "\\1 \\2", post_name)))
