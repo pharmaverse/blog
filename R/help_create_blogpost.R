@@ -39,8 +39,6 @@ create_post <- function(post_name,
                           "metatools",
                           "metacore"
                         )) {
-
-
   path_to_img <- "media"
   available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
 
@@ -128,7 +126,9 @@ replace <- function(text, key = c("TITLE", "AUTHOR", "DESCR", "DATE", "TAG", "IM
   replacement <- ifelse(
     key == "AUTHOR", paste("  - name: ", replacement, sep = ""),
     ifelse(key == "TAG", paste(replacement, collapse = ", "),
-           paste('"', replacement, '"', sep = "")))
+      paste('"', replacement, '"', sep = "")
+    )
+  )
 
 
   if (key == "AUTHOR") {
