@@ -7,7 +7,8 @@ source("R/help_create_blogpost.R")
 ## The available images are at the moment:
 list.files("media") %>% tools::file_path_sans_ext()
 ## Please choose (possibly multiple) from this tags list:
-c("metadata", "submission", "qc", "ADaMs", "SDTMs", "community", "conferences", "admiral", "roak", "xportr", "metatools", "metacore")
+c("metadata", "submission", "qc", "ADaMs", "SDTMs", "community",
+  "conferences", "admiral", "roak", "xportr", "metatools", "metacore")
 
 # Fill in the info, e.g.:
 create_post(
@@ -16,7 +17,7 @@ create_post(
   description = "", # you can fill the description in later as well
   author = c("Stefan Thoma"), # one or more authors are permitted
   cover_image = "admiral", # chose one of the above (see line 8)
-  tags = c("admiral") # chose (multiple) from line 10
+  tags = c("admiral", "qc") # chose (multiple) from line 10
 )
 
 

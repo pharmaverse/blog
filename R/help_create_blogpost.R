@@ -125,18 +125,10 @@ replace <- function(text, key = c("TITLE", "AUTHOR", "DESCR", "DATE", "TAG", "IM
   key_with <- paste("[", key, "]", sep = "")
 
   # Decorate replacement
-  if(packageVersion("dplyr")>="1.1.2"){
-    replacement <- case_when(
-      key == "AUTHOR" ~ paste("  - name: ", replacement, sep = ""),
-      key == "TAG" ~ paste(replacement, collapse = ", "),
-      .default = paste('"', replacement, '"', sep = "")
-    )
-  } else {
-    replacement <- ifelse(
-      key == "AUTHOR", paste("  - name: ", replacement, sep = ""),
-      ifelse(key == "TAG", paste(replacement, collapse = ", "),
-             paste('"', replacement, '"', sep = "")))
-  }
+  replacement <- ifelse(
+    key == "AUTHOR", paste("  - name: ", replacement, sep = ""),
+    ifelse(key == "TAG", paste(replacement, collapse = ", "),
+           paste('"', replacement, '"', sep = "")))
 
 
   if (key == "AUTHOR") {
