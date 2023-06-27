@@ -2,7 +2,7 @@
 title: "Hackathon Feedback Application"
 author:
   - name: Stefan Thoma
-description: "Going through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results."
+description: "Going through the process of creating a shiny app for the `admiral` hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results."
 date: "2023-06-19"
 categories: [R, shiny, community, admiral]
 image: "shiny_klee.png"
@@ -10,6 +10,7 @@ editor:
   markdown: 
     wrap: sentence
 ---
+
 
 <!--------------- my typical setup ----------------->
 
@@ -21,18 +22,18 @@ long_slug <- "2023-06-19_shiny_run_script"
 <!--------------- post begins here ----------------->
 
 
+We recently created a shiny application for the [`admiral` hackathon](https://cosa.cdisc.org/events/Admiral) in February 2023.
+The [`admiral` hackathon](https://cosa.cdisc.org/events/Admiral) was an event designed to make statistical programmers from the pharmaceutical industry more comfortable with the [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) R package which allows users to efficiently transform data from one data standard (SDTM) to another (ADaM).
 
-
-We recently created a shiny application for the `admiral` hackathon in February 2023.
-The `admiral` hackathon was an event designed to make statistical programmers from the pharmaceutical industry more comfortable with the `admiral` R package which allows users to efficiently transform data from one data standard (sdtm) to another (adam).
-
-Hackathon participants formed groups of up to five people and were then tasked to create R-scripts that map the `sdtm` data to `adam` according to specifics defined in the metadata.
+Hackathon participants formed groups of up to five people and were then tasked to create R-scripts that map the SDTM data to ADaM according to specifics defined in the metadata.
 
 The purpose of the shiny app was threefold:
 
 1.  Allow participants to easily register as a team.
 
-2.  Let participants upload their R-scripts, so that the `admiral` team can see how the `admiral` package is being used -- and how the functions and the documentation could be improved.
+
+2.  Let participants upload their R-scripts, so that the [`admiral` team](https://github.com/pharmaverse/admiral/graphs/contributors) can see how the [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) package is being used -- and how the functions and the documentation could be improved.
+
 
 3.  Run participants R-scripts on the cloud and compare the produced file to a solution file.
     Let participants autonomously get feedback on their work.
@@ -41,8 +42,14 @@ In this blog post I want to highlight some of the thoughts that went into this a
 Please keep in mind that this work was done under tight time restraints.
 
 The [hackathon application](https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/?_ga=2.75919894.2036952320.1679990144-1584712930.1674550185) is still online (although data-upload is switched off) and the [GitHub repository](https://github.com/StefanThoma/hackathon_app) is publicly available.
+The application is embedded into this post right after this paragraph.
 I have also uploaded to GitHub a `.zip` file of the workspace to which hackathon participants had access via [posit cloud](https://posit.cloud).
 For more context you can watch [recordings of the hackathon-meetings](https://www.cdisc.org/events/webinar/admiral-hackathon-kickoff).
+
+```{r}
+#| echo: false
+knitr::include_url("https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/?_ga=2.75919894.2036952320.1679990144-1584712930.1674550185")
+```
 
 ## Permanent Data
 
@@ -53,13 +60,13 @@ Therefore, a [persistent data storage solution](https://shiny.rstudio.com/articl
 
 ### Google drive
 
-I decided to leverage Google drive using the `googledrive` package.
+I decided to leverage Google drive using the [`googledrive` package](https://googledrive.tidyverse.org/) package.
 This allowed me to save structured data (the team registry and the submission scores) as well as unstructured data (their R-script files).
 
 ::: callout-note
 ## Authentication
 
-To access Google drive using the `googledrive` package we need to authenticate.
+To access Google drive using the [`googledrive` package](https://googledrive.tidyverse.org/) we need to authenticate.
 This can be done interactively using the command `googledrive::drive_auth()` which takes you to the Google login page.
 After login you receive an authentication token requested by R.
 
@@ -75,7 +82,7 @@ To keep track of the submissions and the respective scores we wrote a `.csv` fil
 
 Saving the team info as a `.csv` file worked fine as each team received their own file which -- once created -- was not touched anymore.
 As each upload for every team should simply add a row to the `submissions.csv` file, appending the file would be ideal.
-This was not possible using the `googledrive` package.
+This was not possible using the [`googledrive` package](https://googledrive.tidyverse.org/) package.
 Instead, for each submission, the `submissions` file was downloaded, appended, and uploaded again.
 Unfortunately, this lead to a data loss, as the file was continuously overwritten, especially when two teams would submit simultaneously.
 
@@ -144,11 +151,11 @@ When doing such a time-intensive task, make sure to try it first with only a cou
 I am not quite sure how long this took but when I returned from my lunch break everything had finished.
 :::
 
-If you want to stay in the Google framework, I recommend using the `googlesheets4` package for structured data.
-`googlesheets4` allows appending new information to an already existing sheet without the need to download the file first.
+If you want to stay in the Google framework, I recommend using the [`googlesheets4`](https://googlesheets4.tidyverse.org/) package for structured data.
+[`googlesheets4`](https://googlesheets4.tidyverse.org/) allows appending new information to an already existing sheet without the need to download the file first.
 As both packages follow the same style, going from one to the other is really simple.
-`googlesheets4` requires authentication as well.
-However, you can reuse the cached token from the `googledrive` authentication by setting `gs4_auth(token = drive_token())`.
+[`googlesheets4`](https://googlesheets4.tidyverse.org/) requires authentication as well.
+However, you can reuse the cached token from the [`googledrive` package](https://googledrive.tidyverse.org/) authentication by setting `gs4_auth(token = drive_token())`.
 
 ### Security Concerns
 
@@ -178,8 +185,8 @@ The checks and registration is implemented in the `register_team()` function sto
 The challenge here was to adapt the number of input fields depending on the number of team members.
 This means that the team name and email interface must be rendered: 
 First, we check how many team members are part of the group, this is stored in the `input$n_members` input variable.
-Then we create a `tagList` with as many elements as team members. 
-Each element contains two columns, one for the email, one for the member name. 
+Then we create a `tagList` with as many elements as team members.
+Each element contains two columns, one for the email, one for the member name.
 This `tagList` is then returned and displayed to the user.
 
 ```{r}
@@ -216,14 +223,15 @@ output$name_email <- shiny::renderUI({
   output
 })
 ```
-The team information is then uploaded to Google drive. 
-Because some teams have more members than others, we have to create the respective data-frame with the number of team members in mind. 
+The team information is then uploaded to Google drive.
+Because some teams have more members than others, we have to create the respective data-frame with the number of team members in mind.
 
-The following chunk creates the registration data. 
+The following chunk creates the registration data.
 Noteworthy here the creation of the `NAME` and `EMAIL` variables which depend on the number of members in this team.
 Further, the user input of these fields is extracted via `input[[paste0(NAME[i])]]` within a for-loop.
 
-We also make the data-creation dependent on the press of the `Register Group` button and cache some variables. 
+We also make the data-creation dependent on the press of the `Register Group` button and cache some variables.
+
 ```{r}
 #| eval: false
 ## registration
@@ -271,9 +279,10 @@ Another thing we had to consider was to replicate the exact folder-structure on 
 This was relatively straight forward as we provided participants with a folder structure in the posit cloud instance they were using.
 They had access to the `sdtm` folder in which the data was stored, and the `adam` folder into which they saved their solutions.
 The structure also included a folder with metadata which was also available on the shiny server.
-For some tasks, participants required some `adam`-datasets stored in the `adam` folder, essentially the output from previous tasks.
 
-This was achieved by first creating a list mapping tasks to the required adam datasets: 
+For some tasks, participants required some ADaM-datasets stored in the `adam` folder, essentially the output from previous tasks.
+This was achieved by first creating a list mapping tasks to the required ADaM datasets:
+
 ```{r}
 #| eval: false
 depends_list <- list(
@@ -287,8 +296,10 @@ depends_list <- list(
   "ADVS" = c("ADSL")
 )
 ```
+
+
 This list is sourced from the `R/parameters.R` file when initiating the application.
-We then call the `get_depends()` function sourced from `R/get_depends.R` which copies the required files from the `key` folder (where our solutions to the tasks were stored) to the `adam` folder. 
+We then call the `get_depends()` function sourced from `R/get_depends.R` which copies the required files from the `key` folder (where our solutions to the tasks were stored) to the `adam` folder.
 After sourcing the uploaded script the content in the `adam` folder is deleted.
 
 ## Compare to Solution File
@@ -297,6 +308,7 @@ We want to compare the file created by participants with our solution (key) file
 The `diffdf::diffdf()` function allows for easy comparison of two data-frames and directly provides extensive feedback for the user:
 
 ```{r}
+#| message: false
 library(dplyr)
 df1 <- tibble(
   numbers = 1:10,
@@ -350,21 +362,22 @@ allowed us to raffle prizes based on the merit of submitted r-scripts
 
 ## Reactiveness
 
-Some of the app functions can take quite some time to execute, e.g. running the uploaded script. 
-Other tasks, e.g. registering a team, do not intrinsically generate user facing outputs. 
-This would make the app using really frustrating, as users would not know whether the app is correctly working or whether it froze. 
+Some of the app functions can take quite some time to execute, e.g. running the uploaded script.
+Other tasks, e.g. registering a team, do not intrinsically generate user facing outputs.
+This would make the app using really frustrating, as users would not know whether the app is correctly working or whether it froze.
 
-We implemented two small features that made the app more responsive. 
-One is simple loading icons that integrate into the user interface and show that output is being computed -- that something is working. 
-The other is a pop up window which communicates whether team registration was successful, and if not, why not. 
+We implemented two small features that made the app more responsive.
+One is simple loading icons that integrate into the user interface and show that output is being computed -- that something is working.
+The other is a pop up window which communicates whether team registration was successful, and if not, why not.
+
 We further aimed to forward errors generated by the uploaded scripts to the user interface, but errors generated by the application itself should be concealed.
 
 ## Conclusion
 
-Although the application was continuously improved during the hackathon it proved to be a useful resource for participants from day one as it allowed groups to set their own pace. 
-It further allowed `admiral` developers to gain insights on package usage of a relatively large sample of potential end users.
-From our perspective, the application provided a great added value to the hackathon and eased the workload of guiding the participants through all the tasks. 
 
+Although the application was continuously improved during the hackathon it proved to be a useful resource for participants from day one as it allowed groups to set their own pace.
+It further allowed [`admiral` developers](https://github.com/pharmaverse/admiral/graphs/contributors) to gain insights on package usage of a relatively large sample of potential end users.
+From our perspective, the application provided a great added value to the hackathon and eased the workload of guiding the participants through all the tasks.
 
 <!--------------- appendices go here ----------------->
 
@@ -372,7 +385,7 @@ From our perspective, the application provided a great added value to the hackat
 #| eval: false
 source("appendix.R")
 insert_appendix(
-  repo_spec = "pharmaverse/comms_wg",
+  repo_spec = "pharmaverse/blog",
   name = long_slug
 )
 ```
