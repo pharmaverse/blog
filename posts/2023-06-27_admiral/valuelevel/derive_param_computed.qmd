@@ -4,14 +4,19 @@ author:
   - name: Kangjie Zhang
 
 description: "Use `admiral::derive_param_computed()` like a calculator to derive new parameters/rows based on existing ones"
-date: "2023-06-12"
-categories: [R, admiral, Valuelevel]
+date: "2023-06-27"
+categories: [admiral]
 image: "derive_param_computed.jpg"
 ---
 
 <!--------------- my typical setup ----------------->
 
-```{r setup, include=FALSE}
+```{r setup1, include=FALSE}
+long_slug <- "admiral"
+# renv::use(lockfile = "renv.lock")
+```
+
+```{r setup2, include=FALSE}
 set.seed(8)
 wide <- 136
 narrow <- 76
@@ -93,3 +98,11 @@ diffdf(adex_expected, adex_admiral, keys = c("USUBJID", "PARAMCD"))
 ```
 
 <!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug
+)
+```
