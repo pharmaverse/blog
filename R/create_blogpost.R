@@ -23,5 +23,5 @@ create_post(
 # Remove that post:
 # unlink("posts/2023-06-15_lbla", recursive = TRUE)
 
-# Note that the folder and file created to not correspond directly to the `post_name` argument.
+# Note that the folder and file created do not correspond directly to the `post_name` argument.
 # This allows for a longer `post_name` without having super long file-names.
