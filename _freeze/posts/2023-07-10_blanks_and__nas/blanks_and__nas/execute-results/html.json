@@ -1,0 +1,14 @@
+{
+  "hash": "4d275375613f536c420429dd14d8edea",
+  "result": {
+    "markdown": "---\ntitle: \"Blanks and NAs\"\nauthor:\n  - name: Ben Straub\ndescription: \"\"\ndate: \"2023-07-10\"\n# please do not use any non-default categories.\n# You can find the default categories in the repository README.md\ncategories: [admiral]\n# feel free to change the image\nimage: \"admiral.png\"\n\n---\n\n\n<!--------------- typical setup ----------------->\n\n\n\n\n\n<!--------------- post begins here ----------------->\n\n\nThe current landscape of moving SAS-based data (`.sas7bdat` or `xpt`) into R has users \ncalling the R package `haven`.  A typical call might invoke `read_sas()` or `read_xpt()`\nto bring your source data, perhaps `SDTM` data. \n\nThis package has several functions to read in data not only from SAS\nbut also from STATA, SPSS and other envirnoments.  \n\n## Loading Packages and Making Dummy Data\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(admiral)\nlibrary(tibble)\n\ndf <- tribble(\n  ~USUBJID,   ~RFICDTC,\n  \"1001\", \"2000-01-01\",\n  \"1002\", \"2001-01-01\",\n  \"1003\",           \"\"\n)\n```\n:::\n\n\n## Some brief notes on the Data\n\n\n::: {.cell}\n\n```{.r .cell-code}\nprint(df)\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n# A tibble: 3 × 2\n  USUBJID RFICDTC     \n  <chr>   <chr>       \n1 1001    \"2000-01-01\"\n2 1002    \"2001-01-01\"\n3 1003    \"\"          \n```\n:::\n:::\n\n\n## A simple conversion \n\n\n::: {.cell}\n\n```{.r .cell-code}\nconvert_blanks_to_na(df)\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n# A tibble: 3 × 2\n  USUBJID RFICDTC   \n  <chr>   <chr>     \n1 1001    2000-01-01\n2 1002    2001-01-01\n3 1003    <NA>      \n```\n:::\n:::\n\n\n\n## Running over several SDTMs for an ADaM\n\n\n\n## Back to Blanks\n\n\n\n\n<!--------------- appendices go here ----------------->\n\n\n::: {.cell}\n::: {.cell-output-display}\n## Last updated {.appendix}\n \n2023-07-04 21:39:27 UTC\n \n## Details {.appendix}\n \n[source code](https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and__nas/index.qmd), [R environment](https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and__nas/renv.lock)\n:::\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
