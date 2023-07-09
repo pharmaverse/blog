@@ -1,0 +1,86 @@
+---
+title: "Blanks and NAs"
+author:
+  - name: Ben Straub
+description: "Reading SAS datasets into R"
+date: "2023-07-10"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [admiral]
+# feel free to change the image
+image: "admiral.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2023-07-10_blanks_and_nas"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+
+Reading in SAS-based datasets (`.sas7bdat` or `xpt`) into R has users 
+calling the R package [haven](https://haven.tidyverse.org/).  A typical call might invoke `read_sas()` or `read_xpt()`
+to bring in your source data to construct your ADaMs or SDTMs.
+
+Unfortunately, while using [haven](https://haven.tidyverse.org/) the character blanks (missing data) found in a typical SAS-based dataset are left as blanks These blanks will typically prove problematic while using functions like `is.na` in combination with `dplyr::filter()` to subset data.
+
+In the [admiral](https://pharmaverse.github.io/admiral/cran-release/) package, we have built a simple function called `convert_blanks_to_na()` to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to `NA_character_`
+
+## Loading Packages and Making Dummy Data
+
+```{r, message = FALSE}
+
+library(admiral)
+library(tibble)
+library(dplyr)
+
+df <- tribble(
+  ~USUBJID,   ~RFICDTC,
+  "01", "2000-01-01",
+  "02", "2001-01-01",
+  "03",           "", # Here we have a character blank
+  "04", "2001-01--",
+  "05", "2001---01",
+  "05",          "", # Here we have a character blank
+)
+
+df
+```
+
+## A simple conversion 
+
+```{r}
+df_na <- convert_blanks_to_na(df)
+
+df_na
+```
+
+```{r}
+
+df_na %>% filter(is.na(RFICDTC))
+
+```
+
+## That's it!
+
+A simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In admiral, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function `use_ad_template()` to get the full R script for the below ADaMs.
+
+```{r}
+list_all_templates()
+```
+
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug
+)
+```
