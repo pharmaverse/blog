@@ -2,7 +2,7 @@
 title: "Blanks and NAs"
 author:
   - name: Ben Straub
-description: "Reading SAS datasets into R"
+description: "Reading SAS datasets into R. The data is not always as it seems!"
 date: "2023-07-10"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
@@ -33,19 +33,18 @@ In the [admiral](https://pharmaverse.github.io/admiral/cran-release/) package, w
 ## Loading Packages and Making Dummy Data
 
 ```{r, message = FALSE}
-
 library(admiral)
 library(tibble)
 library(dplyr)
 
 df <- tribble(
-  ~USUBJID,   ~RFICDTC,
+  ~USUBJID, ~RFICDTC,
   "01", "2000-01-01",
   "02", "2001-01-01",
-  "03",           "", # Here we have a character blank
+  "03", "", # Here we have a character blank
   "04", "2001-01--",
   "05", "2001---01",
-  "05",          "", # Here we have a character blank
+  "05", "", # Here we have a character blank
 )
 
 df
@@ -60,9 +59,7 @@ df_na
 ```
 
 ```{r}
-
 df_na %>% filter(is.na(RFICDTC))
-
 ```
 
 ## That's it!
