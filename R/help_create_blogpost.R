@@ -37,7 +37,9 @@ create_post <- function(post_name,
                           "roak",
                           "xportr",
                           "metatools",
-                          "metacore"
+                          "metacore",
+                          "displays",
+                          "falcon"
                         )) {
   path_to_img <- "media"
   available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
