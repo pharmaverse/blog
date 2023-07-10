@@ -10,7 +10,249 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.433</generator>
-<lastBuildDate>Wed, 28 Jun 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 10 Jul 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Blanks and NAs</title>
+  <dc:creator>Ben Straub</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>Reading in SAS-based datasets (<code>.sas7bdat</code> or <code>xpt</code>) into R has users calling the R package <a href="https://haven.tidyverse.org/">haven</a>. A typical call might invoke <code>read_sas()</code> or <code>read_xpt()</code> to bring in your source data to construct your ADaMs or SDTMs.</p>
+<p>Unfortunately, while using <a href="https://haven.tidyverse.org/">haven</a> the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like <code>is.na</code> in combination with <code>dplyr::filter()</code> to subset data. Check out <a href="https://bayer-group.github.io/sas2r/r-and-sas-syntax.html#handling-of-missing-values">Bayer’s SAS2R catalog: handling-of-missing-values</a> for more discussion on missing values and <code>NAs</code>.</p>
+<p>In the <a href="https://pharmaverse.github.io/admiral/cran-release/">admiral</a> package, we have built a simple function called <code>convert_blanks_to_na()</code> to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to <code>NA_character_</code></p>
+<section id="loading-packages-and-making-dummy-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tibble)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb1-4"></span>
+<span id="cb1-5">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb1-6">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>RFICDTC,</span>
+<span id="cb1-7">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2000-01-01"</span>,</span>
+<span id="cb1-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"02"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2001-01-01"</span>,</span>
+<span id="cb1-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"03"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Here we have a character blank</span></span>
+<span id="cb1-10">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"04"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2001-01--"</span>,</span>
+<span id="cb1-11">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"05"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2001---01"</span>,</span>
+<span id="cb1-12">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"05"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Here we have a character blank</span></span>
+<span id="cb1-13">)</span>
+<span id="cb1-14"></span>
+<span id="cb1-15">df</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  USUBJID RFICDTC     
+  &lt;chr&gt;   &lt;chr&gt;       
+1 01      "2000-01-01"
+2 02      "2001-01-01"
+3 03      ""          
+4 04      "2001-01--" 
+5 05      "2001---01" 
+6 05      ""          </code></pre>
+</div>
+</div>
+</section>
+<section id="a-simple-conversion" class="level2">
+<h2 class="anchored" data-anchor-id="a-simple-conversion">A simple conversion</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">df_na <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">convert_blanks_to_na</span>(df)</span>
+<span id="cb3-2"></span>
+<span id="cb3-3">df_na</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  USUBJID RFICDTC   
+  &lt;chr&gt;   &lt;chr&gt;     
+1 01      2000-01-01
+2 02      2001-01-01
+3 03      &lt;NA&gt;      
+4 04      2001-01-- 
+5 05      2001---01 
+6 05      &lt;NA&gt;      </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">df_na <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(RFICDTC))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  USUBJID RFICDTC
+  &lt;chr&gt;   &lt;chr&gt;  
+1 03      &lt;NA&gt;   
+2 05      &lt;NA&gt;   </code></pre>
+</div>
+</div>
+</section>
+<section id="thats-it" class="level2">
+<h2 class="anchored" data-anchor-id="thats-it">That’s it!</h2>
+<p>A simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In <a href="https://pharmaverse.github.io/admiral/cran-release/">admiral</a>, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function <code>use_ad_template()</code> to get the full R script for the below ADaMs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Existing ADaM templates in package 'admiral':
+• ADAE
+• ADCM
+• ADEG
+• ADEX
+• ADLB
+• ADLBHY
+• ADMH
+• ADPC
+• ADPP
+• ADPPK
+• ADSL
+• ADVS</code></pre>
+</div>
+</div>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-07-10 18:50:28.92922</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
+  author = {Straub, Ben},
+  title = {Blanks and {NAs}},
+  date = {2023-07-10},
+  url = {https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2023" class="csl-entry quarto-appendix-citeas">
+Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html">https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html</a>.
+</div></div></section></div> ]]></description>
+  <category>admiral</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html</guid>
+  <pubDate>Mon, 10 Jul 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/admiral.png" medium="image" type="image/png" height="108" width="144"/>
+</item>
+<item>
+  <title>falcon</title>
+  <dc:creator>Vincent Shen</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="what-is-falcon" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-falcon">What is {falcon}?</h2>
+<p>The <a href="https://pharmaverse.github.io/falcon/">{falcon} initiative</a> is an industry collaborative effort under <a href="https://pharmaverse.org/">{pharmaverse}</a> that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry.</p>
+</section>
+<section id="why-do-we-build-it" class="level2">
+<h2 class="anchored" data-anchor-id="why-do-we-build-it">Why do we build it?</h2>
+<p>The collaborative effort focuses on improving the clarity, consistency, and accessibility of TLGs by addressing variations and redundancies in their creation and use. This harmonized approach allows for streamlined reporting processes and facilitates effective communication of study results within the industry and to regulatory authorities.</p>
+</section>
+<section id="what-has-been-done-so-far" class="level2">
+<h2 class="anchored" data-anchor-id="what-has-been-done-so-far">What has been done so far?</h2>
+<p>Drawing inspiration from the FDA Standard Safety Tables and Figures Integrated Guide, the {falcon} initiative has successfully developed and open-sourced 11 templates to date. 4 product owners and 11 developers from 4 companies have collaborated to make these templates available and also published them on the official {falcon} website at <a href="https://pharmaverse.github.io/falcon/">https://pharmaverse.github.io/falcon/</a>.</p>
+</section>
+<section id="next-steps-vision" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps-vision">Next steps &amp; vision</h2>
+<p>Future plans for {falcon} involve expanding the catalog through continuous collaboration from participating companies and inviting wider industry engagement. The ultimate goal is to promote harmonization of TLGs for clinical reporting across the pharmaceutical industry, leading to greater efficiency, collaboration, and innovation. Even though templates currently come from a published FDA guide, the collaborating companies are open to share and discuss similarities and differences on analysis concepts and output layouts of their own implementations in clinical reporting, for both safety and efficacy analyses.</p>
+<p>In addition, while currently all templates were built using {rtables}, {tern}, {rlistings} and drew inspiration from the open-sourced <a href="https://insightsengineering.github.io/tlg-catalog/">TLG-Catalog</a>, moving forward, we plan to support creating the same templates using alternative table engines such as {gt}.</p>
+<p>{falcon} will be presented at the upcoming PHUSE EU (Standards Implementation stream), where we will share the collaboration journey of {falcon} so far, providing more details on the current progress, long-term vision, and strategies for this initiative. Attendees will gain insights into the challenges and opportunities of harmonizing clinical reporting through open-source collaboration and learn about the potential benefits and future direction of {falcon}.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-07-10 18:50:30.365514</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{shen2023,
+  author = {Shen, Vincent},
+  title = {Falcon},
+  date = {2023-07-09},
+  url = {https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-shen2023" class="csl-entry quarto-appendix-citeas">
+Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.html">https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.html</a>.
+</div></div></section></div> ]]></description>
+  <category>falcon</category>
+  <category>displays</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.html</guid>
+  <pubDate>Sun, 09 Jul 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.png" medium="image" type="image/png" height="67" width="144"/>
+</item>
 <item>
   <title>Hello pharmaverse</title>
   <dc:creator>Ben Straub</dc:creator>
@@ -81,7 +323,7 @@
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-06-27 18:45:48.514894</p>
+<p>2023-07-10 18:50:33.766791</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -99,318 +341,6 @@ Straub, Ben. 2023. <span>“Hello Pharmaverse.”</span> June 28, 2023. <a href=
   <guid>https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/index.html</guid>
   <pubDate>Wed, 28 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/pharmaverse.PNG" medium="image"/>
-</item>
-<item>
-  <title>Admiral Hackathon 2023 Revisited</title>
-  <dc:creator>Stefan Thoma</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<!--------------- my typical setup ----------------->
-<!--------------- post begins here ----------------->
-<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
-<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/events/webinar/pre-admiral-hackathon-workshop-introduction-r-sas-programmers">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
-<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-19_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
-<section id="introduction-to-r-workshop" class="level2">
-<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
-<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
-<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
-<section id="admiral-hackathon" class="level2">
-<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
-<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
-<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
-<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
-<p>Congratulations to the winners:</p>
-<ul>
-<li><code>ViiV Team_GSK</code></li>
-<li><code>teamspoRt</code></li>
-<li><code>TatianaPXL</code></li>
-<li><code>Divyasneelam</code></li>
-<li><code>AdaMTeamIndia</code></li>
-<li><code>Sanofi_BP</code></li>
-<li><code>Jagadish</code> (our community hero)</li>
-<li><code>AZ_WAWA</code></li>
-</ul>
-<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
-<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/events/webinar/cosa-quarterly-spotlight-q1-2023">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
-<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.</p>
-<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
-<!--------------- appendices go here ----------------->
-</section>
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2023-06-27 18:45:47.127405</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
-  author = {Thoma, Stefan},
-  title = {Admiral {Hackathon} 2023 {Revisited}},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
-Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
-June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup</a>.
-</div></div></section></div> ]]></description>
-  <category>community</category>
-  <category>admiral</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</guid>
-  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png" medium="image" type="image/png" height="144" width="144"/>
-</item>
-<item>
-  <title>Derive a new parameter computed from the value of other parameters</title>
-  <dc:creator>Kangjie Zhang</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<!--------------- my typical setup ----------------->
-<!--------------- post begins here ----------------->
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.</p>
-<p>The <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> function <a href="https://pharmaverse.github.io/admiral/cran-release/reference/derive_param_computed.html"><code>derive_param_computed()</code></a> adds a parameter computed from the analysis value of other parameters.</p>
-<p>It works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code.</p>
-</section>
-<section id="example" class="level2">
-<h2 class="anchored" data-anchor-id="example">Example</h2>
-<p>A value level validation use case, where <code>derive_param_computed()</code> is used to validate a derived parameter - <code>PARAMCD = ADPCYMG</code> (Actual Dose per Cycle) in ADEX dataset.</p>
-<section id="derivation" class="level3">
-<h3 class="anchored" data-anchor-id="derivation">Derivation</h3>
-<p>Actual Dose per Cycle is derived from the Total Amount of Dose (<code>PARAMCD = TOTDOSE</code>) / Number of Cycles (<code>PARAMCD = NUMCYC</code>)</p>
-<p>In this example, <code>ADEX.AVAL when ADEX.PARAMCD = ADPCYMG</code> can be derived as:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AAVAL%20(PARAMCD%20=%20ADPCYMG)%20=%20%5Cfrac%7BAVAL%20(PARAMCD%20=%20TOTDOSE)%7D%7BAVAL%20(PARAMCD%20=%20NUMCYC)%7D%0A"></p>
-</section>
-<section id="loading-packages-and-creating-example-data" class="level3">
-<h3 class="anchored" data-anchor-id="loading-packages-and-creating-example-data">Loading Packages and Creating Example Data</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tibble)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr)</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(diffdf)</span>
-<span id="cb1-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(admiral)</span>
-<span id="cb1-5"></span>
-<span id="cb1-6">adex <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tribble</span>(</span>
-<span id="cb1-7">  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>AVAL,</span>
-<span id="cb1-8">  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Total Amount of Dose (mg)"</span>,  <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">180</span>,</span>
-<span id="cb1-9">  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"NUMCYC"</span>,  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Number of Cycles"</span>,           <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span></span>
-<span id="cb1-10">)</span></code></pre></div>
-</div>
-</section>
-<section id="derive-new-parameter" class="level3">
-<h3 class="anchored" data-anchor-id="derive-new-parameter">Derive New Parameter</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">adex_admiral <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_param_computed</span>(</span>
-<span id="cb2-2">  adex,</span>
-<span id="cb2-3">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(USUBJID),</span>
-<span id="cb2-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">parameters =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"NUMCYC"</span>),</span>
-<span id="cb2-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">analysis_value =</span> AVAL.TOTDOSE <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> AVAL.NUMCYC,</span>
-<span id="cb2-6">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">set_values_to =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(</span>
-<span id="cb2-7">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAMCD =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADPCYMG"</span>,</span>
-<span id="cb2-8">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAM =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Actual Dose per Cycle (mg)"</span></span>
-<span id="cb2-9">  )</span>
-<span id="cb2-10">)</span></code></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 4
-  USUBJID PARAMCD PARAM                       AVAL
-  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;
-1 101     TOTDOSE Total Amount of Dose (mg)    180
-2 101     NUMCYC  Number of Cycles               3
-3 101     ADPCYMG Actual Dose per Cycle (mg)    60</code></pre>
-</div>
-</div>
-</section>
-<section id="compare" class="level3">
-<h3 class="anchored" data-anchor-id="compare">Compare</h3>
-<p>For validation purpose, the <a href="https://gowerc.github.io/diffdf/reference/diffdf.html">diffdf</a> package is used below to mimic SAS <code>proc compare</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adex_expected <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bind_rows</span>(</span>
-<span id="cb4-2">  adex,</span>
-<span id="cb4-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tribble</span>(</span>
-<span id="cb4-4">    <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>AVAL,</span>
-<span id="cb4-5">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADPCYMG"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Actual Dose per Cycle (mg)"</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">60</span></span>
-<span id="cb4-6">  )</span>
-<span id="cb4-7">)</span>
-<span id="cb4-8"></span>
-<span id="cb4-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">diffdf</span>(adex_expected, adex_admiral, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">keys =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"USUBJID"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>No issues were found!</code></pre>
-</div>
-</div>
-<!--------------- appendices go here ----------------->
-</section>
-</section>
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2023-06-27 18:45:50.500405</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
-  author = {Zhang, Kangjie},
-  title = {Derive a New Parameter Computed from the Value of Other
-    Parameters},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas">
-Zhang, Kangjie. 2023. <span>“Derive a New Parameter Computed from the
-Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html">https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</a>.
-</div></div></section></div> ]]></description>
-  <category>admiral</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</guid>
-  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>Hackathon Feedback Application</title>
@@ -1275,7 +1205,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-06-27 18:45:52.330104</p>
+<p>2023-07-10 18:50:26.456766</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -1297,6 +1227,318 @@ Thoma, Stefan. 2023. <span>“Hackathon Feedback Application.”</span> June
   <guid>https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/index.html</guid>
   <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/shiny_klee.png" medium="image" type="image/png" height="141" width="144"/>
+</item>
+<item>
+  <title>Derive a new parameter computed from the value of other parameters</title>
+  <dc:creator>Kangjie Zhang</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.</p>
+<p>The <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> function <a href="https://pharmaverse.github.io/admiral/cran-release/reference/derive_param_computed.html"><code>derive_param_computed()</code></a> adds a parameter computed from the analysis value of other parameters.</p>
+<p>It works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code.</p>
+</section>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<p>A value level validation use case, where <code>derive_param_computed()</code> is used to validate a derived parameter - <code>PARAMCD = ADPCYMG</code> (Actual Dose per Cycle) in ADEX dataset.</p>
+<section id="derivation" class="level3">
+<h3 class="anchored" data-anchor-id="derivation">Derivation</h3>
+<p>Actual Dose per Cycle is derived from the Total Amount of Dose (<code>PARAMCD = TOTDOSE</code>) / Number of Cycles (<code>PARAMCD = NUMCYC</code>)</p>
+<p>In this example, <code>ADEX.AVAL when ADEX.PARAMCD = ADPCYMG</code> can be derived as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AAVAL%20(PARAMCD%20=%20ADPCYMG)%20=%20%5Cfrac%7BAVAL%20(PARAMCD%20=%20TOTDOSE)%7D%7BAVAL%20(PARAMCD%20=%20NUMCYC)%7D%0A"></p>
+</section>
+<section id="loading-packages-and-creating-example-data" class="level3">
+<h3 class="anchored" data-anchor-id="loading-packages-and-creating-example-data">Loading Packages and Creating Example Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tibble)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(diffdf)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">adex <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb1-7">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AVAL,</span>
+<span id="cb1-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Total Amount of Dose (mg)"</span>,  <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">180</span>,</span>
+<span id="cb1-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NUMCYC"</span>,  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of Cycles"</span>,           <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb1-10">)</span></code></pre></div>
+</div>
+</section>
+<section id="derive-new-parameter" class="level3">
+<h3 class="anchored" data-anchor-id="derive-new-parameter">Derive New Parameter</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">adex_admiral <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_param_computed</span>(</span>
+<span id="cb2-2">  adex,</span>
+<span id="cb2-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID),</span>
+<span id="cb2-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">parameters =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NUMCYC"</span>),</span>
+<span id="cb2-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">analysis_value =</span> AVAL.TOTDOSE <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> AVAL.NUMCYC,</span>
+<span id="cb2-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">set_values_to =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(</span>
+<span id="cb2-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">PARAMCD =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ADPCYMG"</span>,</span>
+<span id="cb2-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">PARAM =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Actual Dose per Cycle (mg)"</span></span>
+<span id="cb2-9">  )</span>
+<span id="cb2-10">)</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  USUBJID PARAMCD PARAM                       AVAL
+  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;
+1 101     TOTDOSE Total Amount of Dose (mg)    180
+2 101     NUMCYC  Number of Cycles               3
+3 101     ADPCYMG Actual Dose per Cycle (mg)    60</code></pre>
+</div>
+</div>
+</section>
+<section id="compare" class="level3">
+<h3 class="anchored" data-anchor-id="compare">Compare</h3>
+<p>For validation purpose, the <a href="https://gowerc.github.io/diffdf/reference/diffdf.html">diffdf</a> package is used below to mimic SAS <code>proc compare</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adex_expected <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb4-2">  adex,</span>
+<span id="cb4-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb4-4">    <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AVAL,</span>
+<span id="cb4-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ADPCYMG"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Actual Dose per Cycle (mg)"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span></span>
+<span id="cb4-6">  )</span>
+<span id="cb4-7">)</span>
+<span id="cb4-8"></span>
+<span id="cb4-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">diffdf</span>(adex_expected, adex_admiral, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">keys =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"USUBJID"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No issues were found!</code></pre>
+</div>
+</div>
+<!--------------- appendices go here ----------------->
+</section>
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-07-10 18:50:32.343356</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
+  author = {Zhang, Kangjie},
+  title = {Derive a New Parameter Computed from the Value of Other
+    Parameters},
+  date = {2023-06-27},
+  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas">
+Zhang, Kangjie. 2023. <span>“Derive a New Parameter Computed from the
+Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html">https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</a>.
+</div></div></section></div> ]]></description>
+  <category>admiral</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</guid>
+  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>Admiral Hackathon 2023 Revisited</title>
+  <dc:creator>Stefan Thoma</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
+<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/events/webinar/pre-admiral-hackathon-workshop-introduction-r-sas-programmers">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
+<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
+<section id="introduction-to-r-workshop" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
+<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
+<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="admiral-hackathon" class="level2">
+<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
+<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
+<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
+<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
+<p>Congratulations to the winners:</p>
+<ul>
+<li><code>ViiV Team_GSK</code></li>
+<li><code>teamspoRt</code></li>
+<li><code>TatianaPXL</code></li>
+<li><code>Divyasneelam</code></li>
+<li><code>AdaMTeamIndia</code></li>
+<li><code>Sanofi_BP</code></li>
+<li><code>Jagadish</code> (our community hero)</li>
+<li><code>AZ_WAWA</code></li>
+</ul>
+<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
+<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/events/webinar/cosa-quarterly-spotlight-q1-2023">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
+<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.</p>
+<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-07-10 18:50:37.234481</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+  author = {Thoma, Stefan},
+  title = {Admiral {Hackathon} 2023 {Revisited}},
+  date = {2023-06-27},
+  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
+Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
+June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup</a>.
+</div></div></section></div> ]]></description>
+  <category>community</category>
+  <category>admiral</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</guid>
+  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 </channel>
 </rss>

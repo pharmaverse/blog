@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ben Straub">
-<meta name="dcterms.date" content="2023-06-28">
-<meta name="description" content="Short, fun and user-driven content around the pharmaverse.">
+<meta name="dcterms.date" content="2023-07-10">
+<meta name="description" content="Reading SAS datasets into R. The data is not always as it seems!">
 
-<title>Pharmaverse Blog - Hello pharmaverse</title>
+<title>Pharmaverse Blog - Blanks and NAs</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,6 +22,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -71,10 +105,12 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Pharmaverse Blog - Hello pharmaverse">
-<meta property="og:description" content="Short, fun and user-driven content around the pharmaverse.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/pharmaverse.PNG">
+<meta property="og:title" content="Pharmaverse Blog - Blanks and NAs">
+<meta property="og:description" content="Reading SAS datasets into R. The data is not always as it seems!">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/admiral.png">
 <meta property="og:site-name" content="Pharmaverse Blog">
+<meta property="og:image:height" content="276">
+<meta property="og:image:width" content="369">
 </head>
 
 <body class="floating nav-fixed">
@@ -110,14 +146,14 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Hello pharmaverse</h1>
+      <h1 class="title">Blanks and NAs</h1>
                   <div>
         <div class="description">
-          Short, fun and user-driven content around the pharmaverse.
+          Reading SAS datasets into R. The data is not always as it seems!
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">community</div>
+                <div class="quarto-category">admiral</div>
               </div>
                   </div>
   </div>
@@ -135,7 +171,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 28, 2023</p>
+        <p class="date">July 10, 2023</p>
       </div>
     </div>
     
@@ -150,13 +186,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#purpose" id="toc-purpose" class="nav-link active" data-scroll-target="#purpose">Purpose</a></li>
-  <li><a href="#spirit-of-a-blog-post" id="toc-spirit-of-a-blog-post" class="nav-link" data-scroll-target="#spirit-of-a-blog-post">Spirit of a Blog Post</a></li>
-  <li><a href="#what-types-of-posts-are-allowed-on-this-site" id="toc-what-types-of-posts-are-allowed-on-this-site" class="nav-link" data-scroll-target="#what-types-of-posts-are-allowed-on-this-site">What types of posts are allowed on this site?</a>
-  <ul class="collapse">
-  <li><a href="#minimum-post-requirements" id="toc-minimum-post-requirements" class="nav-link" data-scroll-target="#minimum-post-requirements">Minimum Post Requirements</a></li>
-  </ul></li>
-  <li><a href="#how-can-i-make-a-blog-post" id="toc-how-can-i-make-a-blog-post" class="nav-link" data-scroll-target="#how-can-i-make-a-blog-post">How can I make a Blog Post</a></li>
+  <li><a href="#loading-packages-and-making-dummy-data" id="toc-loading-packages-and-making-dummy-data" class="nav-link active" data-scroll-target="#loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</a></li>
+  <li><a href="#a-simple-conversion" id="toc-a-simple-conversion" class="nav-link" data-scroll-target="#a-simple-conversion">A simple conversion</a></li>
+  <li><a href="#thats-it" id="toc-thats-it" class="nav-link" data-scroll-target="#thats-it">That’s it!</a></li>
   </ul>
 </nav>
 </nav>
@@ -170,54 +202,92 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<!--------------- my typical setup ----------------->
+<!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<section id="purpose" class="level2">
-<h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
-<p>The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this <a href="https://pharmaverse.github.io/blog/">pharmaverse blog</a> and promoted on the pharmaverse slack channels as well as on LinkedIn.</p>
-<p>As the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team.</p>
+<p>Reading in SAS-based datasets (<code>.sas7bdat</code> or <code>xpt</code>) into R has users calling the R package <a href="https://haven.tidyverse.org/">haven</a>. A typical call might invoke <code>read_sas()</code> or <code>read_xpt()</code> to bring in your source data to construct your ADaMs or SDTMs.</p>
+<p>Unfortunately, while using <a href="https://haven.tidyverse.org/">haven</a> the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like <code>is.na</code> in combination with <code>dplyr::filter()</code> to subset data. Check out <a href="https://bayer-group.github.io/sas2r/r-and-sas-syntax.html#handling-of-missing-values">Bayer’s SAS2R catalog: handling-of-missing-values</a> for more discussion on missing values and <code>NAs</code>.</p>
+<p>In the <a href="https://pharmaverse.github.io/admiral/cran-release/">admiral</a> package, we have built a simple function called <code>convert_blanks_to_na()</code> to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to <code>NA_character_</code></p>
+<section id="loading-packages-and-making-dummy-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID, <span class="sc">~</span>RFICDTC,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"01"</span>, <span class="st">"2000-01-01"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"02"</span>, <span class="st">"2001-01-01"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"03"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"04"</span>, <span class="st">"2001-01--"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">"2001---01"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  USUBJID RFICDTC     
+  &lt;chr&gt;   &lt;chr&gt;       
+1 01      "2000-01-01"
+2 02      "2001-01-01"
+3 03      ""          
+4 04      "2001-01--" 
+5 05      "2001---01" 
+6 05      ""          </code></pre>
+</div>
+</div>
 </section>
-<section id="spirit-of-a-blog-post" class="level2">
-<h2 class="anchored" data-anchor-id="spirit-of-a-blog-post">Spirit of a Blog Post</h2>
-<p>The CWG believes that the following 4 points will help guide the creation of Blog Posts.</p>
-<ul>
-<li><strong>Short</strong></li>
-<li><strong>Personalized</strong></li>
-<li><strong>Reproducible</strong></li>
-<li><strong>Readable</strong></li>
-</ul>
-<p><strong>Short:</strong> Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.</p>
-<p><strong>Personalized:</strong> Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e.&nbsp;we don’t want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.</p>
-<p><strong>Reproducible:</strong> Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.</p>
-<p><strong>Readable:</strong> The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity.</p>
+<section id="a-simple-conversion" class="level2">
+<h2 class="anchored" data-anchor-id="a-simple-conversion">A simple conversion</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(df)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_na</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  USUBJID RFICDTC   
+  &lt;chr&gt;   &lt;chr&gt;     
+1 01      2000-01-01
+2 02      2001-01-01
+3 03      &lt;NA&gt;      
+4 04      2001-01-- 
+5 05      2001---01 
+6 05      &lt;NA&gt;      </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(RFICDTC))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  USUBJID RFICDTC
+  &lt;chr&gt;   &lt;chr&gt;  
+1 03      &lt;NA&gt;   
+2 05      &lt;NA&gt;   </code></pre>
+</div>
+</div>
 </section>
-<section id="what-types-of-posts-are-allowed-on-this-site" class="level2">
-<h2 class="anchored" data-anchor-id="what-types-of-posts-are-allowed-on-this-site">What types of posts are allowed on this site?</h2>
-<p>Overall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:</p>
-<ol type="1">
-<li>Packages in the Clinical Reporting Pipeline</li>
-<li>Functions from packages in the Clinical Reporting Pipeline</li>
-<li>Wider experiences of using R in the Clinical Reporting Pipeline</li>
-<li>Conference experiences and the Clinical Reporting Pipeline</li>
-</ol>
-<p>However, it never hurts to ask if you topic might fit into this medium!</p>
-<section id="minimum-post-requirements" class="level3">
-<h3 class="anchored" data-anchor-id="minimum-post-requirements">Minimum Post Requirements</h3>
-<ul>
-<li>A unique image to help showcase the post.</li>
-<li>Working Code</li>
-<li>Self-contained data or package data.</li>
-<li>Documentation of package versions</li>
-</ul>
-<p>That is it! After that you can go wild, but we do ask that it is kept short!</p>
-</section>
-</section>
-<section id="how-can-i-make-a-blog-post" class="level2">
-<h2 class="anchored" data-anchor-id="how-can-i-make-a-blog-post">How can I make a Blog Post</h2>
-<p>Step 1: Reach out to us through <a href="pharmaverse.slack.com">pharmaverse/slack</a> or make an issue on our <a href="https://github.com/pharmaverse/blog/issues">GitHub</a>.</p>
-<p>Step 2: Branch off <code>main</code></p>
-<p>Step 3: Review the Spirit of the Blog Post in the Pull Request Template</p>
-<p>Step 4: Poke us to do a review!</p>
+<section id="thats-it" class="level2">
+<h2 class="anchored" data-anchor-id="thats-it">That’s it!</h2>
+<p>A simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In <a href="https://pharmaverse.github.io/admiral/cran-release/">admiral</a>, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function <code>use_ad_template()</code> to get the full R script for the below ADaMs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list_all_templates</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Existing ADaM templates in package 'admiral':
+• ADAE
+• ADCM
+• ADEG
+• ADEX
+• ADLB
+• ADLBHY
+• ADMH
+• ADPC
+• ADPP
+• ADPPK
+• ADSL
+• ADVS</code></pre>
+</div>
+</div>
 <!--------------- appendices go here ----------------->
 </section>
 <div class="cell">
@@ -231,19 +301,19 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-07-10 18:50:33.766791</p>
+<p>2023-07-10 18:50:28.92922</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
 </div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
   author = {Straub, Ben},
-  title = {Hello Pharmaverse},
-  date = {2023-06-28},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-28_welcome},
+  title = {Blanks and {NAs}},
+  date = {2023-07-10},
+  url = {https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html},
   langid = {en}
 }
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Straub, Ben. 2023. <span>“Hello Pharmaverse.”</span> June 28, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-28_welcome">https://pharmaverse.github.io/blog/posts/2023-06-28_welcome</a>.
+Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html">https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
