@@ -1,5 +1,5 @@
 ---
-title: "code sections in admiral"
+title: "How to use Code Sections"
 author:
   - name: Edoardo Mancini
 description: ""
@@ -21,15 +21,73 @@ long_slug <- "2023-07-14_code_sections"
 
 <!--------------- post begins here ----------------->
 
+## Introduction
 
+The [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter **code sections**!
 
+## So, what are code sections and why are they useful?
+
+[Code Sections](https://docs.posit.co/ide/user/ide/guide/code/code-sections.html) are user-generated separators for long R scripts or functions in RStudio. They can be set up by inserting a comment lines followed by four or more dashes in between portions of code, like so:
+
+```{r, message = FALSE}
+# First code section ----
+
+a <- 1
+
+# Second code section ----
+
+b <- 2
+
+# Third code section ----
+
+c <- 3
+```
+RStudio then recognises the code sections automatically, and enables you to:
+
+* Collapse and expand them using the arrow displayed next to the line number, or with the handy shortcuts `Alt+L`/`Shift+Alt+L`.
+* Travel in between them using the navigator at the bottom of the code pane, or by pressing ``Shift+Alt+J`.
+
+```{r, fig.align = 'center', out.width = "45%", fig.cap = "Collapsed sections and the section navigator for the example above.", echo=FALSE}
+knitr::include_graphics("section_navigator.png")
+```
+
+It is also possible to create substections by using two hashtags at the start of a comment line:
+
+```{r, message = FALSE}
+# First code section ----
+a <- 1
+
+## A code subsection ----
+b <- 2
+
+# Second code section ----
+c <- 3
+```
+
+```{r, fig.align = 'center', out.width = "45%", fig.cap = "Code subsections for the example above.", echo=FALSE}
+knitr::include_graphics("subsections.png")
+```
+
+For a complete list of Code Sections shortcuts, and for further informations, see [here](https://docs.posit.co/ide/user/ide/guide/code/code-sections.html#menu-commands-and-shortcuts).
+
+# Code Sections on `admiral`
+
+Within the [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) package, heavy use of code sections is made in scripts such as our template ADaM programs. This ensures that they are more traversable and also encourages good commenting practices throught the program. Here is an example using the ADAE template program:
+
+```{r, eval = FALSE, message = FALSE}
+library(admiral)
+use_ad_template("ADAE")
+```
+
+Once the user saves this template program opens it in their the local file system, a 100+ line file instantly becomes more tractable due to the code sections that have been inserted.
+  <br/>
+```{r, fig.align = 'center', out.width = "45%", fig.cap = "A screenshot of the code sections in the ADAE template script", echo=FALSE}
+knitr::include_graphics("adae_code_sections.png")
+```
+
+## Conclusion
+Code sections are an easy way to navigate long scripts and foster good commenting practices. They are used extensively in the [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) package, but there is no reason that you cannot start using them yourself in your day-to-day R programming!
 
 <!--------------- appendices go here ----------------->
 
-```{r, echo=FALSE}
-source("appendix.R")
-insert_appendix(
-  repo_spec = "pharmaverse/blog",
-  name = long_slug
-)
 ```
