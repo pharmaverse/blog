@@ -6,11 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Ben Straub">
-<meta name="dcterms.date" content="2023-07-10">
-<meta name="description" content="Reading SAS datasets into R. The data is not always as it seems!">
+<meta name="author" content="Edoardo Mancini">
+<meta name="dcterms.date" content="2023-07-14">
 
-<title>Pharmaverse Blog - Blanks and NAs</title>
+<title>Pharmaverse Blog - How to use Code Sections</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -105,12 +104,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Pharmaverse Blog - Blanks and NAs">
-<meta property="og:description" content="Reading SAS datasets into R. The data is not always as it seems!">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/admiral.png">
+<meta property="og:title" content="Pharmaverse Blog - How to use Code Sections">
+<meta property="og:description" content="">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/rstudio-hex.PNG">
 <meta property="og:site-name" content="Pharmaverse Blog">
-<meta property="og:image:height" content="276">
-<meta property="og:image:width" content="369">
 </head>
 
 <body class="floating nav-fixed">
@@ -146,14 +143,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Blanks and NAs</h1>
-                  <div>
-        <div class="description">
-          Reading SAS datasets into R. The data is not always as it seems!
-        </div>
-      </div>
-                          <div class="quarto-categories">
-                <div class="quarto-category">admiral</div>
+      <h1 class="title">How to use Code Sections</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">ADaMs</div>
+                <div class="quarto-category">Tips and Tricks</div>
               </div>
                   </div>
   </div>
@@ -164,14 +157,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Ben Straub </p>
+               <p>Edoardo Mancini </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 10, 2023</p>
+        <p class="date">July 14, 2023</p>
       </div>
     </div>
     
@@ -186,9 +179,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#loading-packages-and-making-dummy-data" id="toc-loading-packages-and-making-dummy-data" class="nav-link active" data-scroll-target="#loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</a></li>
-  <li><a href="#a-simple-conversion" id="toc-a-simple-conversion" class="nav-link" data-scroll-target="#a-simple-conversion">A simple conversion</a></li>
-  <li><a href="#thats-it" id="toc-thats-it" class="nav-link" data-scroll-target="#thats-it">That’s it!</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#so-what-are-code-sections-and-why-are-they-useful" id="toc-so-what-are-code-sections-and-why-are-they-useful" class="nav-link" data-scroll-target="#so-what-are-code-sections-and-why-are-they-useful">So, what are code sections and why are they useful?</a></li>
+  <li><a href="#code-sections-on-admiral" id="toc-code-sections-on-admiral" class="nav-link" data-scroll-target="#code-sections-on-admiral">Code Sections on <code>admiral</code></a>
+  <ul class="collapse">
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
   </ul>
 </nav>
 </nav>
@@ -204,90 +200,86 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>Reading in SAS-based datasets (<code>.sas7bdat</code> or <code>xpt</code>) into R has users calling the R package <a href="https://haven.tidyverse.org/">haven</a>. A typical call might invoke <code>read_sas()</code> or <code>read_xpt()</code> to bring in your source data to construct your ADaMs or SDTMs.</p>
-<p>Unfortunately, while using <a href="https://haven.tidyverse.org/">haven</a> the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like <code>is.na</code> in combination with <code>dplyr::filter()</code> to subset data. Check out <a href="https://bayer-group.github.io/sas2r/r-and-sas-syntax.html#handling-of-missing-values">Bayer’s SAS2R catalog: handling-of-missing-values</a> for more discussion on missing values and <code>NAs</code>.</p>
-<p>In the <a href="https://pharmaverse.github.io/admiral/cran-release/">admiral</a> package, we have built a simple function called <code>convert_blanks_to_na()</code> to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to <code>NA_character_</code></p>
-<section id="loading-packages-and-making-dummy-data" class="level2">
-<h2 class="anchored" data-anchor-id="loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</h2>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>The <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter <strong>code sections</strong>!</p>
+</section>
+<section id="so-what-are-code-sections-and-why-are-they-useful" class="level2">
+<h2 class="anchored" data-anchor-id="so-what-are-code-sections-and-why-are-they-useful">So, what are code sections and why are they useful?</h2>
+<p><a href="https://docs.posit.co/ide/user/ide/guide/code/code-sections.html">Code Sections</a> are separators for long R scripts or functions in RStudio. They can be set up by inserting a comment line followed by four or more dashes in between portions of code, like so:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First code section ----</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">1</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID, <span class="sc">~</span>RFICDTC,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"01"</span>, <span class="st">"2000-01-01"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"02"</span>, <span class="st">"2001-01-01"</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"03"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"04"</span>, <span class="st">"2001-01--"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">"2001---01"</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  USUBJID RFICDTC     
-  &lt;chr&gt;   &lt;chr&gt;       
-1 01      "2000-01-01"
-2 02      "2001-01-01"
-3 03      ""          
-4 04      "2001-01--" 
-5 05      "2001---01" 
-6 05      ""          </code></pre>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Second code section ----</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Third code section ----</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>RStudio then recognizes the code sections automatically, and enables you to:</p>
+<ul>
+<li>Collapse and expand them using the arrow displayed next to the line number, or with the handy shortcuts <code>Alt+L</code>/<code>Shift+Alt+L</code> on Windows or <code>Cmd+Option+L</code>/<code>Cmd+Shift+Option+L</code> on Mac.</li>
+<li>Travel in between them using the navigator at the bottom of the code pane, or by pressing <code>Shift+Alt+J</code> on Windows or <code>Cmd+Shift+Option+J</code> on Mac.</li>
+<li>View an outline of the file using the “Outline” button at the top right of the pane and/or the orange hashtag “Section Navigator” button at the bottom left of the pane.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="section_navigator.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption class="figure-caption">Collapsed sections, outline view and the section navigator for the example above.</figcaption>
+</figure>
 </div>
 </div>
+</div>
+<p>It is also possible to create subsections by using two hashtags at the start of a comment line:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First code section ----</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="do">## A code subsection ----</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Second code section ----</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="subsections.png" class="img-fluid figure-img" style="width:45.0%"></p>
+<figcaption class="figure-caption">Code subsections for the example above.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>For a complete list of Code Sections shortcuts, and for further information, see <a href="https://docs.posit.co/ide/user/ide/guide/code/code-sections.html#menu-commands-and-shortcuts">here</a>.</p>
 </section>
-<section id="a-simple-conversion" class="level2">
-<h2 class="anchored" data-anchor-id="a-simple-conversion">A simple conversion</h2>
+<section id="code-sections-on-admiral" class="level1">
+<h1>Code Sections on <code>admiral</code></h1>
+<p>Within the <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> package, heavy use of code sections is made in scripts such as our template ADaM programs. This ensures that they are more traversable and also encourages good commenting practices throughout the program. Here is an example using the ADAE template program:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(df)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_na</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  USUBJID RFICDTC   
-  &lt;chr&gt;   &lt;chr&gt;     
-1 01      2000-01-01
-2 02      2001-01-01
-3 03      &lt;NA&gt;      
-4 04      2001-01-- 
-5 05      2001---01 
-6 05      &lt;NA&gt;      </code></pre>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">use_ad_template</span>(<span class="st">"ADAE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Once the user saves this template program and opens it in their local file system, a 100+ line file instantly becomes more tractable due to the code sections that have been inserted.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="adae_code_sections.png" class="img-fluid figure-img" style="width:45.0%"></p>
+<figcaption class="figure-caption">A screenshot of the code sections in the ADAE template script</figcaption>
+</figure>
 </div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(RFICDTC))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 2
-  USUBJID RFICDTC
-  &lt;chr&gt;   &lt;chr&gt;  
-1 03      &lt;NA&gt;   
-2 05      &lt;NA&gt;   </code></pre>
 </div>
-</div>
-</section>
-<section id="thats-it" class="level2">
-<h2 class="anchored" data-anchor-id="thats-it">That’s it!</h2>
-<p>A simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In <a href="https://pharmaverse.github.io/admiral/cran-release/">admiral</a>, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function <code>use_ad_template()</code> to get the full R script for the below ADaMs.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list_all_templates</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Existing ADaM templates in package 'admiral':
-• ADAE
-• ADCM
-• ADEG
-• ADEX
-• ADLB
-• ADLBHY
-• ADMH
-• ADPC
-• ADPP
-• ADPPK
-• ADSL
-• ADVS</code></pre>
-</div>
-</div>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Code sections are an easy way to navigate long scripts and foster good commenting practices. They are used extensively in the <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> package, but there is no reason that you cannot start using them yourself in your day-to-day R programming!</p>
 <!--------------- appendices go here ----------------->
 </section>
 <div class="cell">
@@ -298,22 +290,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 
 
+</section>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-07-24 14:36:51.132934</p>
+<p>2023-07-24 14:36:45.477676</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
-  author = {Straub, Ben},
-  title = {Blanks and {NAs}},
-  date = {2023-07-10},
-  url = {https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
+  author = {Mancini, Edoardo},
+  title = {How to Use {Code} {Sections}},
+  date = {2023-07-14},
+  url = {https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/code_sections.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html">https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-mancini2023" class="csl-entry quarto-appendix-citeas" role="listitem">
+Mancini, Edoardo. 2023. <span>“How to Use Code Sections.”</span> July
+14, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/code_sections.html">https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/code_sections.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

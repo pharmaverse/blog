@@ -10,7 +10,175 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.433</generator>
-<lastBuildDate>Mon, 10 Jul 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 14 Jul 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>How to use Code Sections</title>
+  <dc:creator>Edoardo Mancini</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/code_sections.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>The <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter <strong>code sections</strong>!</p>
+</section>
+<section id="so-what-are-code-sections-and-why-are-they-useful" class="level2">
+<h2 class="anchored" data-anchor-id="so-what-are-code-sections-and-why-are-they-useful">So, what are code sections and why are they useful?</h2>
+<p><a href="https://docs.posit.co/ide/user/ide/guide/code/code-sections.html">Code Sections</a> are separators for long R scripts or functions in RStudio. They can be set up by inserting a comment line followed by four or more dashes in between portions of code, like so:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># First code section ----</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3">a <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Second code section ----</span></span>
+<span id="cb1-6"></span>
+<span id="cb1-7">b <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span></span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Third code section ----</span></span>
+<span id="cb1-10"></span>
+<span id="cb1-11">c <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span></code></pre></div>
+</div>
+<p>RStudio then recognizes the code sections automatically, and enables you to:</p>
+<ul>
+<li>Collapse and expand them using the arrow displayed next to the line number, or with the handy shortcuts <code>Alt+L</code>/<code>Shift+Alt+L</code> on Windows or <code>Cmd+Option+L</code>/<code>Cmd+Shift+Option+L</code> on Mac.</li>
+<li>Travel in between them using the navigator at the bottom of the code pane, or by pressing <code>Shift+Alt+J</code> on Windows or <code>Cmd+Shift+Option+J</code> on Mac.</li>
+<li>View an outline of the file using the “Outline” button at the top right of the pane and/or the orange hashtag “Section Navigator” button at the bottom left of the pane.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/section_navigator.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption class="figure-caption">Collapsed sections, outline view and the section navigator for the example above.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>It is also possible to create subsections by using two hashtags at the start of a comment line:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># First code section ----</span></span>
+<span id="cb2-2">a <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## A code subsection ----</span></span>
+<span id="cb2-5">b <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span></span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Second code section ----</span></span>
+<span id="cb2-8">c <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span></code></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/subsections.png" class="img-fluid figure-img" style="width:45.0%"></p>
+<figcaption class="figure-caption">Code subsections for the example above.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>For a complete list of Code Sections shortcuts, and for further information, see <a href="https://docs.posit.co/ide/user/ide/guide/code/code-sections.html#menu-commands-and-shortcuts">here</a>.</p>
+</section>
+<section id="code-sections-on-admiral" class="level1">
+<h1>Code Sections on <code>admiral</code></h1>
+<p>Within the <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> package, heavy use of code sections is made in scripts such as our template ADaM programs. This ensures that they are more traversable and also encourages good commenting practices throughout the program. Here is an example using the ADAE template program:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">use_ad_template</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
+</div>
+<p>Once the user saves this template program and opens it in their local file system, a 100+ line file instantly becomes more tractable due to the code sections that have been inserted.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/adae_code_sections.png" class="img-fluid figure-img" style="width:45.0%"></p>
+<figcaption class="figure-caption">A screenshot of the code sections in the ADAE template script</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Code sections are an easy way to navigate long scripts and foster good commenting practices. They are used extensively in the <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> package, but there is no reason that you cannot start using them yourself in your day-to-day R programming!</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-07-24 14:36:45.477676</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
+  author = {Mancini, Edoardo},
+  title = {How to Use {Code} {Sections}},
+  date = {2023-07-14},
+  url = {https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/code_sections.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-mancini2023" class="csl-entry quarto-appendix-citeas">
+Mancini, Edoardo. 2023. <span>“How to Use Code Sections.”</span> July
+14, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/code_sections.html">https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/code_sections.html</a>.
+</div></div></section></div> ]]></description>
+  <category>ADaMs</category>
+  <category>Tips and Tricks</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/code_sections.html</guid>
+  <pubDate>Fri, 14 Jul 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/rstudio-hex.PNG" medium="image"/>
+</item>
 <item>
   <title>Blanks and NAs</title>
   <dc:creator>Ben Straub</dc:creator>
@@ -173,10 +341,10 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-07-10 18:50:28.92922</p>
+<p>2023-07-24 14:36:51.132934</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
 </div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
   author = {Straub, Ben},
   title = {Blanks and {NAs}},
@@ -233,7 +401,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-07-10 18:50:30.365514</p>
+<p>2023-07-24 14:36:53.041909</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -323,7 +491,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-07-10 18:50:33.766791</p>
+<p>2023-07-24 14:36:57.534779</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -1205,7 +1373,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-07-10 18:50:26.456766</p>
+<p>2023-07-24 14:36:48.014881</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -1425,7 +1593,7 @@ font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-07-10 18:50:32.343356</p>
+<p>2023-07-24 14:36:55.657194</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
@@ -1519,7 +1687,7 @@ Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-07-10 18:50:37.234481</p>
+<p>2023-07-24 14:37:02.360503</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
