@@ -1,0 +1,101 @@
+---
+title: "How to use Code Sections"
+author:
+  - name: Edoardo Mancini
+description: ""
+date: "2023-07-14"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [ADaMs, Tips and Tricks]
+# feel free to change the image
+image: "rstudio-hex.PNG"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2023-07-14_code_sections"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+## Introduction
+
+The [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter **code sections**!
+
+## So, what are code sections and why are they useful?
+
+[Code Sections](https://docs.posit.co/ide/user/ide/guide/code/code-sections.html) are separators for long R scripts or functions in RStudio. They can be set up by inserting a comment line followed by four or more dashes in between portions of code, like so:
+
+```{r, message = FALSE}
+# First code section ----
+
+a <- 1
+
+# Second code section ----
+
+b <- 2
+
+# Third code section ----
+
+c <- 3
+```
+RStudio then recognizes the code sections automatically, and enables you to:
+
+* Collapse and expand them using the arrow displayed next to the line number, or with the handy shortcuts `Alt+L`/`Shift+Alt+L` on Windows or `Cmd+Option+L`/`Cmd+Shift+Option+L` on Mac.
+* Travel in between them using the navigator at the bottom of the code pane, or by pressing `Shift+Alt+J` on Windows or `Cmd+Shift+Option+J` on Mac.
+* View an outline of the file using the "Outline" button at the top right of the pane and/or the orange hashtag "Section Navigator" button at the bottom left of the pane.
+
+```{r, fig.align = 'center', out.width = "100%", fig.cap = "Collapsed sections, outline view and the section navigator for the example above.", echo=FALSE}
+knitr::include_graphics("section_navigator.png")
+```
+
+It is also possible to create subsections by using two hashtags at the start of a comment line:
+
+```{r, message = FALSE}
+# First code section ----
+a <- 1
+
+## A code subsection ----
+b <- 2
+
+# Second code section ----
+c <- 3
+```
+
+```{r, fig.align = 'center', out.width = "45%", fig.cap = "Code subsections for the example above.", echo=FALSE}
+knitr::include_graphics("subsections.png")
+```
+
+For a complete list of Code Sections shortcuts, and for further information, see [here](https://docs.posit.co/ide/user/ide/guide/code/code-sections.html#menu-commands-and-shortcuts).
+
+# Code Sections on `admiral`
+
+Within the [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) package, heavy use of code sections is made in scripts such as our template ADaM programs. This ensures that they are more traversable and also encourages good commenting practices throughout the program. Here is an example using the ADAE template program:
+
+```{r, eval = FALSE, message = FALSE}
+library(admiral)
+use_ad_template("ADAE")
+```
+
+Once the user saves this template program and opens it in their local file system, a 100+ line file instantly becomes more tractable due to the code sections that have been inserted.
+
+```{r, fig.align = 'center', out.width = "45%", fig.cap = "A screenshot of the code sections in the ADAE template script", echo=FALSE}
+knitr::include_graphics("adae_code_sections.png")
+```
+
+## Conclusion
+Code sections are an easy way to navigate long scripts and foster good commenting practices. They are used extensively in the [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) package, but there is no reason that you cannot start using them yourself in your day-to-day R programming!
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug
+)
+```
+

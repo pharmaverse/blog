@@ -23,7 +23,7 @@ insert_source <- function(repo_spec, name,
     branch,
     collection,
     name,
-    "blanks_and_na.qmd",
+    "code_sections.qmd",
     sep = "/"
   )
   return(markdown_link(text, path))
