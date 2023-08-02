@@ -32,27 +32,35 @@ However, they use different approaches when rounding off a 5:
 
 Although base R does not have the option for "round half up", there are functions available in other R packages (e.g., `janitor`, `tidytlg`).
 
-The following table lists some often-used rounding methods and their corresponding functions in SAS and R.
 
-+---------------+----------------------------------------+----------------------------+-------------------+-----------------+--------------------+
-|               | round half up                          | round to even              | round up          | round down      | round towards zero |
-+:=============:+:======================================:+:==========================:+:=================:+:===============:+:==================:+
-| SAS           | `round()`                              | `rounde()`                 | `ceil()`          | `floor()`       | `int()`            |
-+---------------+----------------------------------------+----------------------------+-------------------+-----------------+--------------------+
-| R             | ::: {style="background-color: yellow"} | <div>                      | <div>             | <div>           | <div>              |
-|               | `janitor::round_half_up()`             |                            |                   |                 |                    |
-|               |                                        | `base::round()`            | `base::ceiling()` | `base::floor()` | `base::trunc()`    |
-|               | <div>                                  |                            |                   |                 |                    |
-|               |                                        | </div>                     | </div>            | </div>          | </div>             |
-|               | `tidytlg::roundSAS()`                  |                            |                   |                 |                    |
-|               |                                        |                            |                   |                 |                    |
-|               | </div>                                 |                            |                   |                 |                    |
-|               | :::                                    |                            |                   |                 |                    |
-+---------------+----------------------------------------+----------------------------+-------------------+-----------------+--------------------+
-| Example: 1.45 | 1.5                                    | 1.4                        | 2                 | 1               | 1                  |
-|               |                                        |                            |                   |                 |                    |
-|               | (round to 1 decimal place)             | (round to 1 decimal place) |                   |                 |                    |
-+---------------+----------------------------------------+----------------------------+-------------------+-----------------+--------------------+
+In general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.
+
++---------------+----------------------------+----------------------------+----------+------------+--------------------+
+|               | round half up              | round to even              | round up | round down | round towards zero |
++:=============:+:==========================:+:==========================:+:========:+:==========:+:==================:+
+| Example: 1.45 | 1.5                        | 1.4                        | 2        | 1          | 1                  |
+|               |                            |                            |          |            |                    |
+|               | (round to 1 decimal place) | (round to 1 decimal place) |          |            |                    |
++---------------+----------------------------+----------------------------+----------+------------+--------------------+
+
+Here are the corresponding ways to implement these methods in SAS and R.
+
++---------+----------------------------------------+-----------------+-------------------+-----------------+--------------------+
+|         | round half up                          | round to even   | round up          | round down      | round towards zero |
++:=======:+:======================================:+:===============:+:=================:+:===============:+:==================:+
+| SAS     | `round()`                              | `rounde()`      | `ceil()`          | `floor()`       | `int()`            |
++---------+----------------------------------------+-----------------+-------------------+-----------------+--------------------+
+| R       | ::: {style="background-color: yellow"} | <div>           | <div>             | <div>           | <div>              |
+|         | `janitor::round_half_up()`             |                 |                   |                 |                    |
+|         |                                        | `base::round()` | `base::ceiling()` | `base::floor()` | `base::trunc()`    |
+|         | <div>                                  |                 |                   |                 |                    |
+|         |                                        | </div>          | </div>            | </div>          | </div>             |
+|         | `tidytlg::roundSAS()`                  |                 |                   |                 |                    |
+|         |                                        |                 |                   |                 |                    |
+|         | </div>                                 |                 |                   |                 |                    |
+|         | :::                                    |                 |                   |                 |                    |
++---------+----------------------------------------+-----------------+-------------------+-----------------+--------------------+
+
 
 This table is summarized from links below, where more detailed discussions can be found -
 
