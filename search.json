@@ -32,7 +32,7 @@
     "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
     "title": "Admiral Hackathon 2023 Revisited",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-02 17:41:39.557596"
+    "text": "Last updated\n\n2023-08-03 08:36:17.555151"
   },
   {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
@@ -42,144 +42,102 @@
     "text": "Details\n\nsource code, R environment"
   },
   {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
-    "title": "Derive a new parameter computed from the value of other parameters",
+    "objectID": "posts/2023-06-28_welcome/index.html",
+    "href": "posts/2023-06-28_welcome/index.html",
+    "title": "Hello pharmaverse",
     "section": "",
-    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
+    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
   },
   {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
-    "title": "Derive a new parameter computed from the value of other parameters",
+    "objectID": "posts/2023-06-28_welcome/index.html#purpose",
+    "href": "posts/2023-06-28_welcome/index.html#purpose",
+    "title": "Hello pharmaverse",
     "section": "",
-    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
+    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
   },
   {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "Example",
-    "text": "Example\nA value level validation use case, where derive_param_computed() is used to validate a derived parameter - PARAMCD = ADPCYMG (Actual Dose per Cycle) in ADEX dataset.\n\nDerivation\nActual Dose per Cycle is derived from the Total Amount of Dose (PARAMCD = TOTDOSE) / Number of Cycles (PARAMCD = NUMCYC)\nIn this example, ADEX.AVAL when ADEX.PARAMCD = ADPCYMG can be derived as:\n\\[\nAVAL (PARAMCD = ADPCYMG) = \\frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCYC)}\n\\]\n\n\nLoading Packages and Creating Example Data\n\nlibrary(tibble)\nlibrary(dplyr)\nlibrary(diffdf)\nlibrary(admiral)\n\nadex &lt;- tribble(\n  ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n  \"101\",     \"TOTDOSE\", \"Total Amount of Dose (mg)\",  180,\n  \"101\",     \"NUMCYC\",  \"Number of Cycles\",           3\n)\n\n\n\nDerive New Parameter\n\nadex_admiral &lt;- derive_param_computed(\n  adex,\n  by_vars = exprs(USUBJID),\n  parameters = c(\"TOTDOSE\", \"NUMCYC\"),\n  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,\n  set_values_to = exprs(\n    PARAMCD = \"ADPCYMG\",\n    PARAM = \"Actual Dose per Cycle (mg)\"\n  )\n)\n\n\n\n# A tibble: 3 × 4\n  USUBJID PARAMCD PARAM                       AVAL\n  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;\n1 101     TOTDOSE Total Amount of Dose (mg)    180\n2 101     NUMCYC  Number of Cycles               3\n3 101     ADPCYMG Actual Dose per Cycle (mg)    60\n\n\n\n\nCompare\nFor validation purpose, the diffdf package is used below to mimic SAS proc compare.\n\nadex_expected &lt;- bind_rows(\n  adex,\n  tribble(\n    ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n    \"101\",     \"ADPCYMG\", \"Actual Dose per Cycle (mg)\", 60\n  )\n)\n\ndiffdf(adex_expected, adex_admiral, keys = c(\"USUBJID\", \"PARAMCD\"))\n\nNo issues were found!"
+    "objectID": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
+    "href": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
+    "title": "Hello pharmaverse",
+    "section": "Spirit of a Blog Post",
+    "text": "Spirit of a Blog Post\nThe CWG believes that the following 4 points will help guide the creation of Blog Posts.\n\nShort\nPersonalized\nReproducible\nReadable\n\nShort: Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.\nPersonalized: Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e. we don’t want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.\nReproducible: Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.\nReadable: The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity."
   },
   {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
-    "title": "Derive a new parameter computed from the value of other parameters",
+    "objectID": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
+    "href": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
+    "title": "Hello pharmaverse",
+    "section": "What types of posts are allowed on this site?",
+    "text": "What types of posts are allowed on this site?\nOverall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:\n\nPackages in the Clinical Reporting Pipeline\nFunctions from packages in the Clinical Reporting Pipeline\nWider experiences of using R in the Clinical Reporting Pipeline\nConference experiences and the Clinical Reporting Pipeline\n\nHowever, it never hurts to ask if you topic might fit into this medium!\n\nMinimum Post Requirements\n\nA unique image to help showcase the post.\nWorking Code\nSelf-contained data or package data.\nDocumentation of package versions\n\nThat is it! After that you can go wild, but we do ask that it is kept short!"
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
+    "href": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
+    "title": "Hello pharmaverse",
+    "section": "How can I make a Blog Post",
+    "text": "How can I make a Blog Post\nStep 1: Reach out to us through pharmaverse/slack or make an issue on our GitHub.\nStep 2: Branch off main\nStep 3: Review the Spirit of the Blog Post in the Pull Request Template\nStep 4: Poke us to do a review!"
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#last-updated",
+    "href": "posts/2023-06-28_welcome/index.html#last-updated",
+    "title": "Hello pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-02 17:41:34.606176"
+    "text": "Last updated\n\n2023-08-03 08:36:12.349664"
   },
   {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
-    "title": "Derive a new parameter computed from the value of other parameters",
+    "objectID": "posts/2023-06-28_welcome/index.html#details",
+    "href": "posts/2023-06-28_welcome/index.html#details",
+    "title": "Hello pharmaverse",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
   },
   {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html",
-    "title": "Blanks and NAs",
+    "objectID": "posts/2023-07-09_falcon/falcon.html",
+    "href": "posts/2023-07-09_falcon/falcon.html",
+    "title": "falcon",
     "section": "",
-    "text": "Reading in SAS-based datasets (.sas7bdat or xpt) into R has users calling the R package haven. A typical call might invoke read_sas() or read_xpt() to bring in your source data to construct your ADaMs or SDTMs.\nUnfortunately, while using haven the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like is.na in combination with dplyr::filter() to subset data. Check out Bayer’s SAS2R catalog: handling-of-missing-values for more discussion on missing values and NAs.\nIn the admiral package, we have built a simple function called convert_blanks_to_na() to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to NA_character_"
+    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
   },
   {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#loading-packages-and-making-dummy-data",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#loading-packages-and-making-dummy-data",
-    "title": "Blanks and NAs",
-    "section": "Loading Packages and Making Dummy Data",
-    "text": "Loading Packages and Making Dummy Data\n\nlibrary(admiral)\nlibrary(tibble)\nlibrary(dplyr)\n\ndf &lt;- tribble(\n  ~USUBJID, ~RFICDTC,\n  \"01\", \"2000-01-01\",\n  \"02\", \"2001-01-01\",\n  \"03\", \"\", # Here we have a character blank\n  \"04\", \"2001-01--\",\n  \"05\", \"2001---01\",\n  \"05\", \"\", # Here we have a character blank\n)\n\ndf\n\n# A tibble: 6 × 2\n  USUBJID RFICDTC     \n  &lt;chr&gt;   &lt;chr&gt;       \n1 01      \"2000-01-01\"\n2 02      \"2001-01-01\"\n3 03      \"\"          \n4 04      \"2001-01--\" \n5 05      \"2001---01\" \n6 05      \"\""
+    "objectID": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
+    "href": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
+    "title": "falcon",
+    "section": "",
+    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
   },
   {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#a-simple-conversion",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#a-simple-conversion",
-    "title": "Blanks and NAs",
-    "section": "A simple conversion",
-    "text": "A simple conversion\n\ndf_na &lt;- convert_blanks_to_na(df)\n\ndf_na\n\n# A tibble: 6 × 2\n  USUBJID RFICDTC   \n  &lt;chr&gt;   &lt;chr&gt;     \n1 01      2000-01-01\n2 02      2001-01-01\n3 03      &lt;NA&gt;      \n4 04      2001-01-- \n5 05      2001---01 \n6 05      &lt;NA&gt;      \n\n\n\ndf_na %&gt;% filter(is.na(RFICDTC))\n\n# A tibble: 2 × 2\n  USUBJID RFICDTC\n  &lt;chr&gt;   &lt;chr&gt;  \n1 03      &lt;NA&gt;   \n2 05      &lt;NA&gt;"
+    "objectID": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
+    "href": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
+    "title": "falcon",
+    "section": "Why do we build it?",
+    "text": "Why do we build it?\nThe collaborative effort focuses on improving the clarity, consistency, and accessibility of TLGs by addressing variations and redundancies in their creation and use. This harmonized approach allows for streamlined reporting processes and facilitates effective communication of study results within the industry and to regulatory authorities."
   },
   {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#thats-it",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#thats-it",
-    "title": "Blanks and NAs",
-    "section": "That’s it!",
-    "text": "That’s it!\nA simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In admiral, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function use_ad_template() to get the full R script for the below ADaMs.\n\nlist_all_templates()\n\nExisting ADaM templates in package 'admiral':\n• ADAE\n• ADCM\n• ADEG\n• ADEX\n• ADLB\n• ADLBHY\n• ADMH\n• ADPC\n• ADPP\n• ADPPK\n• ADSL\n• ADVS"
+    "objectID": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
+    "href": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
+    "title": "falcon",
+    "section": "What has been done so far?",
+    "text": "What has been done so far?\nDrawing inspiration from the FDA Standard Safety Tables and Figures Integrated Guide, the {falcon} initiative has successfully developed and open-sourced 11 templates to date. 4 product owners and 11 developers from 4 companies have collaborated to make these templates available and also published them on the official {falcon} website at https://pharmaverse.github.io/falcon/."
   },
   {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
-    "title": "Blanks and NAs",
+    "objectID": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
+    "href": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
+    "title": "falcon",
+    "section": "Next steps & vision",
+    "text": "Next steps & vision\nFuture plans for {falcon} involve expanding the catalog through continuous collaboration from participating companies and inviting wider industry engagement. The ultimate goal is to promote harmonization of TLGs for clinical reporting across the pharmaceutical industry, leading to greater efficiency, collaboration, and innovation. Even though templates currently come from a published FDA guide, the collaborating companies are open to share and discuss similarities and differences on analysis concepts and output layouts of their own implementations in clinical reporting, for both safety and efficacy analyses.\nIn addition, while currently all templates were built using {rtables}, {tern}, {rlistings} and drew inspiration from the open-sourced TLG-Catalog, moving forward, we plan to support creating the same templates using alternative table engines such as {gt}.\n{falcon} will be presented at the upcoming PHUSE EU (Standards Implementation stream), where we will share the collaboration journey of {falcon} so far, providing more details on the current progress, long-term vision, and strategies for this initiative. Attendees will gain insights into the challenges and opportunities of harmonizing clinical reporting through open-source collaboration and learn about the potential benefits and future direction of {falcon}."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#last-updated",
+    "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
+    "title": "falcon",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-02 17:41:31.105423"
+    "text": "Last updated\n\n2023-08-03 08:36:08.887668"
   },
   {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
-    "title": "Blanks and NAs",
+    "objectID": "posts/2023-07-09_falcon/falcon.html#details",
+    "href": "posts/2023-07-09_falcon/falcon.html#details",
+    "title": "falcon",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html",
-    "href": "posts/2023-07-14_code_sections/code_sections.html",
-    "title": "How to use Code Sections",
-    "section": "",
-    "text": "The admiral package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter code sections!"
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#introduction",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#introduction",
-    "title": "How to use Code Sections",
-    "section": "",
-    "text": "The admiral package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter code sections!"
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#so-what-are-code-sections-and-why-are-they-useful",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#so-what-are-code-sections-and-why-are-they-useful",
-    "title": "How to use Code Sections",
-    "section": "So, what are code sections and why are they useful?",
-    "text": "So, what are code sections and why are they useful?\nCode Sections are separators for long R scripts or functions in RStudio. They can be set up by inserting a comment line followed by four or more dashes in between portions of code, like so:\n\n# First code section ----\n\na &lt;- 1\n\n# Second code section ----\n\nb &lt;- 2\n\n# Third code section ----\n\nc &lt;- 3\n\nRStudio then recognizes the code sections automatically, and enables you to:\n\nCollapse and expand them using the arrow displayed next to the line number, or with the handy shortcuts Alt+L/Shift+Alt+L on Windows or Cmd+Option+L/Cmd+Shift+Option+L on Mac.\nTravel in between them using the navigator at the bottom of the code pane, or by pressing Shift+Alt+J on Windows or Cmd+Shift+Option+J on Mac.\nView an outline of the file using the “Outline” button at the top right of the pane and/or the orange hashtag “Section Navigator” button at the bottom left of the pane.\n\n\n\n\n\n\nCollapsed sections, outline view and the section navigator for the example above.\n\n\n\n\nIt is also possible to create subsections by using two hashtags at the start of a comment line:\n\n# First code section ----\na &lt;- 1\n\n## A code subsection ----\nb &lt;- 2\n\n# Second code section ----\nc &lt;- 3\n\n\n\n\n\n\nCode subsections for the example above.\n\n\n\n\nFor a complete list of Code Sections shortcuts, and for further information, see here."
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#conclusion",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#conclusion",
-    "title": "How to use Code Sections",
-    "section": "Conclusion",
-    "text": "Conclusion\nCode sections are an easy way to navigate long scripts and foster good commenting practices. They are used extensively in the admiral package, but there is no reason that you cannot start using them yourself in your day-to-day R programming!"
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
-    "title": "How to use Code Sections",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-02 17:41:26.663615"
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#details",
-    "title": "How to use Code Sections",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Pharmaverse Blog",
-    "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nHow to use Code Sections\n\n\n\n\n\n\n\nADaMs\n\n\nTips and Tricks\n\n\n\n\n\n\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nBlanks and NAs\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nfalcon\n\n\n\n\n\n\n\nfalcon\n\n\ndisplays\n\n\n\n\n\n\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n  \n\n\n\n\nHello pharmaverse\n\n\n\n\n\n\n\ncommunity\n\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nHackathon Feedback Application\n\n\n\n\n\n\n\nR\n\n\nshiny\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nUse admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "R/readme.html",
-    "href": "R/readme.html",
-    "title": "Files in this folder",
-    "section": "",
-    "text": "Some of these files help in creating/developing blog-posts, others are used by our CICD pipeline.\n\ncreate_blogpost.R: use this script to create a new blogpost based on our blogpost template.\nCICD.R: use this script to spellcheck and stylecheck your blogpost.\n\n\n\n\nhelp_create_blogpost.R: script containing the function(s) used by create_blogpost.R\nswitch.R: Used by CICD spellcheck workflow."
-  },
-  {
-    "objectID": "R/readme.html#development-files",
-    "href": "R/readme.html#development-files",
-    "title": "Files in this folder",
-    "section": "",
-    "text": "help_create_blogpost.R: script containing the function(s) used by create_blogpost.R\nswitch.R: Used by CICD spellcheck workflow."
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html",
@@ -242,7 +200,7 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-02 17:41:28.66988"
+    "text": "Last updated\n\n2023-08-03 08:36:04.907127"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
@@ -252,101 +210,178 @@
     "text": "Details\n\nsource code, R environment"
   },
   {
-    "objectID": "posts/2023-07-09_falcon/falcon.html",
-    "href": "posts/2023-07-09_falcon/falcon.html",
-    "title": "falcon",
+    "objectID": "R/readme.html",
+    "href": "R/readme.html",
+    "title": "Files in this folder",
     "section": "",
-    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
+    "text": "Some of these files help in creating/developing blog-posts, others are used by our CICD pipeline.\n\ncreate_blogpost.R: use this script to create a new blogpost based on our blogpost template.\nCICD.R: use this script to spellcheck and stylecheck your blogpost.\n\n\n\n\nhelp_create_blogpost.R: script containing the function(s) used by create_blogpost.R\nswitch.R: Used by CICD spellcheck workflow."
   },
   {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
-    "href": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
-    "title": "falcon",
+    "objectID": "R/readme.html#development-files",
+    "href": "R/readme.html#development-files",
+    "title": "Files in this folder",
     "section": "",
-    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
+    "text": "help_create_blogpost.R: script containing the function(s) used by create_blogpost.R\nswitch.R: Used by CICD spellcheck workflow."
   },
   {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
-    "href": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
-    "title": "falcon",
-    "section": "Why do we build it?",
-    "text": "Why do we build it?\nThe collaborative effort focuses on improving the clarity, consistency, and accessibility of TLGs by addressing variations and redundancies in their creation and use. This harmonized approach allows for streamlined reporting processes and facilitates effective communication of study results within the industry and to regulatory authorities."
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Pharmaverse Blog",
+    "section": "",
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nCross-Industry Open Source Package Development\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\n\n\n\n\n\n\n\nJul 25, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nHow to use Code Sections\n\n\n\n\n\n\n\nADaMs\n\n\nTips and Tricks\n\n\n\n\n\n\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nBlanks and NAs\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nfalcon\n\n\n\n\n\n\n\nfalcon\n\n\ndisplays\n\n\n\n\n\n\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n  \n\n\n\n\nHello pharmaverse\n\n\n\n\n\n\n\ncommunity\n\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nHackathon Feedback Application\n\n\n\n\n\n\n\nR\n\n\nshiny\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nUse admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
-    "href": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
-    "title": "falcon",
-    "section": "What has been done so far?",
-    "text": "What has been done so far?\nDrawing inspiration from the FDA Standard Safety Tables and Figures Integrated Guide, the {falcon} initiative has successfully developed and open-sourced 11 templates to date. 4 product owners and 11 developers from 4 companies have collaborated to make these templates available and also published them on the official {falcon} website at https://pharmaverse.github.io/falcon/."
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html",
+    "href": "posts/2023-07-14_code_sections/code_sections.html",
+    "title": "How to use Code Sections",
+    "section": "",
+    "text": "The admiral package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter code sections!"
   },
   {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
-    "href": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
-    "title": "falcon",
-    "section": "Next steps & vision",
-    "text": "Next steps & vision\nFuture plans for {falcon} involve expanding the catalog through continuous collaboration from participating companies and inviting wider industry engagement. The ultimate goal is to promote harmonization of TLGs for clinical reporting across the pharmaceutical industry, leading to greater efficiency, collaboration, and innovation. Even though templates currently come from a published FDA guide, the collaborating companies are open to share and discuss similarities and differences on analysis concepts and output layouts of their own implementations in clinical reporting, for both safety and efficacy analyses.\nIn addition, while currently all templates were built using {rtables}, {tern}, {rlistings} and drew inspiration from the open-sourced TLG-Catalog, moving forward, we plan to support creating the same templates using alternative table engines such as {gt}.\n{falcon} will be presented at the upcoming PHUSE EU (Standards Implementation stream), where we will share the collaboration journey of {falcon} so far, providing more details on the current progress, long-term vision, and strategies for this initiative. Attendees will gain insights into the challenges and opportunities of harmonizing clinical reporting through open-source collaboration and learn about the potential benefits and future direction of {falcon}."
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#introduction",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#introduction",
+    "title": "How to use Code Sections",
+    "section": "",
+    "text": "The admiral package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter code sections!"
   },
   {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#last-updated",
-    "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
-    "title": "falcon",
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#so-what-are-code-sections-and-why-are-they-useful",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#so-what-are-code-sections-and-why-are-they-useful",
+    "title": "How to use Code Sections",
+    "section": "So, what are code sections and why are they useful?",
+    "text": "So, what are code sections and why are they useful?\nCode Sections are separators for long R scripts or functions in RStudio. They can be set up by inserting a comment line followed by four or more dashes in between portions of code, like so:\n\n# First code section ----\n\na &lt;- 1\n\n# Second code section ----\n\nb &lt;- 2\n\n# Third code section ----\n\nc &lt;- 3\n\nRStudio then recognizes the code sections automatically, and enables you to:\n\nCollapse and expand them using the arrow displayed next to the line number, or with the handy shortcuts Alt+L/Shift+Alt+L on Windows or Cmd+Option+L/Cmd+Shift+Option+L on Mac.\nTravel in between them using the navigator at the bottom of the code pane, or by pressing Shift+Alt+J on Windows or Cmd+Shift+Option+J on Mac.\nView an outline of the file using the “Outline” button at the top right of the pane and/or the orange hashtag “Section Navigator” button at the bottom left of the pane.\n\n\n\n\n\n\nCollapsed sections, outline view and the section navigator for the example above.\n\n\n\n\nIt is also possible to create subsections by using two hashtags at the start of a comment line:\n\n# First code section ----\na &lt;- 1\n\n## A code subsection ----\nb &lt;- 2\n\n# Second code section ----\nc &lt;- 3\n\n\n\n\n\n\nCode subsections for the example above.\n\n\n\n\nFor a complete list of Code Sections shortcuts, and for further information, see here."
+  },
+  {
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#conclusion",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#conclusion",
+    "title": "How to use Code Sections",
+    "section": "Conclusion",
+    "text": "Conclusion\nCode sections are an easy way to navigate long scripts and foster good commenting practices. They are used extensively in the admiral package, but there is no reason that you cannot start using them yourself in your day-to-day R programming!"
+  },
+  {
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
+    "title": "How to use Code Sections",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-02 17:41:32.591978"
+    "text": "Last updated\n\n2023-08-03 08:36:02.884593"
   },
   {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#details",
-    "href": "posts/2023-07-09_falcon/falcon.html#details",
-    "title": "falcon",
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#details",
+    "title": "How to use Code Sections",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
   },
   {
-    "objectID": "posts/2023-06-28_welcome/index.html",
-    "href": "posts/2023-06-28_welcome/index.html",
-    "title": "Hello pharmaverse",
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html",
+    "title": "Blanks and NAs",
     "section": "",
-    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
+    "text": "Reading in SAS-based datasets (.sas7bdat or xpt) into R has users calling the R package haven. A typical call might invoke read_sas() or read_xpt() to bring in your source data to construct your ADaMs or SDTMs.\nUnfortunately, while using haven the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like is.na in combination with dplyr::filter() to subset data. Check out Bayer’s SAS2R catalog: handling-of-missing-values for more discussion on missing values and NAs.\nIn the admiral package, we have built a simple function called convert_blanks_to_na() to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to NA_character_"
   },
   {
-    "objectID": "posts/2023-06-28_welcome/index.html#purpose",
-    "href": "posts/2023-06-28_welcome/index.html#purpose",
-    "title": "Hello pharmaverse",
-    "section": "",
-    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#loading-packages-and-making-dummy-data",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#loading-packages-and-making-dummy-data",
+    "title": "Blanks and NAs",
+    "section": "Loading Packages and Making Dummy Data",
+    "text": "Loading Packages and Making Dummy Data\n\nlibrary(admiral)\nlibrary(tibble)\nlibrary(dplyr)\n\ndf &lt;- tribble(\n  ~USUBJID, ~RFICDTC,\n  \"01\", \"2000-01-01\",\n  \"02\", \"2001-01-01\",\n  \"03\", \"\", # Here we have a character blank\n  \"04\", \"2001-01--\",\n  \"05\", \"2001---01\",\n  \"05\", \"\", # Here we have a character blank\n)\n\ndf\n\n# A tibble: 6 × 2\n  USUBJID RFICDTC     \n  &lt;chr&gt;   &lt;chr&gt;       \n1 01      \"2000-01-01\"\n2 02      \"2001-01-01\"\n3 03      \"\"          \n4 04      \"2001-01--\" \n5 05      \"2001---01\" \n6 05      \"\""
   },
   {
-    "objectID": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
-    "href": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
-    "title": "Hello pharmaverse",
-    "section": "Spirit of a Blog Post",
-    "text": "Spirit of a Blog Post\nThe CWG believes that the following 4 points will help guide the creation of Blog Posts.\n\nShort\nPersonalized\nReproducible\nReadable\n\nShort: Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.\nPersonalized: Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e. we don’t want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.\nReproducible: Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.\nReadable: The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity."
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#a-simple-conversion",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#a-simple-conversion",
+    "title": "Blanks and NAs",
+    "section": "A simple conversion",
+    "text": "A simple conversion\n\ndf_na &lt;- convert_blanks_to_na(df)\n\ndf_na\n\n# A tibble: 6 × 2\n  USUBJID RFICDTC   \n  &lt;chr&gt;   &lt;chr&gt;     \n1 01      2000-01-01\n2 02      2001-01-01\n3 03      &lt;NA&gt;      \n4 04      2001-01-- \n5 05      2001---01 \n6 05      &lt;NA&gt;      \n\n\n\ndf_na %&gt;% filter(is.na(RFICDTC))\n\n# A tibble: 2 × 2\n  USUBJID RFICDTC\n  &lt;chr&gt;   &lt;chr&gt;  \n1 03      &lt;NA&gt;   \n2 05      &lt;NA&gt;"
   },
   {
-    "objectID": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
-    "href": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
-    "title": "Hello pharmaverse",
-    "section": "What types of posts are allowed on this site?",
-    "text": "What types of posts are allowed on this site?\nOverall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:\n\nPackages in the Clinical Reporting Pipeline\nFunctions from packages in the Clinical Reporting Pipeline\nWider experiences of using R in the Clinical Reporting Pipeline\nConference experiences and the Clinical Reporting Pipeline\n\nHowever, it never hurts to ask if you topic might fit into this medium!\n\nMinimum Post Requirements\n\nA unique image to help showcase the post.\nWorking Code\nSelf-contained data or package data.\nDocumentation of package versions\n\nThat is it! After that you can go wild, but we do ask that it is kept short!"
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#thats-it",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#thats-it",
+    "title": "Blanks and NAs",
+    "section": "That’s it!",
+    "text": "That’s it!\nA simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In admiral, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function use_ad_template() to get the full R script for the below ADaMs.\n\nlist_all_templates()\n\nExisting ADaM templates in package 'admiral':\n• ADAE\n• ADCM\n• ADEG\n• ADEX\n• ADLB\n• ADLBHY\n• ADMH\n• ADPC\n• ADPP\n• ADPPK\n• ADSL\n• ADVS"
   },
   {
-    "objectID": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
-    "href": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
-    "title": "Hello pharmaverse",
-    "section": "How can I make a Blog Post",
-    "text": "How can I make a Blog Post\nStep 1: Reach out to us through pharmaverse/slack or make an issue on our GitHub.\nStep 2: Branch off main\nStep 3: Review the Spirit of the Blog Post in the Pull Request Template\nStep 4: Poke us to do a review!"
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#last-updated",
-    "href": "posts/2023-06-28_welcome/index.html#last-updated",
-    "title": "Hello pharmaverse",
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
+    "title": "Blanks and NAs",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-02 17:41:36.037076"
+    "text": "Last updated\n\n2023-08-03 08:36:07.394749"
   },
   {
-    "objectID": "posts/2023-06-28_welcome/index.html#details",
-    "href": "posts/2023-06-28_welcome/index.html#details",
-    "title": "Hello pharmaverse",
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
+    "title": "Blanks and NAs",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "",
+    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "",
+    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "Example",
+    "text": "Example\nA value level validation use case, where derive_param_computed() is used to validate a derived parameter - PARAMCD = ADPCYMG (Actual Dose per Cycle) in ADEX dataset.\n\nDerivation\nActual Dose per Cycle is derived from the Total Amount of Dose (PARAMCD = TOTDOSE) / Number of Cycles (PARAMCD = NUMCYC)\nIn this example, ADEX.AVAL when ADEX.PARAMCD = ADPCYMG can be derived as:\n\\[\nAVAL (PARAMCD = ADPCYMG) = \\frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCYC)}\n\\]\n\n\nLoading Packages and Creating Example Data\n\nlibrary(tibble)\nlibrary(dplyr)\nlibrary(diffdf)\nlibrary(admiral)\n\nadex &lt;- tribble(\n  ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n  \"101\",     \"TOTDOSE\", \"Total Amount of Dose (mg)\",  180,\n  \"101\",     \"NUMCYC\",  \"Number of Cycles\",           3\n)\n\n\n\nDerive New Parameter\n\nadex_admiral &lt;- derive_param_computed(\n  adex,\n  by_vars = exprs(USUBJID),\n  parameters = c(\"TOTDOSE\", \"NUMCYC\"),\n  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,\n  set_values_to = exprs(\n    PARAMCD = \"ADPCYMG\",\n    PARAM = \"Actual Dose per Cycle (mg)\"\n  )\n)\n\n\n\n# A tibble: 3 × 4\n  USUBJID PARAMCD PARAM                       AVAL\n  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;\n1 101     TOTDOSE Total Amount of Dose (mg)    180\n2 101     NUMCYC  Number of Cycles               3\n3 101     ADPCYMG Actual Dose per Cycle (mg)    60\n\n\n\n\nCompare\nFor validation purpose, the diffdf package is used below to mimic SAS proc compare.\n\nadex_expected &lt;- bind_rows(\n  adex,\n  tribble(\n    ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n    \"101\",     \"ADPCYMG\", \"Actual Dose per Cycle (mg)\", 60\n  )\n)\n\ndiffdf(adex_expected, adex_admiral, keys = c(\"USUBJID\", \"PARAMCD\"))\n\nNo issues were found!"
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-08-03 08:36:10.898986"
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "",
+    "text": "This post is based on a talk given at the regional useR! conference on July 21st 2023 in Basel. I took the opportunity to present my personal perspective on the current cross-industry package development efforts with a particular focus on the transformation of the job description of statistical programmers. As I have only recently started my position at Roche, my personal perspective is the perspective of a newcomer. I have a background in Psychology and Statistics and joined Roche in November 2022 as an intern switching to a permanent position as a statistical programmer – what they call analytical data scientist now – in April 2023. I spend about 20% of my time in such a cross-industry package development project, which was a major reason for applying for this position. In this post I would like to explain how we work in this project, and why this had such an impact on my decision to join Roche."
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#context",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#context",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "Context",
+    "text": "Context\nMy decision was influenced by two current industry trends:\nFirst, the switch to a more language agnostic and open source approach for clinical reporting and data analysis. At the moment, R seems to be the best fitting tool for the job, but the systems used here are language agnostic in general. This is related, but does not necessarily lead to the second trend: The move toward cross-industry collaboration when developing clinical reporting software.\nAs the industry moves toward new (to them) programming languages, fit-for-purpose tools need(ed) to be developed. The realization that siloed solutions – in an area where competitiveness does not benefit patients – are simply resource hungry ways to solve the same problem in parallel provided a great argument for a shift toward collaborations.\nSuch cross-industry collaborations gave rise to the pharmaverse, an opinionated collection of R packages designed to solve clinical reporting in R. {admiral}, the project that I work on, is part of the pharmaverse and covers the creation of ADaM data sets (CDISC standard data). These data sets are subsequently used to produce tables, listings, and graphs and are usually part of the submission package for regulators."
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#insights",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#insights",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "Insights",
+    "text": "Insights\nWhen creating an open source package in an industry where currently there is a lot of traction you have to move fast. No, I don’t mean: Move fast and break things. I mean: Communicate! Get people on board! We aimed {admiral} to be the package for ADaM creation even before deciding to create the package together with GSK. By being transparent about our endeavor, e.g. Thomas Neitmann (then at Roche) posting on LinkedIn, we managed to connect with Micheal Rimler from GSK and soon realized that we were dealing with the exact same challenge at both companies, and that a collaborative effort would improve the final product while reducing individual efforts. A working prototype of {admiral} was to be created by GSK and Roche within six months, and would then be open sourced. In our effort to communicate openly, we informed statistical programmers from over 20 companies about the {admiral} project and invited them to try it out and provide feedback once released. In the end, we received over 500 comments from over 50 programmers.\n\n# check out the latest admiral release from CRAN:\ninstall.packages(\"admiral\")\n\nlibrary(admiral)\n\nThis was instrumental in creating a product that was optimised for general usage in the clinical reporting field and ensured that other companies would not unknowingly invest into their own solution to this challenge. Open sourcing early is particularly beneficial because this ensures from the get-go that code created is aimed at a general audience, and not company specific (perhaps by accident).\n{admiral} was created with the long term goal of having a stable and flexible solution for the clinical reporting pipeline. In that spirit, its permissive apache 2.0 licence (jointly owned by Roche and GSK) further strengthens trust into the project, namely for three reasons:\n\nJointly owned means that efforts to monetize the code-base by one company could be vetoed by the other. The permissive licence ensures that in such an unlikely case, the code-base that has been published would stay available and could always be used and improved upon by others.\nHaving this package backed by Roche and GSK ensures (as far as this is ever possible) funding for properly maintaining the packages. This is crucial, as a package is rarely finished.\n\nUp to now, experts from many more companies have joined {admiral} or one of its therapeutic area specific package-extensions, inspiring even more trust into its reliability. If you would like to learn more about licenses for open source projects in the clinical reporting world please check out the recent E2E guidance on open source license"
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#development-workflow",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#development-workflow",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "Development workflow",
+    "text": "Development workflow\nEvery improvement, task, or feature we want to implement on {admiral} starts as an issue on our GitHub repository. It is the centerpiece of our development workflow, along with our developer guides which describe in detail the strategies, conventions, and workflows used in development. The guides help us keep the {admiral} package internally consistent (e.g. naming conventions, function logic) but also ensure that {admiral} adjacent packages follow the same conventions and share the user interface. This is further helped by the implemented CICD pipeline which ensures styling convention and spelling (and much more).\nThe core package developers team meets once a week (twice a week before a release) to discuss progress and priorities. Here, the role of product lead (currently Edoardo Mancini at Roche) and technical lead (currently Ben Straub at GSK) is to set priorities and track the release schedule. These stand-up meetings are centered around the project-board which gives a complete overview of activities and progress. Issues are mostly self-assigned so developers can really chose what they want to work on.\n\n\n\nGitHub project board\n\n\nBy design, {admiral} is community built. Most developers working on the project are statistical programmers working on clinical reporting themselves. As an open source project, community input is highly valued, and anyone using {admiral} is encouraged to submit issues or take on issues as part of the development team. We also do occasional events to bring the statistical programmers community and the developers closer together. Just last February we organised the {admiral} hackathon which had up to 500 participants."
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#impact",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#impact",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "Impact",
+    "text": "Impact\nFor Roche, cross-industry package development work out in their favor: They get access to software created by specialists and users from across the industry but paying only a fraction of the developmental costs. Of course, they don’t have total developmental control but they do get a seat at the table. Any gaps between the open source {admiral} package and the proprietary Roche workflow were bridged by the internal {admiralRoche} package.\nThe switch towards a more language agnostic platform, and open source languages specifically, opens the door to a broad population of university graduates with diverse backgrounds. I personally would not have considered this position five years ago due to a misalignment of skills and job requirements. Working towards an industry standard open source solution will also ensure that skills learned at one company are more easily transferable to external positions, further making the position much more attractive. Access to such a broad pool of potential candidates is clearly beneficial for recruitment at Roche, but also facilitates diversity in teams which makes for a more interesting and effective work place.\nOpen source development comes with much more transparency by definition. Recognition of contributions are built in - anyone can see who did what. This recognition escapes the confines of your company as it is visible to anyone looking at the repository. Anyone can not only see at any time what is being worked on, what discussions are happening and which direction is being taken, but can also participate and contribute. Transparency also applies to errors in the code and how the team is dealing with them. In such an environment it is practically impossible to hide or cover up errors and corrections. Instead, they have to be dealt with publicly and in the open. This openness about errors also helps seeing errors as a natural occurrence that needs to be dealt with. Space for errors encourages learning and is really beneficial for growing both skills and integrity.\nAs you work on a team that spans multiple companies, traditional corporate hierarchies do not apply. Of course, there will always be a sort of hierarchy of experience or skills, but these work in your favor: You will know who to ask for help, and teams are generally very happy for contributors of any skill level. Contributions also need not be in code: Inputs into discussions and domain knowledge contributions are highly valued as well. The flip-side of working in a team without your manager oversight: They may not be directly aware of the work you do. That’s why you have to write blog posts :)\nThe possibility for statistical programmers to pivot towards developing software or writing blog-posts such as this really transforms and broadens their job description. It is this transformation that is reflected by the choice of Roche to re-brand statistical programmers as analytical data scientists. The fact that cross-industry development is being advocated for really lets programmers expand their network outside of their company.\nThe {admiral} project serves as a testament to the power of collaborative open-source development and the potential it holds for the future of work in this industry."
   }
 ]
