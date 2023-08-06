@@ -9,7 +9,7 @@
 <link>https://pharmaverse.github.io/blog/index.html</link>
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
-<generator>quarto-1.3.433</generator>
+<generator>quarto-1.3.450</generator>
 <lastBuildDate>Tue, 25 Jul 2023 00:00:00 GMT</lastBuildDate>
 <item>
   <title>Cross-Industry Open Source Package Development</title>
@@ -28,12 +28,12 @@
 <p>My decision was influenced by two current industry trends:</p>
 <p>First, the switch to a more language agnostic and open source approach for clinical reporting and data analysis. At the moment, R seems to be the best fitting tool for the job, but the systems used here are language agnostic in general. This is related, but does not necessarily lead to the second trend: The move toward cross-industry collaboration when developing clinical reporting software.</p>
 <p>As the industry moves toward new (to them) programming languages, fit-for-purpose tools need(ed) to be developed. The realization that siloed solutions – in an area where competitiveness does not benefit patients – are simply resource hungry ways to solve the same problem in parallel provided a great argument for a shift toward collaborations.</p>
-<p>Such cross-industry collaborations gave rise to the pharmaverse, an opinionated collection of R packages designed to solve clinical reporting in R. <a href="https://github.com/pharmaverse/admiral">{admiral}</a>, the project that I work on, is part of the <a href="https://pharmaverse.github.io/admiraldev/devel/index.html">pharmaverse</a> and covers the creation of ADaM data sets (CDISC standard data). These data sets are subsequently used to produce tables, listings, and graphs and are usually part of the submission package for regulators.<br>
+<p>Such cross-industry collaborations gave rise to the pharmaverse, a curated collection of R packages designed to solve clinical reporting in R. <a href="https://github.com/pharmaverse/admiral">{admiral}</a>, the project that I work on, is part of the <a href="https://pharmaverse.org/">pharmaverse</a> and covers the creation of ADaM data sets (CDISC standard data). These data sets are subsequently used to produce tables, listings, and graphs and are usually part of the submission package for regulators.<br>
 <!-- You can read about the inception of [{admiral}](https://github.com/pharmaverse/admiral) in [this recent blog post by ...](). --></p>
 </section>
 <section id="insights" class="level2">
 <h2 class="anchored" data-anchor-id="insights">Insights</h2>
-<p>When creating an open source package in an industry where currently there is a lot of traction you have to move fast. No, I don’t mean: Move fast and break things. I mean: Communicate! Get people on board! We aimed <a href="https://github.com/pharmaverse/admiral">{admiral}</a> to be <strong>the</strong> package for ADaM creation even before deciding to create the package together with GSK. By being transparent about our endeavor, e.g.&nbsp;Thomas Neitmann (then at Roche) posting on LinkedIn, we managed to connect with Micheal Rimler from GSK and soon realized that we were dealing with the exact same challenge at both companies, and that a collaborative effort would improve the final product while reducing individual efforts. A working prototype of <a href="https://github.com/pharmaverse/admiral">{admiral}</a> was to be created by GSK and Roche within six months, and would then be open sourced. In our effort to communicate openly, we informed statistical programmers from over 20 companies about the <a href="https://github.com/pharmaverse/admiral">{admiral}</a> project and invited them to try it out and provide feedback once released. In the end, we received over 500 comments from over 50 programmers.</p>
+<p>When creating an open source package in an industry where currently there is a lot of traction you have to move fast. No, I don’t mean: Move fast and break things. I mean: Communicate! Get people on board! We aimed <a href="https://github.com/pharmaverse/admiral">{admiral}</a> to be <strong>the</strong> package for ADaM creation even before deciding to create the package together with GSK. By being transparent about our endeavor, e.g.&nbsp;Thomas Neitmann (then at Roche) posting on LinkedIn, we managed to connect with Michael Rimler from GSK and soon realized that we were dealing with the exact same challenge at both companies, and that a collaborative effort would improve the final product while reducing individual efforts. A working prototype of <a href="https://github.com/pharmaverse/admiral">{admiral}</a> was to be created by GSK and Roche within six months, and would then be open sourced. In our effort to communicate openly, we informed statistical programmers from over 20 companies about the <a href="https://github.com/pharmaverse/admiral">{admiral}</a> project and invited them to try it out and provide feedback once released. In the end, we received over 500 comments from over 50 programmers.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -53,8 +53,9 @@ font-style: inherit;">library</span>(admiral)</span></code></pre></div>
 <ul>
 <li><p>Jointly owned means that efforts to monetize the code-base by one company could be vetoed by the other. The permissive licence ensures that in such an unlikely case, the code-base that has been published would stay available and could always be used and improved upon by others.</p></li>
 <li><p>Having this package backed by Roche and GSK ensures (as far as this is ever possible) funding for properly maintaining the packages. This is crucial, as a package is rarely <strong>finished</strong>.</p></li>
+<li><p>Up to now, experts from many more companies have joined <a href="https://github.com/pharmaverse/admiral">{admiral}</a> or one of its therapeutic area specific package-extensions, inspiring even more trust into its reliability.</p></li>
 </ul>
-<p>Up to now, experts from many more companies have joined <a href="https://github.com/pharmaverse/admiral">{admiral}</a> or one of its therapeutic area specific package-extensions, inspiring even more trust into its reliability. If you would like to learn more about licenses for open source projects in the clinical reporting world please check out the <a href="https://phuse-org.github.io/E2E-OS-Guidance/">recent E2E guidance on open source license</a></p>
+<p>If you would like to learn more about licenses for open source projects in the clinical reporting world please check out the <a href="https://phuse-org.github.io/E2E-OS-Guidance/">recent PHUSE E2E Guidance on open source license</a></p>
 </section>
 <section id="development-workflow" class="level2">
 <h2 class="anchored" data-anchor-id="development-workflow">Development workflow</h2>
@@ -70,7 +71,7 @@ font-style: inherit;">library</span>(admiral)</span></code></pre></div>
 </section>
 <section id="impact" class="level2">
 <h2 class="anchored" data-anchor-id="impact">Impact</h2>
-<p>For Roche, cross-industry package development work out in their favor: They get access to software created by specialists and users from across the industry but paying only a fraction of the developmental costs. Of course, they don’t have total developmental control but they do get a seat at the table. Any gaps between the open source <a href="https://github.com/pharmaverse/admiral">{admiral}</a> package and the proprietary Roche workflow were bridged by the internal {admiralRoche} package.</p>
+<p>For Roche, cross-industry package development work out in their favor: They get access to software created by specialists and users from across the industry but paying only a fraction of the developmental costs. Of course, they don’t have total developmental control but they do get a seat at the table. Any gaps between the open source <a href="https://github.com/pharmaverse/admiral">{admiral}</a> package and the proprietary Roche workflow were bridged by the internal {admiralroche} package.</p>
 <p>The switch towards a more language agnostic platform, and open source languages specifically, opens the door to a broad population of university graduates with diverse backgrounds. I personally would not have considered this position five years ago due to a misalignment of skills and job requirements. Working towards an industry standard open source solution will also ensure that skills learned at one company are more easily transferable to external positions, further making the position much more attractive. Access to such a broad pool of potential candidates is clearly beneficial for recruitment at Roche, but also facilitates diversity in teams which makes for a more interesting and effective work place.</p>
 <p>Open source development comes with much more transparency by definition. Recognition of contributions are built in - anyone can see who did what. This recognition escapes the confines of your company as it is visible to anyone looking at the repository. Anyone can not only see at any time what is being worked on, what discussions are happening and which direction is being taken, but can also participate and contribute. Transparency also applies to errors in the code and how the team is dealing with them. In such an environment it is practically impossible to hide or cover up errors and corrections. Instead, they have to be dealt with publicly and in the open. This openness about errors also helps seeing errors as a natural occurrence that needs to be dealt with. Space for errors encourages learning and is really beneficial for growing both skills and integrity.</p>
 <p>As you work on a team that spans multiple companies, traditional corporate hierarchies do not apply. Of course, there will always be a sort of hierarchy of experience or skills, but these work in your favor: You will know who to ask for help, and teams are generally very happy for contributors of any skill level. Contributions also need not be in code: Inputs into discussions and domain knowledge contributions are highly valued as well. The flip-side of working in a team without your manager oversight: They may not be directly aware of the work you do. That’s why you have to write blog posts :)</p>
@@ -245,7 +246,7 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-03 08:36:02.884593</p>
+<p>2023-08-06 15:17:53.028601</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
@@ -428,7 +429,7 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-03 08:36:07.394749</p>
+<p>2023-08-06 15:17:55.280036</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
@@ -488,7 +489,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-03 08:36:08.887668</p>
+<p>2023-08-06 15:17:51.269925</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -578,7 +579,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-03 08:36:12.349664</p>
+<p>2023-08-06 15:17:56.865402</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -1460,7 +1461,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-03 08:36:04.907127</p>
+<p>2023-08-06 15:18:00.643539</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -1680,7 +1681,7 @@ font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-03 08:36:10.898986</p>
+<p>2023-08-06 15:18:03.432515</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
@@ -1774,7 +1775,7 @@ Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-03 08:36:17.555151</p>
+<p>2023-08-06 15:18:07.803089</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
