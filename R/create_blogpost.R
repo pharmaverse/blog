@@ -15,12 +15,12 @@ c(
 
 # Fill in the info, e.g.:
 create_post(
-  post_name = "falcon", # needs to be character vector (length 1)
-  post_date = "2023-07-09", # needs to be character vector (length 1)
+  post_name = "study_day", # needs to be character vector (length 1)
+  post_date = "2023-08-08", # needs to be character vector (length 1)
   description = "", # you can fill the description in later as well
-  author = c("Vincent Shen"), # one or more authors are permitted
-  cover_image = "falcon", # chose one of the above (see line 8)
-  tags = c("falcon", "displays") # chose (multiple) from line 10
+  author = c("Ben Straub"), # one or more authors are permitted
+  cover_image = "admiral", # chose one of the above (see line 8)
+  tags = c("admiral", "ADaMs") # chose (multiple) from line 10
 )
 
 
