@@ -34,7 +34,7 @@ library(dplyr)
 adam <- tribble(
   ~USUBJID, ~TRTSDTM, ~ASTDTM, ~AENDT,
   "001", "2014-01-17T23:59:59", "2014-01-18T13:09:O9", "2014-01-20",
-  "002", "2014-02-25T23:59:59", "2014-03-18T14:09:O9", "2014-03-11",
+  "002", "2014-02-25T23:59:59", "2014-03-18T14:09:O9", "2014-03-24",
   "003", "2014-02-12T23:59:59", "2014-02-18T11:03:O9", "2014-04-17",
   "004", "2014-03-17T23:59:59", "2014-03-19T13:09:O9", "2014-05-04"
 ) %>%
@@ -45,7 +45,10 @@ adam <- tribble(
   )
 ```
 
-Okay! Next we run our dataset through `derive_vars_dy()`, specifying the `reference_date` of the variable you want the calculation to be done against and the `source_vars`argument with the variables to help calculate the relative days.  
+Okay! Next we run our dataset through `derive_vars_dy()`, specifying:
+
+* the reference date of the variable we want the calculation to be done against (`reference_date` argument);
+* the variables required to help calculate the relative days (`source_vars` argument). 
 
 ```{r}
 derive_vars_dy(
@@ -59,7 +62,7 @@ That's it!  We got both our `ASTDY` and `AENDY` variables in only a few short li
 
 What if I want my variables to have a different naming convention?
 
-Easy! In the `source_vars` argument if you want your variables to be called `DEMOADY` and `DEMOEDY`  just do `DEMOADY = ASTDTM` and `DEMOEDY = AENDT` and `derive_vars_day()` will do the rest!
+Easy! In the `source_vars` argument if you want your variables to be called `DEMOADY` and `DEMOEDY`  just do `DEMOADY = ASTDTM` and `DEMOEDY = AENDT` and `derive_vars_dy()` will do the rest!
 
 ```{r}
 derive_vars_dy(
