@@ -10,7 +10,199 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.450</generator>
-<lastBuildDate>Tue, 25 Jul 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 08 Aug 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>It’s all relative? - Calculating Relative Days using admiral</title>
+  <dc:creator>Ben Straub</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/study_day.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>Creating <code>--DY</code> variables for your ADaMs is super easy using <a href="https://pharmaverse.github.io/admiral/v0.11.1/reference/derive_vars_dy.html"><code>derive_vars_dy()</code></a> from the <a href="https://pharmaverse.github.io/admiral/cran-release/">admiral package</a>.</p>
+<p>Let’s build some dummy data with 4 subjects, a start date/time for treatment (<code>TRTSDTM</code>), an analysis start date/time variable (<code>ASTDTM</code>) and an analysis end date variable (<code>AENDT</code>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(lubridate)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb1-4"></span>
+<span id="cb1-5">adam <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb1-6">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>TRTSDTM, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>ASTDTM, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AENDT,</span>
+<span id="cb1-7">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"001"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-01-17T23:59:59"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-01-18T13:09:O9"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-01-20"</span>,</span>
+<span id="cb1-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"002"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-02-25T23:59:59"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-03-18T14:09:O9"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-03-24"</span>,</span>
+<span id="cb1-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"003"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-02-12T23:59:59"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-02-18T11:03:O9"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-04-17"</span>,</span>
+<span id="cb1-10">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"004"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-03-17T23:59:59"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-03-19T13:09:O9"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-05-04"</span></span>
+<span id="cb1-11">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb1-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb1-13">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">TRTSDTM =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_datetime</span>(TRTSDTM),</span>
+<span id="cb1-14">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ASTDTM =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_datetime</span>(ASTDTM),</span>
+<span id="cb1-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">AENDT =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(AENDT)</span>
+<span id="cb1-16">  )</span></code></pre></div>
+</div>
+<p>Okay! Next we run our dataset through <code>derive_vars_dy()</code>, specifying:</p>
+<ul>
+<li>the reference date of the variable we want the calculation to be done against (<code>reference_date</code> argument);</li>
+<li>the variables required to help calculate the relative days (<code>source_vars</code> argument).</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_dy</span>(</span>
+<span id="cb2-2">  adam,</span>
+<span id="cb2-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">reference_date =</span> TRTSDTM,</span>
+<span id="cb2-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">source_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(ASTDTM, AENDT)</span>
+<span id="cb2-5">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 6
+  USUBJID TRTSDTM             ASTDTM              AENDT      ASTDY AENDY
+  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;
+1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20     2     4
+2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24    22    28
+3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17     7    65
+4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04     3    49</code></pre>
+</div>
+</div>
+<p>That’s it! We got both our <code>ASTDY</code> and <code>AENDY</code> variables in only a few short lines of code!</p>
+<p>What if I want my variables to have a different naming convention?</p>
+<p>Easy! In the <code>source_vars</code> argument if you want your variables to be called <code>DEMOADY</code> and <code>DEMOEDY</code> just do <code>DEMOADY = ASTDTM</code> and <code>DEMOEDY = AENDT</code> and <code>derive_vars_dy()</code> will do the rest!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_dy</span>(</span>
+<span id="cb4-2">  adam,</span>
+<span id="cb4-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">reference_date =</span> TRTSDTM,</span>
+<span id="cb4-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">source_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">DEMOADY =</span> ASTDTM, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">DEMOEDY =</span> AENDT)</span>
+<span id="cb4-5">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 6
+  USUBJID TRTSDTM             ASTDTM              AENDT      DEMOADY DEMOEDY
+  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;       &lt;dbl&gt;   &lt;dbl&gt;
+1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20       2       4
+2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24      22      28
+3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17       7      65
+4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04       3      49</code></pre>
+</div>
+</div>
+<p>If you want to get <code>--DT</code> or <code>--DTM</code> variables using <code>admiral</code> then check out <a href="https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dt.html"><code>derive_vars_dt()</code></a> and <a href="https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dtm.html"><code>derive_vars_dtm()</code></a>. If things are messy in your data, e.g.&nbsp;partial dates, both functions have great imputation abilities, which we will cover in an upcoming blog post!</p>
+<!--------------- appendices go here ----------------->
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-08-08 12:54:53.370004</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
+  author = {Straub, Ben},
+  title = {It’s All Relative? - {Calculating} {Relative} {Days} Using
+    Admiral},
+  date = {2023-08-08},
+  url = {https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/study_day.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2023" class="csl-entry quarto-appendix-citeas">
+Straub, Ben. 2023. <span>“It’s All Relative? - Calculating Relative Days
+Using Admiral.”</span> August 8, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/study_day.html">https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/study_day.html</a>.
+</div></div></section></div> ]]></description>
+  <category>admiral</category>
+  <category>ADaMs</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/study_day.html</guid>
+  <pubDate>Tue, 08 Aug 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/admiral.png" medium="image" type="image/png" height="108" width="144"/>
+</item>
 <item>
   <title>Cross-Industry Open Source Package Development</title>
   <dc:creator>Stefan Thoma</dc:creator>
@@ -246,7 +438,7 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-06 15:17:53.028601</p>
+<p>2023-08-08 12:54:40.832809</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
@@ -429,7 +621,7 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-06 15:17:55.280036</p>
+<p>2023-08-08 12:54:43.505435</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
@@ -489,7 +681,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-06 15:17:51.269925</p>
+<p>2023-08-08 12:54:38.796232</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -579,7 +771,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-06 15:17:56.865402</p>
+<p>2023-08-08 12:54:45.373951</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -1461,7 +1653,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-06 15:18:00.643539</p>
+<p>2023-08-08 12:54:50.081647</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -1681,7 +1873,7 @@ font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-06 15:18:03.432515</p>
+<p>2023-08-08 12:54:56.091925</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
@@ -1775,7 +1967,7 @@ Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-06 15:18:07.803089</p>
+<p>2023-08-08 12:55:01.044249</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
