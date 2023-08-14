@@ -1,0 +1,87 @@
+---
+title: "It's all relative? - Calculating Relative Days using admiral"
+author:
+  - name: Ben Straub
+description: ""
+date: "2023-08-08"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [admiral, ADaMs]
+# feel free to change the image
+image: "admiral.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2023-08-08_study_day"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here -----------------> 
+
+Creating `--DY` variables for your ADaMs is super easy using  [`derive_vars_dy()`](https://pharmaverse.github.io/admiral/v0.11.1/reference/derive_vars_dy.html) from the [admiral package](https://pharmaverse.github.io/admiral/cran-release/).
+
+
+Let's build some dummy data with 4 subjects, a start date/time for treatment (`TRTSDTM`), an analysis start date/time variable (`ASTDTM`) and an analysis end date variable (`AENDT`).
+
+```{r, message = FALSE}
+library(admiral)
+library(lubridate)
+library(dplyr)
+
+adam <- tribble(
+  ~USUBJID, ~TRTSDTM, ~ASTDTM, ~AENDT,
+  "001", "2014-01-17T23:59:59", "2014-01-18T13:09:O9", "2014-01-20",
+  "002", "2014-02-25T23:59:59", "2014-03-18T14:09:O9", "2014-03-24",
+  "003", "2014-02-12T23:59:59", "2014-02-18T11:03:O9", "2014-04-17",
+  "004", "2014-03-17T23:59:59", "2014-03-19T13:09:O9", "2014-05-04"
+) %>%
+  mutate(
+    TRTSDTM = as_datetime(TRTSDTM),
+    ASTDTM = as_datetime(ASTDTM),
+    AENDT = ymd(AENDT)
+  )
+```
+
+Okay! Next we run our dataset through `derive_vars_dy()`, specifying:
+
+* the reference date of the variable we want the calculation to be done against (`reference_date` argument);
+* the variables required to help calculate the relative days (`source_vars` argument). 
+
+```{r}
+derive_vars_dy(
+  adam,
+  reference_date = TRTSDTM,
+  source_vars = exprs(ASTDTM, AENDT)
+)
+```
+
+That's it!  We got both our `ASTDY` and `AENDY` variables in only a few short lines of code!  
+
+What if I want my variables to have a different naming convention?
+
+Easy! In the `source_vars` argument if you want your variables to be called `DEMOADY` and `DEMOEDY`  just do `DEMOADY = ASTDTM` and `DEMOEDY = AENDT` and `derive_vars_dy()` will do the rest!
+
+```{r}
+derive_vars_dy(
+  adam,
+  reference_date = TRTSDTM,
+  source_vars = exprs(DEMOADY = ASTDTM, DEMOEDY = AENDT)
+)
+```
+
+
+If you want to get `--DT` or `--DTM` variables using `admiral` then check out [`derive_vars_dt()`](https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dt.html) and [`derive_vars_dtm()`](https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dtm.html). If things are messy in your data, e.g. partial dates, both functions have great imputation abilities, which we will cover in an upcoming blog post!
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug
+)
+```
