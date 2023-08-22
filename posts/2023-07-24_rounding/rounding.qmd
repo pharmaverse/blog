@@ -32,8 +32,8 @@ However, they use different approaches when rounding off a 5:
 
 Although base R does not have the option for "round half up", there are functions available in other R packages (e.g., `janitor`, `tidytlg`).
 
-
-In general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.
+In general, there are many often used rounding methods.
+In the table below, you can find examples of them applied to the number 1.45.
 
 +---------------+----------------------------+----------------------------+----------+------------+--------------------+
 |               | round half up              | round to even              | round up | round down | round towards zero |
@@ -53,14 +53,15 @@ Here are the corresponding ways to implement these methods in SAS and R.
 | R       | ::: {style="background-color: yellow"} | <div>           | <div>             | <div>           | <div>              |
 |         | `janitor::round_half_up()`             |                 |                   |                 |                    |
 |         |                                        | `base::round()` | `base::ceiling()` | `base::floor()` | `base::trunc()`    |
-|         | <div>                                  |                 |                   |                 |                    |
-|         |                                        | </div>          | </div>            | </div>          | </div>             |
+|         | ::: {style="background-color: yellow"} |                 |                   |                 |                    |
+|         | <div>                                  | </div>          | </div>            | </div>          | </div>             |
+|         |                                        |                 |                   |                 |                    |
 |         | `tidytlg::roundSAS()`                  |                 |                   |                 |                    |
 |         |                                        |                 |                   |                 |                    |
 |         | </div>                                 |                 |                   |                 |                    |
 |         | :::                                    |                 |                   |                 |                    |
+|         | :::                                    |                 |                   |                 |                    |
 +---------+----------------------------------------+-----------------+-------------------+-----------------+--------------------+
-
 
 This table is summarized from links below, where more detailed discussions can be found -
 
@@ -76,7 +77,8 @@ This table is summarized from links below, where more detailed discussions can b
 The motivation for having a 'round half up' function is clear: it's a widely used rounding method, but there are no such options available in base R.
 
 There are multiple forums that have discussed this topic, and quite a few functions already available.
-But which one to choose?
+But which ones to choose?
+Are they safe options?
 
 The first time I needed to round half up in R, I chose the function from a [PHUSE paper](https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf) and applied it to my study.
 It works fine for a while until I encountered the following precision issue when double programming in R for TLGs made in SAS.
@@ -143,9 +145,7 @@ The same issue occurred in the following functions/options as well, and has been
 -   \...
     and many others!
 
-### Which one to use?
-
-After reading this post, I hope it will help you save some time identifying which functions are safe to use for rounding half up.
+### Which ones to use?
 
 The following functions have the precision issue mentioned above fixed, they all share the same logic from this [StackOverflow post](https://stackoverflow.com/questions/12688717/round-up-from-5).
 
@@ -156,6 +156,55 @@ The following functions have the precision issue mentioned above fixed, they all
     -   `round_up_from()` has a `threshold` argument for rounding up, which adds flexibility for rounding up
 
     -   `round_up()` rounds up from 5, which is a special case of `round_up_from()`
+
+### Are they safe options?
+
+Those "round half up" functions do not offer the same level of precision and accuracy as the base R round function.
+
+For example, let's consider a value `a` that is slightly less than `1.5`.
+If we choose round half up approach to round `a` to 0 decimal places, an output of `1` is expected.
+However, those functions yield a result of `2` because `1.5 - a` is less than `sqrt(.Machine$double.eps)`.
+
+```{r, message = FALSE}
+a <- 1.5 - 0.5*sqrt(.Machine$double.eps)
+ut_round1(a, 0)
+janitor::round_half_up(a, digits = 0)
+```
+
+This behavior aligns the floating point number comparison functions `all.equal()` and `dplyr::near()` with default tolerance `.Machine$double.eps^0.5`, where 1.5 and `a` are treated as equal.
+
+```{r, message = FALSE}
+all.equal(a, 1.5)
+dplyr::near(a, 1.5)
+```
+
+We can get the expected results from base R `round` as it provides greater accuracy.
+
+```{r, message = FALSE}
+round(a)
+```
+
+Here is an example when base R `round` reaches the precision limit:
+
+```{r, message=FALSE}
+# b is slightly less than 1.5
+b <- 1.5 - 0.5*.Machine$double.eps
+# 1 is expected but the result is 2 
+round(b)
+```
+
+The precision and accuracy requirements can vary depending on the application.
+Therefore, it is essential to be aware each function's performance in your specific context before making a choice.
+
+## Conclusion
+
+> With the differences in default behaviour across languages, you could consider your QC strategy and whether an acceptable level of fuzz in the electronic comparisons could be allowed for cases such as rounding when making comparisons between 2 codes written in different languages as long as this is documented.
+> Alternatively you could document the exact rounding approach to be used in the SAP and then match this regardless of programming language used.
+> - Ross Farrugia
+
+Thanks Ross Farrugia, Ben Straub, Edoardo Mancini and Liming for reviewing this blog post and providing valuable feedback!
+
+If you spot an issue or have different opinions, please don't hesitate to raise them through [pharmaverse/blog](https://github.com/pharmaverse/blog)!
 
 <!--------------- appendices go here ----------------->
 
