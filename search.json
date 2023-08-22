@@ -1,5 +1,159 @@
 [
   {
+    "objectID": "posts/2023-07-24_rounding/rounding.html",
+    "href": "posts/2023-07-24_rounding/rounding.html",
+    "title": "Rounding",
+    "section": "",
+    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even, which matches SAS’s rounde() function.\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#rounding-methods",
+    "href": "posts/2023-07-24_rounding/rounding.html#rounding-methods",
+    "title": "Rounding",
+    "section": "",
+    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even, which matches SAS’s rounde() function.\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#round-half-up-in-r",
+    "href": "posts/2023-07-24_rounding/rounding.html#round-half-up-in-r",
+    "title": "Rounding",
+    "section": "Round half up in R",
+    "text": "Round half up in R\nThe motivation for having a ‘round half up’ function is clear: it’s a widely used rounding method, but there are no such options available in base R.\nThere are multiple forums that have discussed this topic, and quite a few functions already available. But which ones to choose? Are they safe options?\nThe first time I needed to round half up in R, I chose the function from a PHUSE paper and applied it to my study. It works fine for a while until I encountered the following precision issue when double programming in R for TLGs made in SAS.\n\nNumerical precision issue\nExample of rounding half up for 2436.845, with 2 decimal places:\n\n# a function that rounds half up\n# exact copy from: https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf\nut_round &lt;- function(x, n = 0) {\n  # x is the value to be rounded\n  # n is the precision of the rounding\n  scale &lt;- 10^n\n  y &lt;- trunc(x * scale + sign(x) * 0.5) / scale\n  # Return the rounded number\n  return(y)\n}\n# round half up for 2436.845, with 2 decimal places\nut_round(2436.845, 2)\n\n[1] 2436.84\n\n\nThe expected result is 2436.85, but the output rounds it down. Thanks to the community effort, there are already discussions and resolution available in a StackOverflow post -\n\nThere are numerical precision issues, e.g., round2(2436.845, 2) returns 2436.84. Changing z + 0.5 to z + 0.5 + sqrt(.Machine$double.eps) seems to work for me. – Gregor Thomas Jun 24, 2020 at 2:16\n\n\n.Machine$double.eps is a built-in constant in R that represents the smallest positive floating-point number that can be represented on the system (reference: Machine Characteristics)\nThe expression + sqrt(.Machine$double.eps) is used to add a very small value to mitigate floating-point precision issues.\nFor more information about computational precision and floating-point, see the following links -\n\nR: Why doesn’t R think these numbers are equal?\nSAS: Numerical Accuracy in SAS Software\n\n\nAfter the fix:\n\n# revised rounds half up\nut_round1 &lt;- function(x, n = 0) {\n  # x is the value to be rounded\n  # n is the precision of the rounding\n  scale &lt;- 10^n\n  y &lt;- trunc(x * scale + sign(x) * 0.5 + sqrt(.Machine$double.eps)) / scale\n  # Return the rounded number\n  return(y)\n}\n# round half up for 2436.845, with 2 decimal places\nut_round1(2436.845, 2)\n\n[1] 2436.85\n\n\n\n\nWe are not alone\nThe same issue occurred in the following functions/options as well, and has been raised by users:\n\njanitor::round_half_up(): issue was raised and fixed in v2.1.0\nTplyr: options(tplyr.IBMRounding = TRUE), issue was raised\nscrutiny::round_up_from()/round_up(): issue was raised and fixed\n... and many others!\n\n\n\nWhich ones to use?\nThe following functions have the precision issue mentioned above fixed, they all share the same logic from this StackOverflow post.\n\njanitor::round_half_up() version &gt;= 2.1.0\ntidytlg::roundSAS()\n\nthis function has two more arguments that can convert the result to character and allow a character string to indicate missing values\n\nscrutiny::round_up_from()/round_up() version &gt;= 0.2.5\n\nround_up_from() has a threshold argument for rounding up, which adds flexibility for rounding up\nround_up() rounds up from 5, which is a special case of round_up_from()\n\n\n\n\nAre they safe options?\nThose “round half up” functions do not offer the same level of precision and accuracy as the base R round function.\nFor example, let’s consider a value a that is slightly less than 1.5. If we choose round half up approach to round a to 0 decimal places, an output of 1 is expected. However, those functions yield a result of 2 because 1.5 - a is less than sqrt(.Machine$double.eps).\n\na &lt;- 1.5 - 0.5 * sqrt(.Machine$double.eps)\nut_round1(a, 0)\n\n[1] 2\n\njanitor::round_half_up(a, digits = 0)\n\n[1] 2\n\n\nThis behavior aligns the floating point number comparison functions all.equal() and dplyr::near() with default tolerance .Machine$double.eps^0.5, where 1.5 and a are treated as equal.\n\nall.equal(a, 1.5)\n\n[1] TRUE\n\ndplyr::near(a, 1.5)\n\n[1] TRUE\n\n\nWe can get the expected results from base R round as it provides greater accuracy.\n\nround(a)\n\n[1] 1\n\n\nHere is an example when base R round reaches the precision limit:\n\n# b is slightly less than 1.5\nb &lt;- 1.5 - 0.5 * .Machine$double.eps\n# 1 is expected but the result is 2\nround(b)\n\n[1] 2\n\n\nThe precision and accuracy requirements can vary depending on the application. Therefore, it is essential to be aware each function’s performance in your specific context before making a choice."
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#conclusion",
+    "href": "posts/2023-07-24_rounding/rounding.html#conclusion",
+    "title": "Rounding",
+    "section": "Conclusion",
+    "text": "Conclusion\n\nWith the differences in default behaviour across languages, you could consider your QC strategy and whether an acceptable level of fuzz in the electronic comparisons could be allowed for cases such as rounding when making comparisons between 2 codes written in different languages as long as this is documented. Alternatively you could document the exact rounding approach to be used in the SAP and then match this regardless of programming language used. - Ross Farrugia\n\nThanks Ross Farrugia, Ben Straub, Edoardo Mancini and Liming for reviewing this blog post and providing valuable feedback!\nIf you spot an issue or have different opinions, please don’t hesitate to raise them through pharmaverse/blog!"
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#last-updated",
+    "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
+    "title": "Rounding",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-08-22 13:59:11.88039"
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#details",
+    "href": "posts/2023-07-24_rounding/rounding.html#details",
+    "title": "Rounding",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-08-08_study_day/study_day.html",
+    "href": "posts/2023-08-08_study_day/study_day.html",
+    "title": "It’s all relative? - Calculating Relative Days using admiral",
+    "section": "",
+    "text": "Creating --DY variables for your ADaMs is super easy using derive_vars_dy() from the admiral package.\nLet’s build some dummy data with 4 subjects, a start date/time for treatment (TRTSDTM), an analysis start date/time variable (ASTDTM) and an analysis end date variable (AENDT).\nlibrary(admiral)\nlibrary(lubridate)\nlibrary(dplyr)\n\nadam &lt;- tribble(\n  ~USUBJID, ~TRTSDTM, ~ASTDTM, ~AENDT,\n  \"001\", \"2014-01-17T23:59:59\", \"2014-01-18T13:09:O9\", \"2014-01-20\",\n  \"002\", \"2014-02-25T23:59:59\", \"2014-03-18T14:09:O9\", \"2014-03-24\",\n  \"003\", \"2014-02-12T23:59:59\", \"2014-02-18T11:03:O9\", \"2014-04-17\",\n  \"004\", \"2014-03-17T23:59:59\", \"2014-03-19T13:09:O9\", \"2014-05-04\"\n) %&gt;%\n  mutate(\n    TRTSDTM = as_datetime(TRTSDTM),\n    ASTDTM = as_datetime(ASTDTM),\n    AENDT = ymd(AENDT)\n  )\nOkay! Next we run our dataset through derive_vars_dy(), specifying:\nderive_vars_dy(\n  adam,\n  reference_date = TRTSDTM,\n  source_vars = exprs(ASTDTM, AENDT)\n)\n\n# A tibble: 4 × 6\n  USUBJID TRTSDTM             ASTDTM              AENDT      ASTDY AENDY\n  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20     2     4\n2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24    22    28\n3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17     7    65\n4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04     3    49\nThat’s it! We got both our ASTDY and AENDY variables in only a few short lines of code!\nWhat if I want my variables to have a different naming convention?\nEasy! In the source_vars argument if you want your variables to be called DEMOADY and DEMOEDY just do DEMOADY = ASTDTM and DEMOEDY = AENDT and derive_vars_dy() will do the rest!\nderive_vars_dy(\n  adam,\n  reference_date = TRTSDTM,\n  source_vars = exprs(DEMOADY = ASTDTM, DEMOEDY = AENDT)\n)\n\n# A tibble: 4 × 6\n  USUBJID TRTSDTM             ASTDTM              AENDT      DEMOADY DEMOEDY\n  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;       &lt;dbl&gt;   &lt;dbl&gt;\n1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20       2       4\n2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24      22      28\n3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17       7      65\n4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04       3      49\nIf you want to get --DT or --DTM variables using admiral then check out derive_vars_dt() and derive_vars_dtm(). If things are messy in your data, e.g. partial dates, both functions have great imputation abilities, which we will cover in an upcoming blog post!"
+  },
+  {
+    "objectID": "posts/2023-08-08_study_day/study_day.html#last-updated",
+    "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
+    "title": "It’s all relative? - Calculating Relative Days using admiral",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-08-22 13:59:06.057818"
+  },
+  {
+    "objectID": "posts/2023-08-08_study_day/study_day.html#details",
+    "href": "posts/2023-08-08_study_day/study_day.html#details",
+    "title": "It’s all relative? - Calculating Relative Days using admiral",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html",
+    "href": "posts/2023-07-09_falcon/falcon.html",
+    "title": "falcon",
+    "section": "",
+    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
+    "href": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
+    "title": "falcon",
+    "section": "",
+    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
+    "href": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
+    "title": "falcon",
+    "section": "Why do we build it?",
+    "text": "Why do we build it?\nThe collaborative effort focuses on improving the clarity, consistency, and accessibility of TLGs by addressing variations and redundancies in their creation and use. This harmonized approach allows for streamlined reporting processes and facilitates effective communication of study results within the industry and to regulatory authorities."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
+    "href": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
+    "title": "falcon",
+    "section": "What has been done so far?",
+    "text": "What has been done so far?\nDrawing inspiration from the FDA Standard Safety Tables and Figures Integrated Guide, the {falcon} initiative has successfully developed and open-sourced 11 templates to date. 4 product owners and 11 developers from 4 companies have collaborated to make these templates available and also published them on the official {falcon} website at https://pharmaverse.github.io/falcon/."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
+    "href": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
+    "title": "falcon",
+    "section": "Next steps & vision",
+    "text": "Next steps & vision\nFuture plans for {falcon} involve expanding the catalog through continuous collaboration from participating companies and inviting wider industry engagement. The ultimate goal is to promote harmonization of TLGs for clinical reporting across the pharmaceutical industry, leading to greater efficiency, collaboration, and innovation. Even though templates currently come from a published FDA guide, the collaborating companies are open to share and discuss similarities and differences on analysis concepts and output layouts of their own implementations in clinical reporting, for both safety and efficacy analyses.\nIn addition, while currently all templates were built using {rtables}, {tern}, {rlistings} and drew inspiration from the open-sourced TLG-Catalog, moving forward, we plan to support creating the same templates using alternative table engines such as {gt}.\n{falcon} will be presented at the upcoming PHUSE EU (Standards Implementation stream), where we will share the collaboration journey of {falcon} so far, providing more details on the current progress, long-term vision, and strategies for this initiative. Attendees will gain insights into the challenges and opportunities of harmonizing clinical reporting through open-source collaboration and learn about the potential benefits and future direction of {falcon}."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#last-updated",
+    "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
+    "title": "falcon",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-08-22 13:59:00.532079"
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#details",
+    "href": "posts/2023-07-09_falcon/falcon.html#details",
+    "title": "falcon",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html",
+    "href": "posts/2023-07-14_code_sections/code_sections.html",
+    "title": "How to use Code Sections",
+    "section": "",
+    "text": "The admiral package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter code sections!"
+  },
+  {
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#introduction",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#introduction",
+    "title": "How to use Code Sections",
+    "section": "",
+    "text": "The admiral package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter code sections!"
+  },
+  {
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#so-what-are-code-sections-and-why-are-they-useful",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#so-what-are-code-sections-and-why-are-they-useful",
+    "title": "How to use Code Sections",
+    "section": "So, what are code sections and why are they useful?",
+    "text": "So, what are code sections and why are they useful?\nCode Sections are separators for long R scripts or functions in RStudio. They can be set up by inserting a comment line followed by four or more dashes in between portions of code, like so:\n\n# First code section ----\n\na &lt;- 1\n\n# Second code section ----\n\nb &lt;- 2\n\n# Third code section ----\n\nc &lt;- 3\n\nRStudio then recognizes the code sections automatically, and enables you to:\n\nCollapse and expand them using the arrow displayed next to the line number, or with the handy shortcuts Alt+L/Shift+Alt+L on Windows or Cmd+Option+L/Cmd+Shift+Option+L on Mac.\nTravel in between them using the navigator at the bottom of the code pane, or by pressing Shift+Alt+J on Windows or Cmd+Shift+Option+J on Mac.\nView an outline of the file using the “Outline” button at the top right of the pane and/or the orange hashtag “Section Navigator” button at the bottom left of the pane.\n\n\n\n\n\n\nCollapsed sections, outline view and the section navigator for the example above.\n\n\n\n\nIt is also possible to create subsections by using two hashtags at the start of a comment line:\n\n# First code section ----\na &lt;- 1\n\n## A code subsection ----\nb &lt;- 2\n\n# Second code section ----\nc &lt;- 3\n\n\n\n\n\n\nCode subsections for the example above.\n\n\n\n\nFor a complete list of Code Sections shortcuts, and for further information, see here."
+  },
+  {
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#conclusion",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#conclusion",
+    "title": "How to use Code Sections",
+    "section": "Conclusion",
+    "text": "Conclusion\nCode sections are an easy way to navigate long scripts and foster good commenting practices. They are used extensively in the admiral package, but there is no reason that you cannot start using them yourself in your day-to-day R programming!"
+  },
+  {
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
+    "title": "How to use Code Sections",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-08-22 13:58:56.671866"
+  },
+  {
+    "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
+    "href": "posts/2023-07-14_code_sections/code_sections.html#details",
+    "title": "How to use Code Sections",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html",
     "href": "posts/2023-06-27_hackathon_writeup/index.html",
     "title": "Admiral Hackathon 2023 Revisited",
@@ -32,7 +186,7 @@
     "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
     "title": "Admiral Hackathon 2023 Revisited",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-08 12:55:01.044249"
+    "text": "Last updated\n\n2023-08-22 13:58:51.736608"
   },
   {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
@@ -42,23 +196,107 @@
     "text": "Details\n\nsource code, R environment"
   },
   {
-    "objectID": "posts/2023-08-08_study_day/study_day.html",
-    "href": "posts/2023-08-08_study_day/study_day.html",
-    "title": "It’s all relative? - Calculating Relative Days using admiral",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Pharmaverse Blog",
     "section": "",
-    "text": "Creating --DY variables for your ADaMs is super easy using derive_vars_dy() from the admiral package.\nLet’s build some dummy data with 4 subjects, a start date/time for treatment (TRTSDTM), an analysis start date/time variable (ASTDTM) and an analysis end date variable (AENDT).\nlibrary(admiral)\nlibrary(lubridate)\nlibrary(dplyr)\n\nadam &lt;- tribble(\n  ~USUBJID, ~TRTSDTM, ~ASTDTM, ~AENDT,\n  \"001\", \"2014-01-17T23:59:59\", \"2014-01-18T13:09:O9\", \"2014-01-20\",\n  \"002\", \"2014-02-25T23:59:59\", \"2014-03-18T14:09:O9\", \"2014-03-24\",\n  \"003\", \"2014-02-12T23:59:59\", \"2014-02-18T11:03:O9\", \"2014-04-17\",\n  \"004\", \"2014-03-17T23:59:59\", \"2014-03-19T13:09:O9\", \"2014-05-04\"\n) %&gt;%\n  mutate(\n    TRTSDTM = as_datetime(TRTSDTM),\n    ASTDTM = as_datetime(ASTDTM),\n    AENDT = ymd(AENDT)\n  )\nOkay! Next we run our dataset through derive_vars_dy(), specifying:\nderive_vars_dy(\n  adam,\n  reference_date = TRTSDTM,\n  source_vars = exprs(ASTDTM, AENDT)\n)\n\n# A tibble: 4 × 6\n  USUBJID TRTSDTM             ASTDTM              AENDT      ASTDY AENDY\n  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20     2     4\n2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24    22    28\n3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17     7    65\n4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04     3    49\nThat’s it! We got both our ASTDY and AENDY variables in only a few short lines of code!\nWhat if I want my variables to have a different naming convention?\nEasy! In the source_vars argument if you want your variables to be called DEMOADY and DEMOEDY just do DEMOADY = ASTDTM and DEMOEDY = AENDT and derive_vars_dy() will do the rest!\nderive_vars_dy(\n  adam,\n  reference_date = TRTSDTM,\n  source_vars = exprs(DEMOADY = ASTDTM, DEMOEDY = AENDT)\n)\n\n# A tibble: 4 × 6\n  USUBJID TRTSDTM             ASTDTM              AENDT      DEMOADY DEMOEDY\n  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;       &lt;dbl&gt;   &lt;dbl&gt;\n1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20       2       4\n2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24      22      28\n3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17       7      65\n4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04       3      49\nIf you want to get --DT or --DTM variables using admiral then check out derive_vars_dt() and derive_vars_dtm(). If things are messy in your data, e.g. partial dates, both functions have great imputation abilities, which we will cover in an upcoming blog post!"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nIt’s all relative? - Calculating Relative Days using admiral\n\n\n\n\n\n\n\nadmiral\n\n\nADaMs\n\n\n\n\n\n\n\n\n\n\n\nAug 8, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nCross-Industry Open Source Package Development\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\n\n\n\n\n\n\n\nJul 25, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nRounding\n\n\n\n\n\n\n\nrounding\n\n\n\n\nExploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges\n\n\n\n\n\n\nJul 24, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nHow to use Code Sections\n\n\n\n\n\n\n\nADaMs\n\n\nTips and Tricks\n\n\n\n\n\n\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nBlanks and NAs\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nfalcon\n\n\n\n\n\n\n\nfalcon\n\n\ndisplays\n\n\n\n\n\n\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n  \n\n\n\n\nHello pharmaverse\n\n\n\n\n\n\n\ncommunity\n\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nUse admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nHackathon Feedback Application\n\n\n\n\n\n\n\nR\n\n\nshiny\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "posts/2023-08-08_study_day/study_day.html#last-updated",
-    "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
-    "title": "It’s all relative? - Calculating Relative Days using admiral",
+    "objectID": "R/readme.html",
+    "href": "R/readme.html",
+    "title": "Files in this folder",
+    "section": "",
+    "text": "Some of these files help in creating/developing blog-posts, others are used by our CICD pipeline.\n\ncreate_blogpost.R: use this script to create a new blogpost based on our blogpost template.\nCICD.R: use this script to spellcheck and stylecheck your blogpost.\n\n\n\n\nhelp_create_blogpost.R: script containing the function(s) used by create_blogpost.R\nswitch.R: Used by CICD spellcheck workflow."
+  },
+  {
+    "objectID": "R/readme.html#development-files",
+    "href": "R/readme.html#development-files",
+    "title": "Files in this folder",
+    "section": "",
+    "text": "help_create_blogpost.R: script containing the function(s) used by create_blogpost.R\nswitch.R: Used by CICD spellcheck workflow."
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html",
+    "href": "posts/2023-06-28_welcome/index.html",
+    "title": "Hello pharmaverse",
+    "section": "",
+    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#purpose",
+    "href": "posts/2023-06-28_welcome/index.html#purpose",
+    "title": "Hello pharmaverse",
+    "section": "",
+    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
+    "href": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
+    "title": "Hello pharmaverse",
+    "section": "Spirit of a Blog Post",
+    "text": "Spirit of a Blog Post\nThe CWG believes that the following 4 points will help guide the creation of Blog Posts.\n\nShort\nPersonalized\nReproducible\nReadable\n\nShort: Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.\nPersonalized: Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e. we don’t want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.\nReproducible: Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.\nReadable: The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity."
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
+    "href": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
+    "title": "Hello pharmaverse",
+    "section": "What types of posts are allowed on this site?",
+    "text": "What types of posts are allowed on this site?\nOverall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:\n\nPackages in the Clinical Reporting Pipeline\nFunctions from packages in the Clinical Reporting Pipeline\nWider experiences of using R in the Clinical Reporting Pipeline\nConference experiences and the Clinical Reporting Pipeline\n\nHowever, it never hurts to ask if you topic might fit into this medium!\n\nMinimum Post Requirements\n\nA unique image to help showcase the post.\nWorking Code\nSelf-contained data or package data.\nDocumentation of package versions\n\nThat is it! After that you can go wild, but we do ask that it is kept short!"
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
+    "href": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
+    "title": "Hello pharmaverse",
+    "section": "How can I make a Blog Post",
+    "text": "How can I make a Blog Post\nStep 1: Reach out to us through pharmaverse/slack or make an issue on our GitHub.\nStep 2: Branch off main\nStep 3: Review the Spirit of the Blog Post in the Pull Request Template\nStep 4: Poke us to do a review!"
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#last-updated",
+    "href": "posts/2023-06-28_welcome/index.html#last-updated",
+    "title": "Hello pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-08 12:54:53.370004"
+    "text": "Last updated\n\n2023-08-22 13:58:46.792405"
   },
   {
-    "objectID": "posts/2023-08-08_study_day/study_day.html#details",
-    "href": "posts/2023-08-08_study_day/study_day.html#details",
-    "title": "It’s all relative? - Calculating Relative Days using admiral",
+    "objectID": "posts/2023-06-28_welcome/index.html#details",
+    "href": "posts/2023-06-28_welcome/index.html#details",
+    "title": "Hello pharmaverse",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "",
+    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "",
+    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "Example",
+    "text": "Example\nA value level validation use case, where derive_param_computed() is used to validate a derived parameter - PARAMCD = ADPCYMG (Actual Dose per Cycle) in ADEX dataset.\n\nDerivation\nActual Dose per Cycle is derived from the Total Amount of Dose (PARAMCD = TOTDOSE) / Number of Cycles (PARAMCD = NUMCYC)\nIn this example, ADEX.AVAL when ADEX.PARAMCD = ADPCYMG can be derived as:\n\\[\nAVAL (PARAMCD = ADPCYMG) = \\frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCYC)}\n\\]\n\n\nLoading Packages and Creating Example Data\n\nlibrary(tibble)\nlibrary(dplyr)\nlibrary(diffdf)\nlibrary(admiral)\n\nadex &lt;- tribble(\n  ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n  \"101\",     \"TOTDOSE\", \"Total Amount of Dose (mg)\",  180,\n  \"101\",     \"NUMCYC\",  \"Number of Cycles\",           3\n)\n\n\n\nDerive New Parameter\n\nadex_admiral &lt;- derive_param_computed(\n  adex,\n  by_vars = exprs(USUBJID),\n  parameters = c(\"TOTDOSE\", \"NUMCYC\"),\n  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,\n  set_values_to = exprs(\n    PARAMCD = \"ADPCYMG\",\n    PARAM = \"Actual Dose per Cycle (mg)\"\n  )\n)\n\n\n\n# A tibble: 3 × 4\n  USUBJID PARAMCD PARAM                       AVAL\n  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;\n1 101     TOTDOSE Total Amount of Dose (mg)    180\n2 101     NUMCYC  Number of Cycles               3\n3 101     ADPCYMG Actual Dose per Cycle (mg)    60\n\n\n\n\nCompare\nFor validation purpose, the diffdf package is used below to mimic SAS proc compare.\n\nadex_expected &lt;- bind_rows(\n  adex,\n  tribble(\n    ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n    \"101\",     \"ADPCYMG\", \"Actual Dose per Cycle (mg)\", 60\n  )\n)\n\ndiffdf(adex_expected, adex_admiral, keys = c(\"USUBJID\", \"PARAMCD\"))\n\nNo issues were found!"
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-08-22 13:58:54.450275"
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
+    "title": "Derive a new parameter computed from the value of other parameters",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
   },
@@ -130,173 +368,12 @@
     "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
     "title": "Blanks and NAs",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-08 12:54:43.505435"
+    "text": "Last updated\n\n2023-08-22 13:59:03.077861"
   },
   {
     "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
     "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
     "title": "Blanks and NAs",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html",
-    "href": "posts/2023-07-09_falcon/falcon.html",
-    "title": "falcon",
-    "section": "",
-    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
-    "href": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
-    "title": "falcon",
-    "section": "",
-    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
-    "href": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
-    "title": "falcon",
-    "section": "Why do we build it?",
-    "text": "Why do we build it?\nThe collaborative effort focuses on improving the clarity, consistency, and accessibility of TLGs by addressing variations and redundancies in their creation and use. This harmonized approach allows for streamlined reporting processes and facilitates effective communication of study results within the industry and to regulatory authorities."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
-    "href": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
-    "title": "falcon",
-    "section": "What has been done so far?",
-    "text": "What has been done so far?\nDrawing inspiration from the FDA Standard Safety Tables and Figures Integrated Guide, the {falcon} initiative has successfully developed and open-sourced 11 templates to date. 4 product owners and 11 developers from 4 companies have collaborated to make these templates available and also published them on the official {falcon} website at https://pharmaverse.github.io/falcon/."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
-    "href": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
-    "title": "falcon",
-    "section": "Next steps & vision",
-    "text": "Next steps & vision\nFuture plans for {falcon} involve expanding the catalog through continuous collaboration from participating companies and inviting wider industry engagement. The ultimate goal is to promote harmonization of TLGs for clinical reporting across the pharmaceutical industry, leading to greater efficiency, collaboration, and innovation. Even though templates currently come from a published FDA guide, the collaborating companies are open to share and discuss similarities and differences on analysis concepts and output layouts of their own implementations in clinical reporting, for both safety and efficacy analyses.\nIn addition, while currently all templates were built using {rtables}, {tern}, {rlistings} and drew inspiration from the open-sourced TLG-Catalog, moving forward, we plan to support creating the same templates using alternative table engines such as {gt}.\n{falcon} will be presented at the upcoming PHUSE EU (Standards Implementation stream), where we will share the collaboration journey of {falcon} so far, providing more details on the current progress, long-term vision, and strategies for this initiative. Attendees will gain insights into the challenges and opportunities of harmonizing clinical reporting through open-source collaboration and learn about the potential benefits and future direction of {falcon}."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#last-updated",
-    "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
-    "title": "falcon",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-08 12:54:38.796232"
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#details",
-    "href": "posts/2023-07-09_falcon/falcon.html#details",
-    "title": "falcon",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Pharmaverse Blog",
-    "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nIt’s all relative? - Calculating Relative Days using admiral\n\n\n\n\n\n\n\nadmiral\n\n\nADaMs\n\n\n\n\n\n\n\n\n\n\n\nAug 8, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nCross-Industry Open Source Package Development\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\n\n\n\n\n\n\n\nJul 25, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nHow to use Code Sections\n\n\n\n\n\n\n\nADaMs\n\n\nTips and Tricks\n\n\n\n\n\n\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nBlanks and NAs\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nfalcon\n\n\n\n\n\n\n\nfalcon\n\n\ndisplays\n\n\n\n\n\n\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n  \n\n\n\n\nHello pharmaverse\n\n\n\n\n\n\n\ncommunity\n\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nHackathon Feedback Application\n\n\n\n\n\n\n\nR\n\n\nshiny\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nUse admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "R/readme.html",
-    "href": "R/readme.html",
-    "title": "Files in this folder",
-    "section": "",
-    "text": "Some of these files help in creating/developing blog-posts, others are used by our CICD pipeline.\n\ncreate_blogpost.R: use this script to create a new blogpost based on our blogpost template.\nCICD.R: use this script to spellcheck and stylecheck your blogpost.\n\n\n\n\nhelp_create_blogpost.R: script containing the function(s) used by create_blogpost.R\nswitch.R: Used by CICD spellcheck workflow."
-  },
-  {
-    "objectID": "R/readme.html#development-files",
-    "href": "R/readme.html#development-files",
-    "title": "Files in this folder",
-    "section": "",
-    "text": "help_create_blogpost.R: script containing the function(s) used by create_blogpost.R\nswitch.R: Used by CICD spellcheck workflow."
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html",
-    "href": "posts/2023-07-14_code_sections/code_sections.html",
-    "title": "How to use Code Sections",
-    "section": "",
-    "text": "The admiral package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter code sections!"
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#introduction",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#introduction",
-    "title": "How to use Code Sections",
-    "section": "",
-    "text": "The admiral package embraces a modular style of programming, where blocks of code are pieced together in sequence to create an ADaM dataset. However, with the well-documented advantages of the modular approach comes the recognition that scripts will on average be longer. As such, astute programmers working in RStudio are constantly on the lookout for quick ways to effectively navigate their scripts. Enter code sections!"
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#so-what-are-code-sections-and-why-are-they-useful",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#so-what-are-code-sections-and-why-are-they-useful",
-    "title": "How to use Code Sections",
-    "section": "So, what are code sections and why are they useful?",
-    "text": "So, what are code sections and why are they useful?\nCode Sections are separators for long R scripts or functions in RStudio. They can be set up by inserting a comment line followed by four or more dashes in between portions of code, like so:\n\n# First code section ----\n\na &lt;- 1\n\n# Second code section ----\n\nb &lt;- 2\n\n# Third code section ----\n\nc &lt;- 3\n\nRStudio then recognizes the code sections automatically, and enables you to:\n\nCollapse and expand them using the arrow displayed next to the line number, or with the handy shortcuts Alt+L/Shift+Alt+L on Windows or Cmd+Option+L/Cmd+Shift+Option+L on Mac.\nTravel in between them using the navigator at the bottom of the code pane, or by pressing Shift+Alt+J on Windows or Cmd+Shift+Option+J on Mac.\nView an outline of the file using the “Outline” button at the top right of the pane and/or the orange hashtag “Section Navigator” button at the bottom left of the pane.\n\n\n\n\n\n\nCollapsed sections, outline view and the section navigator for the example above.\n\n\n\n\nIt is also possible to create subsections by using two hashtags at the start of a comment line:\n\n# First code section ----\na &lt;- 1\n\n## A code subsection ----\nb &lt;- 2\n\n# Second code section ----\nc &lt;- 3\n\n\n\n\n\n\nCode subsections for the example above.\n\n\n\n\nFor a complete list of Code Sections shortcuts, and for further information, see here."
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#conclusion",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#conclusion",
-    "title": "How to use Code Sections",
-    "section": "Conclusion",
-    "text": "Conclusion\nCode sections are an easy way to navigate long scripts and foster good commenting practices. They are used extensively in the admiral package, but there is no reason that you cannot start using them yourself in your day-to-day R programming!"
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
-    "title": "How to use Code Sections",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-08 12:54:40.832809"
-  },
-  {
-    "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
-    "href": "posts/2023-07-14_code_sections/code_sections.html#details",
-    "title": "How to use Code Sections",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html",
-    "href": "posts/2023-06-28_welcome/index.html",
-    "title": "Hello pharmaverse",
-    "section": "",
-    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#purpose",
-    "href": "posts/2023-06-28_welcome/index.html#purpose",
-    "title": "Hello pharmaverse",
-    "section": "",
-    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
-    "href": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
-    "title": "Hello pharmaverse",
-    "section": "Spirit of a Blog Post",
-    "text": "Spirit of a Blog Post\nThe CWG believes that the following 4 points will help guide the creation of Blog Posts.\n\nShort\nPersonalized\nReproducible\nReadable\n\nShort: Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.\nPersonalized: Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e. we don’t want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.\nReproducible: Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.\nReadable: The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity."
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
-    "href": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
-    "title": "Hello pharmaverse",
-    "section": "What types of posts are allowed on this site?",
-    "text": "What types of posts are allowed on this site?\nOverall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:\n\nPackages in the Clinical Reporting Pipeline\nFunctions from packages in the Clinical Reporting Pipeline\nWider experiences of using R in the Clinical Reporting Pipeline\nConference experiences and the Clinical Reporting Pipeline\n\nHowever, it never hurts to ask if you topic might fit into this medium!\n\nMinimum Post Requirements\n\nA unique image to help showcase the post.\nWorking Code\nSelf-contained data or package data.\nDocumentation of package versions\n\nThat is it! After that you can go wild, but we do ask that it is kept short!"
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
-    "href": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
-    "title": "Hello pharmaverse",
-    "section": "How can I make a Blog Post",
-    "text": "How can I make a Blog Post\nStep 1: Reach out to us through pharmaverse/slack or make an issue on our GitHub.\nStep 2: Branch off main\nStep 3: Review the Spirit of the Blog Post in the Pull Request Template\nStep 4: Poke us to do a review!"
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#last-updated",
-    "href": "posts/2023-06-28_welcome/index.html#last-updated",
-    "title": "Hello pharmaverse",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-08 12:54:45.373951"
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#details",
-    "href": "posts/2023-06-28_welcome/index.html#details",
-    "title": "Hello pharmaverse",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
   },
@@ -361,47 +438,12 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-08 12:54:50.081647"
+    "text": "Last updated\n\n2023-08-22 13:59:08.814635"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
     "href": "posts/2023-06-27__hackathon_app/index.html#details",
     "title": "Hackathon Feedback Application",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "",
-    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "",
-    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "Example",
-    "text": "Example\nA value level validation use case, where derive_param_computed() is used to validate a derived parameter - PARAMCD = ADPCYMG (Actual Dose per Cycle) in ADEX dataset.\n\nDerivation\nActual Dose per Cycle is derived from the Total Amount of Dose (PARAMCD = TOTDOSE) / Number of Cycles (PARAMCD = NUMCYC)\nIn this example, ADEX.AVAL when ADEX.PARAMCD = ADPCYMG can be derived as:\n\\[\nAVAL (PARAMCD = ADPCYMG) = \\frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCYC)}\n\\]\n\n\nLoading Packages and Creating Example Data\n\nlibrary(tibble)\nlibrary(dplyr)\nlibrary(diffdf)\nlibrary(admiral)\n\nadex &lt;- tribble(\n  ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n  \"101\",     \"TOTDOSE\", \"Total Amount of Dose (mg)\",  180,\n  \"101\",     \"NUMCYC\",  \"Number of Cycles\",           3\n)\n\n\n\nDerive New Parameter\n\nadex_admiral &lt;- derive_param_computed(\n  adex,\n  by_vars = exprs(USUBJID),\n  parameters = c(\"TOTDOSE\", \"NUMCYC\"),\n  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,\n  set_values_to = exprs(\n    PARAMCD = \"ADPCYMG\",\n    PARAM = \"Actual Dose per Cycle (mg)\"\n  )\n)\n\n\n\n# A tibble: 3 × 4\n  USUBJID PARAMCD PARAM                       AVAL\n  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;\n1 101     TOTDOSE Total Amount of Dose (mg)    180\n2 101     NUMCYC  Number of Cycles               3\n3 101     ADPCYMG Actual Dose per Cycle (mg)    60\n\n\n\n\nCompare\nFor validation purpose, the diffdf package is used below to mimic SAS proc compare.\n\nadex_expected &lt;- bind_rows(\n  adex,\n  tribble(\n    ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n    \"101\",     \"ADPCYMG\", \"Actual Dose per Cycle (mg)\", 60\n  )\n)\n\ndiffdf(adex_expected, adex_admiral, keys = c(\"USUBJID\", \"PARAMCD\"))\n\nNo issues were found!"
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-08 12:54:56.091925"
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
-    "title": "Derive a new parameter computed from the value of other parameters",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
   }

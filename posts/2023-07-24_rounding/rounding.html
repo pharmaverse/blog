@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Kangjie Zhang">
+<meta name="dcterms.date" content="2023-07-24">
+<meta name="description" content="Exploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges">
+
+<title>Pharmaverse Blog - Rounding</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: #eeeeee;
+      }
+</style>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Pharmaverse Blog - Rounding">
+<meta property="og:description" content="Exploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.png">
+<meta property="og:site-name" content="Pharmaverse Blog">
+<meta property="og:image:height" content="596">
+<meta property="og:image:width" content="624">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Pharmaverse Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/pharmaverse/blog" rel="" target=""><i class="bi bi-github" role="img" aria-label="github">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Rounding</h1>
+                  <div>
+        <div class="description">
+          Exploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">rounding</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Kangjie Zhang </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">July 24, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#rounding-methods" id="toc-rounding-methods" class="nav-link active" data-scroll-target="#rounding-methods">Rounding methods</a></li>
+  <li><a href="#round-half-up-in-r" id="toc-round-half-up-in-r" class="nav-link" data-scroll-target="#round-half-up-in-r">Round half up in R</a>
+  <ul class="collapse">
+  <li><a href="#numerical-precision-issue" id="toc-numerical-precision-issue" class="nav-link" data-scroll-target="#numerical-precision-issue">Numerical precision issue</a></li>
+  <li><a href="#we-are-not-alone" id="toc-we-are-not-alone" class="nav-link" data-scroll-target="#we-are-not-alone">We are not alone</a></li>
+  <li><a href="#which-ones-to-use" id="toc-which-ones-to-use" class="nav-link" data-scroll-target="#which-ones-to-use">Which ones to use?</a></li>
+  <li><a href="#are-they-safe-options" id="toc-are-they-safe-options" class="nav-link" data-scroll-target="#are-they-safe-options">Are they safe options?</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="rounding-methods" class="level2">
+<h2 class="anchored" data-anchor-id="rounding-methods">Rounding methods</h2>
+<p>Both SAS and base R have the function <code>round()</code>, which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:</p>
+<ul>
+<li><p>SAS <code>round()</code> <a href="https://en.wikipedia.org/wiki/Rounding#Rounding_half_up">rounds half up</a>. This is the most common method of rounding.</p></li>
+<li><p>base R <code>round()</code> <a href="https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest">rounds to the nearest even</a>, which matches SAS’s <code>rounde()</code> function.</p></li>
+</ul>
+<p>Although base R does not have the option for “round half up”, there are functions available in other R packages (e.g., <code>janitor</code>, <code>tidytlg</code>).</p>
+<p>In general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.</p>
+<table class="table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 23%">
+<col style="width: 23%">
+<col style="width: 8%">
+<col style="width: 10%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">round half up</th>
+<th style="text-align: center;">round to even</th>
+<th style="text-align: center;">round up</th>
+<th style="text-align: center;">round down</th>
+<th style="text-align: center;">round towards zero</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Example: 1.45</td>
+<td style="text-align: center;"><p>1.5</p>
+<p>(round to 1 decimal place)</p></td>
+<td style="text-align: center;"><p>1.4</p>
+<p>(round to 1 decimal place)</p></td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+<p>Here are the corresponding ways to implement these methods in SAS and R.</p>
+<table class="table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 31%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 13%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">round half up</th>
+<th style="text-align: center;">round to even</th>
+<th style="text-align: center;">round up</th>
+<th style="text-align: center;">round down</th>
+<th style="text-align: center;">round towards zero</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">SAS</td>
+<td style="text-align: center;"><code>round()</code></td>
+<td style="text-align: center;"><code>rounde()</code></td>
+<td style="text-align: center;"><code>ceil()</code></td>
+<td style="text-align: center;"><code>floor()</code></td>
+<td style="text-align: center;"><code>int()</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">R</td>
+<td style="text-align: center;"><div style="background-color: yellow">
+<p><code>janitor::round_half_up()</code></p>
+<div style="background-color: yellow">
+<div>
+<p><code>tidytlg::roundSAS()</code></p>
+</div>
+</div>
+</div></td>
+<td style="text-align: center;"><div>
+<p><code>base::round()</code></p>
+</div></td>
+<td style="text-align: center;"><div>
+<p><code>base::ceiling()</code></p>
+</div></td>
+<td style="text-align: center;"><div>
+<p><code>base::floor()</code></p>
+</div></td>
+<td style="text-align: center;"><div>
+<p><code>base::trunc()</code></p>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>This table is summarized from links below, where more detailed discussions can be found -</p>
+<ul>
+<li><p>Two SAS blogs about <a href="https://blogs.sas.com/content/iml/2019/11/11/round-to-even.html">round-to-even</a> and <a href="https://blogs.sas.com/content/iml/2011/10/03/rounding-up-rounding-down.html">rounding-up-rounding-down</a></p></li>
+<li><p>R documentation: Base R <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/Round.html">Round</a>, <a href="https://sfirke.github.io/janitor/reference/round_half_up.html"><code>janitor::round_half_up()</code></a>, <a href="https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html"><code>tidytlg::roundSAS()</code></a></p></li>
+<li><p><a href="https://psiaims.github.io/CAMIS/">CAMIS</a> (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. <a href="https://psiaims.github.io/CAMIS/Comp/r-sas_rounding.html">Rounding</a> is one of the comparisons, and there are much more <a href="https://psiaims.github.io/CAMIS/">on this page</a>!</p></li>
+</ul>
+</section>
+<section id="round-half-up-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="round-half-up-in-r">Round half up in R</h2>
+<p>The motivation for having a ‘round half up’ function is clear: it’s a widely used rounding method, but there are no such options available in base R.</p>
+<p>There are multiple forums that have discussed this topic, and quite a few functions already available. But which ones to choose? Are they safe options?</p>
+<p>The first time I needed to round half up in R, I chose the function from a <a href="https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf">PHUSE paper</a> and applied it to my study. It works fine for a while until I encountered the following precision issue when double programming in R for TLGs made in SAS.</p>
+<section id="numerical-precision-issue" class="level3">
+<h3 class="anchored" data-anchor-id="numerical-precision-issue">Numerical precision issue</h3>
+<p>Example of rounding half up for 2436.845, with 2 decimal places:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># a function that rounds half up</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># exact copy from: https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>ut_round <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">n =</span> <span class="dv">0</span>) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># x is the value to be rounded</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># n is the precision of the rounding</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  scale <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span>n</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">trunc</span>(x <span class="sc">*</span> scale <span class="sc">+</span> <span class="fu">sign</span>(x) <span class="sc">*</span> <span class="fl">0.5</span>) <span class="sc">/</span> scale</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return the rounded number</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(y)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># round half up for 2436.845, with 2 decimal places</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ut_round</span>(<span class="fl">2436.845</span>, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2436.84</code></pre>
+</div>
+</div>
+<p>The expected result is 2436.85, but the output rounds it down. Thanks to the community effort, there are already discussions and resolution available in a <a href="https://stackoverflow.com/questions/12688717/round-up-from-5#comment110611119_12688836">StackOverflow post</a> -</p>
+<blockquote class="blockquote">
+<p>There are numerical precision issues, e.g., <code>round2(2436.845, 2)</code> returns <code>2436.84.</code> Changing <code>z + 0.5 to z + 0.5 + sqrt(.Machine$double.eps)</code> seems to work for me. – Gregor Thomas Jun 24, 2020 at 2:16</p>
+</blockquote>
+<ul>
+<li><p><code>.Machine$double.eps</code> is a built-in constant in R that represents the smallest positive floating-point number that can be represented on the system (reference: <a href="https://www.math.ucla.edu/~anderson/rw1001/library/base/html/zMachine.html">Machine Characteristics</a>)</p></li>
+<li><p>The expression <code>+ sqrt(.Machine$double.eps)</code> is used to add a very small value to mitigate floating-point precision issues.</p></li>
+<li><p>For more information about computational precision and floating-point, see the following links -</p>
+<ul>
+<li>R: <a href="https://cran.r-project.org/doc/FAQ/R-FAQ.html#Why-doesn_0027t-R-think-these-numbers-are-equal_003f">Why doesn’t R think these numbers are equal?</a></li>
+<li>SAS: <a href="https://documentation.sas.com/doc/en/lrcon/9.4/p0ji1unv6thm0dn1gp4t01a1u0g6.htm">Numerical Accuracy in SAS Software</a></li>
+</ul></li>
+</ul>
+<p>After the fix:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># revised rounds half up</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ut_round1 <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">n =</span> <span class="dv">0</span>) {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># x is the value to be rounded</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># n is the precision of the rounding</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  scale <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span>n</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">trunc</span>(x <span class="sc">*</span> scale <span class="sc">+</span> <span class="fu">sign</span>(x) <span class="sc">*</span> <span class="fl">0.5</span> <span class="sc">+</span> <span class="fu">sqrt</span>(.Machine<span class="sc">$</span>double.eps)) <span class="sc">/</span> scale</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return the rounded number</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(y)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># round half up for 2436.845, with 2 decimal places</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ut_round1</span>(<span class="fl">2436.845</span>, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2436.85</code></pre>
+</div>
+</div>
+</section>
+<section id="we-are-not-alone" class="level3">
+<h3 class="anchored" data-anchor-id="we-are-not-alone">We are not alone</h3>
+<p>The same issue occurred in the following functions/options as well, and has been raised by users:</p>
+<ul>
+<li><p><code>janitor::round_half_up()</code>: <a href="https://github.com/sfirke/janitor/issues/396">issue</a> was raised and fixed in v2.1.0</p></li>
+<li><p><code>Tplyr</code>: <code>options(tplyr.IBMRounding = TRUE)</code>, <a href="https://github.com/atorus-research/Tplyr/issues/124">issue</a> was raised</p></li>
+<li><p><code>scrutiny::round_up_from()/round_up()</code>: <a href="https://github.com/lhdjung/scrutiny/issues/43">issue</a> was raised and fixed</p></li>
+<li><p>... and many others!</p></li>
+</ul>
+</section>
+<section id="which-ones-to-use" class="level3">
+<h3 class="anchored" data-anchor-id="which-ones-to-use">Which ones to use?</h3>
+<p>The following functions have the precision issue mentioned above fixed, they all share the same logic from this <a href="https://stackoverflow.com/questions/12688717/round-up-from-5">StackOverflow post</a>.</p>
+<ul>
+<li><a href="https://sfirke.github.io/janitor/reference/round_half_up.html"><code>janitor::round_half_up()</code></a> <strong>version &gt;= 2.1.0</strong></li>
+<li><a href="https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html"><code>tidytlg::roundSAS()</code></a>
+<ul>
+<li>this function has two more arguments that can convert the result to character and allow a character string to indicate missing values</li>
+</ul></li>
+<li><a href="https://lhdjung.github.io/scrutiny/reference/rounding-common.html"><code>scrutiny::round_up_from()/round_up()</code></a> <strong>version &gt;= 0.2.5</strong>
+<ul>
+<li><p><code>round_up_from()</code> has a <code>threshold</code> argument for rounding up, which adds flexibility for rounding up</p></li>
+<li><p><code>round_up()</code> rounds up from 5, which is a special case of <code>round_up_from()</code></p></li>
+</ul></li>
+</ul>
+</section>
+<section id="are-they-safe-options" class="level3">
+<h3 class="anchored" data-anchor-id="are-they-safe-options">Are they safe options?</h3>
+<p>Those “round half up” functions do not offer the same level of precision and accuracy as the base R round function.</p>
+<p>For example, let’s consider a value <code>a</code> that is slightly less than <code>1.5</code>. If we choose round half up approach to round <code>a</code> to 0 decimal places, an output of <code>1</code> is expected. However, those functions yield a result of <code>2</code> because <code>1.5 - a</code> is less than <code>sqrt(.Machine$double.eps)</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fl">1.5</span> <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">sqrt</span>(.Machine<span class="sc">$</span>double.eps)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ut_round1</span>(a, <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>janitor<span class="sc">::</span><span class="fu">round_half_up</span>(a, <span class="at">digits =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>This behavior aligns the floating point number comparison functions <code>all.equal()</code> and <code>dplyr::near()</code> with default tolerance <code>.Machine$double.eps^0.5</code>, where 1.5 and <code>a</code> are treated as equal.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(a, <span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">near</span>(a, <span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>We can get the expected results from base R <code>round</code> as it provides greater accuracy.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+<p>Here is an example when base R <code>round</code> reaches the precision limit:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># b is slightly less than 1.5</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fl">1.5</span> <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> .Machine<span class="sc">$</span>double.eps</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1 is expected but the result is 2</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>The precision and accuracy requirements can vary depending on the application. Therefore, it is essential to be aware each function’s performance in your specific context before making a choice.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<blockquote class="blockquote">
+<p>With the differences in default behaviour across languages, you could consider your QC strategy and whether an acceptable level of fuzz in the electronic comparisons could be allowed for cases such as rounding when making comparisons between 2 codes written in different languages as long as this is documented. Alternatively you could document the exact rounding approach to be used in the SAP and then match this regardless of programming language used. - Ross Farrugia</p>
+</blockquote>
+<p>Thanks Ross Farrugia, Ben Straub, Edoardo Mancini and Liming for reviewing this blog post and providing valuable feedback!</p>
+<p>If you spot an issue or have different opinions, please don’t hesitate to raise them through <a href="https://github.com/pharmaverse/blog">pharmaverse/blog</a>!</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-08-22 13:59:11.88039</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
+  author = {Zhang, Kangjie},
+  title = {Rounding},
+  date = {2023-07-24},
+  url = {https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas" role="listitem">
+Zhang, Kangjie. 2023. <span>“Rounding.”</span> July 24, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html">https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -181,7 +181,7 @@ font-style: inherit;">DEMOEDY =</span> AENDT)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-08 12:54:53.370004</p>
+<p>2023-08-22 13:59:06.057818</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
@@ -290,6 +290,446 @@ Development.”</span> July 25, 2023. <a href="https://pharmaverse.github.io/blo
   <guid>https://pharmaverse.github.io/blog/posts/2023-07-20_cross_company_dev/cross_industry_dev.html</guid>
   <pubDate>Tue, 25 Jul 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-07-20_cross_company_dev/Rbasel.png" medium="image" type="image/png" height="108" width="144"/>
+</item>
+<item>
+  <title>Rounding</title>
+  <dc:creator>Kangjie Zhang</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="rounding-methods" class="level2">
+<h2 class="anchored" data-anchor-id="rounding-methods">Rounding methods</h2>
+<p>Both SAS and base R have the function <code>round()</code>, which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:</p>
+<ul>
+<li><p>SAS <code>round()</code> <a href="https://en.wikipedia.org/wiki/Rounding#Rounding_half_up">rounds half up</a>. This is the most common method of rounding.</p></li>
+<li><p>base R <code>round()</code> <a href="https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest">rounds to the nearest even</a>, which matches SAS’s <code>rounde()</code> function.</p></li>
+</ul>
+<p>Although base R does not have the option for “round half up”, there are functions available in other R packages (e.g., <code>janitor</code>, <code>tidytlg</code>).</p>
+<p>In general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.</p>
+<table class="table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 23%">
+<col style="width: 23%">
+<col style="width: 8%">
+<col style="width: 10%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">round half up</th>
+<th style="text-align: center;">round to even</th>
+<th style="text-align: center;">round up</th>
+<th style="text-align: center;">round down</th>
+<th style="text-align: center;">round towards zero</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Example: 1.45</td>
+<td style="text-align: center;"><p>1.5</p>
+<p>(round to 1 decimal place)</p></td>
+<td style="text-align: center;"><p>1.4</p>
+<p>(round to 1 decimal place)</p></td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+<p>Here are the corresponding ways to implement these methods in SAS and R.</p>
+<table class="table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 31%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 13%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">round half up</th>
+<th style="text-align: center;">round to even</th>
+<th style="text-align: center;">round up</th>
+<th style="text-align: center;">round down</th>
+<th style="text-align: center;">round towards zero</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">SAS</td>
+<td style="text-align: center;"><code>round()</code></td>
+<td style="text-align: center;"><code>rounde()</code></td>
+<td style="text-align: center;"><code>ceil()</code></td>
+<td style="text-align: center;"><code>floor()</code></td>
+<td style="text-align: center;"><code>int()</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">R</td>
+<td style="text-align: center;"><div style="background-color: yellow">
+<p><code>janitor::round_half_up()</code></p>
+<div style="background-color: yellow">
+<div>
+<p><code>tidytlg::roundSAS()</code></p>
+</div>
+</div>
+</div></td>
+<td style="text-align: center;"><div>
+<p><code>base::round()</code></p>
+</div></td>
+<td style="text-align: center;"><div>
+<p><code>base::ceiling()</code></p>
+</div></td>
+<td style="text-align: center;"><div>
+<p><code>base::floor()</code></p>
+</div></td>
+<td style="text-align: center;"><div>
+<p><code>base::trunc()</code></p>
+</div></td>
+</tr>
+</tbody>
+</table>
+<p>This table is summarized from links below, where more detailed discussions can be found -</p>
+<ul>
+<li><p>Two SAS blogs about <a href="https://blogs.sas.com/content/iml/2019/11/11/round-to-even.html">round-to-even</a> and <a href="https://blogs.sas.com/content/iml/2011/10/03/rounding-up-rounding-down.html">rounding-up-rounding-down</a></p></li>
+<li><p>R documentation: Base R <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/Round.html">Round</a>, <a href="https://sfirke.github.io/janitor/reference/round_half_up.html"><code>janitor::round_half_up()</code></a>, <a href="https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html"><code>tidytlg::roundSAS()</code></a></p></li>
+<li><p><a href="https://psiaims.github.io/CAMIS/">CAMIS</a> (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. <a href="https://psiaims.github.io/CAMIS/Comp/r-sas_rounding.html">Rounding</a> is one of the comparisons, and there are much more <a href="https://psiaims.github.io/CAMIS/">on this page</a>!</p></li>
+</ul>
+</section>
+<section id="round-half-up-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="round-half-up-in-r">Round half up in R</h2>
+<p>The motivation for having a ‘round half up’ function is clear: it’s a widely used rounding method, but there are no such options available in base R.</p>
+<p>There are multiple forums that have discussed this topic, and quite a few functions already available. But which ones to choose? Are they safe options?</p>
+<p>The first time I needed to round half up in R, I chose the function from a <a href="https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf">PHUSE paper</a> and applied it to my study. It works fine for a while until I encountered the following precision issue when double programming in R for TLGs made in SAS.</p>
+<section id="numerical-precision-issue" class="level3">
+<h3 class="anchored" data-anchor-id="numerical-precision-issue">Numerical precision issue</h3>
+<p>Example of rounding half up for 2436.845, with 2 decimal places:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># a function that rounds half up</span></span>
+<span id="cb1-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># exact copy from: https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf</span></span>
+<span id="cb1-3">ut_round <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb1-4">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># x is the value to be rounded</span></span>
+<span id="cb1-5">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># n is the precision of the rounding</span></span>
+<span id="cb1-6">  scale <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span>n</span>
+<span id="cb1-7">  y <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trunc</span>(x <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> scale <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sign</span>(x) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> scale</span>
+<span id="cb1-8">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Return the rounded number</span></span>
+<span id="cb1-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(y)</span>
+<span id="cb1-10">}</span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># round half up for 2436.845, with 2 decimal places</span></span>
+<span id="cb1-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ut_round</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2436.845</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2436.84</code></pre>
+</div>
+</div>
+<p>The expected result is 2436.85, but the output rounds it down. Thanks to the community effort, there are already discussions and resolution available in a <a href="https://stackoverflow.com/questions/12688717/round-up-from-5#comment110611119_12688836">StackOverflow post</a> -</p>
+<blockquote class="blockquote">
+<p>There are numerical precision issues, e.g., <code>round2(2436.845, 2)</code> returns <code>2436.84.</code> Changing <code>z + 0.5 to z + 0.5 + sqrt(.Machine$double.eps)</code> seems to work for me. – Gregor Thomas Jun 24, 2020 at 2:16</p>
+</blockquote>
+<ul>
+<li><p><code>.Machine$double.eps</code> is a built-in constant in R that represents the smallest positive floating-point number that can be represented on the system (reference: <a href="https://www.math.ucla.edu/~anderson/rw1001/library/base/html/zMachine.html">Machine Characteristics</a>)</p></li>
+<li><p>The expression <code>+ sqrt(.Machine$double.eps)</code> is used to add a very small value to mitigate floating-point precision issues.</p></li>
+<li><p>For more information about computational precision and floating-point, see the following links -</p>
+<ul>
+<li>R: <a href="https://cran.r-project.org/doc/FAQ/R-FAQ.html#Why-doesn_0027t-R-think-these-numbers-are-equal_003f">Why doesn’t R think these numbers are equal?</a></li>
+<li>SAS: <a href="https://documentation.sas.com/doc/en/lrcon/9.4/p0ji1unv6thm0dn1gp4t01a1u0g6.htm">Numerical Accuracy in SAS Software</a></li>
+</ul></li>
+</ul>
+<p>After the fix:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># revised rounds half up</span></span>
+<span id="cb3-2">ut_round1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb3-3">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># x is the value to be rounded</span></span>
+<span id="cb3-4">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># n is the precision of the rounding</span></span>
+<span id="cb3-5">  scale <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span>n</span>
+<span id="cb3-6">  y <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trunc</span>(x <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> scale <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sign</span>(x) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sqrt</span>(.Machine<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>double.eps)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> scale</span>
+<span id="cb3-7">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Return the rounded number</span></span>
+<span id="cb3-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(y)</span>
+<span id="cb3-9">}</span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># round half up for 2436.845, with 2 decimal places</span></span>
+<span id="cb3-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ut_round1</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2436.845</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2436.85</code></pre>
+</div>
+</div>
+</section>
+<section id="we-are-not-alone" class="level3">
+<h3 class="anchored" data-anchor-id="we-are-not-alone">We are not alone</h3>
+<p>The same issue occurred in the following functions/options as well, and has been raised by users:</p>
+<ul>
+<li><p><code>janitor::round_half_up()</code>: <a href="https://github.com/sfirke/janitor/issues/396">issue</a> was raised and fixed in v2.1.0</p></li>
+<li><p><code>Tplyr</code>: <code>options(tplyr.IBMRounding = TRUE)</code>, <a href="https://github.com/atorus-research/Tplyr/issues/124">issue</a> was raised</p></li>
+<li><p><code>scrutiny::round_up_from()/round_up()</code>: <a href="https://github.com/lhdjung/scrutiny/issues/43">issue</a> was raised and fixed</p></li>
+<li><p>... and many others!</p></li>
+</ul>
+</section>
+<section id="which-ones-to-use" class="level3">
+<h3 class="anchored" data-anchor-id="which-ones-to-use">Which ones to use?</h3>
+<p>The following functions have the precision issue mentioned above fixed, they all share the same logic from this <a href="https://stackoverflow.com/questions/12688717/round-up-from-5">StackOverflow post</a>.</p>
+<ul>
+<li><a href="https://sfirke.github.io/janitor/reference/round_half_up.html"><code>janitor::round_half_up()</code></a> <strong>version &gt;= 2.1.0</strong></li>
+<li><a href="https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html"><code>tidytlg::roundSAS()</code></a>
+<ul>
+<li>this function has two more arguments that can convert the result to character and allow a character string to indicate missing values</li>
+</ul></li>
+<li><a href="https://lhdjung.github.io/scrutiny/reference/rounding-common.html"><code>scrutiny::round_up_from()/round_up()</code></a> <strong>version &gt;= 0.2.5</strong>
+<ul>
+<li><p><code>round_up_from()</code> has a <code>threshold</code> argument for rounding up, which adds flexibility for rounding up</p></li>
+<li><p><code>round_up()</code> rounds up from 5, which is a special case of <code>round_up_from()</code></p></li>
+</ul></li>
+</ul>
+</section>
+<section id="are-they-safe-options" class="level3">
+<h3 class="anchored" data-anchor-id="are-they-safe-options">Are they safe options?</h3>
+<p>Those “round half up” functions do not offer the same level of precision and accuracy as the base R round function.</p>
+<p>For example, let’s consider a value <code>a</code> that is slightly less than <code>1.5</code>. If we choose round half up approach to round <code>a</code> to 0 decimal places, an output of <code>1</code> is expected. However, those functions yield a result of <code>2</code> because <code>1.5 - a</code> is less than <code>sqrt(.Machine$double.eps)</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">a <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sqrt</span>(.Machine<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>double.eps)</span>
+<span id="cb5-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ut_round1</span>(a, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">janitor<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round_half_up</span>(a, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">digits =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>This behavior aligns the floating point number comparison functions <code>all.equal()</code> and <code>dplyr::near()</code> with default tolerance <code>.Machine$double.eps^0.5</code>, where 1.5 and <code>a</code> are treated as equal.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all.equal</span>(a, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">dplyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">near</span>(a, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>We can get the expected results from base R <code>round</code> as it provides greater accuracy.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(a)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+<p>Here is an example when base R <code>round</code> reaches the precision limit:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># b is slightly less than 1.5</span></span>
+<span id="cb15-2">b <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> .Machine<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>double.eps</span>
+<span id="cb15-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 1 is expected but the result is 2</span></span>
+<span id="cb15-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(b)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>The precision and accuracy requirements can vary depending on the application. Therefore, it is essential to be aware each function’s performance in your specific context before making a choice.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<blockquote class="blockquote">
+<p>With the differences in default behaviour across languages, you could consider your QC strategy and whether an acceptable level of fuzz in the electronic comparisons could be allowed for cases such as rounding when making comparisons between 2 codes written in different languages as long as this is documented. Alternatively you could document the exact rounding approach to be used in the SAP and then match this regardless of programming language used. - Ross Farrugia</p>
+</blockquote>
+<p>Thanks Ross Farrugia, Ben Straub, Edoardo Mancini and Liming for reviewing this blog post and providing valuable feedback!</p>
+<p>If you spot an issue or have different opinions, please don’t hesitate to raise them through <a href="https://github.com/pharmaverse/blog">pharmaverse/blog</a>!</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-08-22 13:59:11.88039</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
+  author = {Zhang, Kangjie},
+  title = {Rounding},
+  date = {2023-07-24},
+  url = {https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas">
+Zhang, Kangjie. 2023. <span>“Rounding.”</span> July 24, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html">https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html</a>.
+</div></div></section></div> ]]></description>
+  <category>rounding</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html</guid>
+  <pubDate>Mon, 24 Jul 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.png" medium="image" type="image/png" height="138" width="144"/>
 </item>
 <item>
   <title>How to use Code Sections</title>
@@ -438,7 +878,7 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-08 12:54:40.832809</p>
+<p>2023-08-22 13:58:56.671866</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
@@ -621,7 +1061,7 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-08 12:54:43.505435</p>
+<p>2023-08-22 13:59:03.077861</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
@@ -681,7 +1121,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-08 12:54:38.796232</p>
+<p>2023-08-22 13:59:00.532079</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -771,7 +1211,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-08 12:54:45.373951</p>
+<p>2023-08-22 13:58:46.792405</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -789,6 +1229,318 @@ Straub, Ben. 2023. <span>“Hello Pharmaverse.”</span> June 28, 2023. <a href=
   <guid>https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/index.html</guid>
   <pubDate>Wed, 28 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/pharmaverse.PNG" medium="image"/>
+</item>
+<item>
+  <title>Admiral Hackathon 2023 Revisited</title>
+  <dc:creator>Stefan Thoma</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
+<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/events/webinar/pre-admiral-hackathon-workshop-introduction-r-sas-programmers">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
+<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
+<section id="introduction-to-r-workshop" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
+<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
+<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="admiral-hackathon" class="level2">
+<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
+<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
+<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
+<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
+<p>Congratulations to the winners:</p>
+<ul>
+<li><code>ViiV Team_GSK</code></li>
+<li><code>teamspoRt</code></li>
+<li><code>TatianaPXL</code></li>
+<li><code>Divyasneelam</code></li>
+<li><code>AdaMTeamIndia</code></li>
+<li><code>Sanofi_BP</code></li>
+<li><code>Jagadish</code> (our community hero)</li>
+<li><code>AZ_WAWA</code></li>
+</ul>
+<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
+<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/events/webinar/cosa-quarterly-spotlight-q1-2023">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
+<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.</p>
+<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-08-22 13:58:51.736608</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+  author = {Thoma, Stefan},
+  title = {Admiral {Hackathon} 2023 {Revisited}},
+  date = {2023-06-27},
+  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
+Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
+June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup</a>.
+</div></div></section></div> ]]></description>
+  <category>community</category>
+  <category>admiral</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</guid>
+  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png" medium="image" type="image/png" height="144" width="144"/>
+</item>
+<item>
+  <title>Derive a new parameter computed from the value of other parameters</title>
+  <dc:creator>Kangjie Zhang</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.</p>
+<p>The <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> function <a href="https://pharmaverse.github.io/admiral/cran-release/reference/derive_param_computed.html"><code>derive_param_computed()</code></a> adds a parameter computed from the analysis value of other parameters.</p>
+<p>It works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code.</p>
+</section>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<p>A value level validation use case, where <code>derive_param_computed()</code> is used to validate a derived parameter - <code>PARAMCD = ADPCYMG</code> (Actual Dose per Cycle) in ADEX dataset.</p>
+<section id="derivation" class="level3">
+<h3 class="anchored" data-anchor-id="derivation">Derivation</h3>
+<p>Actual Dose per Cycle is derived from the Total Amount of Dose (<code>PARAMCD = TOTDOSE</code>) / Number of Cycles (<code>PARAMCD = NUMCYC</code>)</p>
+<p>In this example, <code>ADEX.AVAL when ADEX.PARAMCD = ADPCYMG</code> can be derived as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AAVAL%20(PARAMCD%20=%20ADPCYMG)%20=%20%5Cfrac%7BAVAL%20(PARAMCD%20=%20TOTDOSE)%7D%7BAVAL%20(PARAMCD%20=%20NUMCYC)%7D%0A"></p>
+</section>
+<section id="loading-packages-and-creating-example-data" class="level3">
+<h3 class="anchored" data-anchor-id="loading-packages-and-creating-example-data">Loading Packages and Creating Example Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tibble)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(diffdf)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">adex <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb1-7">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AVAL,</span>
+<span id="cb1-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Total Amount of Dose (mg)"</span>,  <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">180</span>,</span>
+<span id="cb1-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NUMCYC"</span>,  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of Cycles"</span>,           <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb1-10">)</span></code></pre></div>
+</div>
+</section>
+<section id="derive-new-parameter" class="level3">
+<h3 class="anchored" data-anchor-id="derive-new-parameter">Derive New Parameter</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">adex_admiral <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_param_computed</span>(</span>
+<span id="cb2-2">  adex,</span>
+<span id="cb2-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID),</span>
+<span id="cb2-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">parameters =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NUMCYC"</span>),</span>
+<span id="cb2-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">analysis_value =</span> AVAL.TOTDOSE <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> AVAL.NUMCYC,</span>
+<span id="cb2-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">set_values_to =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(</span>
+<span id="cb2-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">PARAMCD =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ADPCYMG"</span>,</span>
+<span id="cb2-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">PARAM =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Actual Dose per Cycle (mg)"</span></span>
+<span id="cb2-9">  )</span>
+<span id="cb2-10">)</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  USUBJID PARAMCD PARAM                       AVAL
+  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;
+1 101     TOTDOSE Total Amount of Dose (mg)    180
+2 101     NUMCYC  Number of Cycles               3
+3 101     ADPCYMG Actual Dose per Cycle (mg)    60</code></pre>
+</div>
+</div>
+</section>
+<section id="compare" class="level3">
+<h3 class="anchored" data-anchor-id="compare">Compare</h3>
+<p>For validation purpose, the <a href="https://gowerc.github.io/diffdf/reference/diffdf.html">diffdf</a> package is used below to mimic SAS <code>proc compare</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adex_expected <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb4-2">  adex,</span>
+<span id="cb4-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb4-4">    <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AVAL,</span>
+<span id="cb4-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ADPCYMG"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Actual Dose per Cycle (mg)"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span></span>
+<span id="cb4-6">  )</span>
+<span id="cb4-7">)</span>
+<span id="cb4-8"></span>
+<span id="cb4-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">diffdf</span>(adex_expected, adex_admiral, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">keys =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"USUBJID"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No issues were found!</code></pre>
+</div>
+</div>
+<!--------------- appendices go here ----------------->
+</section>
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-08-22 13:58:54.450275</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
+  author = {Zhang, Kangjie},
+  title = {Derive a New Parameter Computed from the Value of Other
+    Parameters},
+  date = {2023-06-27},
+  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas">
+Zhang, Kangjie. 2023. <span>“Derive a New Parameter Computed from the
+Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html">https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</a>.
+</div></div></section></div> ]]></description>
+  <category>admiral</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</guid>
+  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>Hackathon Feedback Application</title>
@@ -1653,7 +2405,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-08 12:54:50.081647</p>
+<p>2023-08-22 13:59:08.814635</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -1675,318 +2427,6 @@ Thoma, Stefan. 2023. <span>“Hackathon Feedback Application.”</span> June
   <guid>https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/index.html</guid>
   <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/shiny_klee.png" medium="image" type="image/png" height="141" width="144"/>
-</item>
-<item>
-  <title>Derive a new parameter computed from the value of other parameters</title>
-  <dc:creator>Kangjie Zhang</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<!--------------- my typical setup ----------------->
-<!--------------- post begins here ----------------->
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.</p>
-<p>The <a href="https://pharmaverse.github.io/admiral/cran-release/"><code>admiral</code></a> function <a href="https://pharmaverse.github.io/admiral/cran-release/reference/derive_param_computed.html"><code>derive_param_computed()</code></a> adds a parameter computed from the analysis value of other parameters.</p>
-<p>It works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code.</p>
-</section>
-<section id="example" class="level2">
-<h2 class="anchored" data-anchor-id="example">Example</h2>
-<p>A value level validation use case, where <code>derive_param_computed()</code> is used to validate a derived parameter - <code>PARAMCD = ADPCYMG</code> (Actual Dose per Cycle) in ADEX dataset.</p>
-<section id="derivation" class="level3">
-<h3 class="anchored" data-anchor-id="derivation">Derivation</h3>
-<p>Actual Dose per Cycle is derived from the Total Amount of Dose (<code>PARAMCD = TOTDOSE</code>) / Number of Cycles (<code>PARAMCD = NUMCYC</code>)</p>
-<p>In this example, <code>ADEX.AVAL when ADEX.PARAMCD = ADPCYMG</code> can be derived as:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AAVAL%20(PARAMCD%20=%20ADPCYMG)%20=%20%5Cfrac%7BAVAL%20(PARAMCD%20=%20TOTDOSE)%7D%7BAVAL%20(PARAMCD%20=%20NUMCYC)%7D%0A"></p>
-</section>
-<section id="loading-packages-and-creating-example-data" class="level3">
-<h3 class="anchored" data-anchor-id="loading-packages-and-creating-example-data">Loading Packages and Creating Example Data</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tibble)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr)</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(diffdf)</span>
-<span id="cb1-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(admiral)</span>
-<span id="cb1-5"></span>
-<span id="cb1-6">adex <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tribble</span>(</span>
-<span id="cb1-7">  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>AVAL,</span>
-<span id="cb1-8">  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Total Amount of Dose (mg)"</span>,  <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">180</span>,</span>
-<span id="cb1-9">  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"NUMCYC"</span>,  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Number of Cycles"</span>,           <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span></span>
-<span id="cb1-10">)</span></code></pre></div>
-</div>
-</section>
-<section id="derive-new-parameter" class="level3">
-<h3 class="anchored" data-anchor-id="derive-new-parameter">Derive New Parameter</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">adex_admiral <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_param_computed</span>(</span>
-<span id="cb2-2">  adex,</span>
-<span id="cb2-3">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(USUBJID),</span>
-<span id="cb2-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">parameters =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"NUMCYC"</span>),</span>
-<span id="cb2-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">analysis_value =</span> AVAL.TOTDOSE <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> AVAL.NUMCYC,</span>
-<span id="cb2-6">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">set_values_to =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(</span>
-<span id="cb2-7">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAMCD =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADPCYMG"</span>,</span>
-<span id="cb2-8">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAM =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Actual Dose per Cycle (mg)"</span></span>
-<span id="cb2-9">  )</span>
-<span id="cb2-10">)</span></code></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 4
-  USUBJID PARAMCD PARAM                       AVAL
-  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;
-1 101     TOTDOSE Total Amount of Dose (mg)    180
-2 101     NUMCYC  Number of Cycles               3
-3 101     ADPCYMG Actual Dose per Cycle (mg)    60</code></pre>
-</div>
-</div>
-</section>
-<section id="compare" class="level3">
-<h3 class="anchored" data-anchor-id="compare">Compare</h3>
-<p>For validation purpose, the <a href="https://gowerc.github.io/diffdf/reference/diffdf.html">diffdf</a> package is used below to mimic SAS <code>proc compare</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adex_expected <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bind_rows</span>(</span>
-<span id="cb4-2">  adex,</span>
-<span id="cb4-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tribble</span>(</span>
-<span id="cb4-4">    <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>AVAL,</span>
-<span id="cb4-5">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADPCYMG"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Actual Dose per Cycle (mg)"</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">60</span></span>
-<span id="cb4-6">  )</span>
-<span id="cb4-7">)</span>
-<span id="cb4-8"></span>
-<span id="cb4-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">diffdf</span>(adex_expected, adex_admiral, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">keys =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"USUBJID"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>No issues were found!</code></pre>
-</div>
-</div>
-<!--------------- appendices go here ----------------->
-</section>
-</section>
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2023-08-08 12:54:56.091925</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
-  author = {Zhang, Kangjie},
-  title = {Derive a New Parameter Computed from the Value of Other
-    Parameters},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas">
-Zhang, Kangjie. 2023. <span>“Derive a New Parameter Computed from the
-Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html">https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</a>.
-</div></div></section></div> ]]></description>
-  <category>admiral</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</guid>
-  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Admiral Hackathon 2023 Revisited</title>
-  <dc:creator>Stefan Thoma</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<!--------------- my typical setup ----------------->
-<!--------------- post begins here ----------------->
-<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
-<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/events/webinar/pre-admiral-hackathon-workshop-introduction-r-sas-programmers">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
-<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
-<section id="introduction-to-r-workshop" class="level2">
-<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
-<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
-<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
-<section id="admiral-hackathon" class="level2">
-<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
-<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
-<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
-<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
-<p>Congratulations to the winners:</p>
-<ul>
-<li><code>ViiV Team_GSK</code></li>
-<li><code>teamspoRt</code></li>
-<li><code>TatianaPXL</code></li>
-<li><code>Divyasneelam</code></li>
-<li><code>AdaMTeamIndia</code></li>
-<li><code>Sanofi_BP</code></li>
-<li><code>Jagadish</code> (our community hero)</li>
-<li><code>AZ_WAWA</code></li>
-</ul>
-<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
-<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/events/webinar/cosa-quarterly-spotlight-q1-2023">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
-<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.</p>
-<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
-<!--------------- appendices go here ----------------->
-</section>
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2023-08-08 12:55:01.044249</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
-  author = {Thoma, Stefan},
-  title = {Admiral {Hackathon} 2023 {Revisited}},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
-Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
-June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup</a>.
-</div></div></section></div> ]]></description>
-  <category>community</category>
-  <category>admiral</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</guid>
-  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 </channel>
 </rss>
