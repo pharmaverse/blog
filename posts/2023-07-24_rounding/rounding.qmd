@@ -1,0 +1,217 @@
+---
+title: "Rounding"
+author:
+  - name: Kangjie Zhang
+description: "Exploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on 'round half up' and reliable solutions for numerical precision challenges"
+date: "2023-07-24"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [rounding]
+# feel free to change the image
+image: "rounding.png"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2023-07-24_rounding"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+## Rounding methods
+
+Both SAS and base R have the function `round()`, which rounds the input to the specified number of decimal places.
+However, they use different approaches when rounding off a 5:
+
+-   SAS `round()` [rounds half up](https://en.wikipedia.org/wiki/Rounding#Rounding_half_up).
+    This is the most common method of rounding.
+
+-   base R `round()` [rounds to the nearest even](https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest), which matches SAS's `rounde()` function.
+
+Although base R does not have the option for "round half up", there are functions available in other R packages (e.g., `janitor`, `tidytlg`).
+
+In general, there are many often used rounding methods.
+In the table below, you can find examples of them applied to the number 1.45.
+
++---------------+----------------------------+----------------------------+----------+------------+--------------------+
+|               | round half up              | round to even              | round up | round down | round towards zero |
++:=============:+:==========================:+:==========================:+:========:+:==========:+:==================:+
+| Example: 1.45 | 1.5                        | 1.4                        | 2        | 1          | 1                  |
+|               |                            |                            |          |            |                    |
+|               | (round to 1 decimal place) | (round to 1 decimal place) |          |            |                    |
++---------------+----------------------------+----------------------------+----------+------------+--------------------+
+
+Here are the corresponding ways to implement these methods in SAS and R.
+
++---------+----------------------------------------+-----------------+-------------------+-----------------+--------------------+
+|         | round half up                          | round to even   | round up          | round down      | round towards zero |
++:=======:+:======================================:+:===============:+:=================:+:===============:+:==================:+
+| SAS     | `round()`                              | `rounde()`      | `ceil()`          | `floor()`       | `int()`            |
++---------+----------------------------------------+-----------------+-------------------+-----------------+--------------------+
+| R       | ::: {style="background-color: yellow"} | <div>           | <div>             | <div>           | <div>              |
+|         | `janitor::round_half_up()`             |                 |                   |                 |                    |
+|         |                                        | `base::round()` | `base::ceiling()` | `base::floor()` | `base::trunc()`    |
+|         | ::: {style="background-color: yellow"} |                 |                   |                 |                    |
+|         | <div>                                  | </div>          | </div>            | </div>          | </div>             |
+|         |                                        |                 |                   |                 |                    |
+|         | `tidytlg::roundSAS()`                  |                 |                   |                 |                    |
+|         |                                        |                 |                   |                 |                    |
+|         | </div>                                 |                 |                   |                 |                    |
+|         | :::                                    |                 |                   |                 |                    |
+|         | :::                                    |                 |                   |                 |                    |
++---------+----------------------------------------+-----------------+-------------------+-----------------+--------------------+
+
+This table is summarized from links below, where more detailed discussions can be found -
+
+-   Two SAS blogs about [round-to-even](https://blogs.sas.com/content/iml/2019/11/11/round-to-even.html) and [rounding-up-rounding-down](https://blogs.sas.com/content/iml/2011/10/03/rounding-up-rounding-down.html)
+
+-   R documentation: Base R [Round](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Round.html), [`janitor::round_half_up()`](https://sfirke.github.io/janitor/reference/round_half_up.html), [`tidytlg::roundSAS()`](https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html)
+
+-   [CAMIS](https://psiaims.github.io/CAMIS/) (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software.
+    [Rounding](https://psiaims.github.io/CAMIS/Comp/r-sas_rounding.html) is one of the comparisons, and there are much more [on this page](https://psiaims.github.io/CAMIS/)!
+
+## Round half up in R
+
+The motivation for having a 'round half up' function is clear: it's a widely used rounding method, but there are no such options available in base R.
+
+There are multiple forums that have discussed this topic, and quite a few functions already available.
+But which ones to choose?
+Are they safe options?
+
+The first time I needed to round half up in R, I chose the function from a [PHUSE paper](https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf) and applied it to my study.
+It works fine for a while until I encountered the following precision issue when double programming in R for TLGs made in SAS.
+
+### Numerical precision issue
+
+Example of rounding half up for 2436.845, with 2 decimal places:
+
+```{r, message = FALSE}
+# a function that rounds half up
+# exact copy from: https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf
+ut_round <- function(x, n = 0) {
+  # x is the value to be rounded
+  # n is the precision of the rounding
+  scale <- 10^n
+  y <- trunc(x * scale + sign(x) * 0.5) / scale
+  # Return the rounded number
+  return(y)
+}
+# round half up for 2436.845, with 2 decimal places
+ut_round(2436.845, 2)
+```
+
+The expected result is 2436.85, but the output rounds it down.
+Thanks to the community effort, there are already discussions and resolution available in a [StackOverflow post](https://stackoverflow.com/questions/12688717/round-up-from-5#comment110611119_12688836) -
+
+> There are numerical precision issues, e.g., `round2(2436.845, 2)` returns `2436.84.` Changing `z + 0.5 to z + 0.5 + sqrt(.Machine$double.eps)` seems to work for me. -- Gregor Thomas Jun 24, 2020 at 2:16
+
+-   `.Machine$double.eps` is a built-in constant in R that represents the smallest positive floating-point number that can be represented on the system (reference: [Machine Characteristics](https://www.math.ucla.edu/~anderson/rw1001/library/base/html/zMachine.html))
+
+-   The expression `+ sqrt(.Machine$double.eps)` is used to add a very small value to mitigate floating-point precision issues.
+
+-   For more information about computational precision and floating-point, see the following links -
+
+    -   R: [Why doesn't R think these numbers are equal?](https://cran.r-project.org/doc/FAQ/R-FAQ.html#Why-doesn_0027t-R-think-these-numbers-are-equal_003f)
+    -   SAS: [Numerical Accuracy in SAS Software](https://documentation.sas.com/doc/en/lrcon/9.4/p0ji1unv6thm0dn1gp4t01a1u0g6.htm)
+
+After the fix:
+
+```{r, message = FALSE}
+# revised rounds half up
+ut_round1 <- function(x, n = 0) {
+  # x is the value to be rounded
+  # n is the precision of the rounding
+  scale <- 10^n
+  y <- trunc(x * scale + sign(x) * 0.5 + sqrt(.Machine$double.eps)) / scale
+  # Return the rounded number
+  return(y)
+}
+# round half up for 2436.845, with 2 decimal places
+ut_round1(2436.845, 2)
+```
+
+### We are not alone
+
+The same issue occurred in the following functions/options as well, and has been raised by users:
+
+-   `janitor::round_half_up()`: [issue](https://github.com/sfirke/janitor/issues/396) was raised and fixed in v2.1.0
+
+-   `Tplyr`: `options(tplyr.IBMRounding = TRUE)`, [issue](https://github.com/atorus-research/Tplyr/issues/124) was raised
+
+-   `scrutiny::round_up_from()/round_up()`: [issue](https://github.com/lhdjung/scrutiny/issues/43) was raised and fixed
+
+-   \...
+    and many others!
+
+### Which ones to use?
+
+The following functions have the precision issue mentioned above fixed, they all share the same logic from this [StackOverflow post](https://stackoverflow.com/questions/12688717/round-up-from-5).
+
+-   [`janitor::round_half_up()`](https://sfirke.github.io/janitor/reference/round_half_up.html) **version \>= 2.1.0**
+-   [`tidytlg::roundSAS()`](https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html)
+    -   this function has two more arguments that can convert the result to character and allow a character string to indicate missing values
+-   [`scrutiny::round_up_from()/round_up()`](https://lhdjung.github.io/scrutiny/reference/rounding-common.html) **version \>= 0.2.5**
+    -   `round_up_from()` has a `threshold` argument for rounding up, which adds flexibility for rounding up
+
+    -   `round_up()` rounds up from 5, which is a special case of `round_up_from()`
+
+### Are they safe options?
+
+Those "round half up" functions do not offer the same level of precision and accuracy as the base R round function.
+
+For example, let's consider a value `a` that is slightly less than `1.5`.
+If we choose round half up approach to round `a` to 0 decimal places, an output of `1` is expected.
+However, those functions yield a result of `2` because `1.5 - a` is less than `sqrt(.Machine$double.eps)`.
+
+```{r, message = FALSE}
+a <- 1.5 - 0.5 * sqrt(.Machine$double.eps)
+ut_round1(a, 0)
+janitor::round_half_up(a, digits = 0)
+```
+
+This behavior aligns the floating point number comparison functions `all.equal()` and `dplyr::near()` with default tolerance `.Machine$double.eps^0.5`, where 1.5 and `a` are treated as equal.
+
+```{r, message = FALSE}
+all.equal(a, 1.5)
+dplyr::near(a, 1.5)
+```
+
+We can get the expected results from base R `round` as it provides greater accuracy.
+
+```{r, message = FALSE}
+round(a)
+```
+
+Here is an example when base R `round` reaches the precision limit:
+
+```{r, message=FALSE}
+# b is slightly less than 1.5
+b <- 1.5 - 0.5 * .Machine$double.eps
+# 1 is expected but the result is 2
+round(b)
+```
+
+The precision and accuracy requirements can vary depending on the application.
+Therefore, it is essential to be aware each function's performance in your specific context before making a choice.
+
+## Conclusion
+
+> With the differences in default behaviour across languages, you could consider your QC strategy and whether an acceptable level of fuzz in the electronic comparisons could be allowed for cases such as rounding when making comparisons between 2 codes written in different languages as long as this is documented.
+> Alternatively you could document the exact rounding approach to be used in the SAP and then match this regardless of programming language used.
+> - Ross Farrugia
+
+Thanks Ross Farrugia, Ben Straub, Edoardo Mancini and Liming for reviewing this blog post and providing valuable feedback!
+
+If you spot an issue or have different opinions, please don't hesitate to raise them through [pharmaverse/blog](https://github.com/pharmaverse/blog)!
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug
+)
+```
