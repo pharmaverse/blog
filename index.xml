@@ -10,7 +10,94 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.450</generator>
-<lastBuildDate>Tue, 08 Aug 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 30 Aug 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>The pharmaverse (hi)story</title>
+  <dc:creator>Nicholas Eugenio</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse_story.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>Pharmaverse: from motivation to present</p>
+<section id="human-history-and-pharmaverse-context" class="level2">
+<h2 class="anchored" data-anchor-id="human-history-and-pharmaverse-context">Human history and pharmaverse context</h2>
+<p>Since the Australian Aboriginal, the earliest peoples recorded to have inhabited the Earth and who have been in Australia for at least 65,000 to 80,000 years (<a href="https://www.britannica.com/topic/Australian-Aboriginal">Encyclopædia Britannica</a>), human beings live in group. Whether to protect yourself, increase your life expectancy or simply share tasks.</p>
+<p>For most aspects of life, it doesn’t make sense to think, act or work alone for two main reasons:</p>
+<ol type="1">
+<li><p>You will spend more energy and time;</p></li>
+<li><p>Someone else may be facing (or have faced) the same situation.</p></li>
+</ol>
+<p>The English poet John Donne used to say <em>“No man is an island entire of itself; every man is a piece of the continent, a part of the main;”</em>. I can’t disagree with him. And I dare say that Ari Siggaard Knoph (Novo Nordisk), Michael Rimler (GSK), Michael Stackhouse (Atorus), Ross Farrugia (Roche), and Sumesh Kalappurakal (Janssen) can’t disagree with him either. They are the founders of <a href="https://pharmaverse.org/">pharmaverse</a>, members of its Council and kindly shared their memories of how independent companies, in mid-2020, worked together in the creation of a set of packages developed to support the clinical reporting pipeline.</p>
+<p>If you are not familiar with this pipeline, the important thing to know is that, in a nutshell, pharmaceutical companies must follow a bunch of standardized procedures and formats (from Clinical Data Interchange Standards Consortium, <a href="https://www.cdisc.org/">CDISC</a>) when submitting clinical results to Health Authorities. The focus is on this: <strong>different</strong> companies seeking the <strong>same</strong> standards for outputs.</p>
+<p>Paraphrasing Ross Farrugia (Roche) <em>Breaking boundaries through open-source collaboration</em> presentation in <a href="https://www.youtube.com/watch?v=APMDOS4v9Hk">R/Pharma 2022</a> and thinking of the development of a new drug, we are talking about a “post-competitive” scenario: the drug has already been discovered and the companies should “just” produce and deliver standardized results.</p>
+</section>
+<section id="clinical-reporting-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="clinical-reporting-outputs">Clinical reporting outputs</h2>
+<p>Rationally, we can say that companies face the same challenges in these steps of the process. Not so intuitively, we can also say they were working in silos on that before 2018. Just as Isaac Newton and Gottfried W. Leibniz <a href="https://en.wikipedia.org/wiki/History_of_calculus">independently developed the theory of infinitesimal calculus</a>, pharmaceutical companies were independently working on R solutions for this pipeline.</p>
+<p>But on August 16 and 17 of the mentioned year above, they gathered at the first edition of <a href="https://rinpharma.com/">R/Pharma conference</a> to discuss R and open-source tooling for drug development (the reasons why open-source is an advantageous approach can be found in this <a href="https://pharmaverse.github.io/blog/posts/2023-07-20_cross_company_dev/cross_industry_dev.html">post</a> written by Stefan Thoma). And according to Isabela Velásquez’s article, <a href="https://posit.co/blog/pharmaverse-packages-for-clinical-reporting-workflows/">Pharmaverse: Packages for clinical reporting workflows</a>, one of the most popular questions in this conference was “Is the package code available or on <a href="https://cran.r-project.org/">CRAN</a>?”.</p>
+<p>Well, many of them were. And not necessarily at that date, but just to mention a few: <a href="https://atorus-research.github.io/pharmaRTF/index.html"><em>pharmaRTF</em></a> and <a href="https://atorus-research.github.io/Tplyr/index.html"><em>Tplyr</em></a> from Atorus, <a href="https://merck.github.io/r2rtf/"><em>r2rtf</em></a> from Merck, <a href="https://insightsengineering.github.io/rtables/main/"><em>rtables</em></a> from Roche, etc. The thing is that, overall, there were almost 10000 other packages as well (today, almost 20000). And that took to another two questions:</p>
+<ol type="1">
+<li><p>With this overwhelming number of packages on CRAN, how to find the ones related to solving “clinical reporting problems”?</p></li>
+<li><p>Once the packages were found, how to choose which one to use among those that have the same functional purpose?</p></li>
+</ol>
+<p>So, again, companies re-started to working in silos to find those answers. But now, in collaborative silos and with common goals: create extremely useful packages to solve pharmaceutical-specific gaps once and solve them well!</p>
+</section>
+<section id="first-partnerships" class="level2">
+<h2 class="anchored" data-anchor-id="first-partnerships">First partnerships</h2>
+<p>In 2020, Michael Stackhouse (Atorus) and Michael Rimler (GSK) talked and formed a partnership between their companies to develop a few more packages, including <a href="https://github.com/atorus-research/metacore"><em>metacore</em></a>, to read, store and manipulate metadata for ADaMs/SDTMs in a standardized object; <a href="https://github.com/atorus-research/xportr"><em>xportr</em></a>, to create submission compliant SAS transport files and perform pharma specific dataset level validation checks; and <a href="https://github.com/pharmaverse/logrx"><em>logrx</em></a> (ex-<em>timber</em>), to build log to support reproducibility and traceability of an R script.</p>
+<p>Around the same time, Thomas Neitmann (currently at Denali Therapeutics, then at Roche) and Michael Rimler (GSK) discovered that both were working with ADaM in R, so Thomas Neitmann (currently at Denali Therapeutics, then at Roche), Ross Farrugia (Roche) and Michael Rimler (GSK) saw an opportunity there and GSK started their partnership with Roche to build and release <a href="https://github.com/pharmaverse/admiral"><em>admiral</em></a> package.</p>
+<p>The idea of working together, the sense of community, and the appetite from organizations built more and more, with incentive and priority established up into the programming heads council.</p>
+<p>Janssen had a huge effort in building R capabilities going on as well, by releasing <a href="https://github.com/pharmaverse/tidytlg"><em>tidytlg</em></a> and <a href="https://github.com/pharmaverse/envsetup"><em>envsetup</em></a>), so eventually Michael Rimler (GSK), Michael Stackhouse (Atorus) and Ross Farrugia (Roche) formalized <a href="https://pharmaverse.org/">pharmaverse</a> and formed the council, adding in Sumesh Kalappurakal (Janssen) and Ari Siggaard Knoph (Novo Nordisk) later joined as the fifth council member.</p>
+</section>
+<section id="release-growth-and-developments" class="level2">
+<h2 class="anchored" data-anchor-id="release-growth-and-developments">Release, growth and developments</h2>
+<p>At the end of their presentation <a href="https://www.youtube.com/watch?v=NW9qp5QOlIU">“Closing the Gap: Creating an End to End R Package Toolkit for the Clinical Reporting Pipeline.”</a>, in <a href="https://rinpharma.com/event/rinpharma2021/">R/Pharma 2021</a>, Ben Straub (GSK) and Eli Miller (Atorus) welcomed the community to the <a href="https://pharmaverse.org/">pharmaverse</a>, a curated collection of packages developed by various pharmaceutical companies to support open-source clinical workflows.</p>
+<p>From the outset, the name <a href="https://pharmaverse.org/">pharmaverse</a> was chosen so that it could be a neutral home, unrelated to any company. Also, it was established as not being a consortium, which means that founders don’t own, fund, or maintain the packages. Some individuals and companies maintain them but often allowing for community contributions and being licensed permissively so that there is always a feeling of community ownership. The focus of <a href="https://pharmaverse.org/">pharmaverse</a> early on, and today, is on inter organization cooperation, to build an environment where, if organizations identify that they have a joint problem that they want to solve, this is the right space to work on and release it.</p>
+<p><a href="https://pharmaverse.org/">Pharmaverse</a> has grown a lot, at the time of writing this post we have &gt;25 packages recommended in <a href="https://pharmaverse.org/e2eclinical/">pharmaverse</a>, and this has led to a partnership with <a href="https://phuse.global/About_PHUSE">PHUSE</a> to get support from their organization and platform, and because they are eager to advance and support <a href="https://pharmaverse.org/charter/">pharmaverse mission</a>.</p>
+<p>Despite all its structure, it is impossible to say that we have a single solution for each clinical reporting analysis when it comes to <a href="https://pharmaverse.org/">pharmaverse</a>, a single pathway is impractical. Instead, it is necessary to accept viable tools fitting different pathways into <a href="https://pharmaverse.org/">pharmaverse</a> to direct and give people options as to what might work for them. After all, even though we live together as a community, we still have our own unique internal problems.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/logos.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Sample of pharmaverse packages</figcaption>
+</figure>
+</div>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-08-22 17:23:05.182701</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{eugenio2023,
+  author = {Eugenio, Nicholas},
+  title = {The Pharmaverse (Hi)story},
+  date = {2023-08-30},
+  url = {https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse_story.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-eugenio2023" class="csl-entry quarto-appendix-citeas">
+Eugenio, Nicholas. 2023. <span>“The Pharmaverse (Hi)story.”</span>
+August 30, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse_story.html">https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse_story.html</a>.
+</div></div></section></div> ]]></description>
+  <category>community</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse_story.html</guid>
+  <pubDate>Wed, 30 Aug 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse.png" medium="image" type="image/png" height="144" width="144"/>
+</item>
 <item>
   <title>It’s all relative? - Calculating Relative Days using admiral</title>
   <dc:creator>Ben Straub</dc:creator>
@@ -181,7 +268,7 @@ font-style: inherit;">DEMOEDY =</span> AENDT)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 13:59:06.057818</p>
+<p>2023-08-22 17:23:09.852069</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
@@ -712,7 +799,7 @@ font-style: inherit;">round</span>(b)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 13:59:11.88039</p>
+<p>2023-08-22 17:23:14.871151</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>
@@ -878,7 +965,7 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 13:58:56.671866</p>
+<p>2023-08-22 17:23:00.219446</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
@@ -1061,7 +1148,7 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 13:59:03.077861</p>
+<p>2023-08-22 17:23:07.477414</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
@@ -1121,7 +1208,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 13:59:00.532079</p>
+<p>2023-08-22 17:23:03.668387</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -1211,7 +1298,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 13:58:46.792405</p>
+<p>2023-08-22 17:22:51.964255</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -1303,7 +1390,7 @@ Straub, Ben. 2023. <span>“Hello Pharmaverse.”</span> June 28, 2023. <a href=
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 13:58:51.736608</p>
+<p>2023-08-22 17:22:56.031405</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -1521,7 +1608,7 @@ font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 13:58:54.450275</p>
+<p>2023-08-22 17:22:58.356286</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
@@ -2405,7 +2492,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 13:59:08.814635</p>
+<p>2023-08-22 17:23:12.060088</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>

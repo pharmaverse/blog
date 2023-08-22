@@ -6,11 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Ben Straub">
-<meta name="dcterms.date" content="2023-07-10">
-<meta name="description" content="Reading SAS datasets into R. The data is not always as it seems!">
+<meta name="author" content="Nicholas Eugenio">
+<meta name="dcterms.date" content="2023-08-30">
 
-<title>Pharmaverse Blog - Blanks and NAs</title>
+<title>Pharmaverse Blog - The pharmaverse (hi)story</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,40 +21,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -105,12 +70,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Pharmaverse Blog - Blanks and NAs">
-<meta property="og:description" content="Reading SAS datasets into R. The data is not always as it seems!">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/admiral.png">
+<meta property="og:title" content="Pharmaverse Blog - The pharmaverse (hi)story">
+<meta property="og:description" content="">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse.png">
 <meta property="og:site-name" content="Pharmaverse Blog">
-<meta property="og:image:height" content="276">
-<meta property="og:image:width" content="369">
+<meta property="og:image:height" content="300">
+<meta property="og:image:width" content="300">
 </head>
 
 <body class="floating nav-fixed">
@@ -146,14 +111,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Blanks and NAs</h1>
-                  <div>
-        <div class="description">
-          Reading SAS datasets into R. The data is not always as it seems!
-        </div>
-      </div>
-                          <div class="quarto-categories">
-                <div class="quarto-category">admiral</div>
+      <h1 class="title">The pharmaverse (hi)story</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">community</div>
               </div>
                   </div>
   </div>
@@ -164,14 +124,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Ben Straub </p>
+               <p>Nicholas Eugenio </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 10, 2023</p>
+        <p class="date">August 30, 2023</p>
       </div>
     </div>
     
@@ -186,9 +146,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#loading-packages-and-making-dummy-data" id="toc-loading-packages-and-making-dummy-data" class="nav-link active" data-scroll-target="#loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</a></li>
-  <li><a href="#a-simple-conversion" id="toc-a-simple-conversion" class="nav-link" data-scroll-target="#a-simple-conversion">A simple conversion</a></li>
-  <li><a href="#thats-it" id="toc-thats-it" class="nav-link" data-scroll-target="#thats-it">That’s it!</a></li>
+  <li><a href="#human-history-and-pharmaverse-context" id="toc-human-history-and-pharmaverse-context" class="nav-link active" data-scroll-target="#human-history-and-pharmaverse-context">Human history and pharmaverse context</a></li>
+  <li><a href="#clinical-reporting-outputs" id="toc-clinical-reporting-outputs" class="nav-link" data-scroll-target="#clinical-reporting-outputs">Clinical reporting outputs</a></li>
+  <li><a href="#first-partnerships" id="toc-first-partnerships" class="nav-link" data-scroll-target="#first-partnerships">First partnerships</a></li>
+  <li><a href="#release-growth-and-developments" id="toc-release-growth-and-developments" class="nav-link" data-scroll-target="#release-growth-and-developments">Release, growth and developments</a></li>
   </ul>
 </nav>
 </nav>
@@ -204,89 +165,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>Reading in SAS-based datasets (<code>.sas7bdat</code> or <code>xpt</code>) into R has users calling the R package <a href="https://haven.tidyverse.org/">haven</a>. A typical call might invoke <code>read_sas()</code> or <code>read_xpt()</code> to bring in your source data to construct your ADaMs or SDTMs.</p>
-<p>Unfortunately, while using <a href="https://haven.tidyverse.org/">haven</a> the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like <code>is.na</code> in combination with <code>dplyr::filter()</code> to subset data. Check out <a href="https://bayer-group.github.io/sas2r/r-and-sas-syntax.html#handling-of-missing-values">Bayer’s SAS2R catalog: handling-of-missing-values</a> for more discussion on missing values and <code>NAs</code>.</p>
-<p>In the <a href="https://pharmaverse.github.io/admiral/cran-release/">admiral</a> package, we have built a simple function called <code>convert_blanks_to_na()</code> to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to <code>NA_character_</code></p>
-<section id="loading-packages-and-making-dummy-data" class="level2">
-<h2 class="anchored" data-anchor-id="loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID, <span class="sc">~</span>RFICDTC,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"01"</span>, <span class="st">"2000-01-01"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"02"</span>, <span class="st">"2001-01-01"</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"03"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"04"</span>, <span class="st">"2001-01--"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">"2001---01"</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  USUBJID RFICDTC     
-  &lt;chr&gt;   &lt;chr&gt;       
-1 01      "2000-01-01"
-2 02      "2001-01-01"
-3 03      ""          
-4 04      "2001-01--" 
-5 05      "2001---01" 
-6 05      ""          </code></pre>
-</div>
-</div>
+<p>Pharmaverse: from motivation to present</p>
+<section id="human-history-and-pharmaverse-context" class="level2">
+<h2 class="anchored" data-anchor-id="human-history-and-pharmaverse-context">Human history and pharmaverse context</h2>
+<p>Since the Australian Aboriginal, the earliest peoples recorded to have inhabited the Earth and who have been in Australia for at least 65,000 to 80,000 years (<a href="https://www.britannica.com/topic/Australian-Aboriginal">Encyclopædia Britannica</a>), human beings live in group. Whether to protect yourself, increase your life expectancy or simply share tasks.</p>
+<p>For most aspects of life, it doesn’t make sense to think, act or work alone for two main reasons:</p>
+<ol type="1">
+<li><p>You will spend more energy and time;</p></li>
+<li><p>Someone else may be facing (or have faced) the same situation.</p></li>
+</ol>
+<p>The English poet John Donne used to say <em>“No man is an island entire of itself; every man is a piece of the continent, a part of the main;”</em>. I can’t disagree with him. And I dare say that Ari Siggaard Knoph (Novo Nordisk), Michael Rimler (GSK), Michael Stackhouse (Atorus), Ross Farrugia (Roche), and Sumesh Kalappurakal (Janssen) can’t disagree with him either. They are the founders of <a href="https://pharmaverse.org/">pharmaverse</a>, members of its Council and kindly shared their memories of how independent companies, in mid-2020, worked together in the creation of a set of packages developed to support the clinical reporting pipeline.</p>
+<p>If you are not familiar with this pipeline, the important thing to know is that, in a nutshell, pharmaceutical companies must follow a bunch of standardized procedures and formats (from Clinical Data Interchange Standards Consortium, <a href="https://www.cdisc.org/">CDISC</a>) when submitting clinical results to Health Authorities. The focus is on this: <strong>different</strong> companies seeking the <strong>same</strong> standards for outputs.</p>
+<p>Paraphrasing Ross Farrugia (Roche) <em>Breaking boundaries through open-source collaboration</em> presentation in <a href="https://www.youtube.com/watch?v=APMDOS4v9Hk">R/Pharma 2022</a> and thinking of the development of a new drug, we are talking about a “post-competitive” scenario: the drug has already been discovered and the companies should “just” produce and deliver standardized results.</p>
 </section>
-<section id="a-simple-conversion" class="level2">
-<h2 class="anchored" data-anchor-id="a-simple-conversion">A simple conversion</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(df)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_na</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  USUBJID RFICDTC   
-  &lt;chr&gt;   &lt;chr&gt;     
-1 01      2000-01-01
-2 02      2001-01-01
-3 03      &lt;NA&gt;      
-4 04      2001-01-- 
-5 05      2001---01 
-6 05      &lt;NA&gt;      </code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(RFICDTC))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 2
-  USUBJID RFICDTC
-  &lt;chr&gt;   &lt;chr&gt;  
-1 03      &lt;NA&gt;   
-2 05      &lt;NA&gt;   </code></pre>
-</div>
-</div>
+<section id="clinical-reporting-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="clinical-reporting-outputs">Clinical reporting outputs</h2>
+<p>Rationally, we can say that companies face the same challenges in these steps of the process. Not so intuitively, we can also say they were working in silos on that before 2018. Just as Isaac Newton and Gottfried W. Leibniz <a href="https://en.wikipedia.org/wiki/History_of_calculus">independently developed the theory of infinitesimal calculus</a>, pharmaceutical companies were independently working on R solutions for this pipeline.</p>
+<p>But on August 16 and 17 of the mentioned year above, they gathered at the first edition of <a href="https://rinpharma.com/">R/Pharma conference</a> to discuss R and open-source tooling for drug development (the reasons why open-source is an advantageous approach can be found in this <a href="https://pharmaverse.github.io/blog/posts/2023-07-20_cross_company_dev/cross_industry_dev.html">post</a> written by Stefan Thoma). And according to Isabela Velásquez’s article, <a href="https://posit.co/blog/pharmaverse-packages-for-clinical-reporting-workflows/">Pharmaverse: Packages for clinical reporting workflows</a>, one of the most popular questions in this conference was “Is the package code available or on <a href="https://cran.r-project.org/">CRAN</a>?”.</p>
+<p>Well, many of them were. And not necessarily at that date, but just to mention a few: <a href="https://atorus-research.github.io/pharmaRTF/index.html"><em>pharmaRTF</em></a> and <a href="https://atorus-research.github.io/Tplyr/index.html"><em>Tplyr</em></a> from Atorus, <a href="https://merck.github.io/r2rtf/"><em>r2rtf</em></a> from Merck, <a href="https://insightsengineering.github.io/rtables/main/"><em>rtables</em></a> from Roche, etc. The thing is that, overall, there were almost 10000 other packages as well (today, almost 20000). And that took to another two questions:</p>
+<ol type="1">
+<li><p>With this overwhelming number of packages on CRAN, how to find the ones related to solving “clinical reporting problems”?</p></li>
+<li><p>Once the packages were found, how to choose which one to use among those that have the same functional purpose?</p></li>
+</ol>
+<p>So, again, companies re-started to working in silos to find those answers. But now, in collaborative silos and with common goals: create extremely useful packages to solve pharmaceutical-specific gaps once and solve them well!</p>
 </section>
-<section id="thats-it" class="level2">
-<h2 class="anchored" data-anchor-id="thats-it">That’s it!</h2>
-<p>A simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In <a href="https://pharmaverse.github.io/admiral/cran-release/">admiral</a>, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function <code>use_ad_template()</code> to get the full R script for the below ADaMs.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list_all_templates</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Existing ADaM templates in package 'admiral':
-• ADAE
-• ADCM
-• ADEG
-• ADEX
-• ADLB
-• ADLBHY
-• ADMH
-• ADPC
-• ADPP
-• ADPPK
-• ADSL
-• ADVS</code></pre>
-</div>
+<section id="first-partnerships" class="level2">
+<h2 class="anchored" data-anchor-id="first-partnerships">First partnerships</h2>
+<p>In 2020, Michael Stackhouse (Atorus) and Michael Rimler (GSK) talked and formed a partnership between their companies to develop a few more packages, including <a href="https://github.com/atorus-research/metacore"><em>metacore</em></a>, to read, store and manipulate metadata for ADaMs/SDTMs in a standardized object; <a href="https://github.com/atorus-research/xportr"><em>xportr</em></a>, to create submission compliant SAS transport files and perform pharma specific dataset level validation checks; and <a href="https://github.com/pharmaverse/logrx"><em>logrx</em></a> (ex-<em>timber</em>), to build log to support reproducibility and traceability of an R script.</p>
+<p>Around the same time, Thomas Neitmann (currently at Denali Therapeutics, then at Roche) and Michael Rimler (GSK) discovered that both were working with ADaM in R, so Thomas Neitmann (currently at Denali Therapeutics, then at Roche), Ross Farrugia (Roche) and Michael Rimler (GSK) saw an opportunity there and GSK started their partnership with Roche to build and release <a href="https://github.com/pharmaverse/admiral"><em>admiral</em></a> package.</p>
+<p>The idea of working together, the sense of community, and the appetite from organizations built more and more, with incentive and priority established up into the programming heads council.</p>
+<p>Janssen had a huge effort in building R capabilities going on as well, by releasing <a href="https://github.com/pharmaverse/tidytlg"><em>tidytlg</em></a> and <a href="https://github.com/pharmaverse/envsetup"><em>envsetup</em></a>), so eventually Michael Rimler (GSK), Michael Stackhouse (Atorus) and Ross Farrugia (Roche) formalized <a href="https://pharmaverse.org/">pharmaverse</a> and formed the council, adding in Sumesh Kalappurakal (Janssen) and Ari Siggaard Knoph (Novo Nordisk) later joined as the fifth council member.</p>
+</section>
+<section id="release-growth-and-developments" class="level2">
+<h2 class="anchored" data-anchor-id="release-growth-and-developments">Release, growth and developments</h2>
+<p>At the end of their presentation <a href="https://www.youtube.com/watch?v=NW9qp5QOlIU">“Closing the Gap: Creating an End to End R Package Toolkit for the Clinical Reporting Pipeline.”</a>, in <a href="https://rinpharma.com/event/rinpharma2021/">R/Pharma 2021</a>, Ben Straub (GSK) and Eli Miller (Atorus) welcomed the community to the <a href="https://pharmaverse.org/">pharmaverse</a>, a curated collection of packages developed by various pharmaceutical companies to support open-source clinical workflows.</p>
+<p>From the outset, the name <a href="https://pharmaverse.org/">pharmaverse</a> was chosen so that it could be a neutral home, unrelated to any company. Also, it was established as not being a consortium, which means that founders don’t own, fund, or maintain the packages. Some individuals and companies maintain them but often allowing for community contributions and being licensed permissively so that there is always a feeling of community ownership. The focus of <a href="https://pharmaverse.org/">pharmaverse</a> early on, and today, is on inter organization cooperation, to build an environment where, if organizations identify that they have a joint problem that they want to solve, this is the right space to work on and release it.</p>
+<p><a href="https://pharmaverse.org/">Pharmaverse</a> has grown a lot, at the time of writing this post we have &gt;25 packages recommended in <a href="https://pharmaverse.org/e2eclinical/">pharmaverse</a>, and this has led to a partnership with <a href="https://phuse.global/About_PHUSE">PHUSE</a> to get support from their organization and platform, and because they are eager to advance and support <a href="https://pharmaverse.org/charter/">pharmaverse mission</a>.</p>
+<p>Despite all its structure, it is impossible to say that we have a single solution for each clinical reporting analysis when it comes to <a href="https://pharmaverse.org/">pharmaverse</a>, a single pathway is impractical. Instead, it is necessary to accept viable tools fitting different pathways into <a href="https://pharmaverse.org/">pharmaverse</a> to direct and give people options as to what might work for them. After all, even though we live together as a community, we still have our own unique internal problems.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="logos.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Sample of pharmaverse packages</figcaption>
+</figure>
 </div>
 <!--------------- appendices go here ----------------->
 </section>
@@ -301,19 +221,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 17:23:07.477414</p>
+<p>2023-08-22 17:23:05.182701</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
-  author = {Straub, Ben},
-  title = {Blanks and {NAs}},
-  date = {2023-07-10},
-  url = {https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{eugenio2023,
+  author = {Eugenio, Nicholas},
+  title = {The Pharmaverse (Hi)story},
+  date = {2023-08-30},
+  url = {https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse_story.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html">https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-eugenio2023" class="csl-entry quarto-appendix-citeas" role="listitem">
+Eugenio, Nicholas. 2023. <span>“The Pharmaverse (Hi)story.”</span>
+August 30, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse_story.html">https://pharmaverse.github.io/blog/posts/2023-08-30_pharmaverse_story/pharmaverse_story.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
