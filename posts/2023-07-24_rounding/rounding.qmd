@@ -67,7 +67,7 @@ This table is summarized from links below, where more detailed discussions can b
 
 -   Two SAS blogs about [round-to-even](https://blogs.sas.com/content/iml/2019/11/11/round-to-even.html) and [rounding-up-rounding-down](https://blogs.sas.com/content/iml/2011/10/03/rounding-up-rounding-down.html)
 
--   R documentation: Base R [Round](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/Round), [`janitor::round_half_up()`](https://sfirke.github.io/janitor/reference/round_half_up.html), [`tidytlg::roundSAS()`](https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html)
+-   R documentation: Base R [Round](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Round.html), [`janitor::round_half_up()`](https://sfirke.github.io/janitor/reference/round_half_up.html), [`tidytlg::roundSAS()`](https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html)
 
 -   [CAMIS](https://psiaims.github.io/CAMIS/) (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software.
     [Rounding](https://psiaims.github.io/CAMIS/Comp/r-sas_rounding.html) is one of the comparisons, and there are much more [on this page](https://psiaims.github.io/CAMIS/)!
@@ -166,7 +166,7 @@ If we choose round half up approach to round `a` to 0 decimal places, an output 
 However, those functions yield a result of `2` because `1.5 - a` is less than `sqrt(.Machine$double.eps)`.
 
 ```{r, message = FALSE}
-a <- 1.5 - 0.5*sqrt(.Machine$double.eps)
+a <- 1.5 - 0.5 * sqrt(.Machine$double.eps)
 ut_round1(a, 0)
 janitor::round_half_up(a, digits = 0)
 ```
@@ -188,8 +188,8 @@ Here is an example when base R `round` reaches the precision limit:
 
 ```{r, message=FALSE}
 # b is slightly less than 1.5
-b <- 1.5 - 0.5*.Machine$double.eps
-# 1 is expected but the result is 2 
+b <- 1.5 - 0.5 * .Machine$double.eps
+# 1 is expected but the result is 2
 round(b)
 ```
 
