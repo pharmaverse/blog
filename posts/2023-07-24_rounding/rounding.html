@@ -215,7 +215,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Both SAS and base R have the function <code>round()</code>, which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:</p>
 <ul>
 <li><p>SAS <code>round()</code> <a href="https://en.wikipedia.org/wiki/Rounding#Rounding_half_up">rounds half up</a>. This is the most common method of rounding.</p></li>
-<li><p>base R <code>round()</code> <a href="https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest">rounds to the nearest even</a>, which matches SAS’s <code>rounde()</code> function.</p></li>
+<li><p>base R <code>round()</code> <a href="https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest">rounds to the nearest even</a>. Therefore <code>round(0.5)</code> is <code>0</code> and <code>round(-1.5)</code> is <code>-2</code>. Note from the base R round documentation:</p>
+<ul>
+<li><div>
+<blockquote class="blockquote">
+<p>this is dependent on OS services and on representation error (since e.g.&nbsp;<code>0.15</code> is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so <code>round(0.15, 1)</code> could be either <code>0.1</code> or <code>0.2</code>).</p>
+</blockquote>
+</div></li>
+</ul></li>
 </ul>
 <p>Although base R does not have the option for “round half up”, there are functions available in other R packages (e.g., <code>janitor</code>, <code>tidytlg</code>).</p>
 <p>In general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.</p>
@@ -460,7 +467,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-22 17:25:10.990686</p>
+<p>2023-08-23 12:09:15.285195</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>

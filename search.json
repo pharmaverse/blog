@@ -4,14 +4,14 @@
     "href": "posts/2023-07-24_rounding/rounding.html",
     "title": "Rounding",
     "section": "",
-    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even, which matches SAS’s rounde() function.\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
+    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even. Therefore round(0.5) is 0 and round(-1.5) is -2. Note from the base R round documentation:\n\n\n\nthis is dependent on OS services and on representation error (since e.g. 0.15 is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so round(0.15, 1) could be either 0.1 or 0.2).\n\n\n\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
   },
   {
     "objectID": "posts/2023-07-24_rounding/rounding.html#rounding-methods",
     "href": "posts/2023-07-24_rounding/rounding.html#rounding-methods",
     "title": "Rounding",
     "section": "",
-    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even, which matches SAS’s rounde() function.\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
+    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even. Therefore round(0.5) is 0 and round(-1.5) is -2. Note from the base R round documentation:\n\n\n\nthis is dependent on OS services and on representation error (since e.g. 0.15 is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so round(0.15, 1) could be either 0.1 or 0.2).\n\n\n\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
   },
   {
     "objectID": "posts/2023-07-24_rounding/rounding.html#round-half-up-in-r",
@@ -32,7 +32,7 @@
     "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
     "title": "Rounding",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:25:10.990686"
+    "text": "Last updated\n\n2023-08-23 12:09:15.285195"
   },
   {
     "objectID": "posts/2023-07-24_rounding/rounding.html#details",
@@ -53,7 +53,7 @@
     "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
     "title": "It’s all relative? - Calculating Relative Days using admiral",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:25:06.772241"
+    "text": "Last updated\n\n2023-08-23 12:09:10.621795"
   },
   {
     "objectID": "posts/2023-08-08_study_day/study_day.html#details",
@@ -102,7 +102,7 @@
     "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#last-updated",
     "title": "The pharmaverse (hi)story",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:25:02.597423"
+    "text": "Last updated\n\n2023-08-23 12:09:06.120948"
   },
   {
     "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#details",
@@ -172,7 +172,7 @@
     "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
     "title": "Derive a new parameter computed from the value of other parameters",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:24:56.407931"
+    "text": "Last updated\n\n2023-08-23 12:08:59.077524"
   },
   {
     "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
@@ -221,7 +221,7 @@
     "href": "posts/2023-06-28_welcome/index.html#last-updated",
     "title": "Hello pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:24:50.711893"
+    "text": "Last updated\n\n2023-08-23 12:08:52.497822"
   },
   {
     "objectID": "posts/2023-06-28_welcome/index.html#details",
@@ -284,7 +284,7 @@
     "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
     "title": "Admiral Hackathon 2023 Revisited",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:24:54.344472"
+    "text": "Last updated\n\n2023-08-23 12:08:56.797855"
   },
   {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
@@ -326,7 +326,7 @@
     "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
     "title": "How to use Code Sections",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:24:58.097602"
+    "text": "Last updated\n\n2023-08-23 12:09:01.010591"
   },
   {
     "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
@@ -375,7 +375,7 @@
     "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
     "title": "falcon",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:25:01.228524"
+    "text": "Last updated\n\n2023-08-23 12:09:04.688423"
   },
   {
     "objectID": "posts/2023-07-09_falcon/falcon.html#details",
@@ -417,7 +417,7 @@
     "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
     "title": "Blanks and NAs",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:25:04.661578"
+    "text": "Last updated\n\n2023-08-23 12:09:08.353101"
   },
   {
     "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
@@ -487,7 +487,7 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-22 17:25:08.689211"
+    "text": "Last updated\n\n2023-08-23 12:09:12.682216"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
