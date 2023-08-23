@@ -28,7 +28,13 @@ However, they use different approaches when rounding off a 5:
 -   SAS `round()` [rounds half up](https://en.wikipedia.org/wiki/Rounding#Rounding_half_up).
     This is the most common method of rounding.
 
--   base R `round()` [rounds to the nearest even](https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest), which matches SAS's `rounde()` function.
+-   base R `round()` [rounds to the nearest even](https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest). Therefore `round(0.5)` is `0` and `round(-1.5)` is `-2`. Note from the base R round documentation: 
+
+    -   <div>
+
+        > this is dependent on OS services and on representation error (since e.g. `0.15` is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so `round(0.15, 1)` could be either `0.1` or `0.2`). 
+        </div>
+                                                
 
 Although base R does not have the option for "round half up", there are functions available in other R packages (e.g., `janitor`, `tidytlg`).
 
