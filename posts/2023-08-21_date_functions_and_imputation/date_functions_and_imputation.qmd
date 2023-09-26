@@ -6,7 +6,7 @@ description: "Dates, times and imputation can be a frustrating facet of any prog
 date: "2023-08-21"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
-categories: [admiral]
+categories: [admiral, ADaM, Date/Time]
 # feel free to change the image
 image: "admiral.png"
 
@@ -25,7 +25,7 @@ library(admiraldev)
 
 # Introduction
 
-Date and time is collected in SDTM as character values using the extended [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format `"yyyy-dd-mmThh:mm:ss"`. This universal format allows missing parts date or time - e.g. the string`"2019-10"` represents a date where the day and the time are unknown. In contrast, ADaM timing variables like `ADTM` (Analysis Datetime) or `ADY` (Analysis Relative Day) are numeric variables, which can be derived only if the date or datetime is complete. 
+Date and time is collected in SDTM as character values using the extended [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format `yyyy-dd-mmThh:mm:ss`. This universal format allows missing parts date or time - e.g. the string`"2019-10"` represents a date where the day and the time are unknown. In contrast, ADaM timing variables like `ADTM` (Analysis Datetime) or `ADY` (Analysis Relative Day) are numeric variables, which can be derived only if the date or datetime is complete. 
 
 Most ADaM programmers have, at one point or another, encountered situations where missing dates, unexpected formats or confusing imputation functions rendered derivations of timing variables frustrating and time consuming. `{admiral}` aims to mitigate this (where possible!) by providing functions which automatically derive date/datetime variables for you, and fill in missing date or time parts according to well-defined imputation rules.
 
@@ -35,31 +35,106 @@ In this article, we first examine the arsenal of functions provided by`{admiral}
 
 `{admiral}` provides the following functions for date/datetime imputation:
 
-- `derive_vars_dt()`: Adds a date variable and a date imputation flag variable (optional) based on a --DTC variable and imputation rules.
-- `derive_vars_dtm()`: Adds a datetime variable, a date imputation flag variable, and a time imputation flag variable (both optional) based on a --DTC variable and imputation rules.
-- `impute_dtc_dtm()`: Returns a complete ISO 8601 datetime or `NA` based on a partial ISO 8601 datetime and imputation rules.
-- `impute_dtc_dt()`: Returns a complete ISO 8601 date (without time) or `NA` based on a partial ISO 8601 date(time) and imputation rules.
-- `convert_dtc_to_dt()`: Returns a date if the input ISO 8601 date is complete. Otherwise, `NA` is returned.
-- `convert_dtc_to_dtm()`: Returns a datetime if the input ISO 8601 date is complete (with missing time replaced by `"00:00:00"` as default). Otherwise, NA is returned.
-- `compute_dtf()`: Returns the date imputation flag.
-- `compute_tmf()`: Returns the time imputation flag.
+- Derivations for adding variables
+  - [derive_vars_dt()](https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dt.html): Adds a date variable and a date imputation flag variable (optional) based on a --DTC variable and imputation rules.
+  - [derive_vars_dtm()](https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dtm.html): Adds a datetime variable, a date imputation flag variable, and a time imputation flag variable (both optional) based on a --DTC variable and imputation rules.
+- Computation functions
+  - [impute_dtc_dtm()](https://pharmaverse.github.io/admiral/cran-release/reference/impute_dtc_dtm.html): Returns a complete ISO 8601 datetime or `NA` based on a partial ISO 8601 datetime and imputation rules.
+  - [impute_dtc_dt()](https://pharmaverse.github.io/admiral/cran-release/reference/impute_dtc_dt.html): Returns a complete ISO 8601 date (without time) or `NA` based on a partial ISO 8601 date(time) and imputation rules.
+  - [convert_dtc_to_dt()](https://pharmaverse.github.io/admiral/cran-release/reference/convert_dtc_to_dt.html): Returns a date if the input ISO 8601 date is complete. Otherwise, `NA` is returned.
+  - [convert_dtc_to_dtm()](https://pharmaverse.github.io/admiral/cran-release/reference/convert_dtc_to_dtm.html): Returns a datetime if the input ISO 8601 date is complete (with missing time replaced by `"00:00:00"` as default). Otherwise, NA is returned.
+  - [compute_dtf()](https://pharmaverse.github.io/admiral/cran-release/reference/compute_dtf.html): Returns the date imputation flag.
+  - [compute_tmf()](https://pharmaverse.github.io/admiral/cran-release/reference/compute_tmf.html): Returns the time imputation flag.
 
 From the point of view of a typical ADaM programmer, the functions `impute_*`, `convert_*` and `compute_*` above can be viewed as utilities for treating dates and/or imputation within any custom code. In contrast, their `derive_*` find their use in directly deriving new timing variables and/or carrying out imputation at an ADaM dataset scale.
 
 For a detailed look at the Imputation rules applied by these `{admiral}` functions, please visit [this vignette](https://pharmaverse.github.io/admiral/cran-release/articles/imputation.html#imputation-rules) on the documentation website.
 
+# Simple Examples with Vectors
+
+In the examples below, one can observe how some members of the class of utilities `impute_*()` and `convert_*()` can be employed to do the date-related heavy lifting.
+
+## Imputing a Partial Date Portion
+
+It is easy impute dates to the first day/month if they are partial just by using the `highest_imputation` argument:
+
+```{r  warning = FALSE, message = FALSE}
+library(admiral)
+library(lubridate)
+library(tibble)
+library(dplyr, warn.conflicts = FALSE)
+
+dates <- c(
+  "2019-07-18T15:25:40",
+  "2019-07-18T15:25",
+  "2019-07-18T15",
+  "2019-07-18",
+  "2019-02",
+  "2019",
+  "2019",
+  "2019---07",
+  ""
+)
+
+impute_dtc_dt(
+  dtc = dates,
+  highest_imputation = "M"
+)
+```
+
+A simple modification using `date_imputation = "mid"` or `date_imputation = "last"` or  enables the imputation to be made using the middle or last day/month instead:
+
+```{r}
+# Impute to last day/month if date is partial
+impute_dtc_dt(
+  dtc = dates,
+  highest_imputation = "M",
+  date_imputation = "last",
+)
+
+# Impute to mid day/month if date is partial
+impute_dtc_dt(
+  dtc = dates,
+  highest_imputation = "M",
+  date_imputation = "mid"
+)
+```
+
+But what if there exist minimum dates that the imputed date cannot exceed? Here, the `min_date` argument comes to the rescue: 
+
+```{r}
+impute_dtc_dt(
+  "2020-12",
+  min_dates = list(
+    ymd("2020-12-06"),
+    ymd("2020-11-11")
+  ),
+  highest_imputation = "M"
+)
+```
+
+## Computing Date Imputation Flags
+
+When it comes to carrying out an imputation, the twin task is to flag the type of imputation that was executed. Here, functions like `compute_dtf()` make this straightforward. For this function, all that needs to be done is to pass a date character date to the `dtc` argument, and the resulting imputed date to the `dt` argument. This will then return the right date imputation flag - see the examples below for some possible behaviors:
+
+```{r}
+compute_dtf(dtc = "2019-07", dt = as.Date("2019-07-18"))
+
+compute_dtf(dtc = "2019", dt = as.Date("2019-07-18"))
+
+compute_dtf(dtc = "--06-01T00:00", dt = as.Date("2022-06-01"))
+```
+
+
 # Action Examples
+
+The `derive_*()` functions are essentially wrappers around the aforementioned `impute_*()` and `compute_*()` functions. In the following section, we explore examples where ADaM variables can be derived using this class of functions. 
 
 ## Creating an Imputed Datetime and Date Variable and Imputation Flag Variables
 
 As described previously, `derive_vars_dtm()` derives an imputed datetime variable and the corresponding date and time imputation flags. The imputed date variable can then be derived by using `derive_vars_dtm_to_dt()`. It is not necessary and advisable to perform the imputation for the date variable if it was already done for the datetime variable. CDISC considers the datetime and the date variable as two representations of the same date. Thus the imputation must be the same and the imputation flags are valid for both the datetime and the date variable.
 
 ```{r}
-library(admiral)
-library(lubridate)
-library(tibble)
-library(dplyr, warn.conflicts = FALSE)
-
 ae <- tribble(
   ~AESTDTC,
   "2019-08-09T12:34:56",
@@ -103,7 +178,7 @@ ae <- tribble(
 dataset_vignette(ae)
 ```
 
-## Imputing Time without Imputing Date
+## Imputing Time Without Imputing Date
 
 If the time should be imputed but not the date, the `highest_imputation` argument should be set to `"h"`. This results in `NA` if the date is partial. As no date is imputed the date imputation flag is not created.
 
