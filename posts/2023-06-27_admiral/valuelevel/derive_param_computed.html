@@ -254,6 +254,11 @@ AVAL (PARAMCD = ADPCYMG) = \frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCY
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">PARAM =</span> <span class="st">"Actual Dose per Cycle (mg)"</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The `analysis_value` argument of `derive_param_computed()` is deprecated as
+of admiral 0.12.0.
+ℹ Please use the `set_values_to` argument instead.</code></pre>
+</div>
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -270,15 +275,15 @@ AVAL (PARAMCD = ADPCYMG) = \frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCY
 <h3 class="anchored" data-anchor-id="compare">Compare</h3>
 <p>For validation purpose, the <a href="https://gowerc.github.io/diffdf/reference/diffdf.html">diffdf</a> package is used below to mimic SAS <code>proc compare</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adex_expected <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  adex,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tribble</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>USUBJID,  <span class="sc">~</span>PARAMCD,  <span class="sc">~</span>PARAM,                       <span class="sc">~</span>AVAL,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"101"</span>,     <span class="st">"ADPCYMG"</span>, <span class="st">"Actual Dose per Cycle (mg)"</span>, <span class="dv">60</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">diffdf</span>(adex_expected, adex_admiral, <span class="at">keys =</span> <span class="fu">c</span>(<span class="st">"USUBJID"</span>, <span class="st">"PARAMCD"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>adex_expected <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  adex,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tribble</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>USUBJID,  <span class="sc">~</span>PARAMCD,  <span class="sc">~</span>PARAM,                       <span class="sc">~</span>AVAL,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"101"</span>,     <span class="st">"ADPCYMG"</span>, <span class="st">"Actual Dose per Cycle (mg)"</span>, <span class="dv">60</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">diffdf</span>(adex_expected, adex_admiral, <span class="at">keys =</span> <span class="fu">c</span>(<span class="st">"USUBJID"</span>, <span class="st">"PARAMCD"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>No issues were found!</code></pre>
 </div>
@@ -297,7 +302,7 @@ AVAL (PARAMCD = ADPCYMG) = \frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCY
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:08:59.077524</p>
+<p>2023-09-26 19:35:31.944753</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>

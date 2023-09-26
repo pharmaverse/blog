@@ -10,7 +10,1085 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.450</generator>
-<lastBuildDate>Wed, 30 Aug 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 26 Sep 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Date/Time Functions and Imputation in {admiral}</title>
+  <dc:creator>Edoardo Mancini</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Date and time is collected in SDTM as character values using the extended <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> format <code>yyyy-dd-mmThh:mm:ss</code>. This universal format allows missing parts date or time - e.g.&nbsp;the string<code>"2019-10"</code> represents a date where the day and the time are unknown. In contrast, ADaM timing variables like <code>ADTM</code> (Analysis Datetime) or <code>ADY</code> (Analysis Relative Day) are numeric variables, which can be derived only if the date or datetime is complete.</p>
+<p>Most ADaM programmers have, at one point or another, encountered situations where missing dates, unexpected formats or confusing imputation functions rendered derivations of timing variables frustrating and time consuming. <code>{admiral}</code> aims to mitigate this (where possible!) by providing functions which automatically derive date/datetime variables for you, and fill in missing date or time parts according to well-defined imputation rules.</p>
+<p>In this article, we first examine the arsenal of functions provided by<code>{admiral}</code> to aid in datetime imputation and timing variable derivation. We then observe everything in action through a number of selected typical examples.</p>
+</section>
+<section id="datedatetime-derivation-and-imputation-functions" class="level1">
+<h1>Date/Datetime Derivation and Imputation Functions</h1>
+<p><code>{admiral}</code> provides the following functions for date/datetime imputation:</p>
+<ul>
+<li>Derivations for adding variables
+<ul>
+<li><a href="https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dt.html">derive_vars_dt()</a>: Adds a date variable and a date imputation flag variable (optional) based on a –DTC variable and imputation rules.</li>
+<li><a href="https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dtm.html">derive_vars_dtm()</a>: Adds a datetime variable, a date imputation flag variable, and a time imputation flag variable (both optional) based on a –DTC variable and imputation rules.</li>
+</ul></li>
+<li>Computation functions
+<ul>
+<li><a href="https://pharmaverse.github.io/admiral/cran-release/reference/impute_dtc_dtm.html">impute_dtc_dtm()</a>: Returns a complete ISO 8601 datetime or <code>NA</code> based on a partial ISO 8601 datetime and imputation rules.</li>
+<li><a href="https://pharmaverse.github.io/admiral/cran-release/reference/impute_dtc_dt.html">impute_dtc_dt()</a>: Returns a complete ISO 8601 date (without time) or <code>NA</code> based on a partial ISO 8601 date(time) and imputation rules.</li>
+<li><a href="https://pharmaverse.github.io/admiral/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt()</a>: Returns a date if the input ISO 8601 date is complete. Otherwise, <code>NA</code> is returned.</li>
+<li><a href="https://pharmaverse.github.io/admiral/cran-release/reference/convert_dtc_to_dtm.html">convert_dtc_to_dtm()</a>: Returns a datetime if the input ISO 8601 date is complete (with missing time replaced by <code>"00:00:00"</code> as default). Otherwise, NA is returned.</li>
+<li><a href="https://pharmaverse.github.io/admiral/cran-release/reference/compute_dtf.html">compute_dtf()</a>: Returns the date imputation flag.</li>
+<li><a href="https://pharmaverse.github.io/admiral/cran-release/reference/compute_tmf.html">compute_tmf()</a>: Returns the time imputation flag.</li>
+</ul></li>
+</ul>
+<p>From the point of view of a typical ADaM programmer, the functions <code>impute_*</code>, <code>convert_*</code> and <code>compute_*</code> above can be viewed as utilities for treating dates and/or imputation within any custom code. In contrast, their <code>derive_*</code> find their use in directly deriving new timing variables and/or carrying out imputation at an ADaM dataset scale.</p>
+<p>For a detailed look at the Imputation rules applied by these <code>{admiral}</code> functions, please visit <a href="https://pharmaverse.github.io/admiral/cran-release/articles/imputation.html#imputation-rules">this vignette</a> on the documentation website.</p>
+</section>
+<section id="simple-examples-with-vectors" class="level1">
+<h1>Simple Examples with Vectors</h1>
+<p>In the examples below, one can observe how some members of the class of utilities <code>impute_*()</code> and <code>convert_*()</code> can be employed to do the date-related heavy lifting.</p>
+<section id="imputing-a-partial-date-portion" class="level2">
+<h2 class="anchored" data-anchor-id="imputing-a-partial-date-portion">Imputing a Partial Date Portion</h2>
+<p>It is easy impute dates to the first day/month if they are partial just by using the <code>highest_imputation</code> argument:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(lubridate)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tibble)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">warn.conflicts =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">dates <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(</span>
+<span id="cb1-7">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-07-18T15:25:40"</span>,</span>
+<span id="cb1-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-07-18T15:25"</span>,</span>
+<span id="cb1-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-07-18T15"</span>,</span>
+<span id="cb1-10">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-07-18"</span>,</span>
+<span id="cb1-11">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-02"</span>,</span>
+<span id="cb1-12">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019"</span>,</span>
+<span id="cb1-13">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019"</span>,</span>
+<span id="cb1-14">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019---07"</span>,</span>
+<span id="cb1-15">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">impute_dtc_dt</span>(</span>
+<span id="cb1-19">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> dates,</span>
+<span id="cb1-20">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span></span>
+<span id="cb1-21">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2019-07-18" "2019-07-18" "2019-07-18" "2019-07-18" "2019-02-01"
+[6] "2019-01-01" "2019-01-01" "2019-01-01" NA          </code></pre>
+</div>
+</div>
+<p>A simple modification using <code>date_imputation = "mid"</code> or <code>date_imputation = "last"</code> or enables the imputation to be made using the middle or last day/month instead:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Impute to last day/month if date is partial</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">impute_dtc_dt</span>(</span>
+<span id="cb3-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> dates,</span>
+<span id="cb3-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span>,</span>
+<span id="cb3-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">date_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"last"</span>,</span>
+<span id="cb3-6">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2019-07-18" "2019-07-18" "2019-07-18" "2019-07-18" "2019-02-28"
+[6] "2019-12-31" "2019-12-31" "2019-12-31" NA          </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Impute to mid day/month if date is partial</span></span>
+<span id="cb5-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">impute_dtc_dt</span>(</span>
+<span id="cb5-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> dates,</span>
+<span id="cb5-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span>,</span>
+<span id="cb5-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">date_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mid"</span></span>
+<span id="cb5-6">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2019-07-18" "2019-07-18" "2019-07-18" "2019-07-18" "2019-02-15"
+[6] "2019-06-30" "2019-06-30" "2019-06-30" NA          </code></pre>
+</div>
+</div>
+<p>But what if there exist minimum dates that the imputed date cannot exceed? Here, the <code>min_date</code> argument comes to the rescue:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">impute_dtc_dt</span>(</span>
+<span id="cb7-2">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2020-12"</span>,</span>
+<span id="cb7-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">min_dates =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb7-4">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2020-12-06"</span>),</span>
+<span id="cb7-5">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2020-11-11"</span>)</span>
+<span id="cb7-6">  ),</span>
+<span id="cb7-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span></span>
+<span id="cb7-8">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2020-12-06"</code></pre>
+</div>
+</div>
+</section>
+<section id="computing-date-imputation-flags" class="level2">
+<h2 class="anchored" data-anchor-id="computing-date-imputation-flags">Computing Date Imputation Flags</h2>
+<p>When it comes to carrying out an imputation, the twin task is to flag the type of imputation that was executed. Here, functions like <code>compute_dtf()</code> make this straightforward. For this function, all that needs to be done is to pass a date character date to the <code>dtc</code> argument, and the resulting imputed date to the <code>dt</code> argument. This will then return the right date imputation flag - see the examples below for some possible behaviors:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compute_dtf</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-07"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dt =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.Date</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-07-18"</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "D"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compute_dtf</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dt =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.Date</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-07-18"</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "M"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compute_dtf</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--06-01T00:00"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dt =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.Date</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2022-06-01"</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Y"</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="action-examples" class="level1">
+<h1>Action Examples</h1>
+<p>The <code>derive_*()</code> functions are essentially wrappers around the aforementioned <code>impute_*()</code> and <code>compute_*()</code> functions. In the following section, we explore examples where ADaM variables can be derived using this class of functions.</p>
+<section id="creating-an-imputed-datetime-and-date-variable-and-imputation-flag-variables" class="level2">
+<h2 class="anchored" data-anchor-id="creating-an-imputed-datetime-and-date-variable-and-imputation-flag-variables">Creating an Imputed Datetime and Date Variable and Imputation Flag Variables</h2>
+<p>As described previously, <code>derive_vars_dtm()</code> derives an imputed datetime variable and the corresponding date and time imputation flags. The imputed date variable can then be derived by using <code>derive_vars_dtm_to_dt()</code>. It is not necessary and advisable to perform the imputation for the date variable if it was already done for the datetime variable. CDISC considers the datetime and the date variable as two representations of the same date. Thus the imputation must be the same and the imputation flags are valid for both the datetime and the date variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1">ae <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb15-2">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AESTDTC,</span>
+<span id="cb15-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-08-09T12:34:56"</span>,</span>
+<span id="cb15-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-04-12"</span>,</span>
+<span id="cb15-5">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2010-09"</span>,</span>
+<span id="cb15-6">  <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA_character_</span></span>
+<span id="cb15-7">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb15-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_dtm</span>(</span>
+<span id="cb15-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> AESTDTC,</span>
+<span id="cb15-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AST"</span>,</span>
+<span id="cb15-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span>,</span>
+<span id="cb15-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">date_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span>,</span>
+<span id="cb15-13">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span></span>
+<span id="cb15-14">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb15-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_dtm_to_dt</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(ASTDTM))</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">AESTDTC</th>
+<th style="text-align: left;">ASTDTM</th>
+<th style="text-align: left;">ASTDTF</th>
+<th style="text-align: left;">ASTTMF</th>
+<th style="text-align: left;">ASTDT</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2019-08-09T12:34:56</td>
+<td style="text-align: left;">2019-08-09 12:34:56</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2019-08-09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-04-12</td>
+<td style="text-align: left;">2019-04-12 00:00:00</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: left;">2019-04-12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2010-09</td>
+<td style="text-align: left;">2010-09-01 00:00:00</td>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">H</td>
+<td style="text-align: left;">2010-09-01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="creating-an-imputed-date-variable-and-imputation-flag-variable" class="level2">
+<h2 class="anchored" data-anchor-id="creating-an-imputed-date-variable-and-imputation-flag-variable">Creating an Imputed Date Variable and Imputation Flag Variable</h2>
+<p>If an imputed date variable without a corresponding datetime variable is required, it can be derived by the <code>derive_vars_dt()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1">ae <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb16-2">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AESTDTC,</span>
+<span id="cb16-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-08-09T12:34:56"</span>,</span>
+<span id="cb16-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-04-12"</span>,</span>
+<span id="cb16-5">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2010-09"</span>,</span>
+<span id="cb16-6">  <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA_character_</span></span>
+<span id="cb16-7">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb16-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_dt</span>(</span>
+<span id="cb16-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> AESTDTC,</span>
+<span id="cb16-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AST"</span>,</span>
+<span id="cb16-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span>,</span>
+<span id="cb16-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">date_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span></span>
+<span id="cb16-13">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">AESTDTC</th>
+<th style="text-align: left;">ASTDT</th>
+<th style="text-align: left;">ASTDTF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2019-08-09T12:34:56</td>
+<td style="text-align: left;">2019-08-09</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-04-12</td>
+<td style="text-align: left;">2019-04-12</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2010-09</td>
+<td style="text-align: left;">2010-09-01</td>
+<td style="text-align: left;">D</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="imputing-time-without-imputing-date" class="level2">
+<h2 class="anchored" data-anchor-id="imputing-time-without-imputing-date">Imputing Time Without Imputing Date</h2>
+<p>If the time should be imputed but not the date, the <code>highest_imputation</code> argument should be set to <code>"h"</code>. This results in <code>NA</code> if the date is partial. As no date is imputed the date imputation flag is not created.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1">ae <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb17-2">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AESTDTC,</span>
+<span id="cb17-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-08-09T12:34:56"</span>,</span>
+<span id="cb17-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-04-12"</span>,</span>
+<span id="cb17-5">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2010-09"</span>,</span>
+<span id="cb17-6">  <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA_character_</span></span>
+<span id="cb17-7">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb17-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_dtm</span>(</span>
+<span id="cb17-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> AESTDTC,</span>
+<span id="cb17-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AST"</span>,</span>
+<span id="cb17-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"h"</span>,</span>
+<span id="cb17-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span></span>
+<span id="cb17-13">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">AESTDTC</th>
+<th style="text-align: left;">ASTDTM</th>
+<th style="text-align: left;">ASTTMF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2019-08-09T12:34:56</td>
+<td style="text-align: left;">2019-08-09 12:34:56</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-04-12</td>
+<td style="text-align: left;">2019-04-12 00:00:00</td>
+<td style="text-align: left;">H</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2010-09</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="avoiding-imputed-dates-before-a-particular-date" class="level2">
+<h2 class="anchored" data-anchor-id="avoiding-imputed-dates-before-a-particular-date">Avoiding Imputed Dates Before a Particular Date</h2>
+<p>Usually an adverse event start date is imputed as the earliest date of all possible dates when filling the missing parts. The result may be a date before treatment start date. This is not desirable because the adverse event would not be considered as treatment emergent and excluded from the adverse event summaries. This can be avoided by specifying the treatment start date variable (<code>TRTSDTM</code>) for the <code>min_dates</code> argument.</p>
+<p>Importantly, <code>TRTSDTM</code> is used as imputed date only if the non missing date and time parts of <code>AESTDTC</code> coincide with those of <code>TRTSDTM</code>. Therefore <code>2019-10</code> is not imputed as <code>2019-11-11 12:34:56</code>. This ensures that collected information is not changed by the imputation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">ae <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb18-2">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AESTDTC,              <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>TRTSDTM,</span>
+<span id="cb18-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-08-09T12:34:56"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd_hms</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-11-11T12:34:56"</span>),</span>
+<span id="cb18-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-10"</span>,             <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd_hms</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-11-11T12:34:56"</span>),</span>
+<span id="cb18-5">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-11"</span>,             <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd_hms</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-11-11T12:34:56"</span>),</span>
+<span id="cb18-6">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-12-04"</span>,          <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd_hms</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-11-11T12:34:56"</span>)</span>
+<span id="cb18-7">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb18-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_dtm</span>(</span>
+<span id="cb18-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> AESTDTC,</span>
+<span id="cb18-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AST"</span>,</span>
+<span id="cb18-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span>,</span>
+<span id="cb18-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">date_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span>,</span>
+<span id="cb18-13">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span>,</span>
+<span id="cb18-14">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">min_dates =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(TRTSDTM)</span>
+<span id="cb18-15">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 27%">
+<col style="width: 27%">
+<col style="width: 9%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">AESTDTC</th>
+<th style="text-align: left;">TRTSDTM</th>
+<th style="text-align: left;">ASTDTM</th>
+<th style="text-align: left;">ASTDTF</th>
+<th style="text-align: left;">ASTTMF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2019-08-09T12:34:56</td>
+<td style="text-align: left;">2019-11-11 12:34:56</td>
+<td style="text-align: left;">2019-08-09 12:34:56</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-10</td>
+<td style="text-align: left;">2019-11-11 12:34:56</td>
+<td style="text-align: left;">2019-10-01 00:00:00</td>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">H</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019-11</td>
+<td style="text-align: left;">2019-11-11 12:34:56</td>
+<td style="text-align: left;">2019-11-11 12:34:56</td>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">H</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-12-04</td>
+<td style="text-align: left;">2019-11-11 12:34:56</td>
+<td style="text-align: left;">2019-12-04 00:00:00</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">H</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="avoiding-imputed-dates-after-a-particular-date" class="level2">
+<h2 class="anchored" data-anchor-id="avoiding-imputed-dates-after-a-particular-date">Avoiding Imputed Dates After a Particular Date</h2>
+<p>If a date is imputed as the latest date of all possible dates when filling the missing parts, it should not result in dates after data cut off or death. This can be achieved by specifying the dates for the <code>max_dates</code> argument.</p>
+<p>Importantly, non missing date parts are not changed. Thus <code>2019-12-04</code> is imputed as <code>2019-12-04 23:59:59</code> although it is after the data cut off date. It may make sense to replace it by the data cut off date but this is not part of the imputation. It should be done in a separate data cleaning or data cut off step.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1">ae <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb19-2">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AEENDTC,              <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>DTHDT,            <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>DCUTDT,</span>
+<span id="cb19-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-08-09T12:34:56"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-11-11"</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-12-02"</span>),</span>
+<span id="cb19-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-11"</span>,             <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-11-11"</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-12-02"</span>),</span>
+<span id="cb19-5">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-12"</span>,             <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>,                <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-12-02"</span>),</span>
+<span id="cb19-6">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-12-04"</span>,          <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>,                <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-12-02"</span>)</span>
+<span id="cb19-7">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb19-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_dtm</span>(</span>
+<span id="cb19-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> AEENDTC,</span>
+<span id="cb19-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AEN"</span>,</span>
+<span id="cb19-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span>,</span>
+<span id="cb19-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">date_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"last"</span>,</span>
+<span id="cb19-13">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"last"</span>,</span>
+<span id="cb19-14">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_dates =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(DTHDT, DCUTDT)</span>
+<span id="cb19-15">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 26%">
+<col style="width: 9%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">AEENDTC</th>
+<th style="text-align: left;">DTHDT</th>
+<th style="text-align: left;">DCUTDT</th>
+<th style="text-align: left;">AENDTM</th>
+<th style="text-align: left;">AENDTF</th>
+<th style="text-align: left;">AENTMF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2019-08-09T12:34:56</td>
+<td style="text-align: left;">2019-11-11</td>
+<td style="text-align: left;">2019-12-02</td>
+<td style="text-align: left;">2019-08-09 12:34:56</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-11</td>
+<td style="text-align: left;">2019-11-11</td>
+<td style="text-align: left;">2019-12-02</td>
+<td style="text-align: left;">2019-11-11 23:59:59</td>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">H</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019-12</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2019-12-02</td>
+<td style="text-align: left;">2019-12-02 23:59:59</td>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">H</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-12-04</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2019-12-02</td>
+<td style="text-align: left;">2019-12-04 23:59:59</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">H</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="imputation-without-creating-a-new-variable" class="level2">
+<h2 class="anchored" data-anchor-id="imputation-without-creating-a-new-variable">Imputation Without Creating a New Variable</h2>
+<p>If imputation is required without creating a new variable the <code>convert_dtc_to_dt()</code> function can be called to obtain a vector of imputed dates. It can be used for example here:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1">mh <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb20-2">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>MHSTDTC,     <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>TRTSDT,</span>
+<span id="cb20-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-04"</span>,    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-04-15"</span>),</span>
+<span id="cb20-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-04-01"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-04-15"</span>),</span>
+<span id="cb20-5">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-05"</span>,    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-04-15"</span>),</span>
+<span id="cb20-6">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-06-21"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-04-15"</span>)</span>
+<span id="cb20-7">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb20-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(</span>
+<span id="cb20-9">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">convert_dtc_to_dt</span>(</span>
+<span id="cb20-10">      MHSTDTC,</span>
+<span id="cb20-11">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span>,</span>
+<span id="cb20-12">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">date_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span></span>
+<span id="cb20-13">    ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> TRTSDT</span>
+<span id="cb20-14">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">MHSTDTC</th>
+<th style="text-align: left;">TRTSDT</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2019-04</td>
+<td style="text-align: left;">2019-04-15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-04-01</td>
+<td style="text-align: left;">2019-04-15</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="using-more-than-one-imputation-rule-for-a-variable" class="level2">
+<h2 class="anchored" data-anchor-id="using-more-than-one-imputation-rule-for-a-variable">Using More Than One Imputation Rule for a Variable</h2>
+<p>Using different imputation rules depending on the observation can be done by using the higher-order function <code>slice_derivation()</code>, which applies a derivation function differently (by varying its arguments) in different subsections of a dataset. For example, consider this Vital Signs case where pre-dose records require a different treatment to other records:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1">vs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb21-2">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>VSDTC,                <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>VSTPT,</span>
+<span id="cb21-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-08-09T12:34:56"</span>, <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>,</span>
+<span id="cb21-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-10-12"</span>,          <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PRE-DOSE"</span>,</span>
+<span id="cb21-5">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-11-10"</span>,          <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>,</span>
+<span id="cb21-6">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2019-12-04"</span>,          <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span></span>
+<span id="cb21-7">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb21-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">slice_derivation</span>(</span>
+<span id="cb21-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">derivation =</span> derive_vars_dtm,</span>
+<span id="cb21-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(</span>
+<span id="cb21-11">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> VSDTC,</span>
+<span id="cb21-12">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span></span>
+<span id="cb21-13">    ),</span>
+<span id="cb21-14">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derivation_slice</span>(</span>
+<span id="cb21-15">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter =</span> VSTPT <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PRE-DOSE"</span>,</span>
+<span id="cb21-16">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span>)</span>
+<span id="cb21-17">    ),</span>
+<span id="cb21-18">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derivation_slice</span>(</span>
+<span id="cb21-19">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb21-20">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"last"</span>)</span>
+<span id="cb21-21">    )</span>
+<span id="cb21-22">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">VSDTC</th>
+<th style="text-align: left;">VSTPT</th>
+<th style="text-align: left;">ADTM</th>
+<th style="text-align: left;">ATMF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2019-08-09T12:34:56</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2019-08-09 12:34:56</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-11-10</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2019-11-10 23:59:59</td>
+<td style="text-align: left;">H</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019-12-04</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">2019-12-04 23:59:59</td>
+<td style="text-align: left;">H</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-10-12</td>
+<td style="text-align: left;">PRE-DOSE</td>
+<td style="text-align: left;">2019-10-12 00:00:00</td>
+<td style="text-align: left;">H</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>Deriving timing variables and carrying out imputations is tricky at the best of times, but hopefully this blog post can shed some light on how make this all easier using the <code>{admiral}</code> package! As <code>{admiral}</code> developers we are always interested in knowing how users are employing the package for their ADaM needs, so if you have any comments or feedback related to this topic, don’t be afraid to leave a comment on our <a href="https://app.slack.com/client/T028PB489D3/C02M8KN8269">Slack channel</a> or on the <a href="https://github.com/pharmaverse/admiral/">Github repository</a>, either as an issue or as a discussion.</p>
+<p>For an even more detailed treatment of this topic, users are once again invited to read the corresponding <a href="https://pharmaverse.github.io/admiral/cran-release/articles/imputation.html">vignette</a> on the documentation website, from which this article was adapted.</p>
+<!--------------- appendices go here ----------------->
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
+  author = {Mancini, Edoardo},
+  title = {Date/Time {Functions} and {Imputation} in \{Admiral\}},
+  date = {2023-09-26},
+  url = {https://pharmaverse.github.io/blog/posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-mancini2023" class="csl-entry quarto-appendix-citeas">
+Mancini, Edoardo. 2023. <span>“Date/Time Functions and Imputation in
+{Admiral} .”</span> September 26, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html">https://pharmaverse.github.io/blog/posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html</a>.
+</div></div></section></div> ]]></description>
+  <category>admiral</category>
+  <category>ADaM</category>
+  <category>Date/Time</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html</guid>
+  <pubDate>Tue, 26 Sep 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-09-26_date_functions_and_imputation/admiral.png" medium="image" type="image/png" height="108" width="144"/>
+</item>
 <item>
   <title>The pharmaverse (hi)story</title>
   <dc:creator>Nicholas Eugenio</dc:creator>
@@ -78,7 +1156,7 @@
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:09:06.120948</p>
+<p>2023-09-26 19:35:39.677905</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/renv.lock">R environment</a></p>
@@ -526,7 +1604,7 @@ font-style: inherit;">round</span>(b)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:09:15.285195</p>
+<p>2023-09-26 19:35:34.638551</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>
@@ -715,7 +1793,7 @@ font-style: inherit;">DEMOEDY =</span> AENDT)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:09:10.621795</p>
+<p>2023-09-26 19:35:43.155648</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
@@ -972,7 +2050,7 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:09:01.010591</p>
+<p>2023-09-26 19:35:52.595565</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
@@ -1155,7 +2233,7 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:09:08.353101</p>
+<p>2023-09-26 19:35:37.706794</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
@@ -1215,7 +2293,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:09:04.688423</p>
+<p>2023-09-26 19:35:50.400901</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -1305,7 +2383,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:08:52.497822</p>
+<p>2023-09-26 19:35:54.612719</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -1397,7 +2475,7 @@ Straub, Ben. 2023. <span>“Hello Pharmaverse.”</span> June 28, 2023. <a href=
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:08:56.797855</p>
+<p>2023-09-26 19:35:28.894959</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -1540,6 +2618,11 @@ background-color: null;
 font-style: inherit;">"Actual Dose per Cycle (mg)"</span></span>
 <span id="cb2-9">  )</span>
 <span id="cb2-10">)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The `analysis_value` argument of `derive_param_computed()` is deprecated as
+of admiral 0.12.0.
+ℹ Please use the `set_values_to` argument instead.</code></pre>
+</div>
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -1556,16 +2639,16 @@ font-style: inherit;">"Actual Dose per Cycle (mg)"</span></span>
 <h3 class="anchored" data-anchor-id="compare">Compare</h3>
 <p>For validation purpose, the <a href="https://gowerc.github.io/diffdf/reference/diffdf.html">diffdf</a> package is used below to mimic SAS <code>proc compare</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adex_expected <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">adex_expected <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">bind_rows</span>(</span>
-<span id="cb4-2">  adex,</span>
-<span id="cb4-3">  <span class="fu" style="color: #4758AB;
+<span id="cb5-2">  adex,</span>
+<span id="cb5-3">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">tribble</span>(</span>
-<span id="cb4-4">    <span class="sc" style="color: #5E5E5E;
+<span id="cb5-4">    <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -1574,7 +2657,7 @@ background-color: null;
 font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">~</span>AVAL,</span>
-<span id="cb4-5">    <span class="st" style="color: #20794D;
+<span id="cb5-5">    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
 background-color: null;
@@ -1583,10 +2666,10 @@ background-color: null;
 font-style: inherit;">"Actual Dose per Cycle (mg)"</span>, <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">60</span></span>
-<span id="cb4-6">  )</span>
-<span id="cb4-7">)</span>
-<span id="cb4-8"></span>
-<span id="cb4-9"><span class="fu" style="color: #4758AB;
+<span id="cb5-6">  )</span>
+<span id="cb5-7">)</span>
+<span id="cb5-8"></span>
+<span id="cb5-9"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">diffdf</span>(adex_expected, adex_admiral, <span class="at" style="color: #657422;
 background-color: null;
@@ -1615,7 +2698,7 @@ font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:08:59.077524</p>
+<p>2023-09-26 19:35:31.944753</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
@@ -2499,7 +3582,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-08-23 12:09:12.682216</p>
+<p>2023-09-26 19:35:47.907116</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>

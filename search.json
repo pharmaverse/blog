@@ -1,236 +1,5 @@
 [
   {
-    "objectID": "posts/2023-07-24_rounding/rounding.html",
-    "href": "posts/2023-07-24_rounding/rounding.html",
-    "title": "Rounding",
-    "section": "",
-    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even. Therefore round(0.5) is 0 and round(-1.5) is -2. Note from the base R round documentation:\n\n\n\nthis is dependent on OS services and on representation error (since e.g. 0.15 is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so round(0.15, 1) could be either 0.1 or 0.2).\n\n\n\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
-  },
-  {
-    "objectID": "posts/2023-07-24_rounding/rounding.html#rounding-methods",
-    "href": "posts/2023-07-24_rounding/rounding.html#rounding-methods",
-    "title": "Rounding",
-    "section": "",
-    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even. Therefore round(0.5) is 0 and round(-1.5) is -2. Note from the base R round documentation:\n\n\n\nthis is dependent on OS services and on representation error (since e.g. 0.15 is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so round(0.15, 1) could be either 0.1 or 0.2).\n\n\n\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
-  },
-  {
-    "objectID": "posts/2023-07-24_rounding/rounding.html#round-half-up-in-r",
-    "href": "posts/2023-07-24_rounding/rounding.html#round-half-up-in-r",
-    "title": "Rounding",
-    "section": "Round half up in R",
-    "text": "Round half up in R\nThe motivation for having a ‘round half up’ function is clear: it’s a widely used rounding method, but there are no such options available in base R.\nThere are multiple forums that have discussed this topic, and quite a few functions already available. But which ones to choose? Are they safe options?\nThe first time I needed to round half up in R, I chose the function from a PHUSE paper and applied it to my study. It works fine for a while until I encountered the following precision issue when double programming in R for TLGs made in SAS.\n\nNumerical precision issue\nExample of rounding half up for 2436.845, with 2 decimal places:\n\n# a function that rounds half up\n# exact copy from: https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf\nut_round &lt;- function(x, n = 0) {\n  # x is the value to be rounded\n  # n is the precision of the rounding\n  scale &lt;- 10^n\n  y &lt;- trunc(x * scale + sign(x) * 0.5) / scale\n  # Return the rounded number\n  return(y)\n}\n# round half up for 2436.845, with 2 decimal places\nut_round(2436.845, 2)\n\n[1] 2436.84\n\n\nThe expected result is 2436.85, but the output rounds it down. Thanks to the community effort, there are already discussions and resolution available in a StackOverflow post -\n\nThere are numerical precision issues, e.g., round2(2436.845, 2) returns 2436.84. Changing z + 0.5 to z + 0.5 + sqrt(.Machine$double.eps) seems to work for me. – Gregor Thomas Jun 24, 2020 at 2:16\n\n\n.Machine$double.eps is a built-in constant in R that represents the smallest positive floating-point number that can be represented on the system (reference: Machine Characteristics)\nThe expression + sqrt(.Machine$double.eps) is used to add a very small value to mitigate floating-point precision issues.\nFor more information about computational precision and floating-point, see the following links -\n\nR: Why doesn’t R think these numbers are equal?\nSAS: Numerical Accuracy in SAS Software\n\n\nAfter the fix:\n\n# revised rounds half up\nut_round1 &lt;- function(x, n = 0) {\n  # x is the value to be rounded\n  # n is the precision of the rounding\n  scale &lt;- 10^n\n  y &lt;- trunc(x * scale + sign(x) * 0.5 + sqrt(.Machine$double.eps)) / scale\n  # Return the rounded number\n  return(y)\n}\n# round half up for 2436.845, with 2 decimal places\nut_round1(2436.845, 2)\n\n[1] 2436.85\n\n\n\n\nWe are not alone\nThe same issue occurred in the following functions/options as well, and has been raised by users:\n\njanitor::round_half_up(): issue was raised and fixed in v2.1.0\nTplyr: options(tplyr.IBMRounding = TRUE), issue was raised\nscrutiny::round_up_from()/round_up(): issue was raised and fixed\n... and many others!\n\n\n\nWhich ones to use?\nThe following functions have the precision issue mentioned above fixed, they all share the same logic from this StackOverflow post.\n\njanitor::round_half_up() version &gt;= 2.1.0\ntidytlg::roundSAS()\n\nthis function has two more arguments that can convert the result to character and allow a character string to indicate missing values\n\nscrutiny::round_up_from()/round_up() version &gt;= 0.2.5\n\nround_up_from() has a threshold argument for rounding up, which adds flexibility for rounding up\nround_up() rounds up from 5, which is a special case of round_up_from()\n\n\n\n\nAre they safe options?\nThose “round half up” functions do not offer the same level of precision and accuracy as the base R round function.\nFor example, let’s consider a value a that is slightly less than 1.5. If we choose round half up approach to round a to 0 decimal places, an output of 1 is expected. However, those functions yield a result of 2 because 1.5 - a is less than sqrt(.Machine$double.eps).\n\na &lt;- 1.5 - 0.5 * sqrt(.Machine$double.eps)\nut_round1(a, 0)\n\n[1] 2\n\njanitor::round_half_up(a, digits = 0)\n\n[1] 2\n\n\nThis behavior aligns the floating point number comparison functions all.equal() and dplyr::near() with default tolerance .Machine$double.eps^0.5, where 1.5 and a are treated as equal.\n\nall.equal(a, 1.5)\n\n[1] TRUE\n\ndplyr::near(a, 1.5)\n\n[1] TRUE\n\n\nWe can get the expected results from base R round as it provides greater accuracy.\n\nround(a)\n\n[1] 1\n\n\nHere is an example when base R round reaches the precision limit:\n\n# b is slightly less than 1.5\nb &lt;- 1.5 - 0.5 * .Machine$double.eps\n# 1 is expected but the result is 2\nround(b)\n\n[1] 2\n\n\nThe precision and accuracy requirements can vary depending on the application. Therefore, it is essential to be aware each function’s performance in your specific context before making a choice."
-  },
-  {
-    "objectID": "posts/2023-07-24_rounding/rounding.html#conclusion",
-    "href": "posts/2023-07-24_rounding/rounding.html#conclusion",
-    "title": "Rounding",
-    "section": "Conclusion",
-    "text": "Conclusion\n\nWith the differences in default behaviour across languages, you could consider your QC strategy and whether an acceptable level of fuzz in the electronic comparisons could be allowed for cases such as rounding when making comparisons between 2 codes written in different languages as long as this is documented. Alternatively you could document the exact rounding approach to be used in the SAP and then match this regardless of programming language used. - Ross Farrugia\n\nThanks Ross Farrugia, Ben Straub, Edoardo Mancini and Liming for reviewing this blog post and providing valuable feedback!\nIf you spot an issue or have different opinions, please don’t hesitate to raise them through pharmaverse/blog!"
-  },
-  {
-    "objectID": "posts/2023-07-24_rounding/rounding.html#last-updated",
-    "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
-    "title": "Rounding",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:09:15.285195"
-  },
-  {
-    "objectID": "posts/2023-07-24_rounding/rounding.html#details",
-    "href": "posts/2023-07-24_rounding/rounding.html#details",
-    "title": "Rounding",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-08-08_study_day/study_day.html",
-    "href": "posts/2023-08-08_study_day/study_day.html",
-    "title": "It’s all relative? - Calculating Relative Days using admiral",
-    "section": "",
-    "text": "Creating --DY variables for your ADaMs is super easy using derive_vars_dy() from the admiral package.\nLet’s build some dummy data with 4 subjects, a start date/time for treatment (TRTSDTM), an analysis start date/time variable (ASTDTM) and an analysis end date variable (AENDT).\nlibrary(admiral)\nlibrary(lubridate)\nlibrary(dplyr)\n\nadam &lt;- tribble(\n  ~USUBJID, ~TRTSDTM, ~ASTDTM, ~AENDT,\n  \"001\", \"2014-01-17T23:59:59\", \"2014-01-18T13:09:O9\", \"2014-01-20\",\n  \"002\", \"2014-02-25T23:59:59\", \"2014-03-18T14:09:O9\", \"2014-03-24\",\n  \"003\", \"2014-02-12T23:59:59\", \"2014-02-18T11:03:O9\", \"2014-04-17\",\n  \"004\", \"2014-03-17T23:59:59\", \"2014-03-19T13:09:O9\", \"2014-05-04\"\n) %&gt;%\n  mutate(\n    TRTSDTM = as_datetime(TRTSDTM),\n    ASTDTM = as_datetime(ASTDTM),\n    AENDT = ymd(AENDT)\n  )\nOkay! Next we run our dataset through derive_vars_dy(), specifying:\nderive_vars_dy(\n  adam,\n  reference_date = TRTSDTM,\n  source_vars = exprs(ASTDTM, AENDT)\n)\n\n# A tibble: 4 × 6\n  USUBJID TRTSDTM             ASTDTM              AENDT      ASTDY AENDY\n  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20     2     4\n2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24    22    28\n3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17     7    65\n4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04     3    49\nThat’s it! We got both our ASTDY and AENDY variables in only a few short lines of code!\nWhat if I want my variables to have a different naming convention?\nEasy! In the source_vars argument if you want your variables to be called DEMOADY and DEMOEDY just do DEMOADY = ASTDTM and DEMOEDY = AENDT and derive_vars_dy() will do the rest!\nderive_vars_dy(\n  adam,\n  reference_date = TRTSDTM,\n  source_vars = exprs(DEMOADY = ASTDTM, DEMOEDY = AENDT)\n)\n\n# A tibble: 4 × 6\n  USUBJID TRTSDTM             ASTDTM              AENDT      DEMOADY DEMOEDY\n  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;       &lt;dbl&gt;   &lt;dbl&gt;\n1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20       2       4\n2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24      22      28\n3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17       7      65\n4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04       3      49\nIf you want to get --DT or --DTM variables using admiral then check out derive_vars_dt() and derive_vars_dtm(). If things are messy in your data, e.g. partial dates, both functions have great imputation abilities, which we will cover in an upcoming blog post!"
-  },
-  {
-    "objectID": "posts/2023-08-08_study_day/study_day.html#last-updated",
-    "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
-    "title": "It’s all relative? - Calculating Relative Days using admiral",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:09:10.621795"
-  },
-  {
-    "objectID": "posts/2023-08-08_study_day/study_day.html#details",
-    "href": "posts/2023-08-08_study_day/study_day.html#details",
-    "title": "It’s all relative? - Calculating Relative Days using admiral",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html",
-    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html",
-    "title": "The pharmaverse (hi)story",
-    "section": "",
-    "text": "Pharmaverse: from motivation to present"
-  },
-  {
-    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#human-history-and-pharmaverse-context",
-    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#human-history-and-pharmaverse-context",
-    "title": "The pharmaverse (hi)story",
-    "section": "Human history and pharmaverse context",
-    "text": "Human history and pharmaverse context\nSince the Australian Aboriginal, the earliest peoples recorded to have inhabited the Earth and who have been in Australia for at least 65,000 to 80,000 years (Encyclopædia Britannica), human beings live in group. Whether to protect yourself, increase your life expectancy or simply share tasks.\nFor most aspects of life, it doesn’t make sense to think, act or work alone for two main reasons:\n\nYou will spend more energy and time;\nSomeone else may be facing (or have faced) the same situation.\n\nThe English poet John Donne used to say “No man is an island entire of itself; every man is a piece of the continent, a part of the main;”. I can’t disagree with him. And I dare say that Ari Siggaard Knoph (Novo Nordisk), Michael Rimler (GSK), Michael Stackhouse (Atorus), Ross Farrugia (Roche), and Sumesh Kalappurakal (Janssen) can’t disagree with him either. They are the founders of pharmaverse, members of its Council and kindly shared their memories of how independent companies, in mid-2020, worked together in the creation of a set of packages developed to support the clinical reporting pipeline.\nIf you are not familiar with this pipeline, the important thing to know is that, in a nutshell, pharmaceutical companies must follow a bunch of standardized procedures and formats (from Clinical Data Interchange Standards Consortium, CDISC) when submitting clinical results to Health Authorities. The focus is on this: different companies seeking the same standards for outputs.\nParaphrasing Ross Farrugia (Roche) Breaking boundaries through open-source collaboration presentation in R/Pharma 2022 and thinking of the development of a new drug, we are talking about a “post-competitive” scenario: the drug has already been discovered and the companies should “just” produce and deliver standardized results."
-  },
-  {
-    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#clinical-reporting-outputs",
-    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#clinical-reporting-outputs",
-    "title": "The pharmaverse (hi)story",
-    "section": "Clinical reporting outputs",
-    "text": "Clinical reporting outputs\nRationally, we can say that companies face the same challenges in these steps of the process. Not so intuitively, we can also say they were working in silos on that before 2018. Just as Isaac Newton and Gottfried W. Leibniz independently developed the theory of infinitesimal calculus, pharmaceutical companies were independently working on R solutions for this pipeline.\nBut on August 16 and 17 of the mentioned year above, they gathered at the first edition of R/Pharma conference to discuss R and open-source tooling for drug development (the reasons why open-source is an advantageous approach can be found in this post written by Stefan Thoma). And according to Isabela Velásquez’s article, Pharmaverse: Packages for clinical reporting workflows, one of the most popular questions in this conference was “Is the package code available or on CRAN?”.\nWell, many of them were. And not necessarily at that date, but just to mention a few: pharmaRTF and Tplyr from Atorus, r2rtf from Merck, rtables from Roche, etc. The thing is that, overall, there were almost 10000 other packages as well (today, almost 20000). And that took to another two questions:\n\nWith this overwhelming number of packages on CRAN, how to find the ones related to solving “clinical reporting problems”?\nOnce the packages were found, how to choose which one to use among those that have the same functional purpose?\n\nSo, again, companies re-started to working in silos to find those answers. But now, in collaborative silos and with common goals: create extremely useful packages to solve pharmaceutical-specific gaps once and solve them well!"
-  },
-  {
-    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#first-partnerships",
-    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#first-partnerships",
-    "title": "The pharmaverse (hi)story",
-    "section": "First partnerships",
-    "text": "First partnerships\nIn 2020, Michael Stackhouse (Atorus) and Michael Rimler (GSK) talked and formed a partnership between their companies to develop a few more packages, including metacore, to read, store and manipulate metadata for ADaMs/SDTMs in a standardized object; xportr, to create submission compliant SAS transport files and perform pharma specific dataset level validation checks; and logrx (ex-timber), to build log to support reproducibility and traceability of an R script.\nAround the same time, Thomas Neitmann (currently at Denali Therapeutics, then at Roche) and Michael Rimler (GSK) discovered that both were working with ADaM in R, so Thomas Neitmann (currently at Denali Therapeutics, then at Roche), Ross Farrugia (Roche) and Michael Rimler (GSK) saw an opportunity there and GSK started their partnership with Roche to build and release admiral package.\nThe idea of working together, the sense of community, and the appetite from organizations built more and more, with incentive and priority established up into the programming heads council.\nJanssen had a huge effort in building R capabilities going on as well, by releasing tidytlg and envsetup), so eventually Michael Rimler (GSK), Michael Stackhouse (Atorus) and Ross Farrugia (Roche) formalized pharmaverse and formed the council, adding in Sumesh Kalappurakal (Janssen) and Ari Siggaard Knoph (Novo Nordisk) later joined as the fifth council member."
-  },
-  {
-    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#release-growth-and-developments",
-    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#release-growth-and-developments",
-    "title": "The pharmaverse (hi)story",
-    "section": "Release, growth and developments",
-    "text": "Release, growth and developments\nAt the end of their presentation “Closing the Gap: Creating an End to End R Package Toolkit for the Clinical Reporting Pipeline.”, in R/Pharma 2021, Ben Straub (GSK) and Eli Miller (Atorus) welcomed the community to the pharmaverse, a curated collection of packages developed by various pharmaceutical companies to support open-source clinical workflows.\nFrom the outset, the name pharmaverse was chosen so that it could be a neutral home, unrelated to any company. Also, it was established as not being a consortium, which means that founders don’t own, fund, or maintain the packages. Some individuals and companies maintain them but often allowing for community contributions and being licensed permissively so that there is always a feeling of community ownership. The focus of pharmaverse early on, and today, is on inter organization cooperation, to build an environment where, if organizations identify that they have a joint problem that they want to solve, this is the right space to work on and release it.\nPharmaverse has grown a lot, at the time of writing this post we have &gt;25 packages recommended in pharmaverse, and this has led to a partnership with PHUSE to get support from their organization and platform, and because they are eager to advance and support pharmaverse mission.\nDespite all its structure, it is impossible to say that we have a single solution for each clinical reporting analysis when it comes to pharmaverse, a single pathway is impractical. Instead, it is necessary to accept viable tools fitting different pathways into pharmaverse to direct and give people options as to what might work for them. After all, even though we live together as a community, we still have our own unique internal problems.\n\n\n\nSample of pharmaverse packages"
-  },
-  {
-    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#last-updated",
-    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#last-updated",
-    "title": "The pharmaverse (hi)story",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:09:06.120948"
-  },
-  {
-    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#details",
-    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#details",
-    "title": "The pharmaverse (hi)story",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html",
-    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html",
-    "title": "Cross-Industry Open Source Package Development",
-    "section": "",
-    "text": "This post is based on a talk given at the regional useR! conference on July 21st 2023 in Basel. I took the opportunity to present my personal perspective on the current cross-industry package development efforts with a particular focus on the transformation of the job description of statistical programmers. As I have only recently started my position at Roche, my personal perspective is the perspective of a newcomer. I have a background in Psychology and Statistics and joined Roche in November 2022 as an intern switching to a permanent position as a statistical programmer – what they call analytical data scientist now – in April 2023. I spend about 20% of my time in such a cross-industry package development project, which was a major reason for applying for this position. In this post I would like to explain how we work in this project, and why this had such an impact on my decision to join Roche."
-  },
-  {
-    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#context",
-    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#context",
-    "title": "Cross-Industry Open Source Package Development",
-    "section": "Context",
-    "text": "Context\nMy decision was influenced by two current industry trends:\nFirst, the switch to a more language agnostic and open source approach for clinical reporting and data analysis. At the moment, R seems to be the best fitting tool for the job, but the systems used here are language agnostic in general. This is related, but does not necessarily lead to the second trend: The move toward cross-industry collaboration when developing clinical reporting software.\nAs the industry moves toward new (to them) programming languages, fit-for-purpose tools need(ed) to be developed. The realization that siloed solutions – in an area where competitiveness does not benefit patients – are simply resource hungry ways to solve the same problem in parallel provided a great argument for a shift toward collaborations.\nSuch cross-industry collaborations gave rise to the pharmaverse, a curated collection of R packages designed to solve clinical reporting in R. {admiral}, the project that I work on, is part of the pharmaverse and covers the creation of ADaM data sets (CDISC standard data). These data sets are subsequently used to produce tables, listings, and graphs and are usually part of the submission package for regulators."
-  },
-  {
-    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#insights",
-    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#insights",
-    "title": "Cross-Industry Open Source Package Development",
-    "section": "Insights",
-    "text": "Insights\nWhen creating an open source package in an industry where currently there is a lot of traction you have to move fast. No, I don’t mean: Move fast and break things. I mean: Communicate! Get people on board! We aimed {admiral} to be the package for ADaM creation even before deciding to create the package together with GSK. By being transparent about our endeavor, e.g. Thomas Neitmann (then at Roche) posting on LinkedIn, we managed to connect with Michael Rimler from GSK and soon realized that we were dealing with the exact same challenge at both companies, and that a collaborative effort would improve the final product while reducing individual efforts. A working prototype of {admiral} was to be created by GSK and Roche within six months, and would then be open sourced. In our effort to communicate openly, we informed statistical programmers from over 20 companies about the {admiral} project and invited them to try it out and provide feedback once released. In the end, we received over 500 comments from over 50 programmers.\n\n# check out the latest admiral release from CRAN:\ninstall.packages(\"admiral\")\n\nlibrary(admiral)\n\nThis was instrumental in creating a product that was optimised for general usage in the clinical reporting field and ensured that other companies would not unknowingly invest into their own solution to this challenge. Open sourcing early is particularly beneficial because this ensures from the get-go that code created is aimed at a general audience, and not company specific (perhaps by accident).\n{admiral} was created with the long term goal of having a stable and flexible solution for the clinical reporting pipeline. In that spirit, its permissive apache 2.0 licence (jointly owned by Roche and GSK) further strengthens trust into the project, namely for three reasons:\n\nJointly owned means that efforts to monetize the code-base by one company could be vetoed by the other. The permissive licence ensures that in such an unlikely case, the code-base that has been published would stay available and could always be used and improved upon by others.\nHaving this package backed by Roche and GSK ensures (as far as this is ever possible) funding for properly maintaining the packages. This is crucial, as a package is rarely finished.\nUp to now, experts from many more companies have joined {admiral} or one of its therapeutic area specific package-extensions, inspiring even more trust into its reliability.\n\nIf you would like to learn more about licenses for open source projects in the clinical reporting world please check out the recent PHUSE E2E Guidance on open source license"
-  },
-  {
-    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#development-workflow",
-    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#development-workflow",
-    "title": "Cross-Industry Open Source Package Development",
-    "section": "Development workflow",
-    "text": "Development workflow\nEvery improvement, task, or feature we want to implement on {admiral} starts as an issue on our GitHub repository. It is the centerpiece of our development workflow, along with our developer guides which describe in detail the strategies, conventions, and workflows used in development. The guides help us keep the {admiral} package internally consistent (e.g. naming conventions, function logic) but also ensure that {admiral} adjacent packages follow the same conventions and share the user interface. This is further helped by the implemented CICD pipeline which ensures styling convention and spelling (and much more).\nThe core package developers team meets once a week (twice a week before a release) to discuss progress and priorities. Here, the role of product lead (currently Edoardo Mancini at Roche) and technical lead (currently Ben Straub at GSK) is to set priorities and track the release schedule. These stand-up meetings are centered around the project-board which gives a complete overview of activities and progress. Issues are mostly self-assigned so developers can really chose what they want to work on.\n\n\n\nGitHub project board\n\n\nBy design, {admiral} is community built. Most developers working on the project are statistical programmers working on clinical reporting themselves. As an open source project, community input is highly valued, and anyone using {admiral} is encouraged to submit issues or take on issues as part of the development team. We also do occasional events to bring the statistical programmers community and the developers closer together. Just last February we organised the {admiral} hackathon which had up to 500 participants."
-  },
-  {
-    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#impact",
-    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#impact",
-    "title": "Cross-Industry Open Source Package Development",
-    "section": "Impact",
-    "text": "Impact\nFor Roche, cross-industry package development work out in their favor: They get access to software created by specialists and users from across the industry but paying only a fraction of the developmental costs. Of course, they don’t have total developmental control but they do get a seat at the table. Any gaps between the open source {admiral} package and the proprietary Roche workflow were bridged by the internal {admiralroche} package.\nThe switch towards a more language agnostic platform, and open source languages specifically, opens the door to a broad population of university graduates with diverse backgrounds. I personally would not have considered this position five years ago due to a misalignment of skills and job requirements. Working towards an industry standard open source solution will also ensure that skills learned at one company are more easily transferable to external positions, further making the position much more attractive. Access to such a broad pool of potential candidates is clearly beneficial for recruitment at Roche, but also facilitates diversity in teams which makes for a more interesting and effective work place.\nOpen source development comes with much more transparency by definition. Recognition of contributions are built in - anyone can see who did what. This recognition escapes the confines of your company as it is visible to anyone looking at the repository. Anyone can not only see at any time what is being worked on, what discussions are happening and which direction is being taken, but can also participate and contribute. Transparency also applies to errors in the code and how the team is dealing with them. In such an environment it is practically impossible to hide or cover up errors and corrections. Instead, they have to be dealt with publicly and in the open. This openness about errors also helps seeing errors as a natural occurrence that needs to be dealt with. Space for errors encourages learning and is really beneficial for growing both skills and integrity.\nAs you work on a team that spans multiple companies, traditional corporate hierarchies do not apply. Of course, there will always be a sort of hierarchy of experience or skills, but these work in your favor: You will know who to ask for help, and teams are generally very happy for contributors of any skill level. Contributions also need not be in code: Inputs into discussions and domain knowledge contributions are highly valued as well. The flip-side of working in a team without your manager oversight: They may not be directly aware of the work you do. That’s why you have to write blog posts :)\nThe possibility for statistical programmers to pivot towards developing software or writing blog-posts such as this really transforms and broadens their job description. It is this transformation that is reflected by the choice of Roche to re-brand statistical programmers as analytical data scientists. The fact that cross-industry development is being advocated for really lets programmers expand their network outside of their company.\nThe {admiral} project serves as a testament to the power of collaborative open-source development and the potential it holds for the future of work in this industry."
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "",
-    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "",
-    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "Example",
-    "text": "Example\nA value level validation use case, where derive_param_computed() is used to validate a derived parameter - PARAMCD = ADPCYMG (Actual Dose per Cycle) in ADEX dataset.\n\nDerivation\nActual Dose per Cycle is derived from the Total Amount of Dose (PARAMCD = TOTDOSE) / Number of Cycles (PARAMCD = NUMCYC)\nIn this example, ADEX.AVAL when ADEX.PARAMCD = ADPCYMG can be derived as:\n\\[\nAVAL (PARAMCD = ADPCYMG) = \\frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCYC)}\n\\]\n\n\nLoading Packages and Creating Example Data\n\nlibrary(tibble)\nlibrary(dplyr)\nlibrary(diffdf)\nlibrary(admiral)\n\nadex &lt;- tribble(\n  ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n  \"101\",     \"TOTDOSE\", \"Total Amount of Dose (mg)\",  180,\n  \"101\",     \"NUMCYC\",  \"Number of Cycles\",           3\n)\n\n\n\nDerive New Parameter\n\nadex_admiral &lt;- derive_param_computed(\n  adex,\n  by_vars = exprs(USUBJID),\n  parameters = c(\"TOTDOSE\", \"NUMCYC\"),\n  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,\n  set_values_to = exprs(\n    PARAMCD = \"ADPCYMG\",\n    PARAM = \"Actual Dose per Cycle (mg)\"\n  )\n)\n\n\n\n# A tibble: 3 × 4\n  USUBJID PARAMCD PARAM                       AVAL\n  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;\n1 101     TOTDOSE Total Amount of Dose (mg)    180\n2 101     NUMCYC  Number of Cycles               3\n3 101     ADPCYMG Actual Dose per Cycle (mg)    60\n\n\n\n\nCompare\nFor validation purpose, the diffdf package is used below to mimic SAS proc compare.\n\nadex_expected &lt;- bind_rows(\n  adex,\n  tribble(\n    ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n    \"101\",     \"ADPCYMG\", \"Actual Dose per Cycle (mg)\", 60\n  )\n)\n\ndiffdf(adex_expected, adex_admiral, keys = c(\"USUBJID\", \"PARAMCD\"))\n\nNo issues were found!"
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:08:59.077524"
-  },
-  {
-    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
-    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
-    "title": "Derive a new parameter computed from the value of other parameters",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html",
-    "href": "posts/2023-06-28_welcome/index.html",
-    "title": "Hello pharmaverse",
-    "section": "",
-    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#purpose",
-    "href": "posts/2023-06-28_welcome/index.html#purpose",
-    "title": "Hello pharmaverse",
-    "section": "",
-    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
-    "href": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
-    "title": "Hello pharmaverse",
-    "section": "Spirit of a Blog Post",
-    "text": "Spirit of a Blog Post\nThe CWG believes that the following 4 points will help guide the creation of Blog Posts.\n\nShort\nPersonalized\nReproducible\nReadable\n\nShort: Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.\nPersonalized: Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e. we don’t want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.\nReproducible: Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.\nReadable: The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity."
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
-    "href": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
-    "title": "Hello pharmaverse",
-    "section": "What types of posts are allowed on this site?",
-    "text": "What types of posts are allowed on this site?\nOverall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:\n\nPackages in the Clinical Reporting Pipeline\nFunctions from packages in the Clinical Reporting Pipeline\nWider experiences of using R in the Clinical Reporting Pipeline\nConference experiences and the Clinical Reporting Pipeline\n\nHowever, it never hurts to ask if you topic might fit into this medium!\n\nMinimum Post Requirements\n\nA unique image to help showcase the post.\nWorking Code\nSelf-contained data or package data.\nDocumentation of package versions\n\nThat is it! After that you can go wild, but we do ask that it is kept short!"
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
-    "href": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
-    "title": "Hello pharmaverse",
-    "section": "How can I make a Blog Post",
-    "text": "How can I make a Blog Post\nStep 1: Reach out to us through pharmaverse/slack or make an issue on our GitHub.\nStep 2: Branch off main\nStep 3: Review the Spirit of the Blog Post in the Pull Request Template\nStep 4: Poke us to do a review!"
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#last-updated",
-    "href": "posts/2023-06-28_welcome/index.html#last-updated",
-    "title": "Hello pharmaverse",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:08:52.497822"
-  },
-  {
-    "objectID": "posts/2023-06-28_welcome/index.html#details",
-    "href": "posts/2023-06-28_welcome/index.html#details",
-    "title": "Hello pharmaverse",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
     "objectID": "R/readme.html",
     "href": "R/readme.html",
     "title": "Files in this folder",
@@ -243,55 +12,6 @@
     "title": "Files in this folder",
     "section": "",
     "text": "help_create_blogpost.R: script containing the function(s) used by create_blogpost.R\nswitch.R: Used by CICD spellcheck workflow."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Pharmaverse Blog",
-    "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nThe pharmaverse (hi)story\n\n\n\n\n\n\n\ncommunity\n\n\n\n\n\n\n\n\n\n\n\nAug 30, 2023\n\n\nNicholas Eugenio\n\n\n\n\n\n\n  \n\n\n\n\nRounding\n\n\n\n\n\n\n\nrounding\n\n\n\n\nExploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges\n\n\n\n\n\n\nAug 22, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nIt’s all relative? - Calculating Relative Days using admiral\n\n\n\n\n\n\n\nadmiral\n\n\nADaMs\n\n\n\n\n\n\n\n\n\n\n\nAug 8, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nCross-Industry Open Source Package Development\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\n\n\n\n\n\n\n\nJul 25, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nHow to use Code Sections\n\n\n\n\n\n\n\nADaMs\n\n\nTips and Tricks\n\n\n\n\n\n\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nBlanks and NAs\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nfalcon\n\n\n\n\n\n\n\nfalcon\n\n\ndisplays\n\n\n\n\n\n\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n  \n\n\n\n\nHello pharmaverse\n\n\n\n\n\n\n\ncommunity\n\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nUse admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nHackathon Feedback Application\n\n\n\n\n\n\n\nR\n\n\nshiny\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "posts/2023-06-27_hackathon_writeup/index.html",
-    "href": "posts/2023-06-27_hackathon_writeup/index.html",
-    "title": "Admiral Hackathon 2023 Revisited",
-    "section": "",
-    "text": "This January and February (2023), the admiral development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of admiral users, and help participants familiarize themselves with R and admiral. This whole effort was led by Thomas Neitmann and was supported by Zelos Zhu, Sadchla Mascary, and me – Stefan Thoma.\nThe hackathon event was structured in two parts. First, we offered an Introduction to R for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The workshop recording and the course materials are available online.\nThe main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through the feedback application was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in this blogpost or check out my public GitHub repository for such an application."
-  },
-  {
-    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#introduction-to-r-workshop",
-    "href": "posts/2023-06-27_hackathon_writeup/index.html#introduction-to-r-workshop",
-    "title": "Admiral Hackathon 2023 Revisited",
-    "section": "Introduction to R workshop",
-    "text": "Introduction to R workshop\nWe were really excited to see over 500 people from around 40 countries joining our Introduction to R workshop in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our Introduction to R workshop:\n\n\n\n\n\n216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.\nThe target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.\n\n\n\n\n\nOverall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight survivorship bias…)."
-  },
-  {
-    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#admiral-hackathon",
-    "href": "posts/2023-06-27_hackathon_writeup/index.html#admiral-hackathon",
-    "title": "Admiral Hackathon 2023 Revisited",
-    "section": "admiral Hackathon",
-    "text": "admiral Hackathon\nFollowing the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the posit company. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!\nWe were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: Jagadish Katam without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!\nIn the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH & ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one admiral consulting with one of the admiral core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.\nCongratulations to the winners:\n\nViiV Team_GSK\nteamspoRt\nTatianaPXL\nDivyasneelam\nAdaMTeamIndia\nSanofi_BP\nJagadish (our community hero)\nAZ_WAWA\n\nAlthough this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.\nA recording of the hackathon readout can be found in the CDISC Open Source Alliance Quarterly Spotlight."
-  },
-  {
-    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#conclusion",
-    "href": "posts/2023-06-27_hackathon_writeup/index.html#conclusion",
-    "title": "Admiral Hackathon 2023 Revisited",
-    "section": "Conclusion",
-    "text": "Conclusion\nOverall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the Intro to R workshop (CDISC record breaking) and for the admiral hackathon, but even more so with the engagement of all the participants.\nAgain, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.\nAs always, we are very happy to hear more feedback on the hackathon as well as on admiral in general. Simply submit an issue on the admiral GitHub repository. You would like to join the admiral core developers? Please reach out to Edoardo Mancini (product owner) or Ben Straub (technical lead)."
-  },
-  {
-    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
-    "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
-    "title": "Admiral Hackathon 2023 Revisited",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:08:56.797855"
-  },
-  {
-    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
-    "href": "posts/2023-06-27_hackathon_writeup/index.html#details",
-    "title": "Admiral Hackathon 2023 Revisited",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
   },
   {
     "objectID": "posts/2023-07-14_code_sections/code_sections.html",
@@ -326,103 +46,12 @@
     "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
     "title": "How to use Code Sections",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:09:01.010591"
+    "text": "Last updated\n\n2023-09-26 19:35:52.595565"
   },
   {
     "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
     "href": "posts/2023-07-14_code_sections/code_sections.html#details",
     "title": "How to use Code Sections",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html",
-    "href": "posts/2023-07-09_falcon/falcon.html",
-    "title": "falcon",
-    "section": "",
-    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
-    "href": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
-    "title": "falcon",
-    "section": "",
-    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
-    "href": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
-    "title": "falcon",
-    "section": "Why do we build it?",
-    "text": "Why do we build it?\nThe collaborative effort focuses on improving the clarity, consistency, and accessibility of TLGs by addressing variations and redundancies in their creation and use. This harmonized approach allows for streamlined reporting processes and facilitates effective communication of study results within the industry and to regulatory authorities."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
-    "href": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
-    "title": "falcon",
-    "section": "What has been done so far?",
-    "text": "What has been done so far?\nDrawing inspiration from the FDA Standard Safety Tables and Figures Integrated Guide, the {falcon} initiative has successfully developed and open-sourced 11 templates to date. 4 product owners and 11 developers from 4 companies have collaborated to make these templates available and also published them on the official {falcon} website at https://pharmaverse.github.io/falcon/."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
-    "href": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
-    "title": "falcon",
-    "section": "Next steps & vision",
-    "text": "Next steps & vision\nFuture plans for {falcon} involve expanding the catalog through continuous collaboration from participating companies and inviting wider industry engagement. The ultimate goal is to promote harmonization of TLGs for clinical reporting across the pharmaceutical industry, leading to greater efficiency, collaboration, and innovation. Even though templates currently come from a published FDA guide, the collaborating companies are open to share and discuss similarities and differences on analysis concepts and output layouts of their own implementations in clinical reporting, for both safety and efficacy analyses.\nIn addition, while currently all templates were built using {rtables}, {tern}, {rlistings} and drew inspiration from the open-sourced TLG-Catalog, moving forward, we plan to support creating the same templates using alternative table engines such as {gt}.\n{falcon} will be presented at the upcoming PHUSE EU (Standards Implementation stream), where we will share the collaboration journey of {falcon} so far, providing more details on the current progress, long-term vision, and strategies for this initiative. Attendees will gain insights into the challenges and opportunities of harmonizing clinical reporting through open-source collaboration and learn about the potential benefits and future direction of {falcon}."
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#last-updated",
-    "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
-    "title": "falcon",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:09:04.688423"
-  },
-  {
-    "objectID": "posts/2023-07-09_falcon/falcon.html#details",
-    "href": "posts/2023-07-09_falcon/falcon.html#details",
-    "title": "falcon",
-    "section": "Details",
-    "text": "Details\n\nsource code, R environment"
-  },
-  {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html",
-    "title": "Blanks and NAs",
-    "section": "",
-    "text": "Reading in SAS-based datasets (.sas7bdat or xpt) into R has users calling the R package haven. A typical call might invoke read_sas() or read_xpt() to bring in your source data to construct your ADaMs or SDTMs.\nUnfortunately, while using haven the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like is.na in combination with dplyr::filter() to subset data. Check out Bayer’s SAS2R catalog: handling-of-missing-values for more discussion on missing values and NAs.\nIn the admiral package, we have built a simple function called convert_blanks_to_na() to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to NA_character_"
-  },
-  {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#loading-packages-and-making-dummy-data",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#loading-packages-and-making-dummy-data",
-    "title": "Blanks and NAs",
-    "section": "Loading Packages and Making Dummy Data",
-    "text": "Loading Packages and Making Dummy Data\n\nlibrary(admiral)\nlibrary(tibble)\nlibrary(dplyr)\n\ndf &lt;- tribble(\n  ~USUBJID, ~RFICDTC,\n  \"01\", \"2000-01-01\",\n  \"02\", \"2001-01-01\",\n  \"03\", \"\", # Here we have a character blank\n  \"04\", \"2001-01--\",\n  \"05\", \"2001---01\",\n  \"05\", \"\", # Here we have a character blank\n)\n\ndf\n\n# A tibble: 6 × 2\n  USUBJID RFICDTC     \n  &lt;chr&gt;   &lt;chr&gt;       \n1 01      \"2000-01-01\"\n2 02      \"2001-01-01\"\n3 03      \"\"          \n4 04      \"2001-01--\" \n5 05      \"2001---01\" \n6 05      \"\""
-  },
-  {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#a-simple-conversion",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#a-simple-conversion",
-    "title": "Blanks and NAs",
-    "section": "A simple conversion",
-    "text": "A simple conversion\n\ndf_na &lt;- convert_blanks_to_na(df)\n\ndf_na\n\n# A tibble: 6 × 2\n  USUBJID RFICDTC   \n  &lt;chr&gt;   &lt;chr&gt;     \n1 01      2000-01-01\n2 02      2001-01-01\n3 03      &lt;NA&gt;      \n4 04      2001-01-- \n5 05      2001---01 \n6 05      &lt;NA&gt;      \n\n\n\ndf_na %&gt;% filter(is.na(RFICDTC))\n\n# A tibble: 2 × 2\n  USUBJID RFICDTC\n  &lt;chr&gt;   &lt;chr&gt;  \n1 03      &lt;NA&gt;   \n2 05      &lt;NA&gt;"
-  },
-  {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#thats-it",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#thats-it",
-    "title": "Blanks and NAs",
-    "section": "That’s it!",
-    "text": "That’s it!\nA simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In admiral, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function use_ad_template() to get the full R script for the below ADaMs.\n\nlist_all_templates()\n\nExisting ADaM templates in package 'admiral':\n• ADAE\n• ADCM\n• ADEG\n• ADEX\n• ADLB\n• ADLBHY\n• ADMH\n• ADPC\n• ADPP\n• ADPPK\n• ADSL\n• ADVS"
-  },
-  {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
-    "title": "Blanks and NAs",
-    "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:09:08.353101"
-  },
-  {
-    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
-    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
-    "title": "Blanks and NAs",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
   },
@@ -487,12 +116,453 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2023-08-23 12:09:12.682216"
+    "text": "Last updated\n\n2023-09-26 19:35:47.907116"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
     "href": "posts/2023-06-27__hackathon_app/index.html#details",
     "title": "Hackathon Feedback Application",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-08-08_study_day/study_day.html",
+    "href": "posts/2023-08-08_study_day/study_day.html",
+    "title": "It’s all relative? - Calculating Relative Days using admiral",
+    "section": "",
+    "text": "Creating --DY variables for your ADaMs is super easy using derive_vars_dy() from the admiral package.\nLet’s build some dummy data with 4 subjects, a start date/time for treatment (TRTSDTM), an analysis start date/time variable (ASTDTM) and an analysis end date variable (AENDT).\nlibrary(admiral)\nlibrary(lubridate)\nlibrary(dplyr)\n\nadam &lt;- tribble(\n  ~USUBJID, ~TRTSDTM, ~ASTDTM, ~AENDT,\n  \"001\", \"2014-01-17T23:59:59\", \"2014-01-18T13:09:O9\", \"2014-01-20\",\n  \"002\", \"2014-02-25T23:59:59\", \"2014-03-18T14:09:O9\", \"2014-03-24\",\n  \"003\", \"2014-02-12T23:59:59\", \"2014-02-18T11:03:O9\", \"2014-04-17\",\n  \"004\", \"2014-03-17T23:59:59\", \"2014-03-19T13:09:O9\", \"2014-05-04\"\n) %&gt;%\n  mutate(\n    TRTSDTM = as_datetime(TRTSDTM),\n    ASTDTM = as_datetime(ASTDTM),\n    AENDT = ymd(AENDT)\n  )\nOkay! Next we run our dataset through derive_vars_dy(), specifying:\nderive_vars_dy(\n  adam,\n  reference_date = TRTSDTM,\n  source_vars = exprs(ASTDTM, AENDT)\n)\n\n# A tibble: 4 × 6\n  USUBJID TRTSDTM             ASTDTM              AENDT      ASTDY AENDY\n  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;\n1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20     2     4\n2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24    22    28\n3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17     7    65\n4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04     3    49\nThat’s it! We got both our ASTDY and AENDY variables in only a few short lines of code!\nWhat if I want my variables to have a different naming convention?\nEasy! In the source_vars argument if you want your variables to be called DEMOADY and DEMOEDY just do DEMOADY = ASTDTM and DEMOEDY = AENDT and derive_vars_dy() will do the rest!\nderive_vars_dy(\n  adam,\n  reference_date = TRTSDTM,\n  source_vars = exprs(DEMOADY = ASTDTM, DEMOEDY = AENDT)\n)\n\n# A tibble: 4 × 6\n  USUBJID TRTSDTM             ASTDTM              AENDT      DEMOADY DEMOEDY\n  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;       &lt;dbl&gt;   &lt;dbl&gt;\n1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20       2       4\n2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24      22      28\n3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17       7      65\n4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04       3      49\nIf you want to get --DT or --DTM variables using admiral then check out derive_vars_dt() and derive_vars_dtm(). If things are messy in your data, e.g. partial dates, both functions have great imputation abilities, which we will cover in an upcoming blog post!"
+  },
+  {
+    "objectID": "posts/2023-08-08_study_day/study_day.html#last-updated",
+    "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
+    "title": "It’s all relative? - Calculating Relative Days using admiral",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-09-26 19:35:43.155648"
+  },
+  {
+    "objectID": "posts/2023-08-08_study_day/study_day.html#details",
+    "href": "posts/2023-08-08_study_day/study_day.html#details",
+    "title": "It’s all relative? - Calculating Relative Days using admiral",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html",
+    "title": "Blanks and NAs",
+    "section": "",
+    "text": "Reading in SAS-based datasets (.sas7bdat or xpt) into R has users calling the R package haven. A typical call might invoke read_sas() or read_xpt() to bring in your source data to construct your ADaMs or SDTMs.\nUnfortunately, while using haven the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like is.na in combination with dplyr::filter() to subset data. Check out Bayer’s SAS2R catalog: handling-of-missing-values for more discussion on missing values and NAs.\nIn the admiral package, we have built a simple function called convert_blanks_to_na() to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to NA_character_"
+  },
+  {
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#loading-packages-and-making-dummy-data",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#loading-packages-and-making-dummy-data",
+    "title": "Blanks and NAs",
+    "section": "Loading Packages and Making Dummy Data",
+    "text": "Loading Packages and Making Dummy Data\n\nlibrary(admiral)\nlibrary(tibble)\nlibrary(dplyr)\n\ndf &lt;- tribble(\n  ~USUBJID, ~RFICDTC,\n  \"01\", \"2000-01-01\",\n  \"02\", \"2001-01-01\",\n  \"03\", \"\", # Here we have a character blank\n  \"04\", \"2001-01--\",\n  \"05\", \"2001---01\",\n  \"05\", \"\", # Here we have a character blank\n)\n\ndf\n\n# A tibble: 6 × 2\n  USUBJID RFICDTC     \n  &lt;chr&gt;   &lt;chr&gt;       \n1 01      \"2000-01-01\"\n2 02      \"2001-01-01\"\n3 03      \"\"          \n4 04      \"2001-01--\" \n5 05      \"2001---01\" \n6 05      \"\""
+  },
+  {
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#a-simple-conversion",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#a-simple-conversion",
+    "title": "Blanks and NAs",
+    "section": "A simple conversion",
+    "text": "A simple conversion\n\ndf_na &lt;- convert_blanks_to_na(df)\n\ndf_na\n\n# A tibble: 6 × 2\n  USUBJID RFICDTC   \n  &lt;chr&gt;   &lt;chr&gt;     \n1 01      2000-01-01\n2 02      2001-01-01\n3 03      &lt;NA&gt;      \n4 04      2001-01-- \n5 05      2001---01 \n6 05      &lt;NA&gt;      \n\n\n\ndf_na %&gt;% filter(is.na(RFICDTC))\n\n# A tibble: 2 × 2\n  USUBJID RFICDTC\n  &lt;chr&gt;   &lt;chr&gt;  \n1 03      &lt;NA&gt;   \n2 05      &lt;NA&gt;"
+  },
+  {
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#thats-it",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#thats-it",
+    "title": "Blanks and NAs",
+    "section": "That’s it!",
+    "text": "That’s it!\nA simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In admiral, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function use_ad_template() to get the full R script for the below ADaMs.\n\nlist_all_templates()\n\nExisting ADaM templates in package 'admiral':\n• ADAE\n• ADCM\n• ADEG\n• ADEX\n• ADLB\n• ADLBHY\n• ADMH\n• ADPC\n• ADPP\n• ADPPK\n• ADSL\n• ADVS"
+  },
+  {
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
+    "title": "Blanks and NAs",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-09-26 19:35:37.706794"
+  },
+  {
+    "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
+    "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
+    "title": "Blanks and NAs",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "",
+    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#introduction",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "",
+    "text": "When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.\nThe admiral function derive_param_computed() adds a parameter computed from the analysis value of other parameters.\nIt works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code."
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#example",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "Example",
+    "text": "Example\nA value level validation use case, where derive_param_computed() is used to validate a derived parameter - PARAMCD = ADPCYMG (Actual Dose per Cycle) in ADEX dataset.\n\nDerivation\nActual Dose per Cycle is derived from the Total Amount of Dose (PARAMCD = TOTDOSE) / Number of Cycles (PARAMCD = NUMCYC)\nIn this example, ADEX.AVAL when ADEX.PARAMCD = ADPCYMG can be derived as:\n\\[\nAVAL (PARAMCD = ADPCYMG) = \\frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCYC)}\n\\]\n\n\nLoading Packages and Creating Example Data\n\nlibrary(tibble)\nlibrary(dplyr)\nlibrary(diffdf)\nlibrary(admiral)\n\nadex &lt;- tribble(\n  ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n  \"101\",     \"TOTDOSE\", \"Total Amount of Dose (mg)\",  180,\n  \"101\",     \"NUMCYC\",  \"Number of Cycles\",           3\n)\n\n\n\nDerive New Parameter\n\nadex_admiral &lt;- derive_param_computed(\n  adex,\n  by_vars = exprs(USUBJID),\n  parameters = c(\"TOTDOSE\", \"NUMCYC\"),\n  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,\n  set_values_to = exprs(\n    PARAMCD = \"ADPCYMG\",\n    PARAM = \"Actual Dose per Cycle (mg)\"\n  )\n)\n\nWarning: The `analysis_value` argument of `derive_param_computed()` is deprecated as\nof admiral 0.12.0.\nℹ Please use the `set_values_to` argument instead.\n\n\n\n\n# A tibble: 3 × 4\n  USUBJID PARAMCD PARAM                       AVAL\n  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;\n1 101     TOTDOSE Total Amount of Dose (mg)    180\n2 101     NUMCYC  Number of Cycles               3\n3 101     ADPCYMG Actual Dose per Cycle (mg)    60\n\n\n\n\nCompare\nFor validation purpose, the diffdf package is used below to mimic SAS proc compare.\n\nadex_expected &lt;- bind_rows(\n  adex,\n  tribble(\n    ~USUBJID,  ~PARAMCD,  ~PARAM,                       ~AVAL,\n    \"101\",     \"ADPCYMG\", \"Actual Dose per Cycle (mg)\", 60\n  )\n)\n\ndiffdf(adex_expected, adex_admiral, keys = c(\"USUBJID\", \"PARAMCD\"))\n\nNo issues were found!"
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-09-26 19:35:31.944753"
+  },
+  {
+    "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
+    "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
+    "title": "Derive a new parameter computed from the value of other parameters",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "",
+    "text": "Date and time is collected in SDTM as character values using the extended ISO 8601 format yyyy-dd-mmThh:mm:ss. This universal format allows missing parts date or time - e.g. the string\"2019-10\" represents a date where the day and the time are unknown. In contrast, ADaM timing variables like ADTM (Analysis Datetime) or ADY (Analysis Relative Day) are numeric variables, which can be derived only if the date or datetime is complete.\nMost ADaM programmers have, at one point or another, encountered situations where missing dates, unexpected formats or confusing imputation functions rendered derivations of timing variables frustrating and time consuming. {admiral} aims to mitigate this (where possible!) by providing functions which automatically derive date/datetime variables for you, and fill in missing date or time parts according to well-defined imputation rules.\nIn this article, we first examine the arsenal of functions provided by{admiral} to aid in datetime imputation and timing variable derivation. We then observe everything in action through a number of selected typical examples."
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#imputing-a-partial-date-portion",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#imputing-a-partial-date-portion",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "Imputing a Partial Date Portion",
+    "text": "Imputing a Partial Date Portion\nIt is easy impute dates to the first day/month if they are partial just by using the highest_imputation argument:\n\nlibrary(admiral)\nlibrary(lubridate)\nlibrary(tibble)\nlibrary(dplyr, warn.conflicts = FALSE)\n\ndates &lt;- c(\n  \"2019-07-18T15:25:40\",\n  \"2019-07-18T15:25\",\n  \"2019-07-18T15\",\n  \"2019-07-18\",\n  \"2019-02\",\n  \"2019\",\n  \"2019\",\n  \"2019---07\",\n  \"\"\n)\n\nimpute_dtc_dt(\n  dtc = dates,\n  highest_imputation = \"M\"\n)\n\n[1] \"2019-07-18\" \"2019-07-18\" \"2019-07-18\" \"2019-07-18\" \"2019-02-01\"\n[6] \"2019-01-01\" \"2019-01-01\" \"2019-01-01\" NA          \n\n\nA simple modification using date_imputation = \"mid\" or date_imputation = \"last\" or enables the imputation to be made using the middle or last day/month instead:\n\n# Impute to last day/month if date is partial\nimpute_dtc_dt(\n  dtc = dates,\n  highest_imputation = \"M\",\n  date_imputation = \"last\",\n)\n\n[1] \"2019-07-18\" \"2019-07-18\" \"2019-07-18\" \"2019-07-18\" \"2019-02-28\"\n[6] \"2019-12-31\" \"2019-12-31\" \"2019-12-31\" NA          \n\n# Impute to mid day/month if date is partial\nimpute_dtc_dt(\n  dtc = dates,\n  highest_imputation = \"M\",\n  date_imputation = \"mid\"\n)\n\n[1] \"2019-07-18\" \"2019-07-18\" \"2019-07-18\" \"2019-07-18\" \"2019-02-15\"\n[6] \"2019-06-30\" \"2019-06-30\" \"2019-06-30\" NA          \n\n\nBut what if there exist minimum dates that the imputed date cannot exceed? Here, the min_date argument comes to the rescue:\n\nimpute_dtc_dt(\n  \"2020-12\",\n  min_dates = list(\n    ymd(\"2020-12-06\"),\n    ymd(\"2020-11-11\")\n  ),\n  highest_imputation = \"M\"\n)\n\n[1] \"2020-12-06\""
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#computing-date-imputation-flags",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#computing-date-imputation-flags",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "Computing Date Imputation Flags",
+    "text": "Computing Date Imputation Flags\nWhen it comes to carrying out an imputation, the twin task is to flag the type of imputation that was executed. Here, functions like compute_dtf() make this straightforward. For this function, all that needs to be done is to pass a date character date to the dtc argument, and the resulting imputed date to the dt argument. This will then return the right date imputation flag - see the examples below for some possible behaviors:\n\ncompute_dtf(dtc = \"2019-07\", dt = as.Date(\"2019-07-18\"))\n\n[1] \"D\"\n\ncompute_dtf(dtc = \"2019\", dt = as.Date(\"2019-07-18\"))\n\n[1] \"M\"\n\ncompute_dtf(dtc = \"--06-01T00:00\", dt = as.Date(\"2022-06-01\"))\n\n[1] \"Y\""
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#creating-an-imputed-datetime-and-date-variable-and-imputation-flag-variables",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#creating-an-imputed-datetime-and-date-variable-and-imputation-flag-variables",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "Creating an Imputed Datetime and Date Variable and Imputation Flag Variables",
+    "text": "Creating an Imputed Datetime and Date Variable and Imputation Flag Variables\nAs described previously, derive_vars_dtm() derives an imputed datetime variable and the corresponding date and time imputation flags. The imputed date variable can then be derived by using derive_vars_dtm_to_dt(). It is not necessary and advisable to perform the imputation for the date variable if it was already done for the datetime variable. CDISC considers the datetime and the date variable as two representations of the same date. Thus the imputation must be the same and the imputation flags are valid for both the datetime and the date variable.\n\nae &lt;- tribble(\n  ~AESTDTC,\n  \"2019-08-09T12:34:56\",\n  \"2019-04-12\",\n  \"2010-09\",\n  NA_character_\n) %&gt;%\n  derive_vars_dtm(\n    dtc = AESTDTC,\n    new_vars_prefix = \"AST\",\n    highest_imputation = \"M\",\n    date_imputation = \"first\",\n    time_imputation = \"first\"\n  ) %&gt;%\n  derive_vars_dtm_to_dt(exprs(ASTDTM))\n\n\n\n\n\n\nAESTDTC\nASTDTM\nASTDTF\nASTTMF\nASTDT\n\n\n\n\n2019-08-09T12:34:56\n2019-08-09 12:34:56\nNA\nNA\n2019-08-09\n\n\n2019-04-12\n2019-04-12 00:00:00\nNA\nH\n2019-04-12\n\n\n2010-09\n2010-09-01 00:00:00\nD\nH\n2010-09-01\n\n\nNA\nNA\nNA\nNA\nNA"
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#creating-an-imputed-date-variable-and-imputation-flag-variable",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#creating-an-imputed-date-variable-and-imputation-flag-variable",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "Creating an Imputed Date Variable and Imputation Flag Variable",
+    "text": "Creating an Imputed Date Variable and Imputation Flag Variable\nIf an imputed date variable without a corresponding datetime variable is required, it can be derived by the derive_vars_dt() function.\n\nae &lt;- tribble(\n  ~AESTDTC,\n  \"2019-08-09T12:34:56\",\n  \"2019-04-12\",\n  \"2010-09\",\n  NA_character_\n) %&gt;%\n  derive_vars_dt(\n    dtc = AESTDTC,\n    new_vars_prefix = \"AST\",\n    highest_imputation = \"M\",\n    date_imputation = \"first\"\n  )\n\n\n\n\n\n\nAESTDTC\nASTDT\nASTDTF\n\n\n\n\n2019-08-09T12:34:56\n2019-08-09\nNA\n\n\n2019-04-12\n2019-04-12\nNA\n\n\n2010-09\n2010-09-01\nD\n\n\nNA\nNA\nNA"
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#imputing-time-without-imputing-date",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#imputing-time-without-imputing-date",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "Imputing Time Without Imputing Date",
+    "text": "Imputing Time Without Imputing Date\nIf the time should be imputed but not the date, the highest_imputation argument should be set to \"h\". This results in NA if the date is partial. As no date is imputed the date imputation flag is not created.\n\nae &lt;- tribble(\n  ~AESTDTC,\n  \"2019-08-09T12:34:56\",\n  \"2019-04-12\",\n  \"2010-09\",\n  NA_character_\n) %&gt;%\n  derive_vars_dtm(\n    dtc = AESTDTC,\n    new_vars_prefix = \"AST\",\n    highest_imputation = \"h\",\n    time_imputation = \"first\"\n  )\n\n\n\n\n\n\nAESTDTC\nASTDTM\nASTTMF\n\n\n\n\n2019-08-09T12:34:56\n2019-08-09 12:34:56\nNA\n\n\n2019-04-12\n2019-04-12 00:00:00\nH\n\n\n2010-09\nNA\nNA\n\n\nNA\nNA\nNA"
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#avoiding-imputed-dates-before-a-particular-date",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#avoiding-imputed-dates-before-a-particular-date",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "Avoiding Imputed Dates Before a Particular Date",
+    "text": "Avoiding Imputed Dates Before a Particular Date\nUsually an adverse event start date is imputed as the earliest date of all possible dates when filling the missing parts. The result may be a date before treatment start date. This is not desirable because the adverse event would not be considered as treatment emergent and excluded from the adverse event summaries. This can be avoided by specifying the treatment start date variable (TRTSDTM) for the min_dates argument.\nImportantly, TRTSDTM is used as imputed date only if the non missing date and time parts of AESTDTC coincide with those of TRTSDTM. Therefore 2019-10 is not imputed as 2019-11-11 12:34:56. This ensures that collected information is not changed by the imputation.\n\nae &lt;- tribble(\n  ~AESTDTC,              ~TRTSDTM,\n  \"2019-08-09T12:34:56\", ymd_hms(\"2019-11-11T12:34:56\"),\n  \"2019-10\",             ymd_hms(\"2019-11-11T12:34:56\"),\n  \"2019-11\",             ymd_hms(\"2019-11-11T12:34:56\"),\n  \"2019-12-04\",          ymd_hms(\"2019-11-11T12:34:56\")\n) %&gt;%\n  derive_vars_dtm(\n    dtc = AESTDTC,\n    new_vars_prefix = \"AST\",\n    highest_imputation = \"M\",\n    date_imputation = \"first\",\n    time_imputation = \"first\",\n    min_dates = exprs(TRTSDTM)\n  )\n\n\n\n\n\n\n\n\n\n\n\n\n\nAESTDTC\nTRTSDTM\nASTDTM\nASTDTF\nASTTMF\n\n\n\n\n2019-08-09T12:34:56\n2019-11-11 12:34:56\n2019-08-09 12:34:56\nNA\nNA\n\n\n2019-10\n2019-11-11 12:34:56\n2019-10-01 00:00:00\nD\nH\n\n\n2019-11\n2019-11-11 12:34:56\n2019-11-11 12:34:56\nD\nH\n\n\n2019-12-04\n2019-11-11 12:34:56\n2019-12-04 00:00:00\nNA\nH"
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#avoiding-imputed-dates-after-a-particular-date",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#avoiding-imputed-dates-after-a-particular-date",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "Avoiding Imputed Dates After a Particular Date",
+    "text": "Avoiding Imputed Dates After a Particular Date\nIf a date is imputed as the latest date of all possible dates when filling the missing parts, it should not result in dates after data cut off or death. This can be achieved by specifying the dates for the max_dates argument.\nImportantly, non missing date parts are not changed. Thus 2019-12-04 is imputed as 2019-12-04 23:59:59 although it is after the data cut off date. It may make sense to replace it by the data cut off date but this is not part of the imputation. It should be done in a separate data cleaning or data cut off step.\n\nae &lt;- tribble(\n  ~AEENDTC,              ~DTHDT,            ~DCUTDT,\n  \"2019-08-09T12:34:56\", ymd(\"2019-11-11\"), ymd(\"2019-12-02\"),\n  \"2019-11\",             ymd(\"2019-11-11\"), ymd(\"2019-12-02\"),\n  \"2019-12\",             NA,                ymd(\"2019-12-02\"),\n  \"2019-12-04\",          NA,                ymd(\"2019-12-02\")\n) %&gt;%\n  derive_vars_dtm(\n    dtc = AEENDTC,\n    new_vars_prefix = \"AEN\",\n    highest_imputation = \"M\",\n    date_imputation = \"last\",\n    time_imputation = \"last\",\n    max_dates = exprs(DTHDT, DCUTDT)\n  )\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAEENDTC\nDTHDT\nDCUTDT\nAENDTM\nAENDTF\nAENTMF\n\n\n\n\n2019-08-09T12:34:56\n2019-11-11\n2019-12-02\n2019-08-09 12:34:56\nNA\nNA\n\n\n2019-11\n2019-11-11\n2019-12-02\n2019-11-11 23:59:59\nD\nH\n\n\n2019-12\nNA\n2019-12-02\n2019-12-02 23:59:59\nD\nH\n\n\n2019-12-04\nNA\n2019-12-02\n2019-12-04 23:59:59\nNA\nH"
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#imputation-without-creating-a-new-variable",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#imputation-without-creating-a-new-variable",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "Imputation Without Creating a New Variable",
+    "text": "Imputation Without Creating a New Variable\nIf imputation is required without creating a new variable the convert_dtc_to_dt() function can be called to obtain a vector of imputed dates. It can be used for example here:\n\nmh &lt;- tribble(\n  ~MHSTDTC,     ~TRTSDT,\n  \"2019-04\",    ymd(\"2019-04-15\"),\n  \"2019-04-01\", ymd(\"2019-04-15\"),\n  \"2019-05\",    ymd(\"2019-04-15\"),\n  \"2019-06-21\", ymd(\"2019-04-15\")\n) %&gt;%\n  filter(\n    convert_dtc_to_dt(\n      MHSTDTC,\n      highest_imputation = \"M\",\n      date_imputation = \"first\"\n    ) &lt; TRTSDT\n  )\n\n\n\n\n\n\nMHSTDTC\nTRTSDT\n\n\n\n\n2019-04\n2019-04-15\n\n\n2019-04-01\n2019-04-15"
+  },
+  {
+    "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#using-more-than-one-imputation-rule-for-a-variable",
+    "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#using-more-than-one-imputation-rule-for-a-variable",
+    "title": "Date/Time Functions and Imputation in {admiral}",
+    "section": "Using More Than One Imputation Rule for a Variable",
+    "text": "Using More Than One Imputation Rule for a Variable\nUsing different imputation rules depending on the observation can be done by using the higher-order function slice_derivation(), which applies a derivation function differently (by varying its arguments) in different subsections of a dataset. For example, consider this Vital Signs case where pre-dose records require a different treatment to other records:\n\nvs &lt;- tribble(\n  ~VSDTC,                ~VSTPT,\n  \"2019-08-09T12:34:56\", NA,\n  \"2019-10-12\",          \"PRE-DOSE\",\n  \"2019-11-10\",          NA,\n  \"2019-12-04\",          NA\n) %&gt;%\n  slice_derivation(\n    derivation = derive_vars_dtm,\n    args = params(\n      dtc = VSDTC,\n      new_vars_prefix = \"A\"\n    ),\n    derivation_slice(\n      filter = VSTPT == \"PRE-DOSE\",\n      args = params(time_imputation = \"first\")\n    ),\n    derivation_slice(\n      filter = TRUE,\n      args = params(time_imputation = \"last\")\n    )\n  )\n\n\n\n\n\n\nVSDTC\nVSTPT\nADTM\nATMF\n\n\n\n\n2019-08-09T12:34:56\nNA\n2019-08-09 12:34:56\nNA\n\n\n2019-11-10\nNA\n2019-11-10 23:59:59\nH\n\n\n2019-12-04\nNA\n2019-12-04 23:59:59\nH\n\n\n2019-10-12\nPRE-DOSE\n2019-10-12 00:00:00\nH"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Pharmaverse Blog",
+    "section": "",
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nDate/Time Functions and Imputation in {admiral}\n\n\n\n\n\n\n\nadmiral\n\n\nADaM\n\n\nDate/Time\n\n\n\n\nDates, times and imputation can be a frustrating facet of any programming language. Here’s how {admiral} makes all of this easy!\n\n\n\n\n\n\nSep 26, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nThe pharmaverse (hi)story\n\n\n\n\n\n\n\ncommunity\n\n\n\n\n\n\n\n\n\n\n\nAug 30, 2023\n\n\nNicholas Eugenio\n\n\n\n\n\n\n  \n\n\n\n\nRounding\n\n\n\n\n\n\n\nrounding\n\n\n\n\nExploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges\n\n\n\n\n\n\nAug 22, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nIt’s all relative? - Calculating Relative Days using admiral\n\n\n\n\n\n\n\nadmiral\n\n\nADaMs\n\n\n\n\n\n\n\n\n\n\n\nAug 8, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nCross-Industry Open Source Package Development\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\n\n\n\n\n\n\n\nJul 25, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nHow to use Code Sections\n\n\n\n\n\n\n\nADaMs\n\n\nTips and Tricks\n\n\n\n\n\n\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nBlanks and NAs\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nfalcon\n\n\n\n\n\n\n\nfalcon\n\n\ndisplays\n\n\n\n\n\n\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n  \n\n\n\n\nHello pharmaverse\n\n\n\n\n\n\n\ncommunity\n\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nUse admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nHackathon Feedback Application\n\n\n\n\n\n\n\nR\n\n\nshiny\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/2023-06-27_hackathon_writeup/index.html",
+    "href": "posts/2023-06-27_hackathon_writeup/index.html",
+    "title": "Admiral Hackathon 2023 Revisited",
+    "section": "",
+    "text": "This January and February (2023), the admiral development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of admiral users, and help participants familiarize themselves with R and admiral. This whole effort was led by Thomas Neitmann and was supported by Zelos Zhu, Sadchla Mascary, and me – Stefan Thoma.\nThe hackathon event was structured in two parts. First, we offered an Introduction to R for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The workshop recording and the course materials are available online.\nThe main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through the feedback application was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in this blogpost or check out my public GitHub repository for such an application."
+  },
+  {
+    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#introduction-to-r-workshop",
+    "href": "posts/2023-06-27_hackathon_writeup/index.html#introduction-to-r-workshop",
+    "title": "Admiral Hackathon 2023 Revisited",
+    "section": "Introduction to R workshop",
+    "text": "Introduction to R workshop\nWe were really excited to see over 500 people from around 40 countries joining our Introduction to R workshop in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our Introduction to R workshop:\n\n\n\n\n\n216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.\nThe target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.\n\n\n\n\n\nOverall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight survivorship bias…)."
+  },
+  {
+    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#admiral-hackathon",
+    "href": "posts/2023-06-27_hackathon_writeup/index.html#admiral-hackathon",
+    "title": "Admiral Hackathon 2023 Revisited",
+    "section": "admiral Hackathon",
+    "text": "admiral Hackathon\nFollowing the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the posit company. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!\nWe were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: Jagadish Katam without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!\nIn the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH & ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one admiral consulting with one of the admiral core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.\nCongratulations to the winners:\n\nViiV Team_GSK\nteamspoRt\nTatianaPXL\nDivyasneelam\nAdaMTeamIndia\nSanofi_BP\nJagadish (our community hero)\nAZ_WAWA\n\nAlthough this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.\nA recording of the hackathon readout can be found in the CDISC Open Source Alliance Quarterly Spotlight."
+  },
+  {
+    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#conclusion",
+    "href": "posts/2023-06-27_hackathon_writeup/index.html#conclusion",
+    "title": "Admiral Hackathon 2023 Revisited",
+    "section": "Conclusion",
+    "text": "Conclusion\nOverall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the Intro to R workshop (CDISC record breaking) and for the admiral hackathon, but even more so with the engagement of all the participants.\nAgain, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.\nAs always, we are very happy to hear more feedback on the hackathon as well as on admiral in general. Simply submit an issue on the admiral GitHub repository. You would like to join the admiral core developers? Please reach out to Edoardo Mancini (product owner) or Ben Straub (technical lead)."
+  },
+  {
+    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
+    "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
+    "title": "Admiral Hackathon 2023 Revisited",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-09-26 19:35:28.894959"
+  },
+  {
+    "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
+    "href": "posts/2023-06-27_hackathon_writeup/index.html#details",
+    "title": "Admiral Hackathon 2023 Revisited",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html",
+    "href": "posts/2023-07-24_rounding/rounding.html",
+    "title": "Rounding",
+    "section": "",
+    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even. Therefore round(0.5) is 0 and round(-1.5) is -2. Note from the base R round documentation:\n\n\n\nthis is dependent on OS services and on representation error (since e.g. 0.15 is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so round(0.15, 1) could be either 0.1 or 0.2).\n\n\n\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#rounding-methods",
+    "href": "posts/2023-07-24_rounding/rounding.html#rounding-methods",
+    "title": "Rounding",
+    "section": "",
+    "text": "Both SAS and base R have the function round(), which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:\n\nSAS round() rounds half up. This is the most common method of rounding.\nbase R round() rounds to the nearest even. Therefore round(0.5) is 0 and round(-1.5) is -2. Note from the base R round documentation:\n\n\n\nthis is dependent on OS services and on representation error (since e.g. 0.15 is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so round(0.15, 1) could be either 0.1 or 0.2).\n\n\n\n\nAlthough base R does not have the option for “round half up”, there are functions available in other R packages (e.g., janitor, tidytlg).\nIn general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nExample: 1.45\n1.5\n(round to 1 decimal place)\n1.4\n(round to 1 decimal place)\n2\n1\n1\n\n\n\nHere are the corresponding ways to implement these methods in SAS and R.\n\n\n\n\n\n\n\n\n\n\n\n\nround half up\nround to even\nround up\nround down\nround towards zero\n\n\n\n\nSAS\nround()\nrounde()\nceil()\nfloor()\nint()\n\n\nR\n\njanitor::round_half_up()\n\n\ntidytlg::roundSAS()\n\n\n\n\nbase::round()\n\n\nbase::ceiling()\n\n\nbase::floor()\n\n\nbase::trunc()\n\n\n\n\nThis table is summarized from links below, where more detailed discussions can be found -\n\nTwo SAS blogs about round-to-even and rounding-up-rounding-down\nR documentation: Base R Round, janitor::round_half_up(), tidytlg::roundSAS()\nCAMIS (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. Rounding is one of the comparisons, and there are much more on this page!"
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#round-half-up-in-r",
+    "href": "posts/2023-07-24_rounding/rounding.html#round-half-up-in-r",
+    "title": "Rounding",
+    "section": "Round half up in R",
+    "text": "Round half up in R\nThe motivation for having a ‘round half up’ function is clear: it’s a widely used rounding method, but there are no such options available in base R.\nThere are multiple forums that have discussed this topic, and quite a few functions already available. But which ones to choose? Are they safe options?\nThe first time I needed to round half up in R, I chose the function from a PHUSE paper and applied it to my study. It works fine for a while until I encountered the following precision issue when double programming in R for TLGs made in SAS.\n\nNumerical precision issue\nExample of rounding half up for 2436.845, with 2 decimal places:\n\n# a function that rounds half up\n# exact copy from: https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf\nut_round &lt;- function(x, n = 0) {\n  # x is the value to be rounded\n  # n is the precision of the rounding\n  scale &lt;- 10^n\n  y &lt;- trunc(x * scale + sign(x) * 0.5) / scale\n  # Return the rounded number\n  return(y)\n}\n# round half up for 2436.845, with 2 decimal places\nut_round(2436.845, 2)\n\n[1] 2436.84\n\n\nThe expected result is 2436.85, but the output rounds it down. Thanks to the community effort, there are already discussions and resolution available in a StackOverflow post -\n\nThere are numerical precision issues, e.g., round2(2436.845, 2) returns 2436.84. Changing z + 0.5 to z + 0.5 + sqrt(.Machine$double.eps) seems to work for me. – Gregor Thomas Jun 24, 2020 at 2:16\n\n\n.Machine$double.eps is a built-in constant in R that represents the smallest positive floating-point number that can be represented on the system (reference: Machine Characteristics)\nThe expression + sqrt(.Machine$double.eps) is used to add a very small value to mitigate floating-point precision issues.\nFor more information about computational precision and floating-point, see the following links -\n\nR: Why doesn’t R think these numbers are equal?\nSAS: Numerical Accuracy in SAS Software\n\n\nAfter the fix:\n\n# revised rounds half up\nut_round1 &lt;- function(x, n = 0) {\n  # x is the value to be rounded\n  # n is the precision of the rounding\n  scale &lt;- 10^n\n  y &lt;- trunc(x * scale + sign(x) * 0.5 + sqrt(.Machine$double.eps)) / scale\n  # Return the rounded number\n  return(y)\n}\n# round half up for 2436.845, with 2 decimal places\nut_round1(2436.845, 2)\n\n[1] 2436.85\n\n\n\n\nWe are not alone\nThe same issue occurred in the following functions/options as well, and has been raised by users:\n\njanitor::round_half_up(): issue was raised and fixed in v2.1.0\nTplyr: options(tplyr.IBMRounding = TRUE), issue was raised\nscrutiny::round_up_from()/round_up(): issue was raised and fixed\n... and many others!\n\n\n\nWhich ones to use?\nThe following functions have the precision issue mentioned above fixed, they all share the same logic from this StackOverflow post.\n\njanitor::round_half_up() version &gt;= 2.1.0\ntidytlg::roundSAS()\n\nthis function has two more arguments that can convert the result to character and allow a character string to indicate missing values\n\nscrutiny::round_up_from()/round_up() version &gt;= 0.2.5\n\nround_up_from() has a threshold argument for rounding up, which adds flexibility for rounding up\nround_up() rounds up from 5, which is a special case of round_up_from()\n\n\n\n\nAre they safe options?\nThose “round half up” functions do not offer the same level of precision and accuracy as the base R round function.\nFor example, let’s consider a value a that is slightly less than 1.5. If we choose round half up approach to round a to 0 decimal places, an output of 1 is expected. However, those functions yield a result of 2 because 1.5 - a is less than sqrt(.Machine$double.eps).\n\na &lt;- 1.5 - 0.5 * sqrt(.Machine$double.eps)\nut_round1(a, 0)\n\n[1] 2\n\njanitor::round_half_up(a, digits = 0)\n\n[1] 2\n\n\nThis behavior aligns the floating point number comparison functions all.equal() and dplyr::near() with default tolerance .Machine$double.eps^0.5, where 1.5 and a are treated as equal.\n\nall.equal(a, 1.5)\n\n[1] TRUE\n\ndplyr::near(a, 1.5)\n\n[1] TRUE\n\n\nWe can get the expected results from base R round as it provides greater accuracy.\n\nround(a)\n\n[1] 1\n\n\nHere is an example when base R round reaches the precision limit:\n\n# b is slightly less than 1.5\nb &lt;- 1.5 - 0.5 * .Machine$double.eps\n# 1 is expected but the result is 2\nround(b)\n\n[1] 2\n\n\nThe precision and accuracy requirements can vary depending on the application. Therefore, it is essential to be aware each function’s performance in your specific context before making a choice."
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#conclusion",
+    "href": "posts/2023-07-24_rounding/rounding.html#conclusion",
+    "title": "Rounding",
+    "section": "Conclusion",
+    "text": "Conclusion\n\nWith the differences in default behaviour across languages, you could consider your QC strategy and whether an acceptable level of fuzz in the electronic comparisons could be allowed for cases such as rounding when making comparisons between 2 codes written in different languages as long as this is documented. Alternatively you could document the exact rounding approach to be used in the SAP and then match this regardless of programming language used. - Ross Farrugia\n\nThanks Ross Farrugia, Ben Straub, Edoardo Mancini and Liming for reviewing this blog post and providing valuable feedback!\nIf you spot an issue or have different opinions, please don’t hesitate to raise them through pharmaverse/blog!"
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#last-updated",
+    "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
+    "title": "Rounding",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-09-26 19:35:34.638551"
+  },
+  {
+    "objectID": "posts/2023-07-24_rounding/rounding.html#details",
+    "href": "posts/2023-07-24_rounding/rounding.html#details",
+    "title": "Rounding",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html",
+    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html",
+    "title": "The pharmaverse (hi)story",
+    "section": "",
+    "text": "Pharmaverse: from motivation to present"
+  },
+  {
+    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#human-history-and-pharmaverse-context",
+    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#human-history-and-pharmaverse-context",
+    "title": "The pharmaverse (hi)story",
+    "section": "Human history and pharmaverse context",
+    "text": "Human history and pharmaverse context\nSince the Australian Aboriginal, the earliest peoples recorded to have inhabited the Earth and who have been in Australia for at least 65,000 to 80,000 years (Encyclopædia Britannica), human beings live in group. Whether to protect yourself, increase your life expectancy or simply share tasks.\nFor most aspects of life, it doesn’t make sense to think, act or work alone for two main reasons:\n\nYou will spend more energy and time;\nSomeone else may be facing (or have faced) the same situation.\n\nThe English poet John Donne used to say “No man is an island entire of itself; every man is a piece of the continent, a part of the main;”. I can’t disagree with him. And I dare say that Ari Siggaard Knoph (Novo Nordisk), Michael Rimler (GSK), Michael Stackhouse (Atorus), Ross Farrugia (Roche), and Sumesh Kalappurakal (Janssen) can’t disagree with him either. They are the founders of pharmaverse, members of its Council and kindly shared their memories of how independent companies, in mid-2020, worked together in the creation of a set of packages developed to support the clinical reporting pipeline.\nIf you are not familiar with this pipeline, the important thing to know is that, in a nutshell, pharmaceutical companies must follow a bunch of standardized procedures and formats (from Clinical Data Interchange Standards Consortium, CDISC) when submitting clinical results to Health Authorities. The focus is on this: different companies seeking the same standards for outputs.\nParaphrasing Ross Farrugia (Roche) Breaking boundaries through open-source collaboration presentation in R/Pharma 2022 and thinking of the development of a new drug, we are talking about a “post-competitive” scenario: the drug has already been discovered and the companies should “just” produce and deliver standardized results."
+  },
+  {
+    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#clinical-reporting-outputs",
+    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#clinical-reporting-outputs",
+    "title": "The pharmaverse (hi)story",
+    "section": "Clinical reporting outputs",
+    "text": "Clinical reporting outputs\nRationally, we can say that companies face the same challenges in these steps of the process. Not so intuitively, we can also say they were working in silos on that before 2018. Just as Isaac Newton and Gottfried W. Leibniz independently developed the theory of infinitesimal calculus, pharmaceutical companies were independently working on R solutions for this pipeline.\nBut on August 16 and 17 of the mentioned year above, they gathered at the first edition of R/Pharma conference to discuss R and open-source tooling for drug development (the reasons why open-source is an advantageous approach can be found in this post written by Stefan Thoma). And according to Isabela Velásquez’s article, Pharmaverse: Packages for clinical reporting workflows, one of the most popular questions in this conference was “Is the package code available or on CRAN?”.\nWell, many of them were. And not necessarily at that date, but just to mention a few: pharmaRTF and Tplyr from Atorus, r2rtf from Merck, rtables from Roche, etc. The thing is that, overall, there were almost 10000 other packages as well (today, almost 20000). And that took to another two questions:\n\nWith this overwhelming number of packages on CRAN, how to find the ones related to solving “clinical reporting problems”?\nOnce the packages were found, how to choose which one to use among those that have the same functional purpose?\n\nSo, again, companies re-started to working in silos to find those answers. But now, in collaborative silos and with common goals: create extremely useful packages to solve pharmaceutical-specific gaps once and solve them well!"
+  },
+  {
+    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#first-partnerships",
+    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#first-partnerships",
+    "title": "The pharmaverse (hi)story",
+    "section": "First partnerships",
+    "text": "First partnerships\nIn 2020, Michael Stackhouse (Atorus) and Michael Rimler (GSK) talked and formed a partnership between their companies to develop a few more packages, including metacore, to read, store and manipulate metadata for ADaMs/SDTMs in a standardized object; xportr, to create submission compliant SAS transport files and perform pharma specific dataset level validation checks; and logrx (ex-timber), to build log to support reproducibility and traceability of an R script.\nAround the same time, Thomas Neitmann (currently at Denali Therapeutics, then at Roche) and Michael Rimler (GSK) discovered that both were working with ADaM in R, so Thomas Neitmann (currently at Denali Therapeutics, then at Roche), Ross Farrugia (Roche) and Michael Rimler (GSK) saw an opportunity there and GSK started their partnership with Roche to build and release admiral package.\nThe idea of working together, the sense of community, and the appetite from organizations built more and more, with incentive and priority established up into the programming heads council.\nJanssen had a huge effort in building R capabilities going on as well, by releasing tidytlg and envsetup), so eventually Michael Rimler (GSK), Michael Stackhouse (Atorus) and Ross Farrugia (Roche) formalized pharmaverse and formed the council, adding in Sumesh Kalappurakal (Janssen) and Ari Siggaard Knoph (Novo Nordisk) later joined as the fifth council member."
+  },
+  {
+    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#release-growth-and-developments",
+    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#release-growth-and-developments",
+    "title": "The pharmaverse (hi)story",
+    "section": "Release, growth and developments",
+    "text": "Release, growth and developments\nAt the end of their presentation “Closing the Gap: Creating an End to End R Package Toolkit for the Clinical Reporting Pipeline.”, in R/Pharma 2021, Ben Straub (GSK) and Eli Miller (Atorus) welcomed the community to the pharmaverse, a curated collection of packages developed by various pharmaceutical companies to support open-source clinical workflows.\nFrom the outset, the name pharmaverse was chosen so that it could be a neutral home, unrelated to any company. Also, it was established as not being a consortium, which means that founders don’t own, fund, or maintain the packages. Some individuals and companies maintain them but often allowing for community contributions and being licensed permissively so that there is always a feeling of community ownership. The focus of pharmaverse early on, and today, is on inter organization cooperation, to build an environment where, if organizations identify that they have a joint problem that they want to solve, this is the right space to work on and release it.\nPharmaverse has grown a lot, at the time of writing this post we have &gt;25 packages recommended in pharmaverse, and this has led to a partnership with PHUSE to get support from their organization and platform, and because they are eager to advance and support pharmaverse mission.\nDespite all its structure, it is impossible to say that we have a single solution for each clinical reporting analysis when it comes to pharmaverse, a single pathway is impractical. Instead, it is necessary to accept viable tools fitting different pathways into pharmaverse to direct and give people options as to what might work for them. After all, even though we live together as a community, we still have our own unique internal problems.\n\n\n\nSample of pharmaverse packages"
+  },
+  {
+    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#last-updated",
+    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#last-updated",
+    "title": "The pharmaverse (hi)story",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-09-26 19:35:39.677905"
+  },
+  {
+    "objectID": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#details",
+    "href": "posts/2023-08-30_pharmaverse_story/pharmaverse_story.html#details",
+    "title": "The pharmaverse (hi)story",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "",
+    "text": "This post is based on a talk given at the regional useR! conference on July 21st 2023 in Basel. I took the opportunity to present my personal perspective on the current cross-industry package development efforts with a particular focus on the transformation of the job description of statistical programmers. As I have only recently started my position at Roche, my personal perspective is the perspective of a newcomer. I have a background in Psychology and Statistics and joined Roche in November 2022 as an intern switching to a permanent position as a statistical programmer – what they call analytical data scientist now – in April 2023. I spend about 20% of my time in such a cross-industry package development project, which was a major reason for applying for this position. In this post I would like to explain how we work in this project, and why this had such an impact on my decision to join Roche."
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#context",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#context",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "Context",
+    "text": "Context\nMy decision was influenced by two current industry trends:\nFirst, the switch to a more language agnostic and open source approach for clinical reporting and data analysis. At the moment, R seems to be the best fitting tool for the job, but the systems used here are language agnostic in general. This is related, but does not necessarily lead to the second trend: The move toward cross-industry collaboration when developing clinical reporting software.\nAs the industry moves toward new (to them) programming languages, fit-for-purpose tools need(ed) to be developed. The realization that siloed solutions – in an area where competitiveness does not benefit patients – are simply resource hungry ways to solve the same problem in parallel provided a great argument for a shift toward collaborations.\nSuch cross-industry collaborations gave rise to the pharmaverse, a curated collection of R packages designed to solve clinical reporting in R. {admiral}, the project that I work on, is part of the pharmaverse and covers the creation of ADaM data sets (CDISC standard data). These data sets are subsequently used to produce tables, listings, and graphs and are usually part of the submission package for regulators."
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#insights",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#insights",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "Insights",
+    "text": "Insights\nWhen creating an open source package in an industry where currently there is a lot of traction you have to move fast. No, I don’t mean: Move fast and break things. I mean: Communicate! Get people on board! We aimed {admiral} to be the package for ADaM creation even before deciding to create the package together with GSK. By being transparent about our endeavor, e.g. Thomas Neitmann (then at Roche) posting on LinkedIn, we managed to connect with Michael Rimler from GSK and soon realized that we were dealing with the exact same challenge at both companies, and that a collaborative effort would improve the final product while reducing individual efforts. A working prototype of {admiral} was to be created by GSK and Roche within six months, and would then be open sourced. In our effort to communicate openly, we informed statistical programmers from over 20 companies about the {admiral} project and invited them to try it out and provide feedback once released. In the end, we received over 500 comments from over 50 programmers.\n\n# check out the latest admiral release from CRAN:\ninstall.packages(\"admiral\")\n\nlibrary(admiral)\n\nThis was instrumental in creating a product that was optimised for general usage in the clinical reporting field and ensured that other companies would not unknowingly invest into their own solution to this challenge. Open sourcing early is particularly beneficial because this ensures from the get-go that code created is aimed at a general audience, and not company specific (perhaps by accident).\n{admiral} was created with the long term goal of having a stable and flexible solution for the clinical reporting pipeline. In that spirit, its permissive apache 2.0 licence (jointly owned by Roche and GSK) further strengthens trust into the project, namely for three reasons:\n\nJointly owned means that efforts to monetize the code-base by one company could be vetoed by the other. The permissive licence ensures that in such an unlikely case, the code-base that has been published would stay available and could always be used and improved upon by others.\nHaving this package backed by Roche and GSK ensures (as far as this is ever possible) funding for properly maintaining the packages. This is crucial, as a package is rarely finished.\nUp to now, experts from many more companies have joined {admiral} or one of its therapeutic area specific package-extensions, inspiring even more trust into its reliability.\n\nIf you would like to learn more about licenses for open source projects in the clinical reporting world please check out the recent PHUSE E2E Guidance on open source license"
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#development-workflow",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#development-workflow",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "Development workflow",
+    "text": "Development workflow\nEvery improvement, task, or feature we want to implement on {admiral} starts as an issue on our GitHub repository. It is the centerpiece of our development workflow, along with our developer guides which describe in detail the strategies, conventions, and workflows used in development. The guides help us keep the {admiral} package internally consistent (e.g. naming conventions, function logic) but also ensure that {admiral} adjacent packages follow the same conventions and share the user interface. This is further helped by the implemented CICD pipeline which ensures styling convention and spelling (and much more).\nThe core package developers team meets once a week (twice a week before a release) to discuss progress and priorities. Here, the role of product lead (currently Edoardo Mancini at Roche) and technical lead (currently Ben Straub at GSK) is to set priorities and track the release schedule. These stand-up meetings are centered around the project-board which gives a complete overview of activities and progress. Issues are mostly self-assigned so developers can really chose what they want to work on.\n\n\n\nGitHub project board\n\n\nBy design, {admiral} is community built. Most developers working on the project are statistical programmers working on clinical reporting themselves. As an open source project, community input is highly valued, and anyone using {admiral} is encouraged to submit issues or take on issues as part of the development team. We also do occasional events to bring the statistical programmers community and the developers closer together. Just last February we organised the {admiral} hackathon which had up to 500 participants."
+  },
+  {
+    "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#impact",
+    "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#impact",
+    "title": "Cross-Industry Open Source Package Development",
+    "section": "Impact",
+    "text": "Impact\nFor Roche, cross-industry package development work out in their favor: They get access to software created by specialists and users from across the industry but paying only a fraction of the developmental costs. Of course, they don’t have total developmental control but they do get a seat at the table. Any gaps between the open source {admiral} package and the proprietary Roche workflow were bridged by the internal {admiralroche} package.\nThe switch towards a more language agnostic platform, and open source languages specifically, opens the door to a broad population of university graduates with diverse backgrounds. I personally would not have considered this position five years ago due to a misalignment of skills and job requirements. Working towards an industry standard open source solution will also ensure that skills learned at one company are more easily transferable to external positions, further making the position much more attractive. Access to such a broad pool of potential candidates is clearly beneficial for recruitment at Roche, but also facilitates diversity in teams which makes for a more interesting and effective work place.\nOpen source development comes with much more transparency by definition. Recognition of contributions are built in - anyone can see who did what. This recognition escapes the confines of your company as it is visible to anyone looking at the repository. Anyone can not only see at any time what is being worked on, what discussions are happening and which direction is being taken, but can also participate and contribute. Transparency also applies to errors in the code and how the team is dealing with them. In such an environment it is practically impossible to hide or cover up errors and corrections. Instead, they have to be dealt with publicly and in the open. This openness about errors also helps seeing errors as a natural occurrence that needs to be dealt with. Space for errors encourages learning and is really beneficial for growing both skills and integrity.\nAs you work on a team that spans multiple companies, traditional corporate hierarchies do not apply. Of course, there will always be a sort of hierarchy of experience or skills, but these work in your favor: You will know who to ask for help, and teams are generally very happy for contributors of any skill level. Contributions also need not be in code: Inputs into discussions and domain knowledge contributions are highly valued as well. The flip-side of working in a team without your manager oversight: They may not be directly aware of the work you do. That’s why you have to write blog posts :)\nThe possibility for statistical programmers to pivot towards developing software or writing blog-posts such as this really transforms and broadens their job description. It is this transformation that is reflected by the choice of Roche to re-brand statistical programmers as analytical data scientists. The fact that cross-industry development is being advocated for really lets programmers expand their network outside of their company.\nThe {admiral} project serves as a testament to the power of collaborative open-source development and the potential it holds for the future of work in this industry."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html",
+    "href": "posts/2023-07-09_falcon/falcon.html",
+    "title": "falcon",
+    "section": "",
+    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
+    "href": "posts/2023-07-09_falcon/falcon.html#what-is-falcon",
+    "title": "falcon",
+    "section": "",
+    "text": "The {falcon} initiative is an industry collaborative effort under {pharmaverse} that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
+    "href": "posts/2023-07-09_falcon/falcon.html#why-do-we-build-it",
+    "title": "falcon",
+    "section": "Why do we build it?",
+    "text": "Why do we build it?\nThe collaborative effort focuses on improving the clarity, consistency, and accessibility of TLGs by addressing variations and redundancies in their creation and use. This harmonized approach allows for streamlined reporting processes and facilitates effective communication of study results within the industry and to regulatory authorities."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
+    "href": "posts/2023-07-09_falcon/falcon.html#what-has-been-done-so-far",
+    "title": "falcon",
+    "section": "What has been done so far?",
+    "text": "What has been done so far?\nDrawing inspiration from the FDA Standard Safety Tables and Figures Integrated Guide, the {falcon} initiative has successfully developed and open-sourced 11 templates to date. 4 product owners and 11 developers from 4 companies have collaborated to make these templates available and also published them on the official {falcon} website at https://pharmaverse.github.io/falcon/."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
+    "href": "posts/2023-07-09_falcon/falcon.html#next-steps-vision",
+    "title": "falcon",
+    "section": "Next steps & vision",
+    "text": "Next steps & vision\nFuture plans for {falcon} involve expanding the catalog through continuous collaboration from participating companies and inviting wider industry engagement. The ultimate goal is to promote harmonization of TLGs for clinical reporting across the pharmaceutical industry, leading to greater efficiency, collaboration, and innovation. Even though templates currently come from a published FDA guide, the collaborating companies are open to share and discuss similarities and differences on analysis concepts and output layouts of their own implementations in clinical reporting, for both safety and efficacy analyses.\nIn addition, while currently all templates were built using {rtables}, {tern}, {rlistings} and drew inspiration from the open-sourced TLG-Catalog, moving forward, we plan to support creating the same templates using alternative table engines such as {gt}.\n{falcon} will be presented at the upcoming PHUSE EU (Standards Implementation stream), where we will share the collaboration journey of {falcon} so far, providing more details on the current progress, long-term vision, and strategies for this initiative. Attendees will gain insights into the challenges and opportunities of harmonizing clinical reporting through open-source collaboration and learn about the potential benefits and future direction of {falcon}."
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#last-updated",
+    "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
+    "title": "falcon",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-09-26 19:35:50.400901"
+  },
+  {
+    "objectID": "posts/2023-07-09_falcon/falcon.html#details",
+    "href": "posts/2023-07-09_falcon/falcon.html#details",
+    "title": "falcon",
+    "section": "Details",
+    "text": "Details\n\nsource code, R environment"
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html",
+    "href": "posts/2023-06-28_welcome/index.html",
+    "title": "Hello pharmaverse",
+    "section": "",
+    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#purpose",
+    "href": "posts/2023-06-28_welcome/index.html#purpose",
+    "title": "Hello pharmaverse",
+    "section": "",
+    "text": "The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this pharmaverse blog and promoted on the pharmaverse slack channels as well as on LinkedIn.\nAs the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team."
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
+    "href": "posts/2023-06-28_welcome/index.html#spirit-of-a-blog-post",
+    "title": "Hello pharmaverse",
+    "section": "Spirit of a Blog Post",
+    "text": "Spirit of a Blog Post\nThe CWG believes that the following 4 points will help guide the creation of Blog Posts.\n\nShort\nPersonalized\nReproducible\nReadable\n\nShort: Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.\nPersonalized: Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e. we don’t want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.\nReproducible: Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.\nReadable: The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity."
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
+    "href": "posts/2023-06-28_welcome/index.html#what-types-of-posts-are-allowed-on-this-site",
+    "title": "Hello pharmaverse",
+    "section": "What types of posts are allowed on this site?",
+    "text": "What types of posts are allowed on this site?\nOverall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:\n\nPackages in the Clinical Reporting Pipeline\nFunctions from packages in the Clinical Reporting Pipeline\nWider experiences of using R in the Clinical Reporting Pipeline\nConference experiences and the Clinical Reporting Pipeline\n\nHowever, it never hurts to ask if you topic might fit into this medium!\n\nMinimum Post Requirements\n\nA unique image to help showcase the post.\nWorking Code\nSelf-contained data or package data.\nDocumentation of package versions\n\nThat is it! After that you can go wild, but we do ask that it is kept short!"
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
+    "href": "posts/2023-06-28_welcome/index.html#how-can-i-make-a-blog-post",
+    "title": "Hello pharmaverse",
+    "section": "How can I make a Blog Post",
+    "text": "How can I make a Blog Post\nStep 1: Reach out to us through pharmaverse/slack or make an issue on our GitHub.\nStep 2: Branch off main\nStep 3: Review the Spirit of the Blog Post in the Pull Request Template\nStep 4: Poke us to do a review!"
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#last-updated",
+    "href": "posts/2023-06-28_welcome/index.html#last-updated",
+    "title": "Hello pharmaverse",
+    "section": "Last updated",
+    "text": "Last updated\n\n2023-09-26 19:35:54.612719"
+  },
+  {
+    "objectID": "posts/2023-06-28_welcome/index.html#details",
+    "href": "posts/2023-06-28_welcome/index.html#details",
+    "title": "Hello pharmaverse",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
   }
