@@ -9,7 +9,6 @@ date: "2023-10-30"
 categories: [admiral]
 # feel free to change the image
 image: "admiral.png"
-
 ---
 
 <!--------------- typical setup ----------------->
@@ -20,9 +19,69 @@ long_slug <- "2023-10-30_floating_point"
 ```
 
 <!--------------- post begins here ----------------->
+{{admiral}} recently ran into some trouble when dealing with floating point values, captured by this thread on GitHub. 
+This post gives a brief overview on floating point values, recaps the discussion on GitHub, and explains how {{admiral}} deals with floating point values.
+
+## Floating point values
+
+Floating point values are numeric objects representing numbers between integers, e.g. 0.5., 2.3, 3.1415, etc.
+However, floating point numbers are not stored like integers, and most floating point numbers are approximations to the number they represent.
+To see what value a floating point number is actually stored as, we can use the `format()` function:
+
+```{r, echo=FALSE}
+format(1.4, digits = 22)
+```
+
+This affects mathematical operations as well:
+
+```{r}
+0.1 + 0.2 == 0.3
+```
+
+If we look at the actually stored values, this makes sense:
+
+```{r}
+0.1 %>% format(digits = 22)
+0.2 %>% format(digits = 22)
+
+(0.1 + 0.2) %>% format(digits = 22)
+
+0.3 %>% format(digits = 22)
+```
+
+
+::: callout-note
+## Exact floating point values
+
+There are also some floating point values which can be exactly represented. 
+All these values can be represented as $\frac{x}{2^y}$, where x and y are integers.
+For example, 0.5 is stored as $\frac{1}{2}$, 0.25 is stored as $\frac{1}{4}$, 0.125 is stored as $\frac{1}{8}$, etc.
+
+
+```{r}
+# simple examples
+0.5 %>% format(digits = 22)
+0.25 %>% format(digits = 22)
+0.125 %>% format(digits = 22)
+0.0625 %>% format(digits = 22)
+
+# some weird values for x and y
+(1121/(2^9)) %>% format(digits = 22)
+```
+
+All floating point values are stored as $\frac{x}{2^y}$, where the outcome may be a very close approximation to the value they represent.
+
+:::
+
+## Issues arising
 
 
 
+## Potential solutions
+
+
+
+## Conclusion
 
 <!--------------- appendices go here ----------------->
 
