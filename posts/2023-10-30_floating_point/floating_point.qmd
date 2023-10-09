@@ -119,11 +119,41 @@ A workaround would be to round to the nearest integer, and then divide by 10:
   format(digits = 22)
 ```
 
+This is a bit awkward, as you don't know by how much you need to multiply each time, a very clunky solution.
 
-However, this is not a good solution, as it is not clear how many decimal places to round to.
+Alternatively, we can compare the absolute value of the difference between the analysis value and the upper limit plus 10% to a very small number, e.g. 0.0000001:
+
+```{r}
+
+AVAL <- 111.1
+COMP <- (101 * 1.1)
+
+abs(AVAL - COMP) < 0.0000001
+```
+
+Comparing to a very small value is also how the `all.equal()` function works, which compares two numeric values and returns `TRUE` if they are equal within a tolerance.
+By default the tolerance is around $1.5 * 10^{-8}$ but you can set it yourself to a lower value, e.g. machine tolerance `.Machine$double.eps` - the smallest positive floating-point number x such that 1 + x != 1.
+
+```{r}
+1 + .Machine$double.eps == 1
+
+all.equal(AVAL, COMP, tolerance = .Machine$double.eps)
+```
+
+This would still be a little clunky for *greater than or equal to* comparisons: 
+
+```{r}
+all.equal(AVAL, COMP) | AVAL > COMP
+# unfortunately, the all.equal() function does not return a FALSE if they are not the same:
+all.equal(AVAL, COMP + 1)
+
+```
+
+For some reason, the value it returns is also not correct.
 
 
 
+## Solution in {{admiral}}
 
 
 
