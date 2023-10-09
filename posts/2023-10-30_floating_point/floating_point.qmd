@@ -19,7 +19,8 @@ long_slug <- "2023-10-30_floating_point"
 ```
 
 <!--------------- post begins here ----------------->
-{{admiral}} recently ran into some trouble when dealing with floating point values, captured {by this thread on GitHub}(https://github.com/pharmaverse/admiral/pull/2060). 
+
+{{admiral}} recently ran into some trouble when dealing with floating point values, captured {by this thread on GitHub}(https://github.com/pharmaverse/admiral/pull/2060).
 This post gives a brief overview on floating point values, recaps the discussion on GitHub, and explains how {{admiral}} deals with floating point values.
 
 ## Floating point values
@@ -28,7 +29,8 @@ Floating point values are numeric objects representing numbers between integers,
 However, floating point numbers are not stored like integers, and most floating point numbers are approximations to the number they represent.
 To see what value a floating point number is actually stored as, we can use the `format()` function:
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message = FALSE}
+library(dplyr)
 format(1.4, digits = 22)
 ```
 
@@ -49,14 +51,14 @@ If we look at the actually stored values, this makes sense:
 0.3 %>% format(digits = 22)
 ```
 
+Essentially: Avoid using exact comparators such as `==` and `>=` when comparing floating point values.
 
 ::: callout-note
 ## Exact floating point values
 
-There are also some floating point values which can be exactly represented. 
+There are also some floating point values which can be exactly represented.
 All these values can be represented as $\frac{x}{2^y}$, where x and y are integers.
 For example, 0.5 is stored as $\frac{1}{2}$, 0.25 is stored as $\frac{1}{4}$, 0.125 is stored as $\frac{1}{8}$, etc.
-
 
 ```{r}
 # simple examples
@@ -70,21 +72,24 @@ For example, 0.5 is stored as $\frac{1}{2}$, 0.25 is stored as $\frac{1}{4}$, 0.
 ```
 
 All floating point values are stored as $\frac{x}{2^y}$, where the outcome may be a very close approximation to the value they represent.
-
 :::
 
 ## Issues arising
 
 Gordon Miller stumbled upon this issue when he was creating a unit test for a function of {{admiral}}:
 
-| The test is AVAL >= 1.1*ANRHI should give a value of "1" where AVAL = 110 and ANRHI = 100.
-| I tried it separately and I also got 1.1*ANRHI not equal to 110 where ANRHI = 100.
+| The test is AVAL \>= 1.1\*ANRHI should give a value of "1" where AVAL = 110 and ANRHI = 100.
+| 
+| 
+| I tried it separately and I also got 1.1\*ANRHI not equal to 110 where ANRHI = 100.
+| 
+| 
 
-Where ANRHI is the *analysis range upper limit* and AVAL is an *analysis value*. 
+Where ANRHI is the *analysis range upper limit* and AVAL is an *analysis value*.
 
-What happened here? 
+What happened here?
 Gordon Miller wanted to compute the *analysis range upper limit* plus 10% and compare it to the *analysis value*.
-He expected the comparison to yield `TRUE` (or `1` if converted to `numeric`) as AVAL (110) should be exactly 1.1 * 100.
+He expected the comparison to yield `TRUE` (or `1` if converted to `numeric`) as AVAL (110) should be exactly 1.1 \* 100.
 However, he multiplied an integer (100) with a floating point value (1.1).
 And the result was not exactly 110, as 1.1 is not exactly represented as a floating point value.
 
@@ -92,6 +97,7 @@ And the result was not exactly 110, as 1.1 is not exactly represented as a float
 (1.1 * 100) %>% format(digits = 22)
 1.1 * 100 == 110
 ```
+
 On my machine, the result *is* actually larger than 110, while on Gordon Miller's machine the result was smaller than 110.
 In {{admiral}}, we strive towards removing platform specific and unexpected behavior, so we had to find a way to solve the floating point issue.
 
@@ -102,8 +108,9 @@ A very crude option would be to round the result of the multiplication to the ne
 ```{r}
 round(1.1 * 100) %>% format(digits = 22)
 ```
-However, this does not work when the result is not an integer, i.e. the upper limit was 101 instead. 
-We should then compare the analysis value to 101 * 1.1, which should be exactly 111.1.
+
+However, this does not work when the result is not an integer, i.e. the upper limit was 101 instead.
+We should then compare the analysis value to 101 \* 1.1, which should be exactly 111.1.
 We could try to round to the nearest decimal place, but that value would again be stored as a floating point value:
 
 ```{r}
@@ -111,6 +118,7 @@ We could try to round to the nearest decimal place, but that value would again b
   round(digits = 1) %>%
   format(digits = 22)
 ```
+
 A workaround would be to round to the nearest integer, and then divide by 10:
 
 ```{r}
@@ -119,18 +127,61 @@ A workaround would be to round to the nearest integer, and then divide by 10:
   format(digits = 22)
 ```
 
+This is a bit awkward, as you don't know by how much you need to multiply each time, a very clunky solution.
 
-However, this is not a good solution, as it is not clear how many decimal places to round to.
+Alternatively, we can compare the absolute value of the difference between the analysis value and the upper limit plus 10% to a very small number, e.g. 0.0000001:
 
+```{r}
 
+AVAL <- 111.1
+COMP <- (101 * 1.1)
 
+abs(AVAL - COMP) < 0.0000001
+```
 
+Comparing to a very small value is also how the `all.equal()` function works, which compares two numeric values and returns `TRUE` if they are equal within a tolerance.
+By default the tolerance is around $1.5 * 10^{-8}$ but you can set it yourself to a lower value, e.g. machine tolerance `.Machine$double.eps` - the smallest positive floating-point number x such that 1 + x !=
+1.
 
+```{r}
+1 + .Machine$double.eps == 1
 
+all.equal(AVAL, COMP, tolerance = .Machine$double.eps)
+```
+
+This would still be a little clunky for *greater than or equal to* comparisons:
+
+```{r}
+all.equal(AVAL, COMP) | AVAL > COMP
+# unfortunately, the all.equal() function does not return a FALSE if they are not the same:
+all.equal(AVAL, COMP + 1)
+
+```
+
+For some reason, the value it returns is also not correct.
+
+There is also a dplyr function called `near()` which does essentially the same thing as `all.equal()`:
+
+```{r}
+ANRHI <- 100
+AVAL <- 110
+(1.1*ANRHI) %>% format(digits = 22)
+AVAL > 1.1*ANRHI | near(AVAL, 1.1*ANRHI)
+```
+
+By Gordon Miller suggested to replace the standard comparators with the following functions across {{admiral}}
+
+| Standard | Improved             |
+|----------|----------------------|
+| A \>= B  | A \> B \| near(A, B) |
+| A \<= B  | A \< B \| near(A, B) |
+| A == B   | near(A, B)           |
+| A \> B   | A \> B & !near(A, B) |
+| A \< B   | A \< B & !near(A, B) |
+
+## Solution in {{admiral}}
 
 ## Conclusion
-
-
 
 <!--------------- appendices go here ----------------->
 
