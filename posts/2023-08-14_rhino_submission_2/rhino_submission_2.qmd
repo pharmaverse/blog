@@ -6,7 +6,7 @@ author:
   - name: André Veríssimo
   - name: APPSILON
 description: "" # <---- please write a description
-date: "2023-08-14"
+date: "2023-10-10"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
 categories: [submission, community]
@@ -23,18 +23,24 @@ long_slug <- "2023-08-14_rhino_submission_2"
 
 <!--------------- post begins here ----------------->
 
-There is significant momentum in driving the adoption of R packages in the life sciences industries, in particular, the RConsortium Submissions Working Group is dedicated to promoting the use of R for regulatory submissions to the FDA.
+There is significant momentum in driving the adoption of R packages in the life sciences industries, in particular, the R Consortium Submissions Working Group is dedicated to promoting the use of R for regulatory submissions to the FDA.
 
-The RConsortium Submissions Working Group successfully completed an R-based submission in November 2021 through the eCTD portal (R Submissions Pilot 1).
+The R Consortium Submissions Working Group successfully completed an R-based submission in November 2021 through the eCTD portal (R Submissions Pilot 1).
 This Pilot was completed on [March 10, 2022](https://github.com/RConsortium/submissions-wg/blob/main/_Documents/Summary_R_Pilot_Submission2.pdf) after a successful statistical review and evaluation by the FDA staff.
 
-Moving forward, the Pilot 2 had the ambition to include a Shiny application that the FDA staff could deploy on their own servers.
+Moving forward, the Pilot 2 aimed to include a Shiny application that the FDA staff could deploy on their own servers.
+The R Consortium recently announced that [on September 27, 2023](https://www.r-consortium.org/announcement/2023/10/05/shiny-app-successfully-reviewed-by-fda-cder-staff-pilot-2-announcement-2), the R Submissions Working Group successfully completed the follow-up to the Pilot 2 R Shiny-based submission and received a response letter from FDA CDER. This marks the first publicly available submission package that includes a Shiny component.
+The full FDA response letter can be found [here](https://github.com/RConsortium/submissions-wg/blob/0f1dc5c30985d413f75d196c2b6caa96231b26ee/_Documents/Summary_R_Pilot2_Submission%2027SEP2023.pdf).
+
 The Shiny application that was sent for the Pilot 2 had the goal to display the 4 Tables, Listings and Figures (TLFs) that were sent for the Pilot 1 with basic filtering functionality. 
 
 The submission package adhered to the eCTD folder structure and contained 5 deliverables.
 Among the deliverables was the proprietary R package {pilot2wrappers}, which enables the execution of the Shiny application. 
 
 The FDA staff were expected to receive the electronic submission packages in the eCTD format, install and load open-source R packages used as dependencies in the included Shiny application, reconstruct and load the submitted Shiny application, and communicate potential improvements in writing. 
+
+In the following stage, the R Consortium's R Submission Working Group launched Pilot 4, aiming to investigate innovative technologies like Linux containers and web assembly.
+These technologies are being explored to package a Shiny application into a self-contained unit, streamlining the transfer and execution processes for the application.
 
 In this post, our aim is to outline how we used the Rhino framework to reproduce the Shiny application that was successfully submitted to the FDA for the Pilot 2 project.
 Additionally, we detail the challenges identified during the process and how we were able to successfully address them by using an open-source package.
@@ -44,7 +50,11 @@ Additionally, we detail the challenges identified during the process and how we 
 While the original Shiny application submitted to the FDA was wrapped using {Golem}, we replicated the application using our in-house developed framework [Rhino](https://appsilon.github.io/rhino/).
 The main motivation was to provide an example of an R Submission that is not an R package and to identify and solve any issues that may arise from this approach.
 
-Our demo application ([FDA-pilot-app](https://go.appsilon.com/fda-clinical-trial)) is accessible on our website, alongside other Shiny and Rhinoverse [demonstration apps](https://go.appsilon.com/demo-apps); the code for FDA-pilot-app is [open-source](https://go.appsilon.com/fda-app-github).
+Our demo application ([FDA-pilot-app](https://go.appsilon.com/fda-clinical-trial)) is accessible on our website, alongside other Shiny and Rhinoverse [demonstration apps](https://go.appsilon.com/demo-apps).
+
+{{< video https://appsilon.com/static/35215a117d1bc17fac2179f059c3709f/rhino_fda_pilot_r_shiny_app_e-ctd.webm?_=6 >}}
+
+The code for FDA-pilot-app is [open-source](https://go.appsilon.com/fda-app-github).
 You can create your own Rhino-based application by following our [tutorial](https://go.appsilon.com/rhino-tutorial-github) and viewing our workshop, which is available on [YouTube](https://go.appsilon.com/rhino-workshop-youtube). 
 
 ## Brief Introduction to Rhino
@@ -69,7 +79,13 @@ Rhino is an ideal fit for highly regulated environments such as regulatory submi
 The structure of this application is available on the [github](https://github.com/Appsilon/rhino-fda-pilot) repository.
 The structure of this Shiny app is the following.
 
-```         
+<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+
+Click here to expand the FDA-pilot-app structure
+
+</button>
+
+``` {#collapseExample .collapse}
 .
 ├── app
 │   ├── view
@@ -120,7 +136,10 @@ The structure of this Shiny app is the following.
 ![](images/pkglite%20logo.png){fig-align="center" width="144"}
 
 To comply with the [Electronic Submission File Formats and Specifications](https://www.fda.gov/files/medical%20devices/published/Tobacco-Electronic-Submission-File-Formats-and-Specifications.pdf) for the eCTD submission, the programming code should carry a ".txt" extension.
-We used the {[pkglite](https://github.com/Merck/pkglite)} R package to efficiently pack and unpack the FDA-pilot-app to facilitate FDA reviewers setting up the submission on their systems.
+In the R Submissions Pilot 3 the group did not use {pkglite} as the FDA clarified that ".zip" and ".r" files are acceptable for submission.
+In this case, we utilized the {[pkglite](https://github.com/Merck/pkglite)} R package to efficiently pack and unpack the FDA-pilot-app.
+This approach would facilitate the FDA reviewers in setting up the submission on their systems.
+
 This package allows packing R packages to ".txt" files, which are the only supported files for the submission of proprietary packages to the FDA via the eCTD gateway. 
 
 ### Packing the FDA-pilot-app into a .txt file
@@ -142,7 +161,7 @@ root_spec <- pkglite::file_spec(
   all_files = TRUE,
   recursive = FALSE
 )
-write(paste0("Package: ", app_name), "DESCRIPTION", append=TRUE)
+write(paste0("Package: ", app_name), "DESCRIPTION", append = TRUE)
 pkglite::collate(
   getwd(),
   renv_spec,
@@ -158,7 +177,7 @@ file.remove("DESCRIPTION")
 The packed .txt file can be unpacked into a Shiny app by using {pkglite} as follows:
 
 ```{r, eval=FALSE}
-pkglite::unpack("rhinosubmission.txt") 
+pkglite::unpack("rhinosubmission.txt")
 ```
 
 ## Lessons Learned
