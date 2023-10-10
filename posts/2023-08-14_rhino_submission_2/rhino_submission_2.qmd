@@ -140,7 +140,7 @@ In the R Submissions Pilot 3 the group did not use {pkglite} as the FDA clarifie
 In this case, we utilized the {[pkglite](https://github.com/Merck/pkglite)} R package to efficiently pack and unpack the FDA-pilot-app.
 This approach would facilitate the FDA reviewers in setting up the submission on their systems.
 
-This package allows packing R packages to ".txt" files, which are the only supported files for the submission of proprietary packages to the FDA via the eCTD gateway. 
+This package allows packing R packages to ".txt" files, which are supported for the submission of proprietary packages to the FDA via the eCTD gateway. 
 
 ### Packing the FDA-pilot-app into a .txt file
 
@@ -174,7 +174,7 @@ file.remove("DESCRIPTION")
 
 ### Unpacking the FDA-pilot-app
 
-The packed .txt file can be unpacked into a Shiny app by using {pkglite} as follows:
+The packed ".txt" file can be unpacked into a Shiny app by using {pkglite} as follows:
 
 ```{r, eval=FALSE}
 pkglite::unpack("rhinosubmission.txt")
@@ -184,7 +184,8 @@ pkglite::unpack("rhinosubmission.txt")
 
 Our initial objective was to prove that it would be possible to submit a Shiny application using Rhino through the eCTD gateway.
 During the rewriting process we identified that this could be done by integrating the open-source {pkglite} package.
-By following this approach, we concluded that it would be possible to submit a Shiny application through the eCTD gateway. 
+By following this approach, we concluded that it would be possible to submit a Shiny application through the eCTD gateway.
+This was also achieved through the successful submission of a package that included a Shiny component in Pilot 2.
 
 Having rewritten the R Submissions Pilot 2 Shiny application using Rhino holds major implications for the adoption of our framework within the life sciences.
 Apart from being a strong, opinionated framework that improves reproducibility and reliability for Shiny development, using Rhino for regulatory submissions could improve the flexibility and speed in the clinical reporting pipeline.
