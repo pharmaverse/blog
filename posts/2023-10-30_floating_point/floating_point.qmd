@@ -54,9 +54,10 @@ If we look at the actually stored values, this makes sense:
 Essentially: Avoid using exact comparators such as `==` and `>=` when comparing floating point values.
 
 ::: callout-note
+
 ## Exact floating point values
 
-There are also some floating point values which can be exactly represented.
+There are some floating point values which can be exactly represented.
 All these values can be represented as $\frac{x}{2^y}$, where x and y are integers.
 For example, 0.5 is stored as $\frac{1}{2}$, 0.25 is stored as $\frac{1}{4}$, 0.125 is stored as $\frac{1}{8}$, etc.
 
@@ -76,7 +77,19 @@ All floating point values are stored as $\frac{x}{2^y}$, where the outcome may b
 
 ## Issues arising
 
-Gordon Miller stumbled upon this issue when he was creating a unit test for a function of {{admiral}}:
+Gordon Miller stumbled upon this issue when he was creating a unit test for a function in {{admiral}}.
+This function made use of `atoxgr_criteria_ctcv5`, a `data-frame` object containing metadata on adverse events in cancer therapy. 
+This is based on the Common Terminology Criteria for Adverse Events (CTCAE) of the US National Cancer Institute (NCI) is a classification system for adverse events in cancer therapy.
+We can have a look here:
+
+```{r}
+# download old version of atoxgr_criteria_ctcv4 without the updated comparisons
+load(url("https://github.com/pharmaverse/admiral/raw/d063939bf897939aa8de3c32c4ee1bdfef7280af/data/atoxgr_criteria_ctcv4.rda"))
+# check it out.
+atoxgr_criteria_ctcv4 %>% head() %>% select(TERM, Definition, GRADE_CRITERIA_CODE)
+```
+
+
 
 | The test is AVAL \>= 1.1\*ANRHI should give a value of "1" where AVAL = 110 and ANRHI = 100.
 | I tried it separately and I also got 1.1\*ANRHI not equal to 110 where ANRHI = 100.
@@ -257,7 +270,7 @@ signif(AVAL, signif_dig) == signif(ANRHI*1.1, signif_dig)
 
 
 ```{r}
-atoxgr_criteria_ctcv5
+atoxgr_criteria_ctcv5 %>% head() %>% select(TERM, Definition, GRADE_CRITERIA_CODE)
 ```
 
 
