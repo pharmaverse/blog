@@ -20,7 +20,7 @@ long_slug <- "2023-10-30_floating_point"
 
 <!--------------- post begins here ----------------->
 
-{{admiral}} recently ran into some trouble when dealing with floating point values, captured {by this thread on GitHub}(https://github.com/pharmaverse/admiral/pull/2060).
+{{admiral}} recently ran into some trouble when dealing with floating point values, captured [by this thread on GitHub](https://github.com/pharmaverse/admiral/pull/2060).
 This post gives a brief overview on floating point values, recaps the discussion on GitHub, and explains how {{admiral}} deals with floating point values.
 
 ## Floating point values
@@ -170,13 +170,79 @@ AVAL > 1.1*ANRHI | near(AVAL, 1.1*ANRHI)
 
 By Gordon Miller suggested to replace the standard comparators with the following functions across {{admiral}}
 
-| Standard | Improved             |
+| `base` | improved             |
 |----------|----------------------|
 | A \>= B  | A \> B \| near(A, B) |
 | A \<= B  | A \< B \| near(A, B) |
 | A == B   | near(A, B)           |
+| A != B   | !near(A, B)           |
 | A \> B   | A \> B & !near(A, B) |
 | A \< B   | A \< B & !near(A, B) |
+
+
+This would work perfectly fine, but especially for `case_when()` statements, it would add a lot of code-bloat.
+
+
+::: callout-note
+Although a minor issue, it looks like the `near()` function tests for absolute differences, while the `all.equal()` function tests for relative differences, as discussed in [this thread](https://github.com/tidyverse/dplyr/issues/6921):
+
+```{r}
+# very large values:
+# when checking for absolute differences
+near(1.1 * 100 * 10^6, 
+     110 * 10^6)
+# when checking for relative differences
+all.equal(1.1 * 100 * 10^6, 
+          110 * 10^6)
+
+# as: 
+(1.1 * 100 * 10^6) %>% format(digits = 22)
+(110 * 10^6) %>% format(digits = 22)
+```
+
+:::
+
+An even more elegant solution is implemented in the `fpCompare` package, which compares floating point numbers using custom infix operators: 
+
+
+|         `base`            |`fpCompare`    |
+|-------------------------|-------------|
+|        A \>=  B            | A %>=% B	        |
+|        A \<=  B            | A %<=% B	        |
+|        A ==   B           | A %==% B	        |
+|        A !=   B           | A %!=% B	        |
+|        A \>   B            | A %>>% B	        |
+|        A \<   B            | A %<<% B	        |
+
+
+As an example to how this is implemented, we can have a look at the `fpCompare` source code for one of the operators:
+
+```{r}
+`%<=%` <- function(x, y) {
+ (x < y + getOption("fpCompare.tolerance"))
+}
+```
+
+Even if `y` is ever so slightly smaller than `x`, adding the tolerance to `y` will make the result larger than `x`, and the comparison will return TRUE.
+
+```{r}
+# we need to set the fpCompare.tolerance first, because we did not load the package:
+options(fpCompare.tolerance = 1e-8)
+
+(1.1 * 100) %<=% 110
+```
+
+
+```{r}
+(1.1 * 100) %>% format(digits = 22)
+(110) %>% format(digits = 22)
+(1.1 * 100) %<=% 110
+```
+
+
+As long as {{admiral}} remains open source and free to use, using this package, or even reusing the code itself would be fine. 
+
+
 
 ## Solution in {{admiral}}
 
