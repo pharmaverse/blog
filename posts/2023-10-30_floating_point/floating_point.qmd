@@ -79,11 +79,7 @@ All floating point values are stored as $\frac{x}{2^y}$, where the outcome may b
 Gordon Miller stumbled upon this issue when he was creating a unit test for a function of {{admiral}}:
 
 | The test is AVAL \>= 1.1\*ANRHI should give a value of "1" where AVAL = 110 and ANRHI = 100.
-| 
-| 
 | I tried it separately and I also got 1.1\*ANRHI not equal to 110 where ANRHI = 100.
-| 
-| 
 
 Where ANRHI is the *analysis range upper limit* and AVAL is an *analysis value*.
 
@@ -119,15 +115,19 @@ We could try to round to the nearest decimal place, but that value would again b
   format(digits = 22)
 ```
 
-A workaround would be to round to the nearest integer, and then divide by 10:
+A workaround would be to multiply both sides of the equation with 10, and then round to the next integer:
 
 ```{r}
-(101 * 1.1) %>%
+(101 * 1.1 * 10) %>%
   round() %>%
+  format(digits = 22)
+
+(111.1 * 10) %>%
+  round() %>% 
   format(digits = 22)
 ```
 
-This is a bit awkward, as you don't know by how much you need to multiply each time, a very clunky solution.
+This is very awkward, as you don't know by how much you need to multiply each time, a very clunky solution.
 
 Alternatively, we can compare the absolute value of the difference between the analysis value and the upper limit plus 10% to a very small number, e.g. 0.0000001:
 
@@ -140,8 +140,7 @@ abs(AVAL - COMP) < 0.0000001
 ```
 
 Comparing to a very small value is also how the `all.equal()` function works, which compares two numeric values and returns `TRUE` if they are equal within a tolerance.
-By default the tolerance is around $1.5 * 10^{-8}$ but you can set it yourself to a lower value, e.g. machine tolerance `.Machine$double.eps` - the smallest positive floating-point number x such that 1 + x !=
-1.
+By default the tolerance is around $1.5 * 10^{-8}$ but you can set it yourself to a lower value, e.g. machine tolerance `.Machine$double.eps` - the smallest positive floating-point number x such that 1 + x != 1.
 
 ```{r}
 1 + .Machine$double.eps == 1
@@ -149,7 +148,7 @@ By default the tolerance is around $1.5 * 10^{-8}$ but you can set it yourself t
 all.equal(AVAL, COMP, tolerance = .Machine$double.eps)
 ```
 
-This would still be a little clunky for *greater than or equal to* comparisons:
+This would still be a little clunky for *greater than or equal to* comparisons: 
 
 ```{r}
 all.equal(AVAL, COMP) | AVAL > COMP
