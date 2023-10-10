@@ -241,8 +241,27 @@ options(fpCompare.tolerance = 1e-8)
 
 
 As long as {{admiral}} remains open source and free to use, using this package, or even reusing the code itself would be fine. 
+Although this was *my* prefered option, we did not end up implementing it.
+Instead, we made use of the `signif()` function, which rounds a number to a specified number of significant digits.
+This way, we could use the regular infix operators and simply provide the number of significant digits we want to compare to:
+
+```{r}
+signif_dig <- 15
+AVAL <- 110
+signif(AVAL, signif_dig) == signif(ANRHI*1.1, signif_dig)
 
 
+# as:
+(ANRHI*1.1) %>% signif(signif_dig)  %>% format(digits = 22)
+```
+
+
+```{r}
+atoxgr_criteria_ctcv5
+```
+
+
+atoxgr_criteria_ctcv5
 
 ## Solution in {{admiral}}
 
