@@ -27,14 +27,14 @@ This post gives a brief overview on floating point values, recaps the discussion
 
 Floating point values are numeric objects representing numbers between integers, e.g. 0.5., 2.3, 3.1415, etc.
 However, floating point numbers are not stored like integers, and most floating point numbers are approximations to the number they represent.
-To see what value a floating point number is actually stored as, we can use the `format()` function:
+To see what value a floating point number is actually stored as, we can use the `format()` function where we can increase the number of digits shown:
 
 ```{r, echo=FALSE, message = FALSE}
 library(dplyr)
 format(1.4, digits = 22)
 ```
 
-This affects mathematical operations as well:
+These very small numerical differences impact the result of mathematical operations:
 
 ```{r}
 0.1 + 0.2 == 0.3
@@ -51,7 +51,7 @@ If we look at the actually stored values, this makes sense:
 0.3 %>% format(digits = 22)
 ```
 
-Essentially: Avoid using exact comparators such as `==` and `>=` when comparing floating point values.
+The bottom line is: Avoid using exact comparators such as `==` and `>=` when comparing floating point values.
 
 ::: callout-note
 
@@ -77,9 +77,9 @@ All floating point values are stored as $\frac{x}{2^y}$, where the outcome may b
 
 ## Issues arising
 
-Gordon Miller stumbled upon this issue when he was creating a unit test for a function in {{admiral}}.
-This function made use of `atoxgr_criteria_ctcv5`, a `data-frame` object containing metadata on adverse events in cancer therapy. 
-This is based on the Common Terminology Criteria for Adverse Events (CTCAE) of the US National Cancer Institute (NCI) is a classification system for adverse events in cancer therapy.
+Gordon Miller stumbled upon this issue when he was creating a unit test for the `derive_var_atoxgr_dir()` function in {{admiral}}.
+This function made use of `atoxgr_criteria_ctcv5`, a `data-frame` object containing metadata on adverse events in cancer therapy.
+`atoxgr_criteria_ctcv5` is based on the Common Terminology Criteria for Adverse Events (CTCAE) of the US National Cancer Institute (NCI) which is a classification system for adverse events in cancer therapy.
 We can have a look here:
 
 ```{r}
@@ -88,8 +88,8 @@ load(url("https://github.com/pharmaverse/admiral/raw/d063939bf897939aa8de3c32c4e
 # check it out.
 atoxgr_criteria_ctcv4 %>% head() %>% select(TERM, Definition, GRADE_CRITERIA_CODE)
 ```
-
-
+As you can see, the data-frame contains the column `GRADE_CRITERIA_CODE` which contains comparisons of floating point values.
+And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison:
 
 | The test is AVAL \>= 1.1\*ANRHI should give a value of "1" where AVAL = 110 and ANRHI = 100.
 | I tried it separately and I also got 1.1\*ANRHI not equal to 110 where ANRHI = 100.
