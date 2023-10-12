@@ -21,7 +21,7 @@ long_slug <- "2023-10-30_floating_point"
 <!--------------- post begins here ----------------->
 ```{r, echo=FALSE}
 # check if version 444 of admiral is installed, and throw error if not:
-if (packageVersion("admiral")< "0.12.2") {
+if (packageVersion("admiral") < "0.12.2") {
   stop("Please install a more recent version of admiral.
        At least version 0.12.2 is required.")
 }
@@ -99,7 +99,9 @@ We can have a look here:
 # download old version of atoxgr_criteria_ctcv4 without the updated comparisons
 load(url("https://github.com/pharmaverse/admiral/raw/d063939bf897939aa8de3c32c4ee1bdfef7280af/data/atoxgr_criteria_ctcv4.rda"))
 # check it out.
-atoxgr_criteria_ctcv4 %>% head() %>% select(TERM, Definition, GRADE_CRITERIA_CODE)
+atoxgr_criteria_ctcv4 %>%
+  head() %>%
+  select(TERM, Definition, GRADE_CRITERIA_CODE)
 ```
 As you can see, the data-frame contains the column `GRADE_CRITERIA_CODE` which contains comparisons of floating point values.
 And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison:
@@ -149,7 +151,7 @@ A workaround would be to multiply both sides of the equation with 10, and then r
   format(digits = 22)
 
 (111.1 * 10) %>%
-  round() %>% 
+  round() %>%
   format(digits = 22)
 ```
 
@@ -170,10 +172,10 @@ By default the tolerance is around $1.5 * 10^{-8}$ but you can set it yourself t
 ```{r}
 1 + .Machine$double.eps == 1
 # but:
-1 + .Machine$double.eps/2 == 1
+1 + .Machine$double.eps / 2 == 1
 
 # so we can use:
-all.equal(AVAL, ANRHI * 1,1, tolerance = .Machine$double.eps)
+all.equal(AVAL, ANRHI * 1, 1, tolerance = .Machine$double.eps)
 ```
 
 This would still be a little clunky for *greater than or equal to* comparisons: 
@@ -182,7 +184,6 @@ This would still be a little clunky for *greater than or equal to* comparisons:
 all.equal(AVAL, ANRHI * 1.1) | AVAL > ANRHI * 1.1
 # unfortunately, the all.equal() function does not return a FALSE if they are not the same:
 all.equal(AVAL, ANRHI * 1.1 + 1)
-
 ```
 
 For some reason, the value it returns is also not correct.
@@ -217,13 +218,17 @@ Although a minor issue, it looks like the `near()` function tests for absolute d
 ```{r}
 # very large values:
 # when checking for absolute differences
-near(ANRHI * 1.1 * 10^6, 
-     AVAL * 10^6)
+near(
+  ANRHI * 1.1 * 10^6,
+  AVAL * 10^6
+)
 # when checking for relative differences
-all.equal(ANRHI * 1.1 * 10^6, 
-          AVAL * 10^6)
+all.equal(
+  ANRHI * 1.1 * 10^6,
+  AVAL * 10^6
+)
 
-# as: 
+# as:
 (ANRHI * 1.1 * 10^6) %>% format(digits = 22)
 (AVAL * 10^6) %>% format(digits = 22)
 ```
@@ -247,7 +252,7 @@ As an example to how this is implemented, we can have a look at the `fpCompare` 
 
 ```{r}
 `%<=%` <- function(x, y) {
- (x < y + getOption("fpCompare.tolerance"))
+  (x < y + getOption("fpCompare.tolerance"))
 }
 ```
 
@@ -261,7 +266,7 @@ options(fpCompare.tolerance = 1e-8)
 ```
 
 As long as [{{admiral}}](https://github.com/pharmaverse/admiral) remains open source and free to use, using this package, or even reusing the code itself would be fine. 
-Although this was *my* prefered option, we did not end up implementing it.
+Although this was *my* preferred option, we did not end up implementing it.
 Instead, we made use of the `signif()` function, which rounds a number to a specified number of significant digits.
 This way, we could use the regular infix operators and simply provide the number of significant digits we want to compare to:
 
@@ -271,11 +276,13 @@ signif_dig <- 15
 signif(AVAL, signif_dig) == signif(ANRHI * 1.1, signif_dig)
 
 # as:
-(ANRHI*1.1) %>% signif(signif_dig)  %>% format(digits = 22)
+(ANRHI * 1.1) %>%
+  signif(signif_dig) %>%
+  format(digits = 22)
 
-# and although when printed, the number still looks off: 
+# and although when printed, the number still looks off:
 ANRHI <- 101
-((ANRHI * 1.1) %>% signif(signif_dig)) %>% format(digits= 22)
+((ANRHI * 1.1) %>% signif(signif_dig)) %>% format(digits = 22)
 
 # the comparison works now:
 ((ANRHI * 1.1) %>% signif(signif_dig)) == 111.1
@@ -283,7 +290,9 @@ ANRHI <- 101
 
 This is now implemented throughout `atoxgr_criteria_ctcv5`:
 ```{r}
-admiral::atoxgr_criteria_ctcv5 %>% head() %>% select(TERM, Definition, GRADE_CRITERIA_CODE)
+admiral::atoxgr_criteria_ctcv5 %>%
+  head() %>%
+  select(TERM, Definition, GRADE_CRITERIA_CODE)
 ```
 
 ## Conclusion
@@ -291,7 +300,7 @@ admiral::atoxgr_criteria_ctcv5 %>% head() %>% select(TERM, Definition, GRADE_CRI
 
 In conclusion, the recent challenges faced by [{{admiral}}](https://github.com/pharmaverse/admiral) in dealing with floating point values shed light on the complexities and nuances of working with these numerical representations. Floating point values, as we've seen, are approximations of real numbers and can lead to unexpected issues in mathematical operations, especially when using exact comparators like `==` and `>=`. The differences between how these values are stored and computed can result in platform-specific discrepancies and unexpected behavior.
 
-Several potential solutions were explored to address this issue, including rounding, using `near()` or `all.equal()` functions, or implementing custom infix operators as seen in the fpCompare package. However, the most elegant and practical solution adopted in [{{admiral}}](https://github.com/pharmaverse/admiral) was to use the signif() function to round values to a specified number of significant digits. This approach allows for reliable and consistent comparisons without adding unnecessary complexity to the codebase.
+Several potential solutions were explored to address this issue, including rounding, using `near()` or `all.equal()` functions, or implementing custom infix operators as seen in the fpCompare package. However, the most elegant and practical solution adopted in [{{admiral}}](https://github.com/pharmaverse/admiral) was to use the signif() function to round values to a specified number of significant digits. This approach allows for reliable and consistent comparisons without adding unnecessary complexity to the code base.
 
 Readers and developers should be vigilant when working with floating point values in their own code or when utilizing [{{admiral}}](https://github.com/pharmaverse/admiral) for their projects. Keep in mind that some floating point values can look like integers at first glance as in the above example of `1.1*100`. The experience with floating point issues in [{{admiral}}](https://github.com/pharmaverse/admiral) serves as a valuable reminder of the potential pitfalls associated with numerical precision in programming. It's crucial to exercise caution when performing comparisons with floating point numbers as small discrepancies can have significant downstream implications. When writing your own comparisons consider the following best practices:
 
@@ -312,9 +321,9 @@ I.e. `.Machine$double.eps / 1.8` is still detectable, while `.Machine$double.eps
 
 ```{r}
 # eps / 1.8 is still detectable:
-.Machine$double.eps/1.8+1 == 1
+.Machine$double.eps / 1.8 + 1 == 1
 
-.Machine$double.eps/2+1 == 1
+.Machine$double.eps / 2 + 1 == 1
 ```
 
 
