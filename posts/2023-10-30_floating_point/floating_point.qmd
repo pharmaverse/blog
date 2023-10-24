@@ -9,6 +9,11 @@ date: "2023-10-30"
 categories: [admiral]
 # feel free to change the image
 image: "admiral.png"
+knitr:
+  opts_chunk: 
+    # collapse: true
+    comment: ""
+    null_prefix: ""
 ---
 
 <!--------------- typical setup ----------------->
@@ -19,19 +24,22 @@ long_slug <- "2023-10-30_floating_point"
 ```
 
 <!--------------- post begins here ----------------->
-```{r, echo=FALSE}
+
+```{r, message = FALSE, warning = FALSE}
 # check if version 444 of admiral is installed, and throw error if not:
 if (packageVersion("admiral") < "0.12.2") {
   stop("Please install a more recent version of admiral.
        At least version 0.12.2 is required.")
 }
+library(admiral)
+library(dplyr)
+library(reactable)
 ```
 
-```{r, echo=FALSE}
-```
 
-[{{admiral}}](https://github.com/pharmaverse/admiral) recently ran into some trouble when dealing with floating point values, captured [by this thread on GitHub](https://github.com/pharmaverse/admiral/pull/2060).
-This post gives a brief overview on floating point values, recaps the discussion on GitHub, and explains how [{{admiral}}](https://github.com/pharmaverse/admiral) deals with floating point values.
+
+[{admiral}](https://github.com/pharmaverse/admiral) recently ran into some trouble when dealing with floating point values, captured [by this thread on GitHub](https://github.com/pharmaverse/admiral/pull/2060).
+This post gives a brief overview on floating point values, recaps the discussion on GitHub, and explains how [{admiral}](https://github.com/pharmaverse/admiral) deals with floating point values.
 
 ## Floating point values
 
@@ -39,8 +47,7 @@ Floating point values are numeric objects representing numbers between integers,
 However, floating point numbers are not stored like integers, and most floating point numbers are approximations to the number they represent.
 To see what value a floating point number is actually stored as, we can use the `format()` function where we can increase the number of digits shown:
 
-```{r, echo=FALSE, message = FALSE}
-library(dplyr)
+```{r, message = FALSE, warnings = FALSE}
 format(1.4, digits = 22)
 ```
 
@@ -64,11 +71,10 @@ If we look at the actually stored values, this makes sense:
 The bottom line is: Avoid using exact comparators such as `==` and `>=` when comparing floating point values.
 
 ::: callout-note
-
 ## Exact floating point values
 
-There are some floating point values which can be exactly represented.
-All these values can be represented as $\frac{x}{2^y}$, where x and y are integers.
+Floating point values are stored in binary format.
+While most floating point values are approximations, there are some exceptions which can be exactly represented, namely if they can be written down as $\frac{x}{2^y}$, where x and y are integers.
 For example, 0.5 is stored as $\frac{1}{2}$, 0.25 is stored as $\frac{1}{4}$, 0.125 is stored as $\frac{1}{8}$, etc.
 
 ```{r}
@@ -84,30 +90,33 @@ For example, 0.5 is stored as $\frac{1}{2}$, 0.25 is stored as $\frac{1}{4}$, 0.
 
 All floating point values are stored as $\frac{x}{2^y}$, where the outcome may be a very close approximation to the value they represent\*.
 
-\* Based on a recollection of the course associated with [this GitHub Repository](https://github.com/mmaechler/ProgRRR) by Martin Mächler.
 
+https://en.wikipedia.org/wiki/Floating-point_arithmetic#Representable_numbers,_conversion_and_rounding
+If you would like to learn more about representable floating point values please read the wikipedia article on floating point values, especially section [Representable numbers, conversion and rounding](https://en.wikipedia.org/wiki/Floating-point_arithmetic#Representable_numbers,_conversion_and_rounding).
+
+
+\* Based on a recollection of the course associated with [this GitHub Repository](https://github.com/mmaechler/ProgRRR) by Martin Mächler.
 :::
 
 ## Issues arising
 
-Gordon Miller stumbled upon this issue when he was creating a unit test for the `derive_var_atoxgr_dir()` function in [{{admiral}}](https://github.com/pharmaverse/admiral).
-This function made use of `atoxgr_criteria_ctcv5`, a `data-frame` object containing metadata on adverse events in cancer therapy.
-`atoxgr_criteria_ctcv5` is based on the Common Terminology Criteria for Adverse Events (CTCAE) of the US National Cancer Institute (NCI) which is a classification system for adverse events in cancer therapy.
-We can have a look here:
+Gordon Miller came across this issue when he was creating [DAIDS criteria](https://rsc.niaid.nih.gov/clinical-research-sites/daids-adverse-event-grading-tables) for adverse events in cancer therapy when using `case_when` statements to implement the grade. 
 
+We can have a glimpse here:
 ```{r}
-# download old version of atoxgr_criteria_ctcv4 without the updated comparisons
-load(url("https://github.com/pharmaverse/admiral/raw/d063939bf897939aa8de3c32c4ee1bdfef7280af/data/atoxgr_criteria_ctcv4.rda"))
-# check it out.
-atoxgr_criteria_ctcv4 %>%
-  head() %>%
-  select(TERM, Definition, GRADE_CRITERIA_CODE)
+atoxgr_criteria_daids %>%
+  filter(TERM %in% c("Amylase, High", "Lipase, High")) %>%
+  select(TERM, GRADE_CRITERIA_CODE) %>%
+  reactable(defaultPageSize = 4, highlight = TRUE, bordered = TRUE, striped = TRUE, resizable = TRUE)
 ```
-As you can see, the data-frame contains the column `GRADE_CRITERIA_CODE` which contains comparisons of floating point values.
-And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison:
 
-| The test is AVAL \>= 1.1\*ANRHI should give a value of "1" where AVAL = 110 and ANRHI = 100.
-| I tried it separately and I also got 1.1\*ANRHI not equal to 110 where ANRHI = 100.
+As you can see, the data-frame contains the column `GRADE_CRITERIA_CODE` which contains comparisons of floating point values.
+And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison initially:
+
+> The test is AVAL \>= 1.1\*ANRHI should give a value of "1" where AVAL = 110 and ANRHI = 100.
+> 
+> I tried it separately and I also got 1.1\*ANRHI not equal to 110 where ANRHI = 100.
+> 
 
 Where ANRHI is the *analysis range upper limit* and AVAL is an *analysis value*.
 
@@ -123,7 +132,7 @@ And the result was not exactly 110, as 1.1 is not exactly represented as a float
 ```
 
 On my machine, the result *is* actually larger than 110, while on Gordon Miller's machine the result was smaller than 110.
-In [{{admiral}}](https://github.com/pharmaverse/admiral), we strive towards removing platform specific and unexpected behavior, so we had to find a way to solve the floating point issue.
+In [{admiral}](https://github.com/pharmaverse/admiral), we strive towards removing platform specific and unexpected behavior, so we had to find a way to solve the floating point issue.
 
 ## Potential solutions
 
@@ -167,7 +176,8 @@ abs(AVAL - ANRHI * 1.1) < 0.0000001
 ```
 
 Comparing to a very small value is also how the `all.equal()` function works, which compares two numeric values and returns `TRUE` if they are equal within a tolerance.
-By default the tolerance is around $1.5 * 10^{-8}$ but you can set it yourself to a lower value, e.g. machine tolerance `.Machine$double.eps` - (one of\*\*) the smallest positive floating-point number x such that 1 + x != 1.
+By default the tolerance is around $1.5 * 10^{-8}$ but you can set it yourself to a lower value, e.g. machine tolerance `.Machine$double.eps` - (one of\*\*) the smallest positive floating-point number x such that 1 + x !=
+1.
 
 ```{r}
 1 + .Machine$double.eps == 1
@@ -178,7 +188,7 @@ By default the tolerance is around $1.5 * 10^{-8}$ but you can set it yourself t
 all.equal(AVAL, ANRHI * 1, 1, tolerance = .Machine$double.eps)
 ```
 
-This would still be a little clunky for *greater than or equal to* comparisons: 
+This would still be a little clunky for *greater than or equal to* comparisons:
 
 ```{r}
 all.equal(AVAL, ANRHI * 1.1) | AVAL > ANRHI * 1.1
@@ -187,6 +197,8 @@ all.equal(AVAL, ANRHI * 1.1 + 1)
 ```
 
 For some reason, the value it returns is also not correct.
+
+
 
 There is also a dplyr function called `near()` which does essentially the same thing as `all.equal()`:
 
@@ -197,22 +209,20 @@ AVAL <- 110
 AVAL > ANRHI * 1.1 | near(AVAL, ANRHI * 1.1)
 ```
 
-Gordon Miller suggested to replace the standard comparators with the following functions across [{{admiral}}](https://github.com/pharmaverse/admiral)
+Gordon Miller suggested to replace the standard comparators with the following functions across [{admiral}](https://github.com/pharmaverse/admiral)
 
-| `base` | improved             |
-|----------|----------------------|
-| A \>= B  | A \> B \| near(A, B) |
-| A \<= B  | A \< B \| near(A, B) |
-| A == B   | near(A, B)           |
-| A != B   | !near(A, B)           |
-| A \> B   | A \> B & !near(A, B) |
-| A \< B   | A \< B & !near(A, B) |
-
+| {base}  | improved             |
+|---------|----------------------|
+| A \>= B | A \> B \| near(A, B) |
+| A \<= B | A \< B \| near(A, B) |
+| A == B  | near(A, B)           |
+| A != B  | !near(A, B)          |
+| A \> B  | A \> B & !near(A, B) |
+| A \< B  | A \< B & !near(A, B) |
 
 This would work perfectly fine, but especially for `case_when()` statements, it would add a lot of code-bloat.
 
 
-::: callout-note
 Although a minor issue, it looks like the `near()` function tests for absolute differences, while the `all.equal()` function tests for relative differences, as discussed in [this thread](https://github.com/tidyverse/dplyr/issues/6921):
 
 ```{r}
@@ -231,9 +241,11 @@ all.equal(
 # As:
 (ANRHI * 1.1 * 10^6) %>% format(digits = 22)
 (AVAL * 10^6) %>% format(digits = 22)
+```
 
 
-|         `base`            |`fpCompare`    |
+
+|         {base}            |[{fpCompare}](https://github.com/PredictiveEcology/fpCompare)    |
 |-------------------------|-------------|
 |        A \>=  B            | A %>=% B	        |
 |        A \<=  B            | A %<=% B	        |
@@ -243,7 +255,7 @@ all.equal(
 |        A \<   B            | A %<<% B	        |
 
 
-As an example to how this is implemented, we can have a look at the `fpCompare` source code for one of the operators:
+As an example to how this is implemented, we can have a look at the [{fpCompare}](https://github.com/PredictiveEcology/fpCompare) source code for one of the operators:
 
 ```{r}
 `%<=%` <- function(x, y) {
@@ -260,7 +272,7 @@ options(fpCompare.tolerance = 1e-8)
 (ANRHI * 1.1) %<=% AVAL
 ```
 
-As long as [{{admiral}}](https://github.com/pharmaverse/admiral) remains open source and free to use, using this package, or even reusing the code itself would be fine. 
+As long as [{admiral}](https://github.com/pharmaverse/admiral) remains open source and free to use, using this package, or even reusing the code itself would be fine.
 Although this was *my* preferred option, we did not end up implementing it.
 Instead, we made use of the `signif()` function, which rounds a number to a specified number of significant digits.
 This way, we could use the regular infix operators and simply provide the number of significant digits we want to compare to:
@@ -283,35 +295,50 @@ ANRHI <- 101
 ((ANRHI * 1.1) %>% signif(signif_dig)) == 111.1
 ```
 
-This is now implemented throughout `atoxgr_criteria_ctcv5`:
+This is now implemented throughout `atoxgr_criteria_daids`, `atoxgr_criteria_ctcv4`, and `atoxgr_criteria_ctcv5`, and we are [working on an issue](https://github.com/pharmaverse/admiral/issues/2134) for the 1.0.0 release of [{admiral}](https://github.com/pharmaverse/admiral) to implement this for `derive_var_anrind` as well.
+
+
 ```{r}
-admiral::atoxgr_criteria_ctcv5 %>%
-  head() %>%
-  select(TERM, Definition, GRADE_CRITERIA_CODE)
+atoxgr_criteria_daids %>%
+  select(TERM, GRADE_CRITERIA_CODE) %>%
+  reactable(defaultPageSize = 4, highlight = TRUE, bordered = TRUE, striped = TRUE, resizable = TRUE)
 ```
 
 ## Conclusion
+
 <!-- The first version of this conclusion was generated with ChatGPT. -->
 
-The recent challenges faced by [{{admiral}}](https://github.com/pharmaverse/admiral) in dealing with floating point values shed light on the complexities and nuances of working with these numerical representations. Floating point values, as we've seen, are approximations of real numbers and can lead to unexpected issues in mathematical operations, especially when using exact comparators like `==` and `>=`. The differences between how these values are stored and computed can result in platform-specific discrepancies and unexpected behavior.
+The recent challenges faced by [{admiral}](https://github.com/pharmaverse/admiral) in dealing with floating point values shed light on the complexities and nuances of working with these numerical representations.
+Floating point values, as we've seen, are approximations of real numbers and can lead to unexpected issues in mathematical operations, especially when using exact comparators like `==` and `>=`.
+The differences between how these values are stored and computed can result in platform-specific discrepancies and unexpected behavior.
 
-Several potential solutions were explored to address this issue, including rounding, using `near()` or `all.equal()` functions, or implementing custom infix operators as seen in the fpCompare package. However, the most elegant and practical solution adopted in [{{admiral}}](https://github.com/pharmaverse/admiral) was to use the signif() function to round values to a specified number of significant digits. This approach allows for reliable and consistent comparisons without adding unnecessary complexity to the code base.
-
-Readers and developers should be vigilant when working with floating point values in their own code or when utilizing [{{admiral}}](https://github.com/pharmaverse/admiral) for their projects. Keep in mind that some floating point values can look like integers at first glance as in the above example of `1.1*100`. The experience with floating point issues in [{{admiral}}](https://github.com/pharmaverse/admiral) serves as a valuable reminder of the potential pitfalls associated with numerical precision in programming. It's crucial to exercise caution when performing comparisons with floating point numbers as small discrepancies can have significant downstream implications. When writing your own comparisons consider the following best practices:
-
-1. Avoid Exact Comparisons: As highlighted earlier, using exact comparators like == or >= when dealing with floating point values can lead to unexpected results. Instead, opt for methods that take into account a tolerance or margin of error, such as the `near()` function or the `signif()` approach discussed in this context.
-
-1. **Platform Independence:** Be aware that floating point representations may differ across various platforms or environments. Always test your code on multiple platforms to ensure consistency in results.
-
-1. Documentation and Comments: When writing code that potentially involves floating point comparisons, it's advisable to include clear documentation and comments that explain the reasoning behind your approach. 
-This will help others understand and maintain the code effectively.
-
-1. Testing and Validation: Implement thorough testing and validation procedures to verify the correctness of your code, particularly when it relies on floating point comparisons. By running a variety of test cases, you can identify potential issues and ensure the reliability of your calculations.
-
-By heeding these precautions and understanding the intricacies of floating point representations, you can mitigate the risk of encountering unexpected behavior in your code. Whether you're working with [{{admiral}}](https://github.com/pharmaverse/admiral) or any other software, a cautious and informed approach to handling floating point values is essential for maintaining code accuracy and reliability.
+Several potential solutions were explored to address this issue, including rounding, using `near()` or `all.equal()` functions, or implementing custom infix operators as seen in the fpCompare package.
+However, the most elegant and practical solution adopted in [{admiral}](https://github.com/pharmaverse/admiral) was to use the `signif()` function to round values to a specified number of significant digits.
+This approach allows for reliable and consistent comparisons without adding unnecessary complexity to the code base.
 
 
-\*\* This is a number of the smallest magnitude for which a difference is still detected. 
+Readers and developers should be vigilant when working with floating point values in their own code or when utilizing [{admiral}](https://github.com/pharmaverse/admiral) for their projects.
+Keep in mind that some floating point values can look like integers at first glance as in the above example of `1.1*100`.
+The experience with floating point issues in [{admiral}](https://github.com/pharmaverse/admiral) serves as a valuable reminder of the potential pitfalls associated with numerical precision in programming.
+It's crucial to exercise caution when performing comparisons with floating point numbers as small discrepancies can have significant downstream implications.
+When writing your own comparisons consider the following best practices:
+
+1.  **Avoid Exact Comparisons:** As highlighted earlier, using exact comparators like == or \>= when dealing with floating point values can lead to unexpected results.
+    Instead, opt for methods that take into account a tolerance or margin of error, such as the `near()` function or the `signif()` approach discussed in this context.
+
+2.  **Platform Independence:** Be aware that floating point representations may differ across various platforms or environments.
+    Always test your code on multiple platforms to ensure consistency in results.
+
+3.  **Documentation and Comments:** When writing code that potentially involves floating point comparisons, it's advisable to include clear documentation and comments that explain the reasoning behind your approach.
+    This will help others understand and maintain the code effectively.
+
+4.  **Testing and Validation:** Implement thorough testing and validation procedures to verify the correctness of your code, particularly when it relies on floating point comparisons.
+    This should include specific tests that would flag floating point issues on any machine or platform.
+
+By heeding these precautions and understanding the intricacies of floating point representations, you can mitigate the risk of encountering unexpected behavior in your code.
+Whether you're working with [{admiral}](https://github.com/pharmaverse/admiral) or any other software, a cautious and informed approach to handling floating point values is essential for maintaining code accuracy and reliability.
+
+\*\* This is a number of the smallest magnitude for which a difference is still detected.
 I.e. `.Machine$double.eps / 1.8` is still detectable, while `.Machine$double.eps / 2` is not detectable any longer (at least on my machine):
 
 ```{r}
@@ -320,7 +347,6 @@ I.e. `.Machine$double.eps / 1.8` is still detectable, while `.Machine$double.eps
 
 .Machine$double.eps / 2 + 1 == 1
 ```
-
 
 <!--------------- appendices go here ----------------->
 
