@@ -293,7 +293,7 @@ admiral::atoxgr_criteria_ctcv5 %>%
 ## Conclusion
 <!-- The first version of this conclusion was generated with ChatGPT. -->
 
-In conclusion, the recent challenges faced by [{{admiral}}](https://github.com/pharmaverse/admiral) in dealing with floating point values shed light on the complexities and nuances of working with these numerical representations. Floating point values, as we've seen, are approximations of real numbers and can lead to unexpected issues in mathematical operations, especially when using exact comparators like `==` and `>=`. The differences between how these values are stored and computed can result in platform-specific discrepancies and unexpected behavior.
+The recent challenges faced by [{{admiral}}](https://github.com/pharmaverse/admiral) in dealing with floating point values shed light on the complexities and nuances of working with these numerical representations. Floating point values, as we've seen, are approximations of real numbers and can lead to unexpected issues in mathematical operations, especially when using exact comparators like `==` and `>=`. The differences between how these values are stored and computed can result in platform-specific discrepancies and unexpected behavior.
 
 Several potential solutions were explored to address this issue, including rounding, using `near()` or `all.equal()` functions, or implementing custom infix operators as seen in the fpCompare package. However, the most elegant and practical solution adopted in [{{admiral}}](https://github.com/pharmaverse/admiral) was to use the signif() function to round values to a specified number of significant digits. This approach allows for reliable and consistent comparisons without adding unnecessary complexity to the code base.
 
