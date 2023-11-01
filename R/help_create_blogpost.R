@@ -96,7 +96,7 @@ create_post <- function(post_name,
 
   # Write new .qmd file
   writeLines(result, con = paste(file.path(new_dir, snake_name), ".qmd", sep = ""))
-  file.create(paste(file.path(new_dir, "appendix"), ".R", sep = ""))
+  file.copy("inst/template/appendix.R", paste(file.path(new_dir, "appendix"), ".R", sep = ""))
   image_name <- paste(cover_image, ".png", sep = "")
   file.copy(from = file.path(path_to_img, image_name), to = file.path(new_dir, image_name))
 
