@@ -22,46 +22,12 @@
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># check if version 444 of admiral is installed, and throw error if not:</span></span>
-<span id="cb1-2"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">packageVersion</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"admiral"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"0.12.2"</span>) {</span>
-<span id="cb1-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stop</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Please install a more recent version of admiral.</span></span>
-<span id="cb1-4"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">       At least version 0.12.2 is required."</span>)</span>
-<span id="cb1-5">}</span>
-<span id="cb1-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(admiral)</span>
-<span id="cb1-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr)</span>
-<span id="cb1-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(reactable)</span></code></pre></div>
-</div>
 <p><a href="https://github.com/pharmaverse/admiral">{admiral}</a> recently ran into some trouble when dealing with floating point values, captured <a href="https://github.com/pharmaverse/admiral/pull/2060">by this thread on GitHub</a>. This post gives a brief overview on floating point values, recaps the discussion on GitHub, and explains how <a href="https://github.com/pharmaverse/admiral">{admiral}</a> deals with floating point values.</p>
 <section id="floating-point-values" class="level2">
 <h2 class="anchored" data-anchor-id="floating-point-values">Floating point values</h2>
 <p>Floating point values are numeric objects representing numbers between integers, e.g.&nbsp;0.5, 2.3, 3.1415, etc. However, floating point numbers are not stored like integers, and most floating point numbers are approximations to the number they represent. To see what value a floating point number is actually stored as, we can use the <code>format()</code> function where we can increase the number of digits shown:</p>
 <div class="cell" data-warnings="false">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">format</span>(<span class="fl" style="color: #AD0000;
 background-color: null;
@@ -76,7 +42,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 </div>
 <p>These very small numerical differences impact the result of mathematical operations:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -93,7 +59,7 @@ font-style: inherit;">0.3</span></span></code></pre></div>
 </div>
 <p>If we look at the actually stored values, this makes sense:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -107,7 +73,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "0.1000000000000000055511"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.2</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -121,7 +87,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "0.2000000000000000111022"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">(<span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">(<span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -139,7 +105,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "0.3000000000000000444089"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.3</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -167,10 +133,10 @@ Exact floating point values
 <div class="callout-body-container callout-body">
 <p>Floating point values are stored in binary format. While most floating point values are approximations, there are some exceptions which can be exactly represented, namely if they can be written down as <img src="https://latex.codecogs.com/png.latex?%5Cfrac%7Bx%7D%7B2%5Ey%7D">, where x and y are integers. For example, 0.5 is stored as <img src="https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B2%7D">, 0.25 is stored as <img src="https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B4%7D">, 0.125 is stored as <img src="https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B8%7D">, etc.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># simple examples</span></span>
-<span id="cb14-2"><span class="fl" style="color: #AD0000;
+<span id="cb13-2"><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -184,7 +150,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "0.5"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.25</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -198,7 +164,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "0.25"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.125</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -212,7 +178,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "0.125"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.0625</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -226,10 +192,10 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "0.0625"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># some weird values for x and y</span></span>
-<span id="cb22-2">(<span class="dv" style="color: #AD0000;
+<span id="cb21-2">(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1121</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -263,10 +229,10 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <p>Gordon Miller came across this issue when he was creating <a href="https://rsc.niaid.nih.gov/clinical-research-sites/daids-adverse-event-grading-tables">DAIDS criteria</a> for adverse events in cancer therapy when using <code>case_when</code> statements to implement the grade.</p>
 <p>We can have a glimpse here:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1">atoxgr_criteria_daids <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1">atoxgr_criteria_daids <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb24-2">  <span class="fu" style="color: #4758AB;
+<span id="cb23-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">filter</span>(TERM <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -279,12 +245,12 @@ background-color: null;
 font-style: inherit;">"Lipase, High"</span>)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb24-3">  <span class="fu" style="color: #4758AB;
+<span id="cb23-3">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">select</span>(TERM, GRADE_CRITERIA_CODE) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb24-4">  <span class="fu" style="color: #4758AB;
+<span id="cb23-4">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">reactable</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -309,8 +275,8 @@ background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
 
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-dbe968d3f117fb7bbffc" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-dbe968d3f117fb7bbffc">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-bddd4a407e5987709868" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bddd4a407e5987709868">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>As you can see, the data-frame contains the column <code>GRADE_CRITERIA_CODE</code> which contains comparisons of floating point values. And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison initially:</p>
@@ -321,7 +287,7 @@ font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <p>Where ANRHI is the <em>analysis range upper limit</em> and AVAL is an <em>analysis value</em>.</p>
 <p>What happened here? Gordon Miller wanted to compute the <em>analysis range upper limit</em> plus 10% and compare it to the <em>analysis value</em>. He expected the comparison to yield <code>TRUE</code> (or <code>1</code> if converted to <code>numeric</code>) as AVAL (110) should be exactly 1.1 * 100. However, he multiplied an integer (100) with a floating point value (1.1). And the result was not exactly 110, as 1.1 is not exactly represented as a floating point value.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1">(<span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1">(<span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1.1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -339,7 +305,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "110.0000000000000142109"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1.1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -360,7 +326,7 @@ font-style: inherit;">110</span></span></code></pre></div>
 <h2 class="anchored" data-anchor-id="potential-solutions">Potential solutions</h2>
 <p>A very crude option would be to round the result of the multiplication to the nearest integer.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">round</span>(<span class="fl" style="color: #AD0000;
 background-color: null;
@@ -383,7 +349,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 </div>
 <p>However, this does not work when the result is not an integer, i.e.&nbsp;the upper limit was 101 instead. We should then compare the analysis value to 101 * 1.1, which should be exactly 111.1. We could try to round to the nearest decimal place, but that value would again be stored as a floating point value:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1">(<span class="dv" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1">(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">101</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -392,7 +358,7 @@ background-color: null;
 font-style: inherit;">1.1</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb31-2">  <span class="fu" style="color: #4758AB;
+<span id="cb30-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">round</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -401,7 +367,7 @@ background-color: null;
 font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb31-3">  <span class="fu" style="color: #4758AB;
+<span id="cb30-3">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">format</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -414,7 +380,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 </div>
 <p>A workaround would be to multiply both sides of the equation with 10, and then round to the next integer:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1">(<span class="dv" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1">(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">101</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -427,12 +393,12 @@ background-color: null;
 font-style: inherit;">10</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb33-2">  <span class="fu" style="color: #4758AB;
+<span id="cb32-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">round</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb33-3">  <span class="fu" style="color: #4758AB;
+<span id="cb32-3">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">format</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -442,7 +408,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "1111"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1">(<span class="fl" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1">(<span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">111.1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -451,12 +417,12 @@ background-color: null;
 font-style: inherit;">10</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb35-2">  <span class="fu" style="color: #4758AB;
+<span id="cb34-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">round</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb35-3">  <span class="fu" style="color: #4758AB;
+<span id="cb34-3">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">format</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -470,18 +436,18 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <p>This is very awkward, as you don’t know by how much you need to multiply each time, a very clunky solution.</p>
 <p>Alternatively, we can compare the absolute value of the difference between the analysis value and the upper limit plus 10% to a very small number, e.g.&nbsp;0.0000001:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1">AVAL <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1">AVAL <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">111.1</span></span>
-<span id="cb37-2">ANRHI <span class="ot" style="color: #003B4F;
+<span id="cb36-2">ANRHI <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">101</span></span>
-<span id="cb37-3"></span>
-<span id="cb37-4"><span class="fu" style="color: #4758AB;
+<span id="cb36-3"></span>
+<span id="cb36-4"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">abs</span>(AVAL <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -500,7 +466,7 @@ font-style: inherit;">0.0000001</span></span></code></pre></div>
 </div>
 <p>Comparing to a very small value is also how the <code>all.equal()</code> function works, which compares two numeric values and returns <code>TRUE</code> if they are equal within a tolerance. By default the tolerance is around <img src="https://latex.codecogs.com/png.latex?1.5%20*%2010%5E%7B-8%7D"> but you can set it yourself to a lower value, e.g.&nbsp;machine tolerance <code>.Machine$double.eps</code> - (one of**) the smallest positive floating-point number x such that 1 + x != 1.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><span class="dv" style="color: #AD0000;
+<div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -514,10 +480,10 @@ font-style: inherit;">1</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb41" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># but:</span></span>
-<span id="cb41-2"><span class="dv" style="color: #AD0000;
+<span id="cb40-2"><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -535,10 +501,10 @@ font-style: inherit;">1</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb43" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb42" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># so we can use:</span></span>
-<span id="cb43-2"><span class="fu" style="color: #4758AB;
+<span id="cb42-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">all.equal</span>(AVAL, ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -557,7 +523,7 @@ font-style: inherit;">$</span>double.eps)</span></code></pre></div>
 </div>
 <p>This would still be a little clunky for <em>greater than or equal to</em> comparisons:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb44" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">all.equal</span>(AVAL, ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -575,10 +541,10 @@ font-style: inherit;">1.1</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb47" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb46" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># unfortunately, the all.equal() function does not return a FALSE if they are not the same:</span></span>
-<span id="cb47-2"><span class="fu" style="color: #4758AB;
+<span id="cb46-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">all.equal</span>(AVAL, ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -596,17 +562,17 @@ font-style: inherit;">1</span>)</span></code></pre></div>
 <p>For some reason, the value it returns is also not correct.</p>
 <p>There is also a dplyr function called <code>near()</code> which does essentially the same thing as <code>all.equal()</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1">ANRHI <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb48" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1">ANRHI <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">100</span></span>
-<span id="cb49-2">AVAL <span class="ot" style="color: #003B4F;
+<span id="cb48-2">AVAL <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">110</span></span>
-<span id="cb49-3">(ANRHI <span class="sc" style="color: #5E5E5E;
+<span id="cb48-3">(ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -622,7 +588,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "110.0000000000000142109"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb51" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1">AVAL <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb50" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1">AVAL <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&gt;</span> ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -679,16 +645,16 @@ font-style: inherit;">1.1</span>)</span></code></pre></div>
 <p>This would work perfectly fine, but especially for <code>case_when()</code> statements, it would add a lot of code-bloat.</p>
 <p>Although a minor issue, it looks like the <code>near()</code> function tests for absolute differences, while the <code>all.equal()</code> function tests for relative differences, as discussed in <a href="https://github.com/tidyverse/dplyr/issues/6921">this thread</a>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb52" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Very large values:</span></span>
-<span id="cb53-2"><span class="co" style="color: #5E5E5E;
+<span id="cb52-2"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># When checking for absolute differences</span></span>
-<span id="cb53-3"><span class="fu" style="color: #4758AB;
+<span id="cb52-3"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">near</span>(</span>
-<span id="cb53-4">  ANRHI <span class="sc" style="color: #5E5E5E;
+<span id="cb52-4">  ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -701,7 +667,7 @@ background-color: null;
 font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">6</span>,</span>
-<span id="cb53-5">  AVAL <span class="sc" style="color: #5E5E5E;
+<span id="cb52-5">  AVAL <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -710,17 +676,17 @@ background-color: null;
 font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">6</span></span>
-<span id="cb53-6">)</span></code></pre></div>
+<span id="cb52-6">)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb55" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb54" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># When checking for relative differences</span></span>
-<span id="cb55-2"><span class="fu" style="color: #4758AB;
+<span id="cb54-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">all.equal</span>(</span>
-<span id="cb55-3">  ANRHI <span class="sc" style="color: #5E5E5E;
+<span id="cb54-3">  ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -733,7 +699,7 @@ background-color: null;
 font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">6</span>,</span>
-<span id="cb55-4">  AVAL <span class="sc" style="color: #5E5E5E;
+<span id="cb54-4">  AVAL <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -742,14 +708,14 @@ background-color: null;
 font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">6</span></span>
-<span id="cb55-5">)</span></code></pre></div>
+<span id="cb54-5">)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb57" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb56" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># As:</span></span>
-<span id="cb57-2">(ANRHI <span class="sc" style="color: #5E5E5E;
+<span id="cb56-2">(ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -773,7 +739,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "110000000.0000000149012"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb59" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1">(AVAL <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb58" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1">(AVAL <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -830,7 +796,7 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 </table>
 <p>As an example to how this is implemented, we can have a look at the <a href="https://github.com/PredictiveEcology/fpCompare">{fpCompare}</a> source code for one of the operators:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb61" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><span class="st" style="color: #20794D;
+<div class="sourceCode cell-code" id="cb60" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">`</span><span class="at" style="color: #657422;
 background-color: null;
@@ -841,7 +807,7 @@ background-color: null;
 font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">function</span>(x, y) {</span>
-<span id="cb61-2">  (x <span class="sc" style="color: #5E5E5E;
+<span id="cb60-2">  (x <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span> y <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -850,22 +816,22 @@ background-color: null;
 font-style: inherit;">getOption</span>(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"fpCompare.tolerance"</span>))</span>
-<span id="cb61-3">}</span></code></pre></div>
+<span id="cb60-3">}</span></code></pre></div>
 </div>
 <p>Even if <code>y</code> is ever so slightly smaller than <code>x</code>, adding the tolerance to <code>y</code> will make the result larger than <code>x</code>, and the comparison will return <code>TRUE</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb62" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb61" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># we need to set the fpCompare.tolerance first, because we did not load the package:</span></span>
-<span id="cb62-2"><span class="fu" style="color: #4758AB;
+<span id="cb61-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">options</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">fpCompare.tolerance =</span> <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1e-8</span>)</span>
-<span id="cb62-3"></span>
-<span id="cb62-4">(ANRHI <span class="sc" style="color: #5E5E5E;
+<span id="cb61-3"></span>
+<span id="cb61-4">(ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -878,13 +844,13 @@ font-style: inherit;">%&lt;=%</span> AVAL</span></code></pre></div>
 </div>
 <p>As long as <a href="https://github.com/pharmaverse/admiral">{admiral}</a> remains open source and free to use, using this package, or even reusing the code itself would be fine. Although this was <em>my</em> preferred option, we did not end up implementing it. Instead, we made use of the <code>signif()</code> function, which rounds a number to a specified number of significant digits. This way, we could use the regular infix operators and simply provide the number of significant digits we want to compare to:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1">signif_dig <span class="ot" style="color: #003B4F;
+<div class="sourceCode cell-code" id="cb63" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1">signif_dig <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">15</span></span>
-<span id="cb64-2"></span>
-<span id="cb64-3"><span class="fu" style="color: #4758AB;
+<span id="cb63-2"></span>
+<span id="cb63-3"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">signif</span>(AVAL, signif_dig) <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -898,22 +864,22 @@ font-style: inherit;">1.1</span>, signif_dig)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb66" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb65" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># as:</span></span>
-<span id="cb66-2">(ANRHI <span class="sc" style="color: #5E5E5E;
+<span id="cb65-2">(ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1.1</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb66-3">  <span class="fu" style="color: #4758AB;
+<span id="cb65-3">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">signif</span>(signif_dig) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb66-4">  <span class="fu" style="color: #4758AB;
+<span id="cb65-4">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">format</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -923,15 +889,15 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "110"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb68" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb67" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># and although when printed, the number still looks off:</span></span>
-<span id="cb68-2">ANRHI <span class="ot" style="color: #003B4F;
+<span id="cb67-2">ANRHI <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">101</span></span>
-<span id="cb68-3">((ANRHI <span class="sc" style="color: #5E5E5E;
+<span id="cb67-3">((ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -951,10 +917,10 @@ font-style: inherit;">22</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "111.0999999999999943157"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb70" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb69" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># the comparison works now:</span></span>
-<span id="cb70-2">((ANRHI <span class="sc" style="color: #5E5E5E;
+<span id="cb69-2">((ANRHI <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -973,15 +939,15 @@ font-style: inherit;">111.1</span></span></code></pre></div>
 </div>
 <p>This is now implemented throughout <code>atoxgr_criteria_daids</code>, <code>atoxgr_criteria_ctcv4</code>, and <code>atoxgr_criteria_ctcv5</code>, and we are <a href="https://github.com/pharmaverse/admiral/issues/2134">working on an issue</a> for the 1.0.0 release of <a href="https://github.com/pharmaverse/admiral">{admiral}</a> to implement this for <code>derive_var_anrind</code> as well.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb72" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1">atoxgr_criteria_daids <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb71" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1">atoxgr_criteria_daids <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb72-2">  <span class="fu" style="color: #4758AB;
+<span id="cb71-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">select</span>(TERM, GRADE_CRITERIA_CODE) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb72-3">  <span class="fu" style="color: #4758AB;
+<span id="cb71-3">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">reactable</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -1006,8 +972,8 @@ background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
 
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-7bd9d4e8653d1308bbe6" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-7bd9d4e8653d1308bbe6">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) <= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"da99d43d89c947a2b8035eee653763d5"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-c7f73e9c09ed16fc8b74" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c7f73e9c09ed16fc8b74">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) <= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"da99d43d89c947a2b8035eee653763d5"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -1026,10 +992,10 @@ font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <p>By heeding these precautions and understanding the intricacies of floating point representations, you can mitigate the risk of encountering unexpected behavior in your code. Whether you’re working with <a href="https://github.com/pharmaverse/admiral">{admiral}</a> or any other software, a cautious and informed approach to handling floating point values is essential for maintaining code accuracy and reliability.</p>
 <p>** This is a number of the smallest magnitude for which a difference is still detected. I.e. <code>.Machine$double.eps / 1.8</code> is still detectable, while <code>.Machine$double.eps / 2</code> is not detectable any longer (at least on my machine):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb72" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># eps / 1.8 is still detectable:</span></span>
-<span id="cb73-2">.Machine<span class="sc" style="color: #5E5E5E;
+<span id="cb72-2">.Machine<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>double.eps <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -1047,7 +1013,7 @@ font-style: inherit;">1</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] FALSE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb75" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1">.Machine<span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb74" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1">.Machine<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>double.eps <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -1079,7 +1045,7 @@ font-style: inherit;">1</span></span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:29.221436</p>
+<p>2023-11-01 15:47:35.340689</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/renv.lock">R environment</a></p>
@@ -1398,7 +1364,7 @@ font-style: inherit;">"rhinosubmission.txt"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:23.971975</p>
+<p>2023-11-01 15:47:31.231853</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/renv.lock">R environment</a></p>
@@ -2567,7 +2533,7 @@ Mancini, Edoardo. 2023. <span>“Date/Time Functions and Imputation in
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:44.601231</p>
+<p>2023-11-01 15:47:48.201548</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/renv.lock">R environment</a></p>
@@ -3015,7 +2981,7 @@ font-style: inherit;">round</span>(b)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:21.916968</p>
+<p>2023-11-01 15:47:29.564969</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>
@@ -3204,7 +3170,7 @@ font-style: inherit;">DEMOEDY =</span> AENDT)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:40.941836</p>
+<p>2023-11-01 15:47:45.242711</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
@@ -3461,7 +3427,7 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:50.680805</p>
+<p>2023-11-01 15:47:53.276819</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
@@ -3644,7 +3610,7 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:19.785545</p>
+<p>2023-11-01 15:47:27.839956</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
@@ -3704,7 +3670,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:32.958678</p>
+<p>2023-11-01 15:47:38.469514</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -3794,7 +3760,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:31.379119</p>
+<p>2023-11-01 15:47:37.128939</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -4015,7 +3981,7 @@ font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:26.646983</p>
+<p>2023-11-01 15:47:33.340574</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
@@ -4899,7 +4865,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:38.130301</p>
+<p>2023-11-01 15:47:42.927745</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -4995,7 +4961,7 @@ Thoma, Stefan. 2023. <span>“Hackathon Feedback Application.”</span> June
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 14:33:48.886504</p>
+<p>2023-11-01 15:47:51.728905</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
