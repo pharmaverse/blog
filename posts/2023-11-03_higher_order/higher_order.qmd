@@ -97,7 +97,7 @@ To derive `AHSEVFL` for records occurring on or after study day 1, the user coul
 
 ```{r}
 adae_pre_stdy1 <- adae %>% filter(AESTDY >= 1)
-adae_post_stdy1 <- adae %>% filter(!(AESTDY >= 1)) 
+adae_post_stdy1 <- adae %>% filter(!(AESTDY >= 1))
 
 adae_pre_stdy1_flag <- adae_pre_stdy1 %>%
   derive_var_extreme_flag(
@@ -105,9 +105,9 @@ adae_pre_stdy1_flag <- adae_pre_stdy1 %>%
     by_vars = exprs(USUBJID),
     order = exprs(TEMP_AESEVN, AESTDY, AESEQ),
     mode = "first"
-  ) 
+  )
 
-adae_ahsevfl <- adae_post_stdy1 %>% 
+adae_ahsevfl <- adae_post_stdy1 %>%
   mutate(AHSEVFL = NA_character_) %>% # need to make AHSEVFL in this dataset too, to enable binding below
   rbind(adae_pre_stdy1_flag)
 ```
@@ -238,7 +238,7 @@ adae_ahsev2fl %>%
   )
 ```
 
-Notice that the `derivation_slice` ordering is important. in the above examples, all the AEs on or after study day 1 were addressed first, and then the `filter = TRUE` option was employed to catch all remaining records (in this casepre-treatment AEs).
+Notice that the `derivation_slice` ordering is important. in the above examples, all the AEs on or after study day 1 were addressed first, and then the `filter = TRUE` option was employed to catch all remaining records (in this case pre-treatment AEs).
 
 The ordering is perhaps shown even more when in the below example where three slices are taken. Remember that observations that match with more than one slice are only considered for the first matching slice. Thus, in this case the objective is to create a flag for each patient for the record with the first severe AE, and then the first moderate AE, and finally the last occurring AE which is neither severe or moderate.
 
