@@ -25,11 +25,11 @@ long_slug <- "2023-11-03_higher_order"
 
 Picture the following scenario:
 
-_You, a budding `{admiral}` programmer, are finding your groove chaining together modular code blocks to derive variables and parameters in a drive to construct your favorite ADaM dataset, `ADAE`. Suddenly you notice that one of the flags you are deriving should only use records on or after study day 1. In a moment of mild annoyance, you get to work modifying what was originally a simple call to `derive_var_extreme_flag()` by first subsetting `ADAE` to records where `AESTDY > 1`, then deriving the flag only for the subsetted `ADAE`, and finally binding the two portions of `ADAE` back together before continuing on with your program. Miffed by this interruption, you think to yourself: "I wish there was a neater, faster way to do this in stride, that didn't break my code modularity..."_
+_You, a budding [{admiral}](https://pharmaverse.github.io/admiral/) programmer, are finding your groove chaining together modular code blocks to derive variables and parameters in a drive to construct your favorite ADaM dataset, `ADAE`. Suddenly you notice that one of the flags you are deriving should only use records on or after study day 1. In a moment of mild annoyance, you get to work modifying what was originally a simple call to `derive_var_extreme_flag()` by first subsetting `ADAE` to records where `AESTDY > 1`, then deriving the flag only for the subsetted `ADAE`, and finally binding the two portions of `ADAE` back together before continuing on with your program. Miffed by this interruption, you think to yourself: "I wish there was a neater, faster way to do this in stride, that didn't break my code modularity..."_
 
-If the above could never be you, then you'll probably be alright never reading this blog post. However, if you want to learn more about the tools that `{admiral}` provides to make your life easier in cases like this one, then you are in the right place, since this blog post will highlight how higher order functions can solve such issues.
+If the above could never be you, then you'll probably be alright never reading this blog post. However, if you want to learn more about the tools that [{admiral}](https://pharmaverse.github.io/admiral/) provides to make your life easier in cases like this one, then you are in the right place, since this blog post will highlight how higher order functions can solve such issues.
 
-A higher order function is a function that takes another function as input. By introducing these higher order functions, `{admiral}` intends to give the user greater power over derivations, whilst trying to negate the need for both adding additional `{admiral}` functions/arguments, and the user needing many separate steps.
+A higher order function is a function that takes another function as input. By introducing these higher order functions, [{admiral}](https://pharmaverse.github.io/admiral/) intends to give the user greater power over derivations, whilst trying to negate the need for both adding additional [{admiral}](https://pharmaverse.github.io/admiral/) functions/arguments, and the user needing many separate steps.
 
 The functions covered in this post are:
 
@@ -41,13 +41,15 @@ The functions covered in this post are:
 
 The examples in this blog post require the following packages.
 
-For example purpose, the ADSL dataset - which is included in `{admiral` - and the SDTM datasets from `{pharmaversesdtm}` are used.
-
 ```{r, warning=FALSE, message=FALSE}
 library(admiral)
 library(pharmaversesdtm)
 library(dplyr, warn.conflicts = FALSE)
+```
 
+For example purpose, the ADSL dataset - which is included in [{admiral}](https://pharmaverse.github.io/admiral/) - and the SDTM datasets from [{pharmaversesdtm}](https://pharmaverse.github.io/pharmaversesdtm) are used.
+
+```{r, warning=FALSE, message=FALSE}
 data("admiral_adsl")
 data("ae")
 data("vs")
@@ -55,6 +57,7 @@ adsl <- admiral_adsl
 ae <- convert_blanks_to_na(ae)
 vs <- convert_blanks_to_na(vs)
 ```
+
 ```{r echo=FALSE}
 adsl <- filter(adsl, USUBJID %in% c("01-701-1111", "01-705-1393"))
 ae <- filter(ae, USUBJID %in% c("01-701-1111", "01-705-1393"))
@@ -79,7 +82,7 @@ adae <- ae %>%
 
 # Restrict Derivation
 
-The idea behind `restrict_derivation()` is largely to solve the problem outlined in the introduction: sometimes one may want to easily apply a derivation only for certain records from the input dataset.`restrict_derivation()` gives the users the ability to achieve this across any function, without each function needing to have such an argument to allow for this.
+The idea behind `restrict_derivation()` is largely to solve the problem outlined in the introduction: sometimes one may want to easily apply a derivation only for certain records from the input dataset. `restrict_derivation()` gives the users the ability to achieve this across any [{admiral}](https://pharmaverse.github.io/admiral/) function, without each function needing to have such an argument to allow for this.
 
 Putting this into practice with an example: suppose the user has some code flagging the first occurring AE with the highest severity for each patient:
 
@@ -112,7 +115,7 @@ adae_ahsevfl <- adae_post_stdy1 %>%
   rbind(adae_pre_stdy1_flag)
 ```
 
-..or,  `restrict_derivation()` could be wrapped around `derive_var_extreme_flag()`, using the following structure:
+..or, `restrict_derivation()` could be wrapped around `derive_var_extreme_flag()`, using the following structure:
 
 * The function to restrict, `derive_var_extreme_flag()` is passed to `restrict_derivation()` through the `derivation` argument;
 * The arguments to `derive_var_extreme_flag()` are passed using a call to `params()`;
@@ -120,7 +123,6 @@ adae_ahsevfl <- adae_post_stdy1 %>%
 
 ```{r}
 adae_ahsevfl <- adae %>%
-  mutate(TEMP_AESEVN = as.integer(factor(AESEV, levels = c("SEVERE", "MODERATE", "MILD")))) %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
@@ -195,21 +197,23 @@ vs_ahilofl %>%
   )
 ```
 
-Notice that any arguments that _stay the same_ across iterations (here, `by_vars` and `order`) are instead passed outside of `variable_params`.
+Notice that any arguments that _stay the same_ across iterations (here, `by_vars` and `order`) are instead passed outside of `variable_params`. However, it is important to observe that although the arguments outside `variable_params` are invariant across derivation calls, if any such argument is also specified inside `variable_params` then this selection overrides the outside selection. This can be useful in cases where for most derivation calls, the set of invariant arguments is constant, but for one or two calls a small modification is required.
 
-Clearly, the advantage of using `call_derivation()` instead of duplicating code blocks only grows as the number of variable derivations with similar needs also grows.
+Clearly, the advantage of using `call_derivation()` instead of duplicating code blocks only _grows_ as the number of variable derivations with similar needs also grows.
 
 # Slice Derivation
 
 This function is essentially a combination of `call_derivation()` and `restrict_derivation()`, since it allows a single derivation to be applied with different arguments for different slices (subsets) of records from the input dataset. One could do this with separate `restrict_derivation()` calls for each different set of records, but `slice_derivation()` allows to achieve this in one call.
 
-For instance, consider the case where one wanted to achieve the a similar derivation to that in the `restrict_derivation()` example (flagging AE with the highest severity for each patient) but while for records occurring on or after study day 1 the intent remains to flag the _first_ occurring AE, for pre-treatment AEs one instead targets the _last_ occurring AE.
+For instance, consider the case where one wanted to achieve a similar derivation to that in the `restrict_derivation()` example (flagging AE with the highest severity for each patient) but while for records occurring on or after study day 1 the intent remains to flag the _first_ occurring AE, for pre-treatment AEs one instead targets the _last_ occurring AE.
 
 `slice_derivation()` comes to the rescue! 
 
-* Once again, the function to restrict, is passed through the `derivation` argument;
-* The arguments that remain constant across slides are passed in the `args` selection using a call to `params()`;
-* The user passes `derivation_slice`'s to the function detailing the filter condition for the slice in the `filter` argument and what differs across runs in the `args` call. 
+* Once again, the function to restrict is passed through the `derivation` argument;
+* The arguments that remain constant across slices are passed in the `args` selection using a call to `params()`;
+* The user passes `derivation_slice`'s to the function detailing the filter condition for the slice in the `filter` argument and what differs across runs in the `args` call.
+
+Note: observations that match with more than one slice are only considered for the first matching slice. Moreover, observations with no match to any of the slices are included in the output dataset but the derivation is not called for them.
 
 ```{r}
 adae_ahsev2fl <- adae %>%
@@ -275,11 +279,11 @@ adae_ahsev3fl %>%
 
 The order is only important when the slices are not mutually exclusive, so in the above case the moderate AE slice could have been above the severe AE slice, for example, and there would have been no difference to the result. However the third slice had to come last to check all remaining (i.e. not severe or moderate) records only.
 
-<!--------------- appendices go here ----------------->
-
 # Conclusion
 
-The `restrict_derivation()`, `call_derivation()` and `slice_derivation()` higher order functions are a flexible toolset provided by `{admiral}` to streamline ADaM code. They are never the _only_ way to achieve a derivation, but they are often the _most efficient_ way to do so. When code becomes long or convoluted, it is often worth pausing to examine whether one of these could come to the rescue to make life simpler.
+The three higher order functions avaliable in [{admiral}](https://pharmaverse.github.io/admiral/) `restrict_derivation()`, `call_derivation()` and `slice_derivation()`, are a flexible toolset provided by [{admiral}](https://pharmaverse.github.io/admiral/) to streamline ADaM code. They are never the _only_ way to achieve a derivation, but they are often the _most efficient_ way to do so. When code becomes long or convoluted, it is often worth pausing to examine whether one of these could come to the rescue to make life simpler.
+
+<!--------------- appendices go here ----------------->
 
 ```{r, echo=FALSE}
 source("appendix.R")
