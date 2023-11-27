@@ -10,7 +10,1028 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.450</generator>
-<lastBuildDate>Mon, 30 Oct 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 27 Nov 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Believe in a higher order!</title>
+  <dc:creator>Edoardo Mancini</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/higher_order.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Picture the following scenario:</p>
+<p><em>You, a budding <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> programmer, are finding your groove chaining together modular code blocks to derive variables and parameters in a drive to construct your favorite ADaM dataset, <code>ADAE</code>. Suddenly you notice that one of the flags you are deriving should only use records on or after study day 1. In a moment of mild annoyance, you get to work modifying what was originally a simple call to <code>derive_var_extreme_flag()</code> by first subsetting <code>ADAE</code> to records where <code>AESTDY &gt; 1</code>, then deriving the flag only for the subsetted <code>ADAE</code>, and finally binding the two portions of <code>ADAE</code> back together before continuing on with your program. Miffed by this interruption, you think to yourself: “I wish there was a neater, faster way to do this in stride, that didn’t break my code modularity…”</em></p>
+<p>If the above could never be you, then you’ll probably be alright never reading this blog post. However, if you want to learn more about the tools that <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> provides to make your life easier in cases like this one, then you are in the right place, since this blog post will highlight how higher order functions can solve such issues.</p>
+<p>A higher order function is a function that takes another function as input. By introducing these higher order functions, <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> intends to give the user greater power over derivations, whilst trying to negate the need for both adding additional <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> functions/arguments, and the user needing many separate steps.</p>
+<p>The functions covered in this post are:</p>
+<ul>
+<li><code>restrict_derivation()</code>: Allows the user to execute a single derivation on a subset of the input dataset.</li>
+<li><code>call_derivation()</code>: Allows the user to call a single derivation multiple times with some arguments being fixed across iterations and others varying.</li>
+<li><code>slice_derivation()</code>: Allows the user to split the input dataset into slices (subsets) and for each slice a single derivation is called separately. Some or all arguments of the derivation may vary depending on the slice.</li>
+</ul>
+<section id="required-packages" class="level2">
+<h2 class="anchored" data-anchor-id="required-packages">Required Packages</h2>
+<p>The examples in this blog post require the following packages.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(pharmaversesdtm)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">warn.conflicts =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span></code></pre></div>
+</div>
+<p>For example purpose, the ADSL dataset - which is included in <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> - and the SDTM datasets from <a href="https://pharmaverse.github.io/pharmaversesdtm">{pharmaversesdtm}</a> are used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"admiral_adsl"</span>)</span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ae"</span>)</span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"vs"</span>)</span>
+<span id="cb2-4">adsl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> admiral_adsl</span>
+<span id="cb2-5">ae <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">convert_blanks_to_na</span>(ae)</span>
+<span id="cb2-6">vs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">convert_blanks_to_na</span>(vs)</span></code></pre></div>
+</div>
+<p>The following code creates a minimally viable ADAE dataset to be used where needed in the following examples.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">adae <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> ae <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">left_join</span>(adsl, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"STUDYID"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"USUBJID"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_dt</span>(</span>
+<span id="cb3-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AST"</span>,</span>
+<span id="cb3-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dtc =</span> AESTDTC,</span>
+<span id="cb3-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">highest_imputation =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M"</span></span>
+<span id="cb3-7">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb3-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">TRTEMFL =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">if_else</span>(ASTDT <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> TRTSDT, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>, <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA_character_</span>),</span>
+<span id="cb3-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">TEMP_AESEVN =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.integer</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(AESEV, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SEVERE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MODERATE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MILD"</span>)))</span>
+<span id="cb3-11">  )</span></code></pre></div>
+</div>
+</section>
+</section>
+<section id="restrict-derivation" class="level1">
+<h1>Restrict Derivation</h1>
+<p>The idea behind <code>restrict_derivation()</code> is largely to solve the problem outlined in the introduction: sometimes one may want to easily apply a derivation only for certain records from the input dataset. <code>restrict_derivation()</code> gives the users the ability to achieve this across any <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> function, without each function needing to have such an argument to allow for this.</p>
+<p>Putting this into practice with an example: suppose the user has some code flagging the first occurring AE with the highest severity for each patient:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adae_ahsevfl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adae <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_var_extreme_flag</span>(</span>
+<span id="cb4-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> AHSEVFL,</span>
+<span id="cb4-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID),</span>
+<span id="cb4-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(TEMP_AESEVN, AESTDY, AESEQ),</span>
+<span id="cb4-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span></span>
+<span id="cb4-7">  )</span></code></pre></div>
+</div>
+<p>To derive <code>AHSEVFL</code> for records occurring on or after study day 1, the user could try to split the dataset before applying <code>derive_var_extreme_flag()</code>, and then re-join everything at the end…</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">adae_pre_stdy1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adae <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(AESTDY <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb5-2">adae_post_stdy1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adae <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>(AESTDY <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>))</span>
+<span id="cb5-3"></span>
+<span id="cb5-4">adae_pre_stdy1_flag <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adae_pre_stdy1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_var_extreme_flag</span>(</span>
+<span id="cb5-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> AHSEVFL,</span>
+<span id="cb5-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID),</span>
+<span id="cb5-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(TEMP_AESEVN, AESTDY, AESEQ),</span>
+<span id="cb5-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span></span>
+<span id="cb5-10">  )</span>
+<span id="cb5-11"></span>
+<span id="cb5-12">adae_ahsevfl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adae_post_stdy1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">AHSEVFL =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA_character_</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># need to make AHSEVFL in this dataset too, to enable binding below</span></span>
+<span id="cb5-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(adae_pre_stdy1_flag)</span></code></pre></div>
+</div>
+<p>..or, <code>restrict_derivation()</code> could be wrapped around <code>derive_var_extreme_flag()</code>, using the following structure:</p>
+<ul>
+<li>The function to restrict, <code>derive_var_extreme_flag()</code> is passed to <code>restrict_derivation()</code> through the <code>derivation</code> argument;</li>
+<li>The arguments to <code>derive_var_extreme_flag()</code> are passed using a call to <code>params()</code>;</li>
+<li>The restriction criterion is provided using the <code>filter</code> argument.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">adae_ahsevfl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adae <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">restrict_derivation</span>(</span>
+<span id="cb6-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">derivation =</span> derive_var_extreme_flag,</span>
+<span id="cb6-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(</span>
+<span id="cb6-5">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> AHSEVFL,</span>
+<span id="cb6-6">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID),</span>
+<span id="cb6-7">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(TEMP_AESEVN, AESTDY, AESEQ),</span>
+<span id="cb6-8">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span></span>
+<span id="cb6-9">    ),</span>
+<span id="cb6-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter =</span> AESTDY <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb6-11">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">USUBJID</th>
+<th style="text-align: left;">AEDECOD</th>
+<th style="text-align: right;">AESTDY</th>
+<th style="text-align: right;">AESEQ</th>
+<th style="text-align: left;">AESEV</th>
+<th style="text-align: left;">AHSEVFL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">LOCALISED INFECTION</td>
+<td style="text-align: right;">-61</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">MICTURITION URGENCY</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ARTHRALGIA</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">CELLULITIS</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Though the ultimate result is the same, the second approach is often preferable as it allows everything to be achieved within one code block, meaning one doesn’t necessarily need to break the rhythm achieved when chaining multiple blocks together due to the requirement to “preprocess” the ADaM dataset by only keeping records relevant for the derivation.</p>
+</section>
+<section id="call-derivation" class="level1">
+<h1>Call Derivation</h1>
+<p><code>call_derivation()</code> is a function that exists purely for convenience: it saves the user repeating numerous similar derivation function calls. It is best used when multiple derived variables have very similar specifications with only slight variations.</p>
+<p>As an example, imagine the case where all the parameters in a BDS ADaM require both a highest value flag and a lowest value flag.</p>
+<p>Here is an example of how to achieve this without using <code>call_derivation()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">vs_ahilofl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> vs <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb7-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_var_extreme_flag</span>(</span>
+<span id="cb7-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID, VSTESTCD),</span>
+<span id="cb7-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(VSORRES, VSSEQ),</span>
+<span id="cb7-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> AHIFL,</span>
+<span id="cb7-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"last"</span></span>
+<span id="cb7-7">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb7-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_var_extreme_flag</span>(</span>
+<span id="cb7-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID, VSTESTCD),</span>
+<span id="cb7-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(VSORRES, VSSEQ),</span>
+<span id="cb7-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> ALOFL,</span>
+<span id="cb7-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span></span>
+<span id="cb7-13">  )</span></code></pre></div>
+</div>
+<p>Conversely, here is how to achieve the same objective by using <code>call_derivation()</code>. Any arguments differing across runs (such as the name of the new variable) are passed using <code>params()</code>, and again the function that needs to be repeatedly called is passed through the <code>derivation</code> argument.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">vs_ahilofl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> vs <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb8-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">call_derivation</span>(</span>
+<span id="cb8-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">derivation =</span> derive_var_extreme_flag,</span>
+<span id="cb8-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">variable_params =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb8-5">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> AHIFL, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"last"</span>),</span>
+<span id="cb8-6">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> ALOFL, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span>)</span>
+<span id="cb8-7">    ),</span>
+<span id="cb8-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID, VSTESTCD),</span>
+<span id="cb8-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(VSORRES, VSSEQ)</span>
+<span id="cb8-10">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">USUBJID</th>
+<th style="text-align: left;">VSTESTCD</th>
+<th style="text-align: left;">VSORRES</th>
+<th style="text-align: left;">ALOFL</th>
+<th style="text-align: left;">AHIFL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">96.9</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.2</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">96.6</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.7</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.5</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.4</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">98.0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.4</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Notice that any arguments that <em>stay the same</em> across iterations (here, <code>by_vars</code> and <code>order</code>) are instead passed outside of <code>variable_params</code>. However, it is important to observe that although the arguments outside <code>variable_params</code> are invariant across derivation calls, if any such argument is also specified inside <code>variable_params</code> then this selection overrides the outside selection. This can be useful in cases where for most derivation calls, the set of invariant arguments is constant, but for one or two calls a small modification is required.</p>
+<p>Clearly, the advantage of using <code>call_derivation()</code> instead of duplicating code blocks only <em>grows</em> as the number of variable derivations with similar needs also grows.</p>
+</section>
+<section id="slice-derivation" class="level1">
+<h1>Slice Derivation</h1>
+<p>This function is essentially a combination of <code>call_derivation()</code> and <code>restrict_derivation()</code>, since it allows a single derivation to be applied with different arguments for different slices (subsets) of records from the input dataset. One could do this with separate <code>restrict_derivation()</code> calls for each different set of records, but <code>slice_derivation()</code> allows to achieve this in one call.</p>
+<p>For instance, consider the case where one wanted to achieve a similar derivation to that in the <code>restrict_derivation()</code> example (flagging AE with the highest severity for each patient) but while for records occurring on or after study day 1 the intent remains to flag the <em>first</em> occurring AE, for pre-treatment AEs one instead targets the <em>last</em> occurring AE.</p>
+<p><code>slice_derivation()</code> comes to the rescue!</p>
+<ul>
+<li>Once again, the function to restrict is passed through the <code>derivation</code> argument;</li>
+<li>The arguments that remain constant across slices are passed in the <code>args</code> selection using a call to <code>params()</code>;</li>
+<li>The user passes <code>derivation_slice</code>’s to the function detailing the filter condition for the slice in the <code>filter</code> argument and what differs across runs in the <code>args</code> call.</li>
+</ul>
+<p>Note: observations that match with more than one slice are only considered for the first matching slice. Moreover, observations with no match to any of the slices are included in the output dataset but the derivation is not called for them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">adae_ahsev2fl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adae <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb9-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">slice_derivation</span>(</span>
+<span id="cb9-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">derivation =</span> derive_var_extreme_flag,</span>
+<span id="cb9-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(</span>
+<span id="cb9-5">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> AHSEV2FL,</span>
+<span id="cb9-6">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID)</span>
+<span id="cb9-7">    ),</span>
+<span id="cb9-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derivation_slice</span>(</span>
+<span id="cb9-9">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter =</span> AESTDY <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb9-10">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(TEMP_AESEVN, AESTDY, AESEQ), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span>)</span>
+<span id="cb9-11">    ),</span>
+<span id="cb9-12">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derivation_slice</span>(</span>
+<span id="cb9-13">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb9-14">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(AESTDY, AESEQ), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"last"</span>)</span>
+<span id="cb9-15">    )</span>
+<span id="cb9-16">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">USUBJID</th>
+<th style="text-align: left;">AEDECOD</th>
+<th style="text-align: right;">AESTDY</th>
+<th style="text-align: right;">AESEQ</th>
+<th style="text-align: left;">AESEV</th>
+<th style="text-align: left;">AHSEV2FL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">LOCALISED INFECTION</td>
+<td style="text-align: right;">-61</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">MICTURITION URGENCY</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ARTHRALGIA</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">CELLULITIS</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">Y</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Notice that the <code>derivation_slice</code> ordering is important. in the above examples, all the AEs on or after study day 1 were addressed first, and then the <code>filter = TRUE</code> option was employed to catch all remaining records (in this case pre-treatment AEs).</p>
+<p>The ordering is perhaps shown even more when in the below example where three slices are taken. Remember that observations that match with more than one slice are only considered for the first matching slice. Thus, in this case the objective is to create a flag for each patient for the record with the first severe AE, and then the first moderate AE, and finally the last occurring AE which is neither severe or moderate.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">adae_ahsev3fl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adae <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb10-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">slice_derivation</span>(</span>
+<span id="cb10-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">derivation =</span> derive_var_extreme_flag,</span>
+<span id="cb10-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(</span>
+<span id="cb10-5">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> AHSEV3FL,</span>
+<span id="cb10-6">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID)</span>
+<span id="cb10-7">    ),</span>
+<span id="cb10-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derivation_slice</span>(</span>
+<span id="cb10-9">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter =</span> AESEV <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SEVERE"</span>,</span>
+<span id="cb10-10">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(AESTDY, AESEQ), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span>)</span>
+<span id="cb10-11">    ),</span>
+<span id="cb10-12">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derivation_slice</span>(</span>
+<span id="cb10-13">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter =</span> AESEV <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MODERATE"</span>,</span>
+<span id="cb10-14">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(AESTDY, AESEQ), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first"</span>)</span>
+<span id="cb10-15">    ),</span>
+<span id="cb10-16">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derivation_slice</span>(</span>
+<span id="cb10-17">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb10-18">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">args =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">params</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(AESTDY, AESEQ), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"last"</span>)</span>
+<span id="cb10-19">    )</span>
+<span id="cb10-20">  )</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">USUBJID</th>
+<th style="text-align: left;">AEDECOD</th>
+<th style="text-align: right;">AESTDY</th>
+<th style="text-align: right;">AESEQ</th>
+<th style="text-align: left;">AESEV</th>
+<th style="text-align: left;">AHSEV3FL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">LOCALISED INFECTION</td>
+<td style="text-align: right;">-61</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">MICTURITION URGENCY</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ARTHRALGIA</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">CELLULITIS</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The order is only important when the slices are not mutually exclusive, so in the above case the moderate AE slice could have been above the severe AE slice, for example, and there would have been no difference to the result. However the third slice had to come last to check all remaining (i.e.&nbsp;not severe or moderate) records only.</p>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>The three higher order functions available in <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> <code>restrict_derivation()</code>, <code>call_derivation()</code> and <code>slice_derivation()</code>, are a flexible toolset provided by <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> to streamline ADaM code. They are never the <em>only</em> way to achieve a derivation, but they are often the <em>most efficient</em> way to do so. When code becomes long or convoluted, it is often worth pausing to examine whether one of these could come to the rescue to make life simpler.</p>
+<!--------------- appendices go here ----------------->
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-11-27 19:13:43.938122</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
+  author = {Mancini, Edoardo},
+  title = {Believe in a Higher Order!},
+  date = {2023-11-27},
+  url = {https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/higher_order.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-mancini2023" class="csl-entry quarto-appendix-citeas">
+Mancini, Edoardo. 2023. <span>“Believe in a Higher Order!”</span>
+November 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/higher_order.html">https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/higher_order.html</a>.
+</div></div></section></div> ]]></description>
+  <category>admiral</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/higher_order.html</guid>
+  <pubDate>Mon, 27 Nov 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/admiral.png" medium="image" type="image/png" height="108" width="144"/>
+</item>
 <item>
   <title>Floating point</title>
   <dc:creator>Stefan Thoma</dc:creator>
@@ -275,8 +1296,8 @@ background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
 
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-bddd4a407e5987709868" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-bddd4a407e5987709868">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-adba24dc2f82968ad328" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-adba24dc2f82968ad328">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>As you can see, the data-frame contains the column <code>GRADE_CRITERIA_CODE</code> which contains comparisons of floating point values. And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison initially:</p>
@@ -972,8 +1993,8 @@ background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
 
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-c7f73e9c09ed16fc8b74" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-c7f73e9c09ed16fc8b74">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) <= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"da99d43d89c947a2b8035eee653763d5"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-1a8fcbbbc12967e0b82f" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1a8fcbbbc12967e0b82f">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) <= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"da99d43d89c947a2b8035eee653763d5"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -1045,7 +2066,7 @@ font-style: inherit;">1</span></span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:35.340689</p>
+<p>2023-11-27 19:13:46.342818</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/renv.lock">R environment</a></p>
@@ -1364,7 +2385,7 @@ font-style: inherit;">"rhinosubmission.txt"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:31.231853</p>
+<p>2023-11-27 19:13:54.254558</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/renv.lock">R environment</a></p>
@@ -2533,7 +3554,7 @@ Mancini, Edoardo. 2023. <span>“Date/Time Functions and Imputation in
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:48.201548</p>
+<p>2023-11-27 19:13:49.940918</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/renv.lock">R environment</a></p>
@@ -2981,7 +4002,7 @@ font-style: inherit;">round</span>(b)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:29.564969</p>
+<p>2023-11-27 19:13:33.556149</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>
@@ -3170,7 +4191,7 @@ font-style: inherit;">DEMOEDY =</span> AENDT)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:45.242711</p>
+<p>2023-11-27 19:13:57.651626</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
@@ -3240,7 +4261,7 @@ font-style: inherit;">library</span>(admiral)</span></code></pre></div>
 </section>
 <section id="development-workflow" class="level2">
 <h2 class="anchored" data-anchor-id="development-workflow">Development workflow</h2>
-<p>Every improvement, task, or feature we want to implement on <a href="https://github.com/pharmaverse/admiral">{admiral}</a> starts as an issue on our <a href="https://github.com/pharmaverse/admiral">GitHub repository</a>. It is the centerpiece of our development workflow, along with our <a href="https://pharmaverse.github.io/admiraldev/devel/articles/development_process.html">developer guides</a> which describe in detail the strategies, conventions, and workflows used in development. The guides help us keep the <a href="https://github.com/pharmaverse/admiral">{admiral}</a> package internally consistent (e.g.&nbsp;naming conventions, function logic) but also ensure that <a href="https://github.com/pharmaverse/admiral">{admiral}</a> adjacent packages follow the same conventions and share the user interface. This is further helped by the implemented CICD pipeline which ensures styling convention and spelling (and much more).</p>
+<p>Every improvement, task, or feature we want to implement on <a href="https://github.com/pharmaverse/admiral">{admiral}</a> starts as an issue on our <a href="https://github.com/pharmaverse/admiral">GitHub repository</a>. It is the centerpiece of our development workflow, along with our <a href="https://pharmaverse.github.io/admiraldev/articles/programming_strategy.html">developer guides</a> which describe in detail the strategies, conventions, and workflows used in development. The guides help us keep the <a href="https://github.com/pharmaverse/admiral">{admiral}</a> package internally consistent (e.g.&nbsp;naming conventions, function logic) but also ensure that <a href="https://github.com/pharmaverse/admiral">{admiral}</a> adjacent packages follow the same conventions and share the user interface. This is further helped by the implemented CICD pipeline which ensures styling convention and spelling (and much more).</p>
 <p>The core package developers team meets once a week (twice a week before a release) to discuss progress and priorities. Here, the role of product lead (currently <a href="https://www.linkedin.com/in/edoardo-mancini-7a4a40148/">Edoardo Mancini</a> at Roche) and technical lead (currently <a href="https://www.linkedin.com/in/ben-straub/">Ben Straub</a> at GSK) is to set priorities and track the release schedule. These stand-up meetings are centered around the <a href="https://github.com/orgs/pharmaverse/projects/12">project-board</a> which gives a complete overview of activities and progress. Issues are mostly self-assigned so developers can really chose what they want to work on.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -3427,7 +4448,7 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:53.276819</p>
+<p>2023-11-27 19:13:41.390513</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
@@ -3610,7 +4631,7 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:27.839956</p>
+<p>2023-11-27 19:13:51.677601</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
@@ -3670,7 +4691,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:38.469514</p>
+<p>2023-11-27 19:13:40.019302</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -3760,7 +4781,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:37.128939</p>
+<p>2023-11-27 19:13:52.942147</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -3778,6 +4799,100 @@ Straub, Ben. 2023. <span>“Hello Pharmaverse.”</span> June 28, 2023. <a href=
   <guid>https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/index.html</guid>
   <pubDate>Wed, 28 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/pharmaverse.PNG" medium="image"/>
+</item>
+<item>
+  <title>Admiral Hackathon 2023 Revisited</title>
+  <dc:creator>Stefan Thoma</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
+<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/cosa">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
+<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
+<section id="introduction-to-r-workshop" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
+<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
+<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="admiral-hackathon" class="level2">
+<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
+<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
+<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
+<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
+<p>Congratulations to the winners:</p>
+<ul>
+<li><code>ViiV Team_GSK</code></li>
+<li><code>teamspoRt</code></li>
+<li><code>TatianaPXL</code></li>
+<li><code>Divyasneelam</code></li>
+<li><code>AdaMTeamIndia</code></li>
+<li><code>Sanofi_BP</code></li>
+<li><code>Jagadish</code> (our community hero)</li>
+<li><code>AZ_WAWA</code></li>
+</ul>
+<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
+<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/cosa">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
+<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.</p>
+<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-11-27 19:13:36.963431</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+  author = {Thoma, Stefan},
+  title = {Admiral {Hackathon} 2023 {Revisited}},
+  date = {2023-06-27},
+  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
+Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
+June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup</a>.
+</div></div></section></div> ]]></description>
+  <category>community</category>
+  <category>admiral</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</guid>
+  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
   <title>Derive a new parameter computed from the value of other parameters</title>
@@ -3981,7 +5096,7 @@ font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:33.340574</p>
+<p>2023-11-27 19:13:38.746856</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
@@ -4022,7 +5137,7 @@ Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse
 <li><p>Run participants R-scripts on the cloud and compare the produced file to a solution file. Let participants autonomously get feedback on their work.</p></li>
 </ol>
 <p>In this blog post I want to highlight some of the thoughts that went into this application. Please keep in mind that this work was done under tight time restraints.</p>
-<p>The <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/?_ga=2.75919894.2036952320.1679990144-1584712930.1674550185">hackathon application</a> is still online (although data-upload is switched off) and the <a href="https://github.com/StefanThoma/hackathon_app">GitHub repository</a> is publicly available. The application is embedded into this post right after this paragraph. I have also uploaded to GitHub a <code>.zip</code> file of the workspace to which hackathon participants had access via <a href="https://posit.cloud">posit cloud</a>. For more context you can watch <a href="https://www.cdisc.org/events/webinar/admiral-hackathon-kickoff">recordings of the hackathon-meetings</a>.</p>
+<p>The <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/?_ga=2.75919894.2036952320.1679990144-1584712930.1674550185">hackathon application</a> is still online (although data-upload is switched off) and the <a href="https://github.com/StefanThoma/hackathon_app">GitHub repository</a> is publicly available. The application is embedded into this post right after this paragraph. I have also uploaded to GitHub a <code>.zip</code> file of the workspace to which hackathon participants had access via <a href="https://posit.cloud">posit cloud</a>. For more context you can watch <a href="https://www.cdisc.org/cosa">recordings of the hackathon-meetings</a>.</p>
 <div class="cell">
 <iframe src="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/?_ga=2.75919894.2036952320.1679990144-1584712930.1674550185" width="672" height="400px" data-external="1">
 </iframe>
@@ -4865,7 +5980,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2023-11-01 15:47:42.927745</p>
+<p>2023-11-27 19:13:48.333469</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -4887,100 +6002,6 @@ Thoma, Stefan. 2023. <span>“Hackathon Feedback Application.”</span> June
   <guid>https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/index.html</guid>
   <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/shiny_klee.png" medium="image" type="image/png" height="141" width="144"/>
-</item>
-<item>
-  <title>Admiral Hackathon 2023 Revisited</title>
-  <dc:creator>Stefan Thoma</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<!--------------- my typical setup ----------------->
-<!--------------- post begins here ----------------->
-<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
-<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/events/webinar/pre-admiral-hackathon-workshop-introduction-r-sas-programmers">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
-<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
-<section id="introduction-to-r-workshop" class="level2">
-<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
-<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
-<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
-<section id="admiral-hackathon" class="level2">
-<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
-<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
-<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
-<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
-<p>Congratulations to the winners:</p>
-<ul>
-<li><code>ViiV Team_GSK</code></li>
-<li><code>teamspoRt</code></li>
-<li><code>TatianaPXL</code></li>
-<li><code>Divyasneelam</code></li>
-<li><code>AdaMTeamIndia</code></li>
-<li><code>Sanofi_BP</code></li>
-<li><code>Jagadish</code> (our community hero)</li>
-<li><code>AZ_WAWA</code></li>
-</ul>
-<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
-<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/events/webinar/cosa-quarterly-spotlight-q1-2023">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
-<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.</p>
-<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
-<!--------------- appendices go here ----------------->
-</section>
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2023-11-01 15:47:51.728905</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
-  author = {Thoma, Stefan},
-  title = {Admiral {Hackathon} 2023 {Revisited}},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
-Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
-June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup</a>.
-</div></div></section></div> ]]></description>
-  <category>community</category>
-  <category>admiral</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</guid>
-  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 </channel>
 </rss>

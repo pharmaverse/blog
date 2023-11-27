@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Edoardo Mancini">
+<meta name="dcterms.date" content="2023-11-27">
+<meta name="description" content="A brief foray into the higher order functions in the {admiral} package.">
+
+<title>Pharmaverse Blog - Believe in a higher order!</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: #eeeeee;
+      }
+</style>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Pharmaverse Blog - Believe in a higher order!">
+<meta property="og:description" content="A brief foray into the higher order functions in the {admiral} package.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/admiral.png">
+<meta property="og:site-name" content="Pharmaverse Blog">
+<meta property="og:image:height" content="276">
+<meta property="og:image:width" content="369">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Pharmaverse Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/pharmaverse/blog" rel="" target=""><i class="bi bi-github" role="img" aria-label="github">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Believe in a higher order!</h1>
+                  <div>
+        <div class="description">
+          A brief foray into the higher order functions in the {admiral} package.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">admiral</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Edoardo Mancini </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">November 27, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#required-packages" id="toc-required-packages" class="nav-link" data-scroll-target="#required-packages">Required Packages</a></li>
+  </ul></li>
+  <li><a href="#restrict-derivation" id="toc-restrict-derivation" class="nav-link" data-scroll-target="#restrict-derivation">Restrict Derivation</a></li>
+  <li><a href="#call-derivation" id="toc-call-derivation" class="nav-link" data-scroll-target="#call-derivation">Call Derivation</a></li>
+  <li><a href="#slice-derivation" id="toc-slice-derivation" class="nav-link" data-scroll-target="#slice-derivation">Slice Derivation</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Picture the following scenario:</p>
+<p><em>You, a budding <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> programmer, are finding your groove chaining together modular code blocks to derive variables and parameters in a drive to construct your favorite ADaM dataset, <code>ADAE</code>. Suddenly you notice that one of the flags you are deriving should only use records on or after study day 1. In a moment of mild annoyance, you get to work modifying what was originally a simple call to <code>derive_var_extreme_flag()</code> by first subsetting <code>ADAE</code> to records where <code>AESTDY &gt; 1</code>, then deriving the flag only for the subsetted <code>ADAE</code>, and finally binding the two portions of <code>ADAE</code> back together before continuing on with your program. Miffed by this interruption, you think to yourself: “I wish there was a neater, faster way to do this in stride, that didn’t break my code modularity…”</em></p>
+<p>If the above could never be you, then you’ll probably be alright never reading this blog post. However, if you want to learn more about the tools that <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> provides to make your life easier in cases like this one, then you are in the right place, since this blog post will highlight how higher order functions can solve such issues.</p>
+<p>A higher order function is a function that takes another function as input. By introducing these higher order functions, <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> intends to give the user greater power over derivations, whilst trying to negate the need for both adding additional <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> functions/arguments, and the user needing many separate steps.</p>
+<p>The functions covered in this post are:</p>
+<ul>
+<li><code>restrict_derivation()</code>: Allows the user to execute a single derivation on a subset of the input dataset.</li>
+<li><code>call_derivation()</code>: Allows the user to call a single derivation multiple times with some arguments being fixed across iterations and others varying.</li>
+<li><code>slice_derivation()</code>: Allows the user to split the input dataset into slices (subsets) and for each slice a single derivation is called separately. Some or all arguments of the derivation may vary depending on the slice.</li>
+</ul>
+<section id="required-packages" class="level2">
+<h2 class="anchored" data-anchor-id="required-packages">Required Packages</h2>
+<p>The examples in this blog post require the following packages.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pharmaversesdtm)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr, <span class="at">warn.conflicts =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For example purpose, the ADSL dataset - which is included in <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> - and the SDTM datasets from <a href="https://pharmaverse.github.io/pharmaversesdtm">{pharmaversesdtm}</a> are used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"admiral_adsl"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"ae"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"vs"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> admiral_adsl</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>ae <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(ae)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>vs <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(vs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The following code creates a minimally viable ADAE dataset to be used where needed in the following examples.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>adae <span class="ot">&lt;-</span> ae <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(adsl, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"STUDYID"</span>, <span class="st">"USUBJID"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_dt</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_vars_prefix =</span> <span class="st">"AST"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">dtc =</span> AESTDTC,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">highest_imputation =</span> <span class="st">"M"</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">TRTEMFL =</span> <span class="fu">if_else</span>(ASTDT <span class="sc">&gt;=</span> TRTSDT, <span class="st">"Y"</span>, <span class="cn">NA_character_</span>),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">TEMP_AESEVN =</span> <span class="fu">as.integer</span>(<span class="fu">factor</span>(AESEV, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"SEVERE"</span>, <span class="st">"MODERATE"</span>, <span class="st">"MILD"</span>)))</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="restrict-derivation" class="level1">
+<h1>Restrict Derivation</h1>
+<p>The idea behind <code>restrict_derivation()</code> is largely to solve the problem outlined in the introduction: sometimes one may want to easily apply a derivation only for certain records from the input dataset. <code>restrict_derivation()</code> gives the users the ability to achieve this across any <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> function, without each function needing to have such an argument to allow for this.</p>
+<p>Putting this into practice with an example: suppose the user has some code flagging the first occurring AE with the highest severity for each patient:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adae_ahsevfl <span class="ot">&lt;-</span> adae <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_var_extreme_flag</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_var =</span> AHSEVFL,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">order =</span> <span class="fu">exprs</span>(TEMP_AESEVN, AESTDY, AESEQ),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">"first"</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To derive <code>AHSEVFL</code> for records occurring on or after study day 1, the user could try to split the dataset before applying <code>derive_var_extreme_flag()</code>, and then re-join everything at the end…</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>adae_pre_stdy1 <span class="ot">&lt;-</span> adae <span class="sc">%&gt;%</span> <span class="fu">filter</span>(AESTDY <span class="sc">&gt;=</span> <span class="dv">1</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>adae_post_stdy1 <span class="ot">&lt;-</span> adae <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(AESTDY <span class="sc">&gt;=</span> <span class="dv">1</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>adae_pre_stdy1_flag <span class="ot">&lt;-</span> adae_pre_stdy1 <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_var_extreme_flag</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_var =</span> AHSEVFL,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">order =</span> <span class="fu">exprs</span>(TEMP_AESEVN, AESTDY, AESEQ),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">"first"</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>adae_ahsevfl <span class="ot">&lt;-</span> adae_post_stdy1 <span class="sc">%&gt;%</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">AHSEVFL =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span> <span class="co"># need to make AHSEVFL in this dataset too, to enable binding below</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind</span>(adae_pre_stdy1_flag)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>..or, <code>restrict_derivation()</code> could be wrapped around <code>derive_var_extreme_flag()</code>, using the following structure:</p>
+<ul>
+<li>The function to restrict, <code>derive_var_extreme_flag()</code> is passed to <code>restrict_derivation()</code> through the <code>derivation</code> argument;</li>
+<li>The arguments to <code>derive_var_extreme_flag()</code> are passed using a call to <code>params()</code>;</li>
+<li>The restriction criterion is provided using the <code>filter</code> argument.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>adae_ahsevfl <span class="ot">&lt;-</span> adae <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">restrict_derivation</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivation =</span> derive_var_extreme_flag,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">args =</span> <span class="fu">params</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">new_var =</span> AHSEVFL,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">order =</span> <span class="fu">exprs</span>(TEMP_AESEVN, AESTDY, AESEQ),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">mode =</span> <span class="st">"first"</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">filter =</span> AESTDY <span class="sc">&gt;=</span> <span class="dv">1</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">USUBJID</th>
+<th style="text-align: left;">AEDECOD</th>
+<th style="text-align: right;">AESTDY</th>
+<th style="text-align: right;">AESEQ</th>
+<th style="text-align: left;">AESEV</th>
+<th style="text-align: left;">AHSEVFL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">LOCALISED INFECTION</td>
+<td style="text-align: right;">-61</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">MICTURITION URGENCY</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ARTHRALGIA</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">CELLULITIS</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Though the ultimate result is the same, the second approach is often preferable as it allows everything to be achieved within one code block, meaning one doesn’t necessarily need to break the rhythm achieved when chaining multiple blocks together due to the requirement to “preprocess” the ADaM dataset by only keeping records relevant for the derivation.</p>
+</section>
+<section id="call-derivation" class="level1">
+<h1>Call Derivation</h1>
+<p><code>call_derivation()</code> is a function that exists purely for convenience: it saves the user repeating numerous similar derivation function calls. It is best used when multiple derived variables have very similar specifications with only slight variations.</p>
+<p>As an example, imagine the case where all the parameters in a BDS ADaM require both a highest value flag and a lowest value flag.</p>
+<p>Here is an example of how to achieve this without using <code>call_derivation()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>vs_ahilofl <span class="ot">&lt;-</span> vs <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_var_extreme_flag</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID, VSTESTCD),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">order =</span> <span class="fu">exprs</span>(VSORRES, VSSEQ),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_var =</span> AHIFL,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">"last"</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_var_extreme_flag</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID, VSTESTCD),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">order =</span> <span class="fu">exprs</span>(VSORRES, VSSEQ),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_var =</span> ALOFL,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">"first"</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Conversely, here is how to achieve the same objective by using <code>call_derivation()</code>. Any arguments differing across runs (such as the name of the new variable) are passed using <code>params()</code>, and again the function that needs to be repeatedly called is passed through the <code>derivation</code> argument.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>vs_ahilofl <span class="ot">&lt;-</span> vs <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">call_derivation</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivation =</span> derive_var_extreme_flag,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable_params =</span> <span class="fu">list</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">params</span>(<span class="at">new_var =</span> AHIFL, <span class="at">mode =</span> <span class="st">"last"</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">params</span>(<span class="at">new_var =</span> ALOFL, <span class="at">mode =</span> <span class="st">"first"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID, VSTESTCD),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">order =</span> <span class="fu">exprs</span>(VSORRES, VSSEQ)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">USUBJID</th>
+<th style="text-align: left;">VSTESTCD</th>
+<th style="text-align: left;">VSORRES</th>
+<th style="text-align: left;">ALOFL</th>
+<th style="text-align: left;">AHIFL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">96.9</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.2</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">96.6</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.7</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.5</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.4</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">98.0</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">TEMP</td>
+<td style="text-align: left;">97.4</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Notice that any arguments that <em>stay the same</em> across iterations (here, <code>by_vars</code> and <code>order</code>) are instead passed outside of <code>variable_params</code>. However, it is important to observe that although the arguments outside <code>variable_params</code> are invariant across derivation calls, if any such argument is also specified inside <code>variable_params</code> then this selection overrides the outside selection. This can be useful in cases where for most derivation calls, the set of invariant arguments is constant, but for one or two calls a small modification is required.</p>
+<p>Clearly, the advantage of using <code>call_derivation()</code> instead of duplicating code blocks only <em>grows</em> as the number of variable derivations with similar needs also grows.</p>
+</section>
+<section id="slice-derivation" class="level1">
+<h1>Slice Derivation</h1>
+<p>This function is essentially a combination of <code>call_derivation()</code> and <code>restrict_derivation()</code>, since it allows a single derivation to be applied with different arguments for different slices (subsets) of records from the input dataset. One could do this with separate <code>restrict_derivation()</code> calls for each different set of records, but <code>slice_derivation()</code> allows to achieve this in one call.</p>
+<p>For instance, consider the case where one wanted to achieve a similar derivation to that in the <code>restrict_derivation()</code> example (flagging AE with the highest severity for each patient) but while for records occurring on or after study day 1 the intent remains to flag the <em>first</em> occurring AE, for pre-treatment AEs one instead targets the <em>last</em> occurring AE.</p>
+<p><code>slice_derivation()</code> comes to the rescue!</p>
+<ul>
+<li>Once again, the function to restrict is passed through the <code>derivation</code> argument;</li>
+<li>The arguments that remain constant across slices are passed in the <code>args</code> selection using a call to <code>params()</code>;</li>
+<li>The user passes <code>derivation_slice</code>’s to the function detailing the filter condition for the slice in the <code>filter</code> argument and what differs across runs in the <code>args</code> call.</li>
+</ul>
+<p>Note: observations that match with more than one slice are only considered for the first matching slice. Moreover, observations with no match to any of the slices are included in the output dataset but the derivation is not called for them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>adae_ahsev2fl <span class="ot">&lt;-</span> adae <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_derivation</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivation =</span> derive_var_extreme_flag,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">args =</span> <span class="fu">params</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">new_var =</span> AHSEV2FL,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">derivation_slice</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">filter =</span> AESTDY <span class="sc">&gt;=</span> <span class="dv">1</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">args =</span> <span class="fu">params</span>(<span class="at">order =</span> <span class="fu">exprs</span>(TEMP_AESEVN, AESTDY, AESEQ), <span class="at">mode =</span> <span class="st">"first"</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">derivation_slice</span>(</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">filter =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">args =</span> <span class="fu">params</span>(<span class="at">order =</span> <span class="fu">exprs</span>(AESTDY, AESEQ), <span class="at">mode =</span> <span class="st">"last"</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">USUBJID</th>
+<th style="text-align: left;">AEDECOD</th>
+<th style="text-align: right;">AESTDY</th>
+<th style="text-align: right;">AESEQ</th>
+<th style="text-align: left;">AESEV</th>
+<th style="text-align: left;">AHSEV2FL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">LOCALISED INFECTION</td>
+<td style="text-align: right;">-61</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">MICTURITION URGENCY</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ARTHRALGIA</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">CELLULITIS</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">Y</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Notice that the <code>derivation_slice</code> ordering is important. in the above examples, all the AEs on or after study day 1 were addressed first, and then the <code>filter = TRUE</code> option was employed to catch all remaining records (in this case pre-treatment AEs).</p>
+<p>The ordering is perhaps shown even more when in the below example where three slices are taken. Remember that observations that match with more than one slice are only considered for the first matching slice. Thus, in this case the objective is to create a flag for each patient for the record with the first severe AE, and then the first moderate AE, and finally the last occurring AE which is neither severe or moderate.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>adae_ahsev3fl <span class="ot">&lt;-</span> adae <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_derivation</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivation =</span> derive_var_extreme_flag,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">args =</span> <span class="fu">params</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">new_var =</span> AHSEV3FL,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">derivation_slice</span>(</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">filter =</span> AESEV <span class="sc">==</span> <span class="st">"SEVERE"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">args =</span> <span class="fu">params</span>(<span class="at">order =</span> <span class="fu">exprs</span>(AESTDY, AESEQ), <span class="at">mode =</span> <span class="st">"first"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">derivation_slice</span>(</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">filter =</span> AESEV <span class="sc">==</span> <span class="st">"MODERATE"</span>,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">args =</span> <span class="fu">params</span>(<span class="at">order =</span> <span class="fu">exprs</span>(AESTDY, AESEQ), <span class="at">mode =</span> <span class="st">"first"</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">derivation_slice</span>(</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">filter =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">args =</span> <span class="fu">params</span>(<span class="at">order =</span> <span class="fu">exprs</span>(AESTDY, AESEQ), <span class="at">mode =</span> <span class="st">"last"</span>)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">USUBJID</th>
+<th style="text-align: left;">AEDECOD</th>
+<th style="text-align: right;">AESTDY</th>
+<th style="text-align: right;">AESEQ</th>
+<th style="text-align: left;">AESEV</th>
+<th style="text-align: left;">AHSEV3FL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">LOCALISED INFECTION</td>
+<td style="text-align: right;">-61</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ERYTHEMA</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">MICTURITION URGENCY</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">ARTHRALGIA</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">CELLULITIS</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">MODERATE</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-705-1393</td>
+<td style="text-align: left;">PRURITUS</td>
+<td style="text-align: right;">-277</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">MILD</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The order is only important when the slices are not mutually exclusive, so in the above case the moderate AE slice could have been above the severe AE slice, for example, and there would have been no difference to the result. However the third slice had to come last to check all remaining (i.e.&nbsp;not severe or moderate) records only.</p>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>The three higher order functions available in <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> <code>restrict_derivation()</code>, <code>call_derivation()</code> and <code>slice_derivation()</code>, are a flexible toolset provided by <a href="https://pharmaverse.github.io/admiral/">{admiral}</a> to streamline ADaM code. They are never the <em>only</em> way to achieve a derivation, but they are often the <em>most efficient</em> way to do so. When code becomes long or convoluted, it is often worth pausing to examine whether one of these could come to the rescue to make life simpler.</p>
+<!--------------- appendices go here ----------------->
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2023-11-27 19:13:43.938122</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
+  author = {Mancini, Edoardo},
+  title = {Believe in a Higher Order!},
+  date = {2023-11-27},
+  url = {https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/higher_order.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-mancini2023" class="csl-entry quarto-appendix-citeas" role="listitem">
+Mancini, Edoardo. 2023. <span>“Believe in a Higher Order!”</span>
+November 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/higher_order.html">https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/higher_order.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
