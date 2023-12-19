@@ -1,0 +1,197 @@
+---
+title: "PK Examples"
+author:
+  - name: Jeff Dickinson
+description: "Explore PK ADaM Examples on Pharmaverse Examples Page"
+date: "2023-12-20"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [community, admiral, metacore, metatools, xportr]
+# feel free to change the image
+image: "pharmaverse.png"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2023-12-20_p_k__examples"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+# Pharmaverse PK Examples
+
+A new [pharmaverse examples website](https://pharmaverse.github.io/examples){target="_blank"} has some exciting new features to explore.
+
+One of these is the ability to launch Posit Cloud to explore the example code and make your own modifications.
+This interactive Posit Cloud environment is preconfigured with all required package installations.
+Click here: [Launch Posit Cloud](https://posit.cloud/content/7279124){target="_blank"} to explore the examples code.
+
+This sample code here is based on the Population PK Analysis Data (ADPPK) model which follows the recently released [CDISC Implementation Guide](https://www.cdisc.org/standards/foundational/adam/basic-data-structure-adam-poppk-implementation-guide-v1-0){target="_blank"}.
+
+Population PK models generally make use of nonlinear mixed effects models that require numeric variables.
+The data used in the models will include both dosing and concentration records, relative time variables, and numeric covariate variables.
+For more details see the `{admiral}` [vignette](https://pharmaverse.github.io/admiral/articles/pk_adnca.html){target="_blank"}.
+
+## First Load Packages
+
+First we will load the packages required for our project.
+We will use `{admiral}` for the creation of analysis data.
+`{admiral}` requires `{dplyr}`, `{lubridate}` and `{stringr}`.
+We will use `{metacore}` and `{metatools}` to store and manipulate metadata from our specifications.
+We will use `{xportr}` to perform checks on the final data and export to a transport file.
+
+The source SDTM data will come from the CDISC pilot study data stored in `{pharmaversesdtm}` and the ADaM ADSL data will come from `{pharmaverseadam}`.
+
+```{r echo=TRUE, message=FALSE}
+#| label: Load Packages
+# Load Packages
+library(admiral)
+library(dplyr)
+library(lubridate)
+library(stringr)
+library(metacore)
+library(metatools)
+library(xportr)
+library(readr)
+library(pharmaversesdtm)
+library(pharmaverseadam)
+```
+
+## Next Load Specifications for Metacore
+
+We have saved our specifications in an Excel file and will load them into `{metacore}` with the `metacore::spec_to_metacore()` function.
+
+```{r echo=TRUE, message=FALSE}
+#| label: Load Specs
+#| warning: false
+# ---- Load Specs for Metacore ----
+metacore <- spec_to_metacore("pk_spec.xlsx") %>%
+  select_dataset("ADPPK")
+```
+
+## Load Source Datasets
+
+We will load our SDTM data from `{pharmaversesdtm}`.
+The main components of the Population PK will be exposure data from `EX` and pharmacokinetic concentration data from `PC`.
+Here we will use `ADSL` from `{pharmaverseadam}` for baseline characteristics and we will derive additional baselines from vital signs `VS` and laboratory data `LB`.
+
+```{r}
+#| label: Load Source
+# ---- Load source datasets ----
+# Load PC, EX, VS, LB and ADSL
+data("pc")
+data("ex")
+data("vs")
+data("lb")
+data("adsl")
+
+ex <- convert_blanks_to_na(ex)
+pc <- convert_blanks_to_na(pc)
+vs <- convert_blanks_to_na(vs)
+lb <- convert_blanks_to_na(lb)
+```
+
+## Derive Covariates Using `{metatools}`
+
+In this step we will create our numeric covariates using the `metatools::create_var_from_codelist()` function.
+
+```{r}
+#| label: Covariates
+#---- Derive Covariates ----
+# Include numeric values for STUDYIDN, USUBJIDN, SEXN, RACEN etc.
+
+covar <- adsl %>%
+  create_var_from_codelist(metacore, input_var = STUDYID, out_var = STUDYIDN) %>%
+  create_var_from_codelist(metacore, input_var = SEX, out_var = SEXN) %>%
+  create_var_from_codelist(metacore, input_var = RACE, out_var = RACEN) %>%
+  create_var_from_codelist(metacore, input_var = ETHNIC, out_var = AETHNIC) %>%
+  create_var_from_codelist(metacore, input_var = AETHNIC, out_var = AETHNICN) %>%
+  create_var_from_codelist(metacore, input_var = ARMCD, out_var = COHORT) %>%
+  create_var_from_codelist(metacore, input_var = ARMCD, out_var = COHORTC) %>%
+  create_var_from_codelist(metacore, input_var = COUNTRY, out_var = COUNTRYN) %>%
+  create_var_from_codelist(metacore, input_var = COUNTRY, out_var = COUNTRYL) %>%
+  mutate(
+    STUDYIDN = as.numeric(word(USUBJID, 1, sep = fixed("-"))),
+    SITEIDN = as.numeric(word(USUBJID, 2, sep = fixed("-"))),
+    USUBJIDN = as.numeric(word(USUBJID, 3, sep = fixed("-"))),
+    SUBJIDN = as.numeric(SUBJID),
+    ROUTE = unique(ex$EXROUTE),
+    FORM = unique(ex$EXDOSFRM),
+    REGION1 = COUNTRY,
+    REGION1N = COUNTRYN,
+    SUBJTYPC = "Volunteer",
+  ) %>%
+  create_var_from_codelist(metacore, input_var = FORM, out_var = FORMN) %>%
+  create_var_from_codelist(metacore, input_var = ROUTE, out_var = ROUTEN) %>%
+  create_var_from_codelist(metacore, input_var = SUBJTYPC, out_var = SUBJTYP)
+
+```
+
+### Derive Additional Baselines
+
+Next we add additional baselines from vital signs and laboratory data.
+Several common variables are computed using some of the built in functions in `{admiral}`.
+
+```{r}
+#| label: Baselines
+
+labsbl <- lb %>%
+  filter(LBBLFL == "Y" & LBTESTCD %in% c("CREAT", "ALT", "AST", "BILI")) %>%
+  mutate(LBTESTCDB = paste0(LBTESTCD, "BL")) %>%
+  select(STUDYID, USUBJID, LBTESTCDB, LBSTRESN)
+
+covar_vslb <- covar %>%
+  derive_vars_merged(
+    dataset_add = vs,
+    filter_add = VSTESTCD == "HEIGHT",
+    by_vars = exprs(STUDYID, USUBJID),
+    new_vars = exprs(HTBL = VSSTRESN)
+  ) %>%
+  derive_vars_merged(
+    dataset_add = vs,
+    filter_add = VSTESTCD == "WEIGHT" & VSBLFL == "Y",
+    by_vars = exprs(STUDYID, USUBJID),
+    new_vars = exprs(WTBL = VSSTRESN)
+  ) %>%
+  derive_vars_transposed(
+    dataset_merge = labsbl,
+    by_vars = exprs(STUDYID, USUBJID),
+    key_var = LBTESTCDB,
+    value_var = LBSTRESN
+  ) %>%
+  mutate(
+    BMIBL = compute_bmi(height = HTBL, weight = WTBL),
+    BSABL = compute_bsa(
+      height = HTBL,
+      weight = HTBL,
+      method = "Mosteller"
+    ),
+    CRCLBL = compute_egfr(
+      creat = CREATBL, creatu = "SI", age = AGE, weight = WTBL, sex = SEX,
+      method = "CRCL"
+    ),
+    EGFRBL = compute_egfr(
+      creat = CREATBL, creatu = "SI", age = AGE, weight = WTBL, sex = SEX,
+      method = "CKD-EPI"
+    )
+  ) %>%
+  rename(TBILBL = BILIBL)
+```
+
+This covariate section of the code will be combined with the dosing and observation records from `EX` and `PC`.
+
+The rest of the code can be seen on the [pharmaverse examples website](https://pharmaverse.github.io/examples){target="_blank"} or in the [Posit Cloud environment](https://posit.cloud/content/7279124){target="_blank"}.
+
+Happy exploring!
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug
+)
+```
