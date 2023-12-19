@@ -1,0 +1,255 @@
+---
+title: "Testing Containers and WebAssembly in Submissions to the FDA"
+author:
+  - name: André Veríssimo
+  - name: Tymoteusz Makowski
+  - name: Pedro Silva
+  - name: Vedha Viyash
+  - name: APPSILON
+description: "In this post, we dig into the ongoing efforts undertaken to evaluate new technologies for submissions to the Food and Drug Administration (FDA). These transformative approaches, including WebAssembly and containers, hold immense potential to transform the regulatory landscape and streamline the submission process." # <---- please write a description
+date: "2023-12-30"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [submission, community]
+# feel free to change the image
+image: "FDA_WebR_Rhino.webp"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2023-12-30_containers_webassembly_submission"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+The R Consortium Submission Working Group has now successfully made two pilot submissions to the FDA. All the submissions done by the group are focused on improving practices for R-based clinical trial regulatory submissions. Now, the R submission Working Groups in collaboration with Appsilon and Posit are exploring new technologies such as Containers and WebAssembly. In this article, we dive into the details of this exploration.
+
+## How Everything Started
+
+### Pilot 1
+
+This pilot was initially submitted on November 22, 2021. **This submission was the first publicly available R-based submission to the FDA.** This was a test [submission](https://github.com/RConsortium/submissions-pilot1-to-fda) that aimed to explore the submission of an R package to the FDA following the eCTD specifications. The submission included an R package, R scripts for analysis, R-based analysis data reviewed guide (ADRG), and other important components. The final [response letter from the FDA](https://github.com/RConsortium/submissions-wg/blob/main/_Documents/Summary_R_Pilot_Submission2.pdf) was received on March 14, 2022.
+
+## Pilot 2
+
+**This was the first publicly available submission package that contained a Shiny application**. The main goal of this pilot was to test the submission of an R-based Shiny application bundled into a submission package and transfer it successfully to FDA reviewers. The [submitted application](https://github.com/RConsortium/submissions-pilot2-to-fda) was built using the datasets and analysis that were used for the R Submission Pilot 1. The deployed version of this application is available on [this site](https://rconsortium.shinyapps.io/submissions-pilot2/). Alternatively, a Rhino-based version of the application can be found [here](https://connect.appsilon.com/rhino-fda-pilot/).
+
+The final response letter from the FDA was reviewed on September 27, 2023.
+
+![](images/teal.png){fig-align="center" width="159"}
+
+In this submission, there were many open-source R packages that were used to create and execute the Shiny application. A very well known shiny-based interactive exploration framework **{teal}** was used mainly for analyzing the clinical trial data; this package is included in the pharmaverse package repository. The full list of open-source and proprietary R analysis packages is available on this [Analysis Data Reviewer's Guide](https://rsubmission-draft.website-us-east-1.linodeobjects.com/) prepared by the R Consortium R Submissions Working Group for the Pilot 2.
+
+# What's next?
+
+## Pilot 3
+
+This pilot was successfully submitted to FDA on Aug 28, 2023. **This was the first publicly available R [submission](https://github.com/RConsortium/submissions-pilot3-adam-to-fda) that included R scripts to produce ADaM datasets and TLFs**. Both the ADaMs (SDTM .xpt sources from the CDISC Pilot study) and the TLFs (ADaMs .xpt sourced from the ADaMs generated in R by the Pilot 3 team) were created using R.  The next steps for this pilot is to await FDA's review and approval which may take several months to complete.
+
+## Pilot 4
+
+This pilot aims to **explore using technologies such as containers and WebAssembly** software to package a Shiny application into a self-contained unit, streamlining the transfer and execution process for enhanced efficiency.
+
+This pilot is expected to be divided into two parallel submissions:
+
+\(a\) [will investigate WebAssembly](https://github.com/RConsortium/submissions-pilot4-webR) and
+
+\(b\) [will investigate containers](http://github.com/Appsilon/experimental-fda-submission-4-podman/).
+
+### The Journey with WebAssembly and Containers
+
+Our team at Appsilon teamed up with the dynamic Pilot 4 crew to explore WebAssembly technology and containers. George Stagg and Winston Chang also joined the working group to discuss the web-assembly portion of Pilot 4. This partnership brought together our engineering prowess to contribute to these tools, injecting fresh perspectives into the ongoing pilot project.
+
+Some of the outcomes of the collaboration:
+
+1.  We were able to set up a robust container environment for this pilot project. 
+
+2.  We aided the progress made on the use of both experimental technologies: containers and WebAssembly.
+
+3.  We developed a working prototype submission using [Podman](https://podman.io/) container technology.
+
+4.  We developed a working early-stage prototype for wrapping a small Shiny application using WebAssembly.
+
+#### WebAssembly
+
+![](images/webr.png){width="231"}
+
+WebAssembly allows languages like R to be executed at near-native speed directly within web browsers, providing users with the ability to run R code without having R installed locally. [**WebR**](https://docs.r-wasm.org/webr/v0.2.0/) is essentially the R programming language adapted to run in a web browser environment using WebAssembly. This project is under active development. 
+
+### The Pilot 4 Shiny App Up and Running on webR!
+
+![](images/rconsortiumxappsilon.png){fig-align="center"}
+
+The deployed example of the Shiny app running on webR [is available here](https://brilliant-elf-2da930.netlify.app/). Check out the video of the application running below.
+
+{{< video https://youtu.be/wfk_IJ82e9E >}}
+
+During this pilot, engineers at Appsilon developed a prototype of a Shiny application running on webR. The application reuses most of the code from the previous pilot apps with some tweaks and a couple of hacks/changes to get around non CRAN dependencies, specially for data loading, WebR compatibilities, and shimming some of the functionality from {teal} and other packages that are (for now) not available on CRAN.
+
+#### webR Shiny App
+
+During the **second iteration**, which was recently held, Pedro Silva shared the process of developing this Shiny app running on webR.
+
+#### The Process
+
+1.  **Leverage last 2 iterations of the application**
+
+    -   Reuse as much code as possible
+
+    -   Avoid touching the logic part
+
+2.  **Restrict the number of dependencies to packages on CRAN**
+
+    -   Replace/shim functionality that was lost from removing dependencies
+
+Here is the list of dependencies to packages on CRAN, those that worked are colored green, those that were removed are marked in orange. We ended up with just 3 problematic dependencies (bold).
+
+|                                           |                                           |
+|------------------------------------|------------------------------------|
+| [library(config)]{style="color:orange"}   | [library(reactable)]{style="color:green"} |
+| **library(cowplot)**                      | [library(rhino)]{style="color:orange"}    |
+| [library(dplyr)]{style="color:green"}     | [library(rtables)]{style="color:green"}   |
+| [library(emmeans)]{style="color:green"}   | [library(shiny)]{style="color:green"}     |
+| [library(ggplot2)]{style="color:green"}   | [library(stringr)]{style="color:green"}   |
+| [library(glue)]{style="color:green"}      | **library(teal)**                         |
+| [library(haven)]{style="color:green"}     | **library(teal.data)**                    |
+| [library(htmltools)]{style="color:green"} | [library(tibble)]{style="color:green"}    |
+| [library(huxtable)]{style="color:green"}  | [library(tidyr)]{style="color:green"}     |
+| [library(magrittr)]{style="color:green"}  | [library(tippy)]{style="color:green"}     |
+| [library(markdown)]{style="color:green"}  | [library(Tplyr)]{style="color:green"}     |
+| [library(pkgload)]{style="color:green"}   | [library(utils)]{style="color:green"}     |
+| [library(purrr)]{style="color:green"}     | [library(visR)]{style="color:green"}      |
+
+Issues with library(cowplot):
+
+-   Some issue with low-level dependencies when deployed
+
+Solution:
+
+-   Replace functionality with HTML
+
+Issues with library(teal):
+
+-   Uses {shiny.widgets} (not working for webR)
+
+Solution:
+
+-   Redo the UI
+
+-   Load modules directly
+
+-   Recreate filter functionality
+
+Issues with library(teal.data):
+
+-   Use rds exports
+
+Solution:
+
+-   Shim functionality, load data directly
+
+3.  **Leverage shinylive and httpuv to export and serve the application**
+
+    a.  **Shinylive can help streamline the export process**
+
+        i.  **Problems**
+
+            1.  **shiny.live won't let us have non-R files in the application directory - this is an outstanding bug that George asked us to raise an issue for.**
+
+            2.  **We wouldn't be able to run the application as a traditional shiny app**
+
+        ii. **Solution:**
+
+        ```         
+        1.  **Custom build script**
+        ```
+
+    b.  **{httpuv} can help serve the application**
+
+        i.  **{httpuv} would run natively on a machine to serve the Shiny app**
+
+#### Application Structure
+
+The figure below shows an overview of what we ended with:
+
+![](images/application-structure.png)
+
+Some of the issues and solutions found at the very beginning:
+
+1.  The previous applications were built using golem and another one in Rhino; the support for these frameworks is not great in webR up to now.
+    a.  Solution
+        i.  {box} works out of the box (reuse the rhino version modules)
+        ii. Simplify the structure and use a simple shiny modular structure
+2.  Shinylive does not like non-R files when generating the bundle
+    a.  Solution
+        i.  Keep the app folder as clean as possible for now (www folder only)
+3.  {teal} and {teal.data} are not on CRAN
+    a.  Solution
+        i.  Shim and used functionality
+        ii. Use a simple tab system for the UI structure
+
+The FDA were previously told that the shiny application being prepared for the Pilot 4 submission would not be a 1 to 1 mapping from the previous one submitted for the Pilot 2 due to certain constraints such as {teal} not being on CRAN; however, this didn't represent a problem for them since they would mainly like to test the technology.
+
+Pedro Silva, one of the engineers working on the development of this app mentioned **"While WebR is still in development, it shows tremendous promise! The loading is definitely still a pain point (over 100mb to set up the environment!) but it will only get better moving forward."**
+
+#### Containers
+
+![](images/podman-docker-singularity.png){fig-align="center"}
+
+Containerization, particularly through technologies like [Docker, Podman or Singularity](https://appsilon.com/docker-vs-podman-vs-singularity/amp/), offers several advantages for deploying Shiny apps.
+
+##### Choosing the Right Container
+
+Choosing the right container was a question that arose in this project. Although **Docker** is the most popular, we decided to move forward with **Podman**. 
+
+In our exploration of containerization tools for deploying Shiny applications, we've identified key distinctions between Docker and Podman that influenced our choice. 
+
+**Podman** stands out for its daemonless architecture, enhancing security by eliminating the need for a central daemon process. Unlike Docker, Podman supports running containers as non-root users, a critical feature for meeting FDA reviewer requirements. Developed by Red Hat and maintained as an open-source project, Podman prioritizes security with its rootless container support, offering a robust solution for security-conscious users. 
+
+##### Goals
+
+A Container-based method to deploy Pilot 2 Shiny App.
+
+##### What we did
+
+1.  Configurable Podman Dockerfile / docker-compose.yml
+
+    a.  R version
+    b.  Registry / organization name / image name (differences between docker.io and ghcr.io)
+
+2.  Documentation on creating the container
+
+3.  CI: Automated build on amd64 and arm64 platforms
+
+##### Podman short-demo
+
+{{< video https://www.youtube.com/watch?v=H2WnpvVgmyE >}}
+
+Below is the dockerfile (recipe) for the container:
+
+![](images/file-recipe.png){fig-align="center"}
+
+# Next Steps
+
+The next steps are waiting for the review of the Pilot 3 by the FDA and to submit the two sections that explore the new technologies to regulatory authorities. Thanks to the collaboration between the R Submission Working Group and other institutions, there is already a working prototype of a {teal}-like Shiny application running on webR and further exploration with Podman is underway. 
+
+1.  Submission to FDA
+2.  Rhino Compatibility
+
+![](images/rhino.png){fig-align="center" width="161"}
+
+Appsilon is working on the side with Rhino compatibility, eventually we might be able to just add this framework into the Pilot 4 application.
+
+3.  {teal}
+
+    This and other packages might be on CRAN soon. We could incorporate them after that, replacing the shims created for this version
+
+4.  Boot Time
+
+    We need to improve boot time (remove dependencies and keep working on webR).
+
+<!--------------- appendices go here ----------------->
+
+source("appendix.R") insert_appendix( repo_spec = "pharmaverse/blog", name = long_slug ) \`\`\`
