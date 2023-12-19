@@ -2,11 +2,11 @@
 title: "admiral 1.0.0"
 author:
   - name: Ben Straub
-description: ""
+description: "1.0.0 brings new features, a few bug fixes and a committment to stability!"
 date: "2023-12-18"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
-categories: [admiral]
+categories: [admiral, ADaMs]
 # feel free to change the image
 image: "new_features.jpg"
 
@@ -21,7 +21,138 @@ long_slug <- "2023-12-18_admiral_1_0"
 
 <!--------------- post begins here ----------------->
 
+`admiral 1.0.0` is out on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html).  This brings several new features to your tool set
+for working with ADaMs in R. `1.0.0` also brings needed stability to users wishing
+to adopt `{admiral}`, but were a little worried with continued deprecation and experimentation. 
 
+This blog post will walk you through the new features available, discuss some of the new bug fixes, commitment to stability and showcase the resources available to help you on-board to [admiral](https://pharmaverse.github.io/admiral/index.html).
+
+# New Features
+
+We have 3 new functions available in this release: 
+
+* [derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html)
+* [derive_var_merged_ef_msrc()](https://pharmaverse.github.io/admiral/reference/derive_var_merged_ef_msrc.html)
+* [derive_vars_computed()](https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html)
+
+and a new option in [derive_var_atoxgr_dir()](https://pharmaverse.github.io/admiral/reference/derive_var_atoxgr_dir.html) and [derive_var_anrind()](https://pharmaverse.github.io/admiral/reference/derive_var_anrind.html) to handle floating point issues.
+
+## `derive_vars_extreme_event()`
+
+This function works similar to [`derive_extreme_event()`](https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html), but instead of adding observations the function will add variable(s). This function takes available records from user-defined events by selecting the extreme observations and appending to your dataset.  
+
+Let's take a peak with a very simple example where we just use ADSL! The documentation for 
+[derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html) has a much richer example with events from other domains.
+
+Here we are making some dummy `adsl` data.
+
+```{r, message = FALSE, warning = FALSE}
+
+library(tibble)
+library(admiral)
+library(lubridate)
+
+  adsl <- tribble(
+    ~STUDYID, ~USUBJID, ~TRTEDT, ~DTHDT,
+    "PILOT01", "01-1130", ymd("2014-08-16"), ymd("2014-09-13"),
+    "PILOT01", "01-1133", ymd("2013-04-28"), ymd(""),
+    "PILOT01", "01-1211", ymd("2013-01-12"), ymd(""),
+    "PILOT01", "09-1081", ymd("2014-04-27"), ymd(""),
+    "PILOT01", "09-1088", ymd("2014-10-09"), ymd("2014-11-01"),
+  )
+```
+
+The goal here is to add new variables `LSTALVDT` and `DTHFL` based a list of 
+objects that can be used to specify the dataset to look at, specific conditions and what
+to set the values for the new variables. In this example, we only use `ADSL` as
+the source dataset.
+
+```{r}
+derive_vars_extreme_event(
+    adsl,
+    by_vars = exprs(STUDYID, USUBJID),
+    events = list(
+      event(
+        dataset_name = "adsl",
+        condition = !is.na(DTHDT),
+        set_values_to = exprs(LSTALVDT = DTHDT, DTHFL = "Y")
+      ),
+      event(
+        dataset_name = "adsl",
+        condition = !is.na(TRTEDT),
+        set_values_to = exprs(LSTALVDT = TRTEDT, DTHFL = "N")
+      )
+    ),
+    source_datasets = list(adsl = adsl),
+    order = exprs(LSTALVDT),
+    mode = "last",
+    new_vars = exprs(LSTALVDT = LSTALVDT, DTHFL = DTHFL)
+  )
+
+```
+
+Okay! We used a very small example to showcase how to find extreme observations and
+appending this information as new variables to our dataset.  Highly recommend checking
+out the more detailed example in the function documentation to see its true power!
+
+## `derive_var_merged_ef_msrc()`
+
+This function has some similarity to [derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html), but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.
+
+We develop some _simple_ dummy data for `ADSL`, `CM` and `PR`
+
+```{r, message = FALSE, warning = FALSE}
+adsl <- tribble(
+    ~USUBJID, 
+    "1",      
+    "2",      
+    "3",      
+    "4",      
+  )
+
+cm <- tribble(
+    ~USUBJID, ~CMCAT,        ~CMSEQ,
+    "1",      "ANTI-CANCER",      1,
+    "1",      "GENERAL",          2,
+    "2",      "GENERAL",          1,
+    "3",      "ANTI-CANCER",      1
+  )
+
+ pr <- tribble(
+    ~USUBJID, ~PRSEQ,
+    "2",      1,
+    "3",      1
+  )
+```
+
+```{r}
+derive_var_merged_ef_msrc(
+    adsl,
+    flag_events = list(
+      flag_event(
+        dataset_name = "cm",
+        condition = CMCAT == "ANTI-CANCER"
+      ),
+      flag_event(
+        dataset_name = "pr"
+      )
+    ),
+    source_datasets = list(cm = cm, pr = pr),
+    by_vars = exprs(USUBJID),
+    new_var = CANCTRFL
+  )
+
+```
+
+
+## `derive_vars_computed()`
+
+
+# Bug Fixes
+
+# Commitment to Stability
+
+# New On-boarding Resources
 
 
 <!--------------- appendices go here ----------------->
