@@ -23,9 +23,9 @@ long_slug <- "2023-12-18_admiral_1_0"
 
 `admiral 1.0.0` is out on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html).  This brings several new features to your tool set
 for working with ADaMs in R. `1.0.0` also brings needed stability to users wishing
-to adopt `{admiral}`, but were a little worried with continued deprecation and experimentation. 
+to adopt [admiral](https://pharmaverse.github.io/admiral/index.html), but were a little worried with continued deprecation and experimentation. 
 
-This blog post will walk you through the new features available, discuss some of the new bug fixes, commitment to stability and showcase the resources available to help you on-board to [admiral](https://pharmaverse.github.io/admiral/index.html).
+This blog post will walk you through the new features available, discuss some of the bug fixes, our commitment to stability and showcase the resources available to help you on-board to [admiral](https://pharmaverse.github.io/admiral/index.html).
 
 # New Features
 
@@ -42,9 +42,9 @@ and a new option in [derive_var_atoxgr_dir()](https://pharmaverse.github.io/admi
 This function works similar to [`derive_extreme_event()`](https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html), but instead of adding observations the function will add variable(s). This function takes available records from user-defined events by selecting the extreme observations and appending to your dataset.  
 
 Let's take a peak with a very simple example where we just use ADSL! The documentation for 
-[derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html) has a much richer example with events from other domains.
+[derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html) has a much richer example with events from other domains that is more align to where you would use this function. 
 
-Here we are making some dummy `adsl` data.
+Let us make some dummy `ADSL` data and load up our packages.
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -62,10 +62,14 @@ library(lubridate)
   )
 ```
 
-The goal here is to add new variables `LSTALVDT` and `DTHFL` based a list of 
-objects that can be used to specify the dataset to look at, specific conditions and what
-to set the values for the new variables. In this example, we only use `ADSL` as
-the source dataset.
+The goal here is to add two new variables `LSTALVDT` and `DTHFL` based on a list of 
+objects that are used to specify the following:
+
+ - the dataset to look at
+ - a set of conditions
+ - what to set the values for the new variables. 
+ 
+In this example, we only use `ADSL` as the source dataset, so it is a bit contrived, but much more compact for us.
 
 ```{r}
 derive_vars_extreme_event(
@@ -92,14 +96,14 @@ derive_vars_extreme_event(
 ```
 
 Okay! We used a very small example to showcase how to find extreme observations and
-appending this information as new variables to our dataset.  Highly recommend checking
-out the more detailed example in the function documentation to see its true power!
+appending this information as new variables to our `ADSL` dataset.  Highly recommend checking
+out the more detailed example in the [function documentation](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html) to see its true power!
 
 ## `derive_var_merged_ef_msrc()`
 
 This function has some similarity to [derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html), but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.
 
-We develop some _simple_ dummy data for `ADSL`, `CM` and `PR`
+We develop some _simple_ dummy data for `ADSL`, `CM` and `PR`. Our goal is flag patients who have `CMCAT = "ANIT-CANCER"` in the `CM` dataset or have records in the `PR` dataset. Any of these patients who meet these conidtion will have our new variable `CANCTRFL` set as `Y`.
 
 ```{r, message = FALSE, warning = FALSE}
 adsl <- tribble(
@@ -143,13 +147,13 @@ derive_var_merged_ef_msrc(
   )
 
 ```
-
+Let's go! We searched over multiple datasets, `CM` and `PR` with multiple conditions and appended a new variable `CANCTRFL` to `ADSL` setting to "Y" if those conditions were met. This is a powerful function that can help simpliy searching over multiple datasets! 
 
 ## `derive_vars_computed()`
 
-This function is very similar to [derive_vars_computed()](https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html), but instead of adding observations we are going to add variables.  Very handy when wanting to add some additional variables to `ADSL`.
+This function is very similar to [derive_vars_computed()](https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html), but instead of adding observations we are going to add variable(s).  Very handy when wanting to add some additional variables to `ADSL`, e.g. baseline variables.
 
-Again, we have some dummy data for an `ADSL` and `ADVS` and are looking to add a `BMIBL` variable to `ADSL`.
+Let's make some dummy data for an `ADSL` and `ADVS`.  Oru gaol is to `BMIBL` variable pulled from `ADVS` and add appened to `ADSL`.
 
 ```{r}
  adsl <- tribble(
@@ -196,7 +200,7 @@ derive_vars_computed(
 
 # Commitment to Stability
 
-admiral was born out of a conversation between Thomas Neitmann and Michael Rimler roughly two years ago. 
+admiral was born out of a conversation between Thomas Neitmann and Michael Rimler roughly two years ago. Check out this [history blog post](https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html) for some of the play by play. We have 
 
 
 # New On-boarding Resources
