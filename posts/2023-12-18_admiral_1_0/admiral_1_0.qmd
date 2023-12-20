@@ -147,13 +147,79 @@ derive_var_merged_ef_msrc(
 
 ## `derive_vars_computed()`
 
+This function is very similar to [derive_vars_computed()](https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html), but instead of adding observations we are going to add variables.  Very handy when wanting to add some additional variables to `ADSL`.
+
+Again, we have some dummy data for an `ADSL` and `ADVS` and are looking to add a `BMIBL` variable to `ADSL`.
+
+```{r}
+ adsl <- tribble(
+    ~STUDYID,   ~USUBJID, ~AGE,   ~AGEU,
+    "PILOT01", "01-1302",   61, "YEARS",
+    "PILOT01", "17-1344",   64, "YEARS"
+  )
+
+  advs <- tribble(
+    ~STUDYID, ~USUBJID, ~PARAMCD, ~PARAM, ~VISIT, ~AVAL, ~AVALU, ~ABLFL,
+    "PILOT01", "01-1302", "HEIGHT", "Height (cm)", "SCREENING", 177.8, "cm", "Y",
+    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "SCREENING", 81.19, "kg", "N",
+    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "BASELINE", 82.1, "kg", "Y",
+    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "WEEK 2", 81.19, "kg", "N",
+    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "WEEK 4", 82.56, "kg", "N",
+    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "WEEK 6", 80.74, "kg", "N",
+    "PILOT01", "17-1344", "HEIGHT", "Height (cm)", "SCREENING", 163.5, "cm", "Y",
+    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "SCREENING", 58.06, "kg", "N",
+    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "BASELINE", 58.06, "kg", "Y",
+    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "WEEK 2", 58.97, "kg", "N",
+    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "WEEK 4", 57.97, "kg", "N",
+    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "WEEK 6", 58.97, "kg", "N"
+  )
+```
+
+Take a look at how we use `new_vars` and `filter_add` to help us calculate the `BMIBL` and filter the `ADVS` dataset to get the appropriate records.  
+
+```{r}
+
+derive_vars_computed(
+      dataset = adsl,
+      dataset_add = advs,
+      by_vars = exprs(STUDYID, USUBJID),
+      parameters = c("WEIGHT"),
+      constant_by_vars = exprs(STUDYID, USUBJID),
+      constant_parameters = c("HEIGHT"),
+      new_vars = exprs(BMIBL = compute_bmi(height = AVAL.HEIGHT, weight = AVAL.WEIGHT)),
+      filter_add = ABLFL == "Y"
+    )
+
+```
 
 # Bug Fixes
 
 # Commitment to Stability
 
+admiral was born out of a conversation between Thomas Neitmann and Michael Rimler roughly two years ago. 
+
+
 # New On-boarding Resources
 
+admiral has a lot of functions for working with ADaMs. This can be overwhelming for new users and we really sympathize.  To help new users onboarding to using admiral we have developed to resources:
+
+## [admiraldiscovery](https://pharmaverse.github.io/admiraldiscovery/index.html)
+
+This is a dedicated website that lists out in a tabular format standard ADaM datsets and their common variables with corresponding admiral functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving `EOSDT` or `TRTSDT`!  
+
+
+```{r, fig.align = 'center', fig.cap = "Code subsections for the example above.", echo=FALSE}
+knitr::include_graphics("admiraldisc.png")
+```
+
+
+2) [admiral Cheat Sheet](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf)
+
+Inspired by other R package cheat sheets! We try and surface commonly needed functions for doing ADaM derivations with simple tables to show how the data is transforming.  
+
+```{r, fig.align = 'center', fig.cap = "Code subsections for the example above.", echo=FALSE}
+knitr::include_graphics("cheatsheet.png")
+```
 
 <!--------------- appendices go here ----------------->
 
