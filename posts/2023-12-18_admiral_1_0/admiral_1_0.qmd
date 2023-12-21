@@ -2,7 +2,7 @@
 title: "admiral 1.0.0"
 author:
   - name: Ben Straub
-description: "1.0.0 brings new features, a few bug fixes and a committment to stability!"
+description: "1.0.0 brings new features, a few bug fixes, argument alignment, onboarding resources and a committment to stability!"
 date: "2023-12-18"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
@@ -21,11 +21,11 @@ long_slug <- "2023-12-18_admiral_1_0"
 
 <!--------------- post begins here ----------------->
 
-`admiral 1.0.0` is out on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html).  This brings several new features to your tool set
+[`admiral 1.0.0`](https://pharmaverse.github.io/admiral/index.html) is out on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html).  This brings several new features to your tool set
 for working with ADaMs in R. `1.0.0` also brings needed stability to users wishing
-to adopt [admiral](https://pharmaverse.github.io/admiral/index.html), but were a little worried with continued deprecation and experimentation. 
+to adopt [admiral](https://pharmaverse.github.io/admiral/index.html), but were a little worried by the fast deprecation and experimentation. 
 
-This blog post will walk you through the new features available, discuss some of the bug fixes, our commitment to stability and showcase the resources available to help you on-board to [admiral](https://pharmaverse.github.io/admiral/index.html).
+This blog post will walk you through the new features available, discuss some of the bug fixes, a common API across our function, our commitment to stability and showcase the resources available to help you on-board to [admiral](https://pharmaverse.github.io/admiral/index.html).
 
 # New Features
 
@@ -39,37 +39,35 @@ and a new option in [derive_var_atoxgr_dir()](https://pharmaverse.github.io/admi
 
 ## `derive_vars_extreme_event()`
 
-This function works similar to [`derive_extreme_event()`](https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html), but instead of adding observations the function will add variable(s). This function takes available records from user-defined events by selecting the extreme observations and appending to your dataset.  
+This function takes available records from user-defined events by selecting the extreme observations and appending them as a variable(s) to your dataset. [derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html) works similar to [`derive_extreme_event()`](https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html), but instead of adding observations the function will add variable(s). 
 
 Let's take a peak with a very simple example where we just use ADSL! The documentation for 
 [derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html) has a much richer example with events from other domains that is more align to where you would use this function. 
 
-Let us make some dummy `ADSL` data and load up our packages.
-
-```{r, message = FALSE, warning = FALSE}
-
-library(tibble)
-library(admiral)
-library(lubridate)
-
-  adsl <- tribble(
-    ~STUDYID, ~USUBJID, ~TRTEDT, ~DTHDT,
-    "PILOT01", "01-1130", ymd("2014-08-16"), ymd("2014-09-13"),
-    "PILOT01", "01-1133", ymd("2013-04-28"), ymd(""),
-    "PILOT01", "01-1211", ymd("2013-01-12"), ymd(""),
-    "PILOT01", "09-1081", ymd("2014-04-27"), ymd(""),
-    "PILOT01", "09-1088", ymd("2014-10-09"), ymd("2014-11-01"),
-  )
-```
-
-The goal here is to add two new variables `LSTALVDT` and `DTHFL` based on a list of 
-objects that are used to specify the following:
+Let us make some dummy `ADSL` data and load up our packages. The goal here is to add two new variables `LSTALVDT` and `DTHFL` based on a list of objects that are used to specify the following:
 
  - the dataset to look at
  - a set of conditions
  - what to set the values for the new variables. 
+
+```{r, message = FALSE, warning = FALSE}
+library(tibble)
+library(admiral)
+library(lubridate)
+
+adsl <- tribble(
+  ~STUDYID, ~USUBJID, ~TRTEDT, ~DTHDT,
+  "PILOT01", "01-1130", ymd("2014-08-16"), ymd("2014-09-13"),
+  "PILOT01", "01-1133", ymd("2013-04-28"), ymd(""),
+  "PILOT01", "01-1211", ymd("2013-01-12"), ymd(""),
+  "PILOT01", "09-1081", ymd("2014-04-27"), ymd(""),
+  "PILOT01", "09-1088", ymd("2014-10-09"), ymd("2014-11-01"),
+)
+```
+
+
  
-In this example, we only use `ADSL` as the source dataset, so it is a bit contrived, but much more compact for us.
+In this example, we only use `ADSL` as the source dataset, so it is a bit contrived, but much more compact for us. Note the use of the `events` that is taking in our list of event objects and the different conditions and values we set to create our `LSTALVDT` and `DTHFL` variables.
 
 ```{r}
 derive_vars_extreme_event(
@@ -103,7 +101,7 @@ out the more detailed example in the [function documentation](https://pharmavers
 
 This function has some similarity to [derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html), but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.
 
-We develop some _simple_ dummy data for `ADSL`, `CM` and `PR`. Our goal is flag patients who have `CMCAT = "ANIT-CANCER"` in the `CM` dataset or have records in the `PR` dataset. Any of these patients who meet these conidtion will have our new variable `CANCTRFL` set as `Y`.
+We develop some _simple_ dummy data for `ADSL`, `CM` and `PR`. Our goal is flag patients who have `CMCAT = "ANIT-CANCER"` in the `CM` dataset or have records in the `PR` dataset. Any of participants who meet these condition will have our new variable `CANCTRFL` set as `Y`.
 
 ```{r, message = FALSE, warning = FALSE}
 adsl <- tribble(
@@ -129,6 +127,9 @@ cm <- tribble(
   )
 ```
 
+
+Now we have the argument `flag_events` that takes a list of objects where we define the conditions and datasets to check in.
+
 ```{r}
 derive_var_merged_ef_msrc(
     adsl,
@@ -147,13 +148,13 @@ derive_var_merged_ef_msrc(
   )
 
 ```
-Let's go! We searched over multiple datasets, `CM` and `PR` with multiple conditions and appended a new variable `CANCTRFL` to `ADSL` setting to "Y" if those conditions were met. This is a powerful function that can help simpliy searching over multiple datasets! 
+Let's go! We searched over multiple datasets, `CM` and `PR` with multiple conditions and appended a new variable `CANCTRFL` to `ADSL` setting to "Y" if those conditions were met. 
 
 ## `derive_vars_computed()`
 
 This function is very similar to [derive_vars_computed()](https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html), but instead of adding observations we are going to add variable(s).  Very handy when wanting to add some additional variables to `ADSL`, e.g. baseline variables.
 
-Let's make some dummy data for an `ADSL` and `ADVS`.  Oru gaol is to `BMIBL` variable pulled from `ADVS` and add appened to `ADSL`.
+Let's make some dummy data for an `ADSL` and `ADVS`.  Our goal is to derive a `BMIBL` variable pulled from `ADVS` and append to `ADSL`.
 
 ```{r}
  adsl <- tribble(
@@ -179,7 +180,7 @@ Let's make some dummy data for an `ADSL` and `ADVS`.  Oru gaol is to `BMIBL` var
   )
 ```
 
-Take a look at how we use `new_vars` and `filter_add` to help us calculate the `BMIBL` and filter the `ADVS` dataset to get the appropriate records.  
+Take a look at how we use `new_vars` and `filter_add`.  We use an function inside of `new_vars` to help us calculate the `BMI` while using the `filter_add` argugment to only look at baseline records for the calculation. 
 
 ```{r}
 
@@ -196,11 +197,55 @@ derive_vars_computed(
 
 ```
 
-# Bug Fixes
+Alright! Simple enough. We just took records from `ADVS`to help us calculate the `BMI` at baseline using this function and appended our new variable to `ADSL`. 
+
+# Argument Alignment and Bug Fixes 
+
+## Argument Alignment
+
+A huge push was made for `1.0.0` to help align our arguments across all of admiral functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For `1.0.0`, we really want users to have a solid API for admiral functions.  
+
+Let's take a peak at the function [`consolidate_metadata()`](https://pharmaverse.github.io/admiral/reference/consolidate_metadata.html) to even better understand our goal here.  
+
+```
+consolidate_metadata(
+  datasets,
+  key_vars,
+  source_var = SOURCE,
+  check_vars = "warning",
+  check_keys,
+  check_type = "error"
+)
+```
+
+In previous versions of admiral the `consolidate_metada()` function had the argument `check_keys`, which helps to check uniqueness.  Other functions had a similar argument, but were called `check_unique`.  Therefore, to better align our common API for admiral functions we decided to rename the `check_keys` argument to `check_unqiue`. You can follow the discussion around this renaming effort in this [issue](https://github.com/pharmaverse/admiral/issues/2184)
+
+```{r, fig.align = 'center', echo=FALSE}
+knitr::include_graphics("check.png")
+```
+
+
+The argument has a deprecated tag in the function documentation and will issue a warning to users. There was quite a bit of renaming of arguments for `1.0.0` so there are quite of few of these tags in our documentation. In subsequent releases, these arguments will be removed. Please see the [changelog](https://pharmaverse.github.io/admiral/news/index.html#admiral-100) if you would like to explore other functions that had arguments renamed. The issues are linked to each rename so you can follow along with the discussions!
+
+## Bug Fixes
+
+We love fixing bugs and take them incredibly seriously - especially when identified by members from the community.  
+
+If you find a pesky bug, please fill out a [Bug Report](https://github.com/pharmaverse/admiral/issues/new/choose) on our Issues Tab. 
+
+Each bug fixed by our development team is documented in our [changelog](https://pharmaverse.github.io/admiral/news/index.html#updates-of-existing-functions-1-0-0) with the Issue linked. 
+
+```{r, fig.align = 'center', echo=FALSE}
+knitr::include_graphics("issue_tag.png")
+```
+
+
+For example, if you click through the issue for `derive_extreme_event()` that identified a problem where the `condition` was ignored if the `mode` argument was used, you can see the Bug Report along with a reproducible example. You can also see the Pull Request for the exact code changes that are addressing this bug! Way cool!
+
 
 # Commitment to Stability
 
-admiral was born out of a conversation between Thomas Neitmann and Michael Rimler roughly two years ago. Check out this [history blog post](https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html) for some of the play by play. We have 
+admiral was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this [history blog post](https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html) for some of the play by play. During that time, we have worked a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and have sought to consolidate to reduce the number of functions. Unfortunately, this creates a lot of deprecation and frus
 
 
 # New On-boarding Resources
@@ -212,16 +257,16 @@ admiral has a lot of functions for working with ADaMs. This can be overwhelming 
 This is a dedicated website that lists out in a tabular format standard ADaM datsets and their common variables with corresponding admiral functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving `EOSDT` or `TRTSDT`!  
 
 
-```{r, fig.align = 'center', fig.cap = "Code subsections for the example above.", echo=FALSE}
+```{r, fig.align = 'center', echo=FALSE}
 knitr::include_graphics("admiraldisc.png")
 ```
 
 
-2) [admiral Cheat Sheet](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf)
+## [admiral Cheat Sheet](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf)
 
 Inspired by other R package cheat sheets! We try and surface commonly needed functions for doing ADaM derivations with simple tables to show how the data is transforming.  
 
-```{r, fig.align = 'center', fig.cap = "Code subsections for the example above.", echo=FALSE}
+```{r, fig.align = 'center', echo=FALSE}
 knitr::include_graphics("cheatsheet.png")
 ```
 
