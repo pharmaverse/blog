@@ -3,7 +3,7 @@ title: "admiral 1.0.0"
 author:
   - name: Ben Straub
 description: "1.0.0 brings a commitment to stability, new features, a few bug fixes, argument alignment and onboarding resources!"
-date: "2023-12-18"
+date: "2023-01-04"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
 categories: [admiral, ADaMs]
@@ -21,15 +21,20 @@ long_slug <- "2023-12-18_admiral_1_0"
 
 <!--------------- post begins here ----------------->
 
-[`admiral 1.0.0`](https://pharmaverse.github.io/admiral/index.html) is out on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html).  This brings several new features to your tool set
-for working with ADaMs in R. `1.0.0` also brings needed stability to users who were wishing
-to adopt [admiral](https://pharmaverse.github.io/admiral/index.html), but were a little worried by the fast deprecation and experimentation. 
+[`admiral 1.0.0`](https://pharmaverse.github.io/admiral/index.html) is out on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html).  This release brings several new features to your tool set
+for working with ADaMs in R. [`admiral 1.0.0`](https://pharmaverse.github.io/admiral/index.html) also brings needed stability to users who were wishing
+to adopt [admiral](https://pharmaverse.github.io/admiral/index.html), but were a little worried by the fast deprecation and experimentation for `pre-v1.0.0` releases. 
 
-This blog post will walk you discuss our commitment to stability, walk you through the new features available, discuss some of the bug fixes, a common API across our functions, and showcase the resources available to help you on-board to [admiral](https://pharmaverse.github.io/admiral/index.html).
+This blog post will discuss our commitment to stability, walk you through the new features available, discuss some of the bug fixes, a push for common APIs across our functions, and showcase the resources available to help you on-board to [admiral](https://pharmaverse.github.io/admiral/index.html).
 
 # Commitment to Stability
 
-admiral was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this [history blog post](https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html) for some of the play by play. During that time, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and have sought to consolidate to reduce the number of functions. Unfortunately, this creates a lot of deprecation and frustration for users.
+`{admiral}` was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this [history blog post](https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html) for some of additional context on its development. Over the last three years, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and with some minor tweaks could be made redundant in favor of other functions.  This has lead to some deprecation of either whole functions or arguments as we have sought to consolidate. Unfortunately, this creates a lot of frustration for users.
+
+Enter Superseded!!
+
+Now with the release of `1.0.0` we are going to _supersede_ functions going forward. This is the process where when we introduce new functions to replace other functions, we will no longer fast-deprecate the replaced functions.  Now we will supersede them, i.e. we will keep the function in the codebase for a long time, but recommend the use of the new function. If the function were to be removed from the codebase this will be done many years from the time it is superseded.  Please note, any superseded functions that have bugs identified will be fixed.   
+
 
 # New Features
 
@@ -52,7 +57,7 @@ Let us make some dummy `ADSL` data and load up our packages. The goal here is to
 
  - the dataset to look at
  - a set of conditions
- - what to set the values for the new variables. 
+ - what to set the values for the new variables
 
 ```{r, message = FALSE, warning = FALSE}
 library(tibble)
@@ -105,7 +110,7 @@ out the more detailed example in the [function documentation](https://pharmavers
 
 This function has some similarity to [derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html), but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.
 
-We develop some _simple_ dummy data for `ADSL`, `CM` and `PR`. Our goal is to flag patients who have `CMCAT = "ANTI-CANCER"` in the `CM` dataset or have records in the `PR` dataset. Any of participants who meet these condition will have our new variable `CANCTRFL` set as `Y`.
+We develop some _simple_ dummy data for `ADSL`, `CM` and `PR`. Our goal is to flag patients who have `CMCAT = "ANTI-CANCER"` in the `CM` dataset or have records in the `PR` dataset. Any participants who meet these conditions will have our new variable `CANCTRFL` set as `"Y"`.
 
 ```{r, message = FALSE, warning = FALSE}
 adsl <- tribble(
@@ -152,7 +157,8 @@ derive_var_merged_ef_msrc(
   )
 
 ```
-Let's go! We searched over multiple datasets, `CM` and `PR` with multiple conditions and appended a new variable `CANCTRFL` to `ADSL` setting to "Y" if those conditions were met. 
+
+Let's go! We searched over multiple datasets, `CM` and `PR`, with multiple conditions and appended a new variable `CANCTRFL` to `ADSL` setting to `"Y"` if those conditions were met. 
 
 ## `derive_vars_computed()`
 
@@ -207,7 +213,7 @@ Alright! Simple enough. We just took records from `ADVS`to help us calculate the
 
 ## Argument Alignment
 
-A huge push was made for `1.0.0` to help align our arguments across all of admiral functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For `1.0.0`, we really want users to have a solid API for admiral functions.  
+A huge push was made for `1.0.0` to help align our arguments across all of `{admiral}` functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For `1.0.0`, we really want users to have a solid API for `{admiral}` functions.  
 
 Let's take a peak at the function [`consolidate_metadata()`](https://pharmaverse.github.io/admiral/reference/consolidate_metadata.html) to even better understand our goal here.  
 
@@ -222,7 +228,7 @@ consolidate_metadata(
 )
 ```
 
-In previous versions of admiral the `consolidate_metada()` function had the argument `check_keys`, which helps to check uniqueness.  Other functions had a similar argument, but were called `check_unique`.  Therefore, to better align our common API for admiral functions we decided to rename the `check_keys` argument to `check_unique`. You can follow the discussion around this renaming effort in this [issue](https://github.com/pharmaverse/admiral/issues/2184)
+In previous versions of `{admiral}` the `consolidate_metada()` function had the argument `check_keys`, which helps to check uniqueness.  Other functions had a similar argument, but were called `check_unique`.  Therefore, to better align our common API for `{admiral}` functions we decided to rename the `check_keys` argument to `check_unique`. You can follow the discussion around this renaming effort in this [GitHub Issue](https://github.com/pharmaverse/admiral/issues/2184).
 
 ```{r, fig.align = 'center', echo=FALSE}
 knitr::include_graphics("check.png")
@@ -244,23 +250,16 @@ knitr::include_graphics("issue_tag.png")
 ```
 
 
-For example, if you click through the issue for `derive_extreme_event()` that identified a problem where the `condition` was ignored if the `mode` argument was used, you can see the Bug Report along with a reproducible example. You can also see the Pull Request for the exact code changes that are addressing this bug! Way cool!
-
-
-
-
-Enter Superseded!!
-
-Now with the release of `1.0.0` we are going to _superseded_ functions going forward. This is the process where when we introduce new functions to replace other functions, we will no longer deprecate the replaced functions.  Now we will supersede them, i.e. we will keep the function in the codebase for a long time, but recommend the use of the new function. If the function were to be removed from the codebase this will be done many years from the time it is superseded.  Please note, that superseded functions that have bugs identified will be fixed.   
+For example, if you click through the issue for [`derive_extreme_event()`](https://github.com/pharmaverse/admiral/issues/2291) that identified a problem where the `condition` was ignored if the `mode` argument was used, you can see the Bug Report along with a reproducible example. You can also see the Pull Request for the exact code changes that are addressing this bug linked in the Issue! Way cool!
 
 
 # New On-boarding Resources
 
-admiral has a lot of functions for working with ADaMs. This can be overwhelming for new users and we really sympathize.  To help new users onboarding to using admiral we have developed to resources:
+`{admiral}` has a lot of functions for working with ADaMs. This can be overwhelming for new users and we really sympathize.  To help new users onboarding to `{admiral}` we have developed the following resources:
 
 ## [admiraldiscovery](https://pharmaverse.github.io/admiraldiscovery/index.html)
 
-This is a dedicated website that lists out in a tabular format standard ADaM datsets and their common variables with corresponding admiral functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving `EOSDT` or `TRTSDT`!  
+This is a dedicated website that lists out in a tabular format standard ADaM datsets and their common variables with corresponding `{admiral}` functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving `EOSDT` or `TRTSDT`!  
 
 
 ```{r, fig.align = 'center', echo=FALSE}
@@ -276,9 +275,13 @@ Inspired by other R package cheat sheets! We try and surface commonly needed fun
 knitr::include_graphics("cheatsheet.png")
 ```
 
-## Way back machine
+## Way Back Machine
 
+Studies can last a long time. Adopting R as your primary analysis language for your study can introduce certain risks around package dependencies.  Fixing those dependencies to certain package versions can help mitigate those risks. Unfortunately, as package websites are updated those helpful documents, examples and vignettes can be lost as the version changes. Do not lose heart `{admiral}` users. If you decided to fix to a certain version of `{admiral}`, we have you covered with our __Way Back Machine__ that allows you to change the website documentation back to the version you are using.
 
+```{r, fig.align = 'center', echo=FALSE}
+knitr::include_graphics("wayback.png")
+```
 
 <!--------------- appendices go here ----------------->
 
