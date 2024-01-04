@@ -69,10 +69,10 @@ adex_admiral <- derive_param_computed(
   adex,
   by_vars = exprs(USUBJID),
   parameters = c("TOTDOSE", "NUMCYC"),
-  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,
   set_values_to = exprs(
     PARAMCD = "ADPCYMG",
-    PARAM = "Actual Dose per Cycle (mg)"
+    PARAM = "Actual Dose per Cycle (mg)",
+    AVAL = AVAL.TOTDOSE / AVAL.NUMCYC
   )
 )
 ```
