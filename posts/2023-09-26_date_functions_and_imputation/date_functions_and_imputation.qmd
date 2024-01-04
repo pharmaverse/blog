@@ -36,19 +36,19 @@ In this article, we first examine the arsenal of functions provided by`{admiral}
 `{admiral}` provides the following functions for date/datetime imputation:
 
 - Derivations for adding variables
-  - [derive_vars_dt()](https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dt.html): Adds a date variable and a date imputation flag variable (optional) based on a --DTC variable and imputation rules.
-  - [derive_vars_dtm()](https://pharmaverse.github.io/admiral/cran-release/reference/derive_vars_dtm.html): Adds a datetime variable, a date imputation flag variable, and a time imputation flag variable (both optional) based on a --DTC variable and imputation rules.
+  - [derive_vars_dt()](https://pharmaverse.github.io/admiral/reference/derive_vars_dt.html): Adds a date variable and a date imputation flag variable (optional) based on a --DTC variable and imputation rules.
+  - [derive_vars_dtm()](https://pharmaverse.github.io/admiral/reference/derive_vars_dtm.html): Adds a datetime variable, a date imputation flag variable, and a time imputation flag variable (both optional) based on a --DTC variable and imputation rules.
 - Computation functions
-  - [impute_dtc_dtm()](https://pharmaverse.github.io/admiral/cran-release/reference/impute_dtc_dtm.html): Returns a complete ISO 8601 datetime or `NA` based on a partial ISO 8601 datetime and imputation rules.
-  - [impute_dtc_dt()](https://pharmaverse.github.io/admiral/cran-release/reference/impute_dtc_dt.html): Returns a complete ISO 8601 date (without time) or `NA` based on a partial ISO 8601 date(time) and imputation rules.
-  - [convert_dtc_to_dt()](https://pharmaverse.github.io/admiral/cran-release/reference/convert_dtc_to_dt.html): Returns a date if the input ISO 8601 date is complete. Otherwise, `NA` is returned.
-  - [convert_dtc_to_dtm()](https://pharmaverse.github.io/admiral/cran-release/reference/convert_dtc_to_dtm.html): Returns a datetime if the input ISO 8601 date is complete (with missing time replaced by `"00:00:00"` as default). Otherwise, NA is returned.
-  - [compute_dtf()](https://pharmaverse.github.io/admiral/cran-release/reference/compute_dtf.html): Returns the date imputation flag.
-  - [compute_tmf()](https://pharmaverse.github.io/admiral/cran-release/reference/compute_tmf.html): Returns the time imputation flag.
+  - [impute_dtc_dtm()](https://pharmaverse.github.io/admiral/reference/impute_dtc_dtm.html): Returns a complete ISO 8601 datetime or `NA` based on a partial ISO 8601 datetime and imputation rules.
+  - [impute_dtc_dt()](https://pharmaverse.github.io/admiral/reference/impute_dtc_dt.html): Returns a complete ISO 8601 date (without time) or `NA` based on a partial ISO 8601 date(time) and imputation rules.
+  - [convert_dtc_to_dt()](https://pharmaverse.github.io/admiral/reference/convert_dtc_to_dt.html): Returns a date if the input ISO 8601 date is complete. Otherwise, `NA` is returned.
+  - [convert_dtc_to_dtm()](https://pharmaverse.github.io/admiral/reference/convert_dtc_to_dtm.html): Returns a datetime if the input ISO 8601 date is complete (with missing time replaced by `"00:00:00"` as default). Otherwise, NA is returned.
+  - [compute_dtf()](https://pharmaverse.github.io/admiral/reference/compute_dtf.html): Returns the date imputation flag.
+  - [compute_tmf()](https://pharmaverse.github.io/admiral/reference/compute_tmf.html): Returns the time imputation flag.
 
 From the point of view of a typical ADaM programmer, the functions `impute_*`, `convert_*` and `compute_*` above can be viewed as utilities for treating dates and/or imputation within any custom code. In contrast, their `derive_*` find their use in directly deriving new timing variables and/or carrying out imputation at an ADaM dataset scale.
 
-For a detailed look at the Imputation rules applied by these `{admiral}` functions, please visit [this vignette](https://pharmaverse.github.io/admiral/cran-release/articles/imputation.html#imputation-rules) on the documentation website.
+For a detailed look at the Imputation rules applied by these `{admiral}` functions, please visit [this vignette](https://pharmaverse.github.io/admiral/articles/imputation.html#imputation-rules) on the documentation website.
 
 # Simple Examples with Vectors
 
@@ -313,7 +313,7 @@ dataset_vignette(vs)
 
 Deriving timing variables and carrying out imputations is tricky at the best of times, but hopefully this blog post can shed some light on how make this all easier using the `{admiral}` package! As `{admiral}` developers we are always interested in knowing how users are employing the package for their ADaM needs, so if you have any comments or feedback related to this topic, don't be afraid to leave a comment on our [Slack channel](https://app.slack.com/client/T028PB489D3/C02M8KN8269) or on the [Github repository](https://github.com/pharmaverse/admiral/), either as an issue or as a discussion.
 
-For an even more detailed treatment of this topic, users are once again invited to read the corresponding [vignette](https://pharmaverse.github.io/admiral/cran-release/articles/imputation.html) on the documentation website, from which this article was adapted.
+For an even more detailed treatment of this topic, users are once again invited to read the corresponding [vignette](https://pharmaverse.github.io/admiral/articles/imputation.html) on the documentation website, from which this article was adapted.
 
 <!--------------- appendices go here ----------------->
 
