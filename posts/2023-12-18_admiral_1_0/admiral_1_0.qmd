@@ -3,7 +3,7 @@ title: "admiral 1.0.0"
 author:
   - name: Ben Straub
 description: "1.0.0 brings a commitment to stability, new features, a few bug fixes, argument alignment and onboarding resources!"
-date: "2023-01-04"
+date: "2024-01-04"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
 categories: [admiral, ADaMs]
@@ -80,26 +80,25 @@ In this example, we only use `ADSL` as the source dataset, so it is a bit contri
 
 ```{r}
 derive_vars_extreme_event(
-    adsl,
-    by_vars = exprs(STUDYID, USUBJID),
-    events = list(
-      event(
-        dataset_name = "adsl",
-        condition = !is.na(DTHDT),
-        set_values_to = exprs(LSTALVDT = DTHDT, DTHFL = "Y")
-      ),
-      event(
-        dataset_name = "adsl",
-        condition = !is.na(TRTEDT),
-        set_values_to = exprs(LSTALVDT = TRTEDT, DTHFL = "N")
-      )
+  adsl,
+  by_vars = exprs(STUDYID, USUBJID),
+  events = list(
+    event(
+      dataset_name = "adsl",
+      condition = !is.na(DTHDT),
+      set_values_to = exprs(LSTALVDT = DTHDT, DTHFL = "Y")
     ),
-    source_datasets = list(adsl = adsl),
-    order = exprs(LSTALVDT),
-    mode = "last",
-    new_vars = exprs(LSTALVDT = LSTALVDT, DTHFL = DTHFL)
-  )
-
+    event(
+      dataset_name = "adsl",
+      condition = !is.na(TRTEDT),
+      set_values_to = exprs(LSTALVDT = TRTEDT, DTHFL = "N")
+    )
+  ),
+  source_datasets = list(adsl = adsl),
+  order = exprs(LSTALVDT),
+  mode = "last",
+  new_vars = exprs(LSTALVDT = LSTALVDT, DTHFL = DTHFL)
+)
 ```
 
 Okay! We used a very small example to showcase how to find extreme observations and
@@ -114,26 +113,26 @@ We develop some _simple_ dummy data for `ADSL`, `CM` and `PR`. Our goal is to fl
 
 ```{r, message = FALSE, warning = FALSE}
 adsl <- tribble(
-    ~USUBJID, 
-    "1",      
-    "2",      
-    "3",      
-    "4",      
-  )
+  ~USUBJID,
+  "1",
+  "2",
+  "3",
+  "4",
+)
 
 cm <- tribble(
-    ~USUBJID, ~CMCAT,        ~CMSEQ,
-    "1",      "ANTI-CANCER",      1,
-    "1",      "GENERAL",          2,
-    "2",      "GENERAL",          1,
-    "3",      "ANTI-CANCER",      1
-  )
+  ~USUBJID, ~CMCAT,        ~CMSEQ,
+  "1",      "ANTI-CANCER",      1,
+  "1",      "GENERAL",          2,
+  "2",      "GENERAL",          1,
+  "3",      "ANTI-CANCER",      1
+)
 
- pr <- tribble(
-    ~USUBJID, ~PRSEQ,
-    "2",      1,
-    "3",      1
-  )
+pr <- tribble(
+  ~USUBJID, ~PRSEQ,
+  "2",      1,
+  "3",      1
+)
 ```
 
 
@@ -141,21 +140,20 @@ Now we have the argument `flag_events` that takes a list of objects where we def
 
 ```{r}
 derive_var_merged_ef_msrc(
-    adsl,
-    flag_events = list(
-      flag_event(
-        dataset_name = "cm",
-        condition = CMCAT == "ANTI-CANCER"
-      ),
-      flag_event(
-        dataset_name = "pr"
-      )
+  adsl,
+  flag_events = list(
+    flag_event(
+      dataset_name = "cm",
+      condition = CMCAT == "ANTI-CANCER"
     ),
-    source_datasets = list(cm = cm, pr = pr),
-    by_vars = exprs(USUBJID),
-    new_var = CANCTRFL
-  )
-
+    flag_event(
+      dataset_name = "pr"
+    )
+  ),
+  source_datasets = list(cm = cm, pr = pr),
+  by_vars = exprs(USUBJID),
+  new_var = CANCTRFL
+)
 ```
 
 Let's go! We searched over multiple datasets, `CM` and `PR`, with multiple conditions and appended a new variable `CANCTRFL` to `ADSL` setting to `"Y"` if those conditions were met. 
@@ -167,44 +165,42 @@ This function is very similar to [derive_param_computed()](https://pharmaverse.g
 Let's make some dummy data for an `ADSL` and `ADVS`.  Our goal is to derive a `BMIBL` variable pulled from `ADVS` and append to `ADSL`.
 
 ```{r}
- adsl <- tribble(
-    ~STUDYID,   ~USUBJID, ~AGE,   ~AGEU,
-    "PILOT01", "01-1302",   61, "YEARS",
-    "PILOT01", "17-1344",   64, "YEARS"
-  )
+adsl <- tribble(
+  ~STUDYID,   ~USUBJID, ~AGE,   ~AGEU,
+  "PILOT01", "01-1302",   61, "YEARS",
+  "PILOT01", "17-1344",   64, "YEARS"
+)
 
-  advs <- tribble(
-    ~STUDYID, ~USUBJID, ~PARAMCD, ~PARAM, ~VISIT, ~AVAL, ~AVALU, ~ABLFL,
-    "PILOT01", "01-1302", "HEIGHT", "Height (cm)", "SCREENING", 177.8, "cm", "Y",
-    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "SCREENING", 81.19, "kg", "N",
-    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "BASELINE", 82.1, "kg", "Y",
-    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "WEEK 2", 81.19, "kg", "N",
-    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "WEEK 4", 82.56, "kg", "N",
-    "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "WEEK 6", 80.74, "kg", "N",
-    "PILOT01", "17-1344", "HEIGHT", "Height (cm)", "SCREENING", 163.5, "cm", "Y",
-    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "SCREENING", 58.06, "kg", "N",
-    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "BASELINE", 58.06, "kg", "Y",
-    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "WEEK 2", 58.97, "kg", "N",
-    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "WEEK 4", 57.97, "kg", "N",
-    "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "WEEK 6", 58.97, "kg", "N"
-  )
+advs <- tribble(
+  ~STUDYID, ~USUBJID, ~PARAMCD, ~PARAM, ~VISIT, ~AVAL, ~AVALU, ~ABLFL,
+  "PILOT01", "01-1302", "HEIGHT", "Height (cm)", "SCREENING", 177.8, "cm", "Y",
+  "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "SCREENING", 81.19, "kg", "N",
+  "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "BASELINE", 82.1, "kg", "Y",
+  "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "WEEK 2", 81.19, "kg", "N",
+  "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "WEEK 4", 82.56, "kg", "N",
+  "PILOT01", "01-1302", "WEIGHT", "Weight (kg)", "WEEK 6", 80.74, "kg", "N",
+  "PILOT01", "17-1344", "HEIGHT", "Height (cm)", "SCREENING", 163.5, "cm", "Y",
+  "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "SCREENING", 58.06, "kg", "N",
+  "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "BASELINE", 58.06, "kg", "Y",
+  "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "WEEK 2", 58.97, "kg", "N",
+  "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "WEEK 4", 57.97, "kg", "N",
+  "PILOT01", "17-1344", "WEIGHT", "Weight (kg)", "WEEK 6", 58.97, "kg", "N"
+)
 ```
 
-Take a look at how we use `new_vars` and `filter_add`.  We use a function inside of `new_vars` to help us calculate the `BMI` while using the `filter_add` argugment to only look at baseline records for the calculation. 
+Take a look at how we use `new_vars` and `filter_add`.  We use a function inside of `new_vars` to help us calculate the `BMI` while using the `filter_add` argument to only look at baseline records for the calculation. 
 
 ```{r}
-
 derive_vars_computed(
-      dataset = adsl,
-      dataset_add = advs,
-      by_vars = exprs(STUDYID, USUBJID),
-      parameters = c("WEIGHT"),
-      constant_by_vars = exprs(STUDYID, USUBJID),
-      constant_parameters = c("HEIGHT"),
-      new_vars = exprs(BMIBL = compute_bmi(height = AVAL.HEIGHT, weight = AVAL.WEIGHT)),
-      filter_add = ABLFL == "Y"
-    )
-
+  dataset = adsl,
+  dataset_add = advs,
+  by_vars = exprs(STUDYID, USUBJID),
+  parameters = c("WEIGHT"),
+  constant_by_vars = exprs(STUDYID, USUBJID),
+  constant_parameters = c("HEIGHT"),
+  new_vars = exprs(BMIBL = compute_bmi(height = AVAL.HEIGHT, weight = AVAL.WEIGHT)),
+  filter_add = ABLFL == "Y"
+)
 ```
 
 Alright! Simple enough. We just took records from `ADVS`to help us calculate the `BMI` at baseline using this function and appended our new variable to `ADSL`. 
@@ -228,7 +224,7 @@ consolidate_metadata(
 )
 ```
 
-In previous versions of `{admiral}` the `consolidate_metada()` function had the argument `check_keys`, which helps to check uniqueness.  Other functions had a similar argument, but were called `check_unique`.  Therefore, to better align our common API for `{admiral}` functions we decided to rename the `check_keys` argument to `check_unique`. You can follow the discussion around this renaming effort in this [GitHub Issue](https://github.com/pharmaverse/admiral/issues/2184).
+In previous versions of `{admiral}` the `consolidate_metadata()` function had the argument `check_keys`, which helps to check uniqueness.  Other functions had a similar argument, but were called `check_unique`.  Therefore, to better align our common API for `{admiral}` functions we decided to rename the `check_keys` argument to `check_unique`. You can follow the discussion around this renaming effort in this [GitHub Issue](https://github.com/pharmaverse/admiral/issues/2184).
 
 ```{r, fig.align = 'center', echo=FALSE}
 knitr::include_graphics("check.png")
@@ -259,7 +255,7 @@ For example, if you click through the issue for [`derive_extreme_event()`](https
 
 ## [admiraldiscovery](https://pharmaverse.github.io/admiraldiscovery/index.html)
 
-This is a dedicated website that lists out in a tabular format standard ADaM datsets and their common variables with corresponding `{admiral}` functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving `EOSDT` or `TRTSDT`!  
+This is a dedicated website that lists out in a tabular format standard ADaM datasets and their common variables with corresponding `{admiral}` functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving `EOSDT` or `TRTSDT`!  
 
 
 ```{r, fig.align = 'center', echo=FALSE}
