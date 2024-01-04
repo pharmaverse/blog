@@ -29,7 +29,7 @@ options(width = narrow)
 
 When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.
 
-The [`admiral`](https://pharmaverse.github.io/admiral/cran-release/) function [`derive_param_computed()`](https://pharmaverse.github.io/admiral/cran-release/reference/derive_param_computed.html) adds a parameter computed from the analysis value of other parameters.
+The [`admiral`](https://pharmaverse.github.io/admiral/) function [`derive_param_computed()`](https://pharmaverse.github.io/admiral/reference/derive_param_computed.html) adds a parameter computed from the analysis value of other parameters.
 
 It works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code.
 
@@ -69,10 +69,10 @@ adex_admiral <- derive_param_computed(
   adex,
   by_vars = exprs(USUBJID),
   parameters = c("TOTDOSE", "NUMCYC"),
-  analysis_value = AVAL.TOTDOSE / AVAL.NUMCYC,
   set_values_to = exprs(
     PARAMCD = "ADPCYMG",
-    PARAM = "Actual Dose per Cycle (mg)"
+    PARAM = "Actual Dose per Cycle (mg)",
+    AVAL = AVAL.TOTDOSE / AVAL.NUMCYC
   )
 )
 ```
