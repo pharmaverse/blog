@@ -54,7 +54,7 @@
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:54.211214</p>
+<p>2024-01-05 13:10:39.395876</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../renv.lock">R environment</a></p>
@@ -75,9 +75,9 @@ Council.”</span> January 4, 2024. <a href="https://pharmaverse.github.io/blog/
   <media:content url="https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../pharmaverse.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
-  <title>End of Year Update from the Pharmaverse Council</title>
-  <dc:creator>Mike Stackhouse</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html</link>
+  <title>admiral 1.0.0</title>
+  <dc:creator>Ben Straub</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html</link>
   <description><![CDATA[ 
 
 
@@ -85,25 +85,812 @@ Council.”</span> January 4, 2024. <a href="https://pharmaverse.github.io/blog/
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<section id="was-a-big-year" class="level2">
-<h2 class="anchored" data-anchor-id="was-a-big-year">2023 Was a Big Year</h2>
-<p>This was a big year for open-source work in clinical submissions in general. We saw Roche speak about shifting to an <a href="https://www.youtube.com/watch?v=nqJsLSLd39A">open-source backbone for clinical trials</a>. Novo Nordisk spoke publicly of an <a href="https://www.youtube.com/watch?v=t33dS17QHuA">R based submission to the FDA</a>. These are true marks of progress being made in R becoming a first class language for clinical reporting.</p>
-<p>Back in August, Nicholas Eugenio released a <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html">blog post</a> on the history of pharmaverse. It’s funny to think about the fact that only 3 years ago, the idea of cross organization collaboration on R packages and building a community around this in the clinical world was just a conversation between friends. Since then, we have a community of more than 1200 people on Slack, 350 on LinkedIn, interest from over 150 organizations, and over 30 packages. If 2020 through 2022 was the birth of Pharmaverse, 2023 was finding our identity as a community. For the council, 2024 will be about continuing to mature and find more ways that we can continue to support the community.</p>
+<p><a href="https://pharmaverse.github.io/admiral/index.html"><code>admiral 1.0.0</code></a> is out on <a href="https://cran.r-project.org/web/packages/admiral/index.html">CRAN</a>. This release brings several new features to your tool set for working with ADaMs in R. <a href="https://pharmaverse.github.io/admiral/index.html"><code>admiral 1.0.0</code></a> also brings needed stability to users who were wishing to adopt <a href="https://pharmaverse.github.io/admiral/index.html">admiral</a>, but were a little worried by the fast deprecation and experimentation for <code>pre-v1.0.0</code> releases.</p>
+<p>This blog post will discuss our commitment to stability, walk you through the new features available, discuss some of the bug fixes, a push for common APIs across our functions, and showcase the resources available to help you on-board to <a href="https://pharmaverse.github.io/admiral/index.html">admiral</a>.</p>
+<section id="commitment-to-stability" class="level1">
+<h1>Commitment to Stability</h1>
+<p><code>{admiral}</code> was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html">history blog post</a> for some of additional context on its development. Over the last three years, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and with some minor tweaks could be made redundant in favor of other functions. This has lead to some deprecation of either whole functions or arguments as we have sought to consolidate. Unfortunately, this creates a lot of frustration for users.</p>
+<p>Enter Superseded!!</p>
+<p>Now with the release of <code>1.0.0</code> we are going to <em>supersede</em> functions going forward. This is the process where when we introduce new functions to replace other functions, we will no longer fast-deprecate the replaced functions. Now we will supersede them, i.e.&nbsp;we will keep the function in the codebase for a long time, but recommend the use of the new function. If the function were to be removed from the codebase this will be done many years from the time it is superseded. Please note that although superseded functions are not in scope for active development, any bugs identified within them will nevertheless be fixed.</p>
 </section>
-<section id="what-we-accomplished" class="level2">
-<h2 class="anchored" data-anchor-id="what-we-accomplished">What We Accomplished</h2>
-<p>One of our biggest moves in 2023 was to form our partnership with <a href="https://phuse.global/PHUSE_Open_Source_Technology">PHUSE</a>. This latched us into an existing community with shared values and a platform that helps us continue to build the pharmaverse community. At the <a href="https://www.phuse-events.org/attend/frontend/reg/thome.csp?pageID=11403&amp;eventID=19&amp;traceRedir=2">PHUSE EU Connect</a> we had our first opportunity to host a pharmaverse meetup and bring together pharmaverse contributors in person. Additionally, there was an excellent panel session highlighting our use and adoption of open-source across industry, including the pharmaceutical, commercial, and software perspectives. As we move forward, we’ll continue to use this platform to find ways we can host events and encourage collaboration within the pharmaverse community.</p>
-<p>This year our community was also able to launch new platforms to share updates and knowledge throughout the industry. The <a href="https://pharmaverse.github.io/examples/">pharmaverse examples</a> webpage was launched to show pharmaverse packages in action, and the <a href="https://pharmaverse.github.io/blog/">pharmaverse blog</a> (which I’m using right here!) provides a platform to share updates and community news.</p>
+<section id="new-features" class="level1">
+<h1>New Features</h1>
+<p>We have 3 new functions available in this release:</p>
+<ul>
+<li><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">derive_vars_extreme_event()</a></li>
+<li><a href="https://pharmaverse.github.io/admiral/reference/derive_var_merged_ef_msrc.html">derive_var_merged_ef_msrc()</a></li>
+<li><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html">derive_vars_computed()</a></li>
+</ul>
+<p>and a new option in <a href="https://pharmaverse.github.io/admiral/reference/derive_var_atoxgr_dir.html">derive_var_atoxgr_dir()</a> and <a href="https://pharmaverse.github.io/admiral/reference/derive_var_anrind.html">derive_var_anrind()</a> to handle floating point issues.</p>
+<section id="derive_vars_extreme_event" class="level2">
+<h2 class="anchored" data-anchor-id="derive_vars_extreme_event"><code>derive_vars_extreme_event()</code></h2>
+<p>This function takes available records from user-defined events by selecting the extreme observations and appending them as a variable(s) to your dataset. <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">derive_vars_extreme_event()</a> works similar to <a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html"><code>derive_extreme_event()</code></a>, but instead of adding observations the function will add variable(s).</p>
+<p>Let’s take a peek with a very simple example where we just use ADSL! The documentation for <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">derive_vars_extreme_event()</a> has a much richer example with events from other domains that is more aligned to where you would use this function.</p>
+<p>Let us make some dummy <code>ADSL</code> data and load up our packages. The goal here is to add two new variables <code>LSTALVDT</code> and <code>DTHFL</code> based on a list of objects that are used to specify the following:</p>
+<ul>
+<li>the dataset to look at</li>
+<li>a set of conditions</li>
+<li>what to set the values for the new variables</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tibble)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(lubridate)</span>
+<span id="cb1-4"></span>
+<span id="cb1-5">adsl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb1-6">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>STUDYID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>TRTEDT, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>DTHDT,</span>
+<span id="cb1-7">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1130"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-08-16"</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-09-13"</span>),</span>
+<span id="cb1-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1133"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2013-04-28"</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>),</span>
+<span id="cb1-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1211"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2013-01-12"</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>),</span>
+<span id="cb1-10">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"09-1081"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-04-27"</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>),</span>
+<span id="cb1-11">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"09-1088"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-10-09"</span>), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ymd</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2014-11-01"</span>),</span>
+<span id="cb1-12">)</span></code></pre></div>
+</div>
+<p>In this example, we only use <code>ADSL</code> as the source dataset, so it is a bit contrived, but much more compact for us. Note the use of the <code>events</code> that is taking in our list of event objects and the different conditions and values we set to create our <code>LSTALVDT</code> and <code>DTHFL</code> variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_extreme_event</span>(</span>
+<span id="cb2-2">  adsl,</span>
+<span id="cb2-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb2-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">events =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb2-5">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">event</span>(</span>
+<span id="cb2-6">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dataset_name =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"adsl"</span>,</span>
+<span id="cb2-7">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">condition =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(DTHDT),</span>
+<span id="cb2-8">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">set_values_to =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">LSTALVDT =</span> DTHDT, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">DTHFL =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>)</span>
+<span id="cb2-9">    ),</span>
+<span id="cb2-10">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">event</span>(</span>
+<span id="cb2-11">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dataset_name =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"adsl"</span>,</span>
+<span id="cb2-12">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">condition =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(TRTEDT),</span>
+<span id="cb2-13">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">set_values_to =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">LSTALVDT =</span> TRTEDT, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">DTHFL =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>)</span>
+<span id="cb2-14">    )</span>
+<span id="cb2-15">  ),</span>
+<span id="cb2-16">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">source_datasets =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">adsl =</span> adsl),</span>
+<span id="cb2-17">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(LSTALVDT),</span>
+<span id="cb2-18">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"last"</span>,</span>
+<span id="cb2-19">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">LSTALVDT =</span> LSTALVDT, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">DTHFL =</span> DTHFL)</span>
+<span id="cb2-20">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 6
+  STUDYID USUBJID TRTEDT     DTHDT      LSTALVDT   DTHFL
+  &lt;chr&gt;   &lt;chr&gt;   &lt;date&gt;     &lt;date&gt;     &lt;date&gt;     &lt;chr&gt;
+1 PILOT01 01-1130 2014-08-16 2014-09-13 2014-09-13 Y    
+2 PILOT01 01-1133 2013-04-28 NA         2013-04-28 N    
+3 PILOT01 01-1211 2013-01-12 NA         2013-01-12 N    
+4 PILOT01 09-1081 2014-04-27 NA         2014-04-27 N    
+5 PILOT01 09-1088 2014-10-09 2014-11-01 2014-11-01 Y    </code></pre>
+</div>
+</div>
+<p>Okay! We used a very small example to showcase how to find extreme observations and appending this information as new variables to our <code>ADSL</code> dataset. Highly recommend checking out the more detailed example in the <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">function documentation</a> to see its true power!</p>
 </section>
-<section id="where-next" class="level2">
-<h2 class="anchored" data-anchor-id="where-next">Where Next?</h2>
-<p>Back in October, I had the opportunity to do an interview with Michael Rimler for the <a href="https://youtu.be/F3vehIoJgdA?si=80p0pKobZqjlXChj">PHUSE video series</a> Open Source Technologies in Clinical Data Analytics. The last question he asked me was what I expect the state of data analytics in life science to be in 2 to 3 years. My response was that when that time comes, I hope I couldn’t have predicted where we would be - because back in 2020 I could never have predicted where we are now. The progress we’ve made is unbelievable, and the pharmaverse community has played a huge role in getting us where we are today. For the pharmaverse community, I hope to see that progress continue as we move into next year. As a council, our goal is to continue to mature this community. How can we support and foster collaboration between our organizations? How can we leverage this platform to drive the industry forward?</p>
-<p>For you as an individual, there’s always an opportunity to get involved - and you don’t have to be a package developer to contribute. You can <a href="https://pharmaverse.org/contribute/wg/">join a working group</a>, write <a href="https://github.com/pharmaverse/examples">examples</a>, or author a <a href="https://github.com/pharmaverse/blog">blog post</a>. Furthermore, you can get started with the pharmaverse packages, provide feedback via issues, and advocate for their use within your own organization. The pharmaverse community doesn’t exist without you, and we’re happy to have you all here to help us build this together.</p>
+<section id="derive_var_merged_ef_msrc" class="level2">
+<h2 class="anchored" data-anchor-id="derive_var_merged_ef_msrc"><code>derive_var_merged_ef_msrc()</code></h2>
+<p>This function has some similarity to <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">derive_vars_extreme_event()</a>, but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.</p>
+<p>We develop some <em>simple</em> dummy data for <code>ADSL</code>, <code>CM</code> and <code>PR</code>. Our goal is to flag patients who have <code>CMCAT = "ANTI-CANCER"</code> in the <code>CM</code> dataset or have records in the <code>PR</code> dataset. Any participants who meet these conditions will have our new variable <code>CANCTRFL</code> set as <code>"Y"</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adsl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb4-2">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID,</span>
+<span id="cb4-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1"</span>,</span>
+<span id="cb4-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2"</span>,</span>
+<span id="cb4-5">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"3"</span>,</span>
+<span id="cb4-6">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"4"</span>,</span>
+<span id="cb4-7">)</span>
+<span id="cb4-8"></span>
+<span id="cb4-9">cm <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb4-10">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>CMCAT,        <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>CMSEQ,</span>
+<span id="cb4-11">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1"</span>,      <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ANTI-CANCER"</span>,      <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb4-12">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1"</span>,      <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"GENERAL"</span>,          <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>,</span>
+<span id="cb4-13">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2"</span>,      <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"GENERAL"</span>,          <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb4-14">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"3"</span>,      <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ANTI-CANCER"</span>,      <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb4-15">)</span>
+<span id="cb4-16"></span>
+<span id="cb4-17">pr <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb4-18">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PRSEQ,</span>
+<span id="cb4-19">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2"</span>,      <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb4-20">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"3"</span>,      <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb4-21">)</span></code></pre></div>
+</div>
+<p>Now we have the argument <code>flag_events</code> that takes a list of objects where we define the conditions and datasets to check in.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_var_merged_ef_msrc</span>(</span>
+<span id="cb5-2">  adsl,</span>
+<span id="cb5-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">flag_events =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb5-4">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">flag_event</span>(</span>
+<span id="cb5-5">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dataset_name =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>,</span>
+<span id="cb5-6">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">condition =</span> CMCAT <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ANTI-CANCER"</span></span>
+<span id="cb5-7">    ),</span>
+<span id="cb5-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">flag_event</span>(</span>
+<span id="cb5-9">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dataset_name =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pr"</span></span>
+<span id="cb5-10">    )</span>
+<span id="cb5-11">  ),</span>
+<span id="cb5-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">source_datasets =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">cm =</span> cm, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pr =</span> pr),</span>
+<span id="cb5-13">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID),</span>
+<span id="cb5-14">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> CANCTRFL</span>
+<span id="cb5-15">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  USUBJID CANCTRFL
+  &lt;chr&gt;   &lt;chr&gt;   
+1 1       Y       
+2 2       Y       
+3 3       Y       
+4 4       &lt;NA&gt;    </code></pre>
+</div>
+</div>
+<p>Let’s go! We searched over multiple datasets, <code>CM</code> and <code>PR</code>, with multiple conditions and appended a new variable <code>CANCTRFL</code> to <code>ADSL</code> setting to <code>"Y"</code> if those conditions were met.</p>
 </section>
-<section id="p.s." class="level2">
-<h2 class="anchored" data-anchor-id="p.s.">P.S.</h2>
-<p>At PHUSE US Connect 2024 this coming February, be on the lookout for one of the keynote presentations from Michael Rimler and Ross Farrugia! We hope to see you there!</p>
-<p>Here’s to a 2024 full of progress and collaboration!</p>
+<section id="derive_vars_computed" class="level2">
+<h2 class="anchored" data-anchor-id="derive_vars_computed"><code>derive_vars_computed()</code></h2>
+<p>This function is very similar to <a href="https://pharmaverse.github.io/admiral/reference/derive_param_computed.html">derive_param_computed()</a>, but instead of adding observations we are going to add variable(s). Very handy when wanting to add some additional variables to <code>ADSL</code>, e.g.&nbsp;baseline variables.</p>
+<p>Let’s make some dummy data for an <code>ADSL</code> and <code>ADVS</code>. Our goal is to derive a <code>BMIBL</code> variable pulled from <code>ADVS</code> and append to <code>ADSL</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">adsl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb7-2">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>STUDYID,   <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AGE,   <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AGEU,</span>
+<span id="cb7-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1302"</span>,   <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">61</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"YEARS"</span>,</span>
+<span id="cb7-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"17-1344"</span>,   <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">64</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"YEARS"</span></span>
+<span id="cb7-5">)</span>
+<span id="cb7-6"></span>
+<span id="cb7-7">advs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb7-8">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>STUDYID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAMCD, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAM, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>VISIT, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AVAL, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AVALU, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>ABLFL,</span>
+<span id="cb7-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1302"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Height (cm)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SCREENING"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">177.8</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>,</span>
+<span id="cb7-10">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1302"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SCREENING"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">81.19</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>,</span>
+<span id="cb7-11">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1302"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"BASELINE"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">82.1</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>,</span>
+<span id="cb7-12">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1302"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEEK 2"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">81.19</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>,</span>
+<span id="cb7-13">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1302"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEEK 4"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">82.56</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>,</span>
+<span id="cb7-14">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01-1302"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEEK 6"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">80.74</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>,</span>
+<span id="cb7-15">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"17-1344"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Height (cm)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SCREENING"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">163.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>,</span>
+<span id="cb7-16">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"17-1344"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SCREENING"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">58.06</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>,</span>
+<span id="cb7-17">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"17-1344"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"BASELINE"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">58.06</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>,</span>
+<span id="cb7-18">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"17-1344"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEEK 2"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">58.97</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>,</span>
+<span id="cb7-19">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"17-1344"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEEK 4"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">57.97</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>,</span>
+<span id="cb7-20">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PILOT01"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"17-1344"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weight (kg)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEEK 6"</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">58.97</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"kg"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span></span>
+<span id="cb7-21">)</span></code></pre></div>
+</div>
+<p>Take a look at how we use <code>new_vars</code> and <code>filter_add</code>. We use a function inside of <code>new_vars</code> to help us calculate the <code>BMI</code> while using the <code>filter_add</code> argument to only look at baseline records for the calculation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_computed</span>(</span>
+<span id="cb8-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dataset =</span> adsl,</span>
+<span id="cb8-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dataset_add =</span> advs,</span>
+<span id="cb8-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb8-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">parameters =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span>),</span>
+<span id="cb8-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">constant_by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb8-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">constant_parameters =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HEIGHT"</span>),</span>
+<span id="cb8-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">BMIBL =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compute_bmi</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> AVAL.HEIGHT, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">weight =</span> AVAL.WEIGHT)),</span>
+<span id="cb8-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter_add =</span> ABLFL <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span></span>
+<span id="cb8-10">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  STUDYID USUBJID   AGE AGEU  BMIBL
+  &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+1 PILOT01 01-1302    61 YEARS  26.0
+2 PILOT01 17-1344    64 YEARS  21.7</code></pre>
+</div>
+</div>
+<p>Alright! Simple enough. We just took records from <code>ADVS</code>to help us calculate the <code>BMI</code> at baseline using this function and appended our new variable to <code>ADSL</code>.</p>
+</section>
+</section>
+<section id="argument-alignment-and-bug-fixes" class="level1">
+<h1>Argument Alignment and Bug Fixes</h1>
+<section id="argument-alignment" class="level2">
+<h2 class="anchored" data-anchor-id="argument-alignment">Argument Alignment</h2>
+<p>A huge push was made for <code>1.0.0</code> to help align our arguments across all of <code>{admiral}</code> functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For <code>1.0.0</code>, we really want users to have a solid API for <code>{admiral}</code> functions.</p>
+<p>Let’s take a peak at the function <a href="https://pharmaverse.github.io/admiral/reference/consolidate_metadata.html"><code>consolidate_metadata()</code></a> to even better understand our goal here.</p>
+<pre><code>consolidate_metadata(
+  datasets,
+  key_vars,
+  source_var = SOURCE,
+  check_vars = "warning",
+  check_keys,
+  check_type = "error"
+)</code></pre>
+<p>In previous versions of <code>{admiral}</code> the <code>consolidate_metadata()</code> function had the argument <code>check_keys</code>, which helps to check uniqueness. Other functions had a similar argument, but were called <code>check_unique</code>. Therefore, to better align our common API for <code>{admiral}</code> functions we decided to rename the <code>check_keys</code> argument to <code>check_unique</code>. You can follow the discussion around this renaming effort in this <a href="https://github.com/pharmaverse/admiral/issues/2184">GitHub Issue</a>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/check.png" class="img-fluid figure-img" width="450"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The argument has a deprecated tag in the function documentation and will issue a warning to users. There was quite a bit of renaming of arguments for <code>1.0.0</code> so there are quite a few of these tags in our documentation. In subsequent releases, these arguments will be removed. Please see the <a href="https://pharmaverse.github.io/admiral/news/index.html#admiral-100">changelog</a> if you would like to explore other functions that had arguments renamed. The issues are linked to each rename so you can follow along with the discussions!</p>
+</section>
+<section id="bug-fixes" class="level2">
+<h2 class="anchored" data-anchor-id="bug-fixes">Bug Fixes</h2>
+<p>We love fixing bugs and take them incredibly seriously - especially when identified by members from the community.</p>
+<p>If you find a pesky bug, please fill out a <a href="https://github.com/pharmaverse/admiral/issues/new/choose">Bug Report</a> on our Issues Tab.</p>
+<p>Each bug fixed by our development team is documented in our <a href="https://pharmaverse.github.io/admiral/news/index.html#updates-of-existing-functions-1-0-0">changelog</a> with the Issue linked.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/issue_tag.png" class="img-fluid figure-img" width="469"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For example, if you click through the issue for <a href="https://github.com/pharmaverse/admiral/issues/2291"><code>derive_extreme_event()</code></a> that identified a problem where the <code>condition</code> was ignored if the <code>mode</code> argument was used, you can see the Bug Report along with a reproducible example. You can also see the Pull Request for the exact code changes that are addressing this bug linked in the Issue! Way cool!</p>
+</section>
+</section>
+<section id="new-on-boarding-resources" class="level1">
+<h1>New On-boarding Resources</h1>
+<p><code>{admiral}</code> has a lot of functions for working with ADaMs. This can be overwhelming for new users and we really sympathize. To help new users onboarding to <code>{admiral}</code> we have developed the following resources:</p>
+<section id="admiraldiscovery" class="level2">
+<h2 class="anchored" data-anchor-id="admiraldiscovery"><a href="https://pharmaverse.github.io/admiraldiscovery/index.html">admiraldiscovery</a></h2>
+<p>This is a dedicated website that lists out in a tabular format standard ADaM datasets and their common variables with corresponding <code>{admiral}</code> functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving <code>EOSDT</code> or <code>TRTSDT</code>!</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiraldisc.png" class="img-fluid figure-img" width="652"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="admiral-cheat-sheet" class="level2">
+<h2 class="anchored" data-anchor-id="admiral-cheat-sheet"><a href="https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf">admiral Cheat Sheet</a></h2>
+<p>Inspired by other R package cheat sheets! We try and surface commonly needed functions for doing ADaM derivations with simple tables to show how the data is transforming.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/cheatsheet.png" class="img-fluid figure-img" width="781"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="way-back-machine" class="level2">
+<h2 class="anchored" data-anchor-id="way-back-machine">Way Back Machine</h2>
+<p>Studies can last a long time. Adopting R as your primary analysis language for your study can introduce certain risks around package dependencies. Fixing those dependencies to certain package versions can help mitigate those risks. Unfortunately, as package websites are updated those helpful documents, examples and vignettes can be lost as the version changes. Do not lose heart <code>{admiral}</code> users. If you decided to fix to a certain version of <code>{admiral}</code>, we have you covered with our <strong>Way Back Machine</strong> that allows you to change the website documentation back to the version you are using.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/wayback.png" class="img-fluid figure-img" width="770"></p>
+</figure>
+</div>
+</div>
+</div>
 <!--------------- appendices go here ----------------->
 </section>
 <div class="cell">
@@ -114,28 +901,29 @@ Council.”</span> January 4, 2024. <a href="https://pharmaverse.github.io/blog/
 </div>
 
 
+</section>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:31:08.384806</p>
+<p>2024-01-05 13:10:53.498743</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-21_end_of__year__up.../code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-21_end_of__year__up.../renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{stackhouse2023,
-  author = {Stackhouse, Mike},
-  title = {End of {Year} {Update} from the {Pharmaverse} {Council}},
-  date = {2023-12-21},
-  url = {https://pharmaverse.github.io/blog/posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2024,
+  author = {Straub, Ben},
+  title = {Admiral 1.0.0},
+  date = {2024-01-04},
+  url = {https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html},
   langid = {en}
 }
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-stackhouse2023" class="csl-entry quarto-appendix-citeas">
-Stackhouse, Mike. 2023. <span>“End of Year Update from the Pharmaverse
-Council.”</span> December 21, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html">https://pharmaverse.github.io/blog/posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html</a>.
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2024" class="csl-entry quarto-appendix-citeas">
+Straub, Ben. 2024. <span>“Admiral 1.0.0.”</span> January 4, 2024. <a href="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html">https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html</a>.
 </div></div></section></div> ]]></description>
-  <category>community</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html</guid>
-  <pubDate>Thu, 21 Dec 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-12-21_end_of__year__up.../pharmaverse.png" medium="image" type="image/png" height="144" width="144"/>
+  <category>admiral</category>
+  <category>ADaMs</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html</guid>
+  <pubDate>Thu, 04 Jan 2024 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/new_features.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>Believe in a higher order!</title>
@@ -1138,7 +1926,7 @@ font-style: inherit;">"last"</span>)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:56.947715</p>
+<p>2024-01-05 13:10:41.971393</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/renv.lock">R environment</a></p>
@@ -1422,8 +2210,8 @@ background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
 
-<div class="reactable html-widget html-fill-item" id="htmlwidget-9b604e397b0233a144a4" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-9b604e397b0233a144a4">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-b51f1bee061a69e63f26" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b51f1bee061a69e63f26">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>As you can see, the data-frame contains the column <code>GRADE_CRITERIA_CODE</code> which contains comparisons of floating point values. And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison initially:</p>
@@ -2119,8 +2907,8 @@ background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
 
-<div class="reactable html-widget html-fill-item" id="htmlwidget-209dae7bf43c51e0a762" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-209dae7bf43c51e0a762">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-821745d0538084e7b7f9" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-821745d0538084e7b7f9">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -2192,7 +2980,7 @@ font-style: inherit;">1</span></span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:59.620697</p>
+<p>2024-01-05 13:10:44.484925</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/renv.lock">R environment</a></p>
@@ -2511,7 +3299,7 @@ font-style: inherit;">"rhinosubmission.txt"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:51.022125</p>
+<p>2024-01-05 13:10:36.317363</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/renv.lock">R environment</a></p>
@@ -3680,7 +4468,7 @@ Mancini, Edoardo. 2023. <span>“Date/Time Functions and Imputation in
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:36.32313</p>
+<p>2024-01-05 13:10:22.165884</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/renv.lock">R environment</a></p>
@@ -4128,7 +4916,7 @@ font-style: inherit;">round</span>(b)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:43.48572</p>
+<p>2024-01-05 13:10:29.020999</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>
@@ -4317,7 +5105,7 @@ font-style: inherit;">DEMOEDY =</span> AENDT)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:31:03.737172</p>
+<p>2024-01-05 13:10:48.142948</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
@@ -4574,7 +5362,7 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:52.79134</p>
+<p>2024-01-05 13:10:38.02142</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
@@ -4757,7 +5545,7 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:40.456831</p>
+<p>2024-01-05 13:10:26.059533</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
@@ -4817,7 +5605,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:41.815841</p>
+<p>2024-01-05 13:10:27.429802</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -4907,7 +5695,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:31:05.11643</p>
+<p>2024-01-05 13:10:49.483322</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -5789,7 +6577,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:38.178846</p>
+<p>2024-01-05 13:10:23.927892</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -5885,7 +6673,7 @@ Thoma, Stefan. 2023. <span>“Hackathon Feedback Application.”</span> June
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:30:46.916435</p>
+<p>2024-01-05 13:10:32.369975</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -6103,7 +6891,7 @@ font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-04 14:31:06.995587</p>
+<p>2024-01-05 13:10:51.281009</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>

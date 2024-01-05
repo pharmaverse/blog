@@ -1,50 +1,78 @@
 [
   {
-    "objectID": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html",
-    "href": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html",
-    "title": "End of Year Update from the Pharmaverse Council",
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html",
+    "title": "admiral 1.0.0",
     "section": "",
-    "text": "This was a big year for open-source work in clinical submissions in general. We saw Roche speak about shifting to an open-source backbone for clinical trials. Novo Nordisk spoke publicly of an R based submission to the FDA. These are true marks of progress being made in R becoming a first class language for clinical reporting.\nBack in August, Nicholas Eugenio released a blog post on the history of pharmaverse. It’s funny to think about the fact that only 3 years ago, the idea of cross organization collaboration on R packages and building a community around this in the clinical world was just a conversation between friends. Since then, we have a community of more than 1200 people on Slack, 350 on LinkedIn, interest from over 150 organizations, and over 30 packages. If 2020 through 2022 was the birth of Pharmaverse, 2023 was finding our identity as a community. For the council, 2024 will be about continuing to mature and find more ways that we can continue to support the community."
+    "text": "admiral 1.0.0 is out on CRAN. This release brings several new features to your tool set for working with ADaMs in R. admiral 1.0.0 also brings needed stability to users who were wishing to adopt admiral, but were a little worried by the fast deprecation and experimentation for pre-v1.0.0 releases.\nThis blog post will discuss our commitment to stability, walk you through the new features available, discuss some of the bug fixes, a push for common APIs across our functions, and showcase the resources available to help you on-board to admiral."
   },
   {
-    "objectID": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#was-a-big-year",
-    "href": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#was-a-big-year",
-    "title": "End of Year Update from the Pharmaverse Council",
-    "section": "",
-    "text": "This was a big year for open-source work in clinical submissions in general. We saw Roche speak about shifting to an open-source backbone for clinical trials. Novo Nordisk spoke publicly of an R based submission to the FDA. These are true marks of progress being made in R becoming a first class language for clinical reporting.\nBack in August, Nicholas Eugenio released a blog post on the history of pharmaverse. It’s funny to think about the fact that only 3 years ago, the idea of cross organization collaboration on R packages and building a community around this in the clinical world was just a conversation between friends. Since then, we have a community of more than 1200 people on Slack, 350 on LinkedIn, interest from over 150 organizations, and over 30 packages. If 2020 through 2022 was the birth of Pharmaverse, 2023 was finding our identity as a community. For the council, 2024 will be about continuing to mature and find more ways that we can continue to support the community."
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#derive_vars_extreme_event",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#derive_vars_extreme_event",
+    "title": "admiral 1.0.0",
+    "section": "derive_vars_extreme_event()",
+    "text": "derive_vars_extreme_event()\nThis function takes available records from user-defined events by selecting the extreme observations and appending them as a variable(s) to your dataset. derive_vars_extreme_event() works similar to derive_extreme_event(), but instead of adding observations the function will add variable(s).\nLet’s take a peek with a very simple example where we just use ADSL! The documentation for derive_vars_extreme_event() has a much richer example with events from other domains that is more aligned to where you would use this function.\nLet us make some dummy ADSL data and load up our packages. The goal here is to add two new variables LSTALVDT and DTHFL based on a list of objects that are used to specify the following:\n\nthe dataset to look at\na set of conditions\nwhat to set the values for the new variables\n\n\nlibrary(tibble)\nlibrary(admiral)\nlibrary(lubridate)\n\nadsl &lt;- tribble(\n  ~STUDYID, ~USUBJID, ~TRTEDT, ~DTHDT,\n  \"PILOT01\", \"01-1130\", ymd(\"2014-08-16\"), ymd(\"2014-09-13\"),\n  \"PILOT01\", \"01-1133\", ymd(\"2013-04-28\"), ymd(\"\"),\n  \"PILOT01\", \"01-1211\", ymd(\"2013-01-12\"), ymd(\"\"),\n  \"PILOT01\", \"09-1081\", ymd(\"2014-04-27\"), ymd(\"\"),\n  \"PILOT01\", \"09-1088\", ymd(\"2014-10-09\"), ymd(\"2014-11-01\"),\n)\n\nIn this example, we only use ADSL as the source dataset, so it is a bit contrived, but much more compact for us. Note the use of the events that is taking in our list of event objects and the different conditions and values we set to create our LSTALVDT and DTHFL variables.\n\nderive_vars_extreme_event(\n  adsl,\n  by_vars = exprs(STUDYID, USUBJID),\n  events = list(\n    event(\n      dataset_name = \"adsl\",\n      condition = !is.na(DTHDT),\n      set_values_to = exprs(LSTALVDT = DTHDT, DTHFL = \"Y\")\n    ),\n    event(\n      dataset_name = \"adsl\",\n      condition = !is.na(TRTEDT),\n      set_values_to = exprs(LSTALVDT = TRTEDT, DTHFL = \"N\")\n    )\n  ),\n  source_datasets = list(adsl = adsl),\n  order = exprs(LSTALVDT),\n  mode = \"last\",\n  new_vars = exprs(LSTALVDT = LSTALVDT, DTHFL = DTHFL)\n)\n\n# A tibble: 5 × 6\n  STUDYID USUBJID TRTEDT     DTHDT      LSTALVDT   DTHFL\n  &lt;chr&gt;   &lt;chr&gt;   &lt;date&gt;     &lt;date&gt;     &lt;date&gt;     &lt;chr&gt;\n1 PILOT01 01-1130 2014-08-16 2014-09-13 2014-09-13 Y    \n2 PILOT01 01-1133 2013-04-28 NA         2013-04-28 N    \n3 PILOT01 01-1211 2013-01-12 NA         2013-01-12 N    \n4 PILOT01 09-1081 2014-04-27 NA         2014-04-27 N    \n5 PILOT01 09-1088 2014-10-09 2014-11-01 2014-11-01 Y    \n\n\nOkay! We used a very small example to showcase how to find extreme observations and appending this information as new variables to our ADSL dataset. Highly recommend checking out the more detailed example in the function documentation to see its true power!"
   },
   {
-    "objectID": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#what-we-accomplished",
-    "href": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#what-we-accomplished",
-    "title": "End of Year Update from the Pharmaverse Council",
-    "section": "What We Accomplished",
-    "text": "What We Accomplished\nOne of our biggest moves in 2023 was to form our partnership with PHUSE. This latched us into an existing community with shared values and a platform that helps us continue to build the pharmaverse community. At the PHUSE EU Connect we had our first opportunity to host a pharmaverse meetup and bring together pharmaverse contributors in person. Additionally, there was an excellent panel session highlighting our use and adoption of open-source across industry, including the pharmaceutical, commercial, and software perspectives. As we move forward, we’ll continue to use this platform to find ways we can host events and encourage collaboration within the pharmaverse community.\nThis year our community was also able to launch new platforms to share updates and knowledge throughout the industry. The pharmaverse examples webpage was launched to show pharmaverse packages in action, and the pharmaverse blog (which I’m using right here!) provides a platform to share updates and community news."
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#derive_var_merged_ef_msrc",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#derive_var_merged_ef_msrc",
+    "title": "admiral 1.0.0",
+    "section": "derive_var_merged_ef_msrc()",
+    "text": "derive_var_merged_ef_msrc()\nThis function has some similarity to derive_vars_extreme_event(), but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.\nWe develop some simple dummy data for ADSL, CM and PR. Our goal is to flag patients who have CMCAT = \"ANTI-CANCER\" in the CM dataset or have records in the PR dataset. Any participants who meet these conditions will have our new variable CANCTRFL set as \"Y\".\n\nadsl &lt;- tribble(\n  ~USUBJID,\n  \"1\",\n  \"2\",\n  \"3\",\n  \"4\",\n)\n\ncm &lt;- tribble(\n  ~USUBJID, ~CMCAT,        ~CMSEQ,\n  \"1\",      \"ANTI-CANCER\",      1,\n  \"1\",      \"GENERAL\",          2,\n  \"2\",      \"GENERAL\",          1,\n  \"3\",      \"ANTI-CANCER\",      1\n)\n\npr &lt;- tribble(\n  ~USUBJID, ~PRSEQ,\n  \"2\",      1,\n  \"3\",      1\n)\n\nNow we have the argument flag_events that takes a list of objects where we define the conditions and datasets to check in.\n\nderive_var_merged_ef_msrc(\n  adsl,\n  flag_events = list(\n    flag_event(\n      dataset_name = \"cm\",\n      condition = CMCAT == \"ANTI-CANCER\"\n    ),\n    flag_event(\n      dataset_name = \"pr\"\n    )\n  ),\n  source_datasets = list(cm = cm, pr = pr),\n  by_vars = exprs(USUBJID),\n  new_var = CANCTRFL\n)\n\n# A tibble: 4 × 2\n  USUBJID CANCTRFL\n  &lt;chr&gt;   &lt;chr&gt;   \n1 1       Y       \n2 2       Y       \n3 3       Y       \n4 4       &lt;NA&gt;    \n\n\nLet’s go! We searched over multiple datasets, CM and PR, with multiple conditions and appended a new variable CANCTRFL to ADSL setting to \"Y\" if those conditions were met."
   },
   {
-    "objectID": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#where-next",
-    "href": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#where-next",
-    "title": "End of Year Update from the Pharmaverse Council",
-    "section": "Where Next?",
-    "text": "Where Next?\nBack in October, I had the opportunity to do an interview with Michael Rimler for the PHUSE video series Open Source Technologies in Clinical Data Analytics. The last question he asked me was what I expect the state of data analytics in life science to be in 2 to 3 years. My response was that when that time comes, I hope I couldn’t have predicted where we would be - because back in 2020 I could never have predicted where we are now. The progress we’ve made is unbelievable, and the pharmaverse community has played a huge role in getting us where we are today. For the pharmaverse community, I hope to see that progress continue as we move into next year. As a council, our goal is to continue to mature this community. How can we support and foster collaboration between our organizations? How can we leverage this platform to drive the industry forward?\nFor you as an individual, there’s always an opportunity to get involved - and you don’t have to be a package developer to contribute. You can join a working group, write examples, or author a blog post. Furthermore, you can get started with the pharmaverse packages, provide feedback via issues, and advocate for their use within your own organization. The pharmaverse community doesn’t exist without you, and we’re happy to have you all here to help us build this together."
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#derive_vars_computed",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#derive_vars_computed",
+    "title": "admiral 1.0.0",
+    "section": "derive_vars_computed()",
+    "text": "derive_vars_computed()\nThis function is very similar to derive_param_computed(), but instead of adding observations we are going to add variable(s). Very handy when wanting to add some additional variables to ADSL, e.g. baseline variables.\nLet’s make some dummy data for an ADSL and ADVS. Our goal is to derive a BMIBL variable pulled from ADVS and append to ADSL.\n\nadsl &lt;- tribble(\n  ~STUDYID,   ~USUBJID, ~AGE,   ~AGEU,\n  \"PILOT01\", \"01-1302\",   61, \"YEARS\",\n  \"PILOT01\", \"17-1344\",   64, \"YEARS\"\n)\n\nadvs &lt;- tribble(\n  ~STUDYID, ~USUBJID, ~PARAMCD, ~PARAM, ~VISIT, ~AVAL, ~AVALU, ~ABLFL,\n  \"PILOT01\", \"01-1302\", \"HEIGHT\", \"Height (cm)\", \"SCREENING\", 177.8, \"cm\", \"Y\",\n  \"PILOT01\", \"01-1302\", \"WEIGHT\", \"Weight (kg)\", \"SCREENING\", 81.19, \"kg\", \"N\",\n  \"PILOT01\", \"01-1302\", \"WEIGHT\", \"Weight (kg)\", \"BASELINE\", 82.1, \"kg\", \"Y\",\n  \"PILOT01\", \"01-1302\", \"WEIGHT\", \"Weight (kg)\", \"WEEK 2\", 81.19, \"kg\", \"N\",\n  \"PILOT01\", \"01-1302\", \"WEIGHT\", \"Weight (kg)\", \"WEEK 4\", 82.56, \"kg\", \"N\",\n  \"PILOT01\", \"01-1302\", \"WEIGHT\", \"Weight (kg)\", \"WEEK 6\", 80.74, \"kg\", \"N\",\n  \"PILOT01\", \"17-1344\", \"HEIGHT\", \"Height (cm)\", \"SCREENING\", 163.5, \"cm\", \"Y\",\n  \"PILOT01\", \"17-1344\", \"WEIGHT\", \"Weight (kg)\", \"SCREENING\", 58.06, \"kg\", \"N\",\n  \"PILOT01\", \"17-1344\", \"WEIGHT\", \"Weight (kg)\", \"BASELINE\", 58.06, \"kg\", \"Y\",\n  \"PILOT01\", \"17-1344\", \"WEIGHT\", \"Weight (kg)\", \"WEEK 2\", 58.97, \"kg\", \"N\",\n  \"PILOT01\", \"17-1344\", \"WEIGHT\", \"Weight (kg)\", \"WEEK 4\", 57.97, \"kg\", \"N\",\n  \"PILOT01\", \"17-1344\", \"WEIGHT\", \"Weight (kg)\", \"WEEK 6\", 58.97, \"kg\", \"N\"\n)\n\nTake a look at how we use new_vars and filter_add. We use a function inside of new_vars to help us calculate the BMI while using the filter_add argument to only look at baseline records for the calculation.\n\nderive_vars_computed(\n  dataset = adsl,\n  dataset_add = advs,\n  by_vars = exprs(STUDYID, USUBJID),\n  parameters = c(\"WEIGHT\"),\n  constant_by_vars = exprs(STUDYID, USUBJID),\n  constant_parameters = c(\"HEIGHT\"),\n  new_vars = exprs(BMIBL = compute_bmi(height = AVAL.HEIGHT, weight = AVAL.WEIGHT)),\n  filter_add = ABLFL == \"Y\"\n)\n\n# A tibble: 2 × 5\n  STUDYID USUBJID   AGE AGEU  BMIBL\n  &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;\n1 PILOT01 01-1302    61 YEARS  26.0\n2 PILOT01 17-1344    64 YEARS  21.7\n\n\nAlright! Simple enough. We just took records from ADVSto help us calculate the BMI at baseline using this function and appended our new variable to ADSL."
   },
   {
-    "objectID": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#p.s.",
-    "href": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#p.s.",
-    "title": "End of Year Update from the Pharmaverse Council",
-    "section": "P.S.",
-    "text": "P.S.\nAt PHUSE US Connect 2024 this coming February, be on the lookout for one of the keynote presentations from Michael Rimler and Ross Farrugia! We hope to see you there!\nHere’s to a 2024 full of progress and collaboration!"
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#argument-alignment",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#argument-alignment",
+    "title": "admiral 1.0.0",
+    "section": "Argument Alignment",
+    "text": "Argument Alignment\nA huge push was made for 1.0.0 to help align our arguments across all of {admiral} functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For 1.0.0, we really want users to have a solid API for {admiral} functions.\nLet’s take a peak at the function consolidate_metadata() to even better understand our goal here.\nconsolidate_metadata(\n  datasets,\n  key_vars,\n  source_var = SOURCE,\n  check_vars = \"warning\",\n  check_keys,\n  check_type = \"error\"\n)\nIn previous versions of {admiral} the consolidate_metadata() function had the argument check_keys, which helps to check uniqueness. Other functions had a similar argument, but were called check_unique. Therefore, to better align our common API for {admiral} functions we decided to rename the check_keys argument to check_unique. You can follow the discussion around this renaming effort in this GitHub Issue.\n\n\n\n\n\n\n\n\n\nThe argument has a deprecated tag in the function documentation and will issue a warning to users. There was quite a bit of renaming of arguments for 1.0.0 so there are quite a few of these tags in our documentation. In subsequent releases, these arguments will be removed. Please see the changelog if you would like to explore other functions that had arguments renamed. The issues are linked to each rename so you can follow along with the discussions!"
   },
   {
-    "objectID": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#last-updated",
-    "href": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#last-updated",
-    "title": "End of Year Update from the Pharmaverse Council",
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#bug-fixes",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#bug-fixes",
+    "title": "admiral 1.0.0",
+    "section": "Bug Fixes",
+    "text": "Bug Fixes\nWe love fixing bugs and take them incredibly seriously - especially when identified by members from the community.\nIf you find a pesky bug, please fill out a Bug Report on our Issues Tab.\nEach bug fixed by our development team is documented in our changelog with the Issue linked.\n\n\n\n\n\n\n\n\n\nFor example, if you click through the issue for derive_extreme_event() that identified a problem where the condition was ignored if the mode argument was used, you can see the Bug Report along with a reproducible example. You can also see the Pull Request for the exact code changes that are addressing this bug linked in the Issue! Way cool!"
+  },
+  {
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#admiraldiscovery",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#admiraldiscovery",
+    "title": "admiral 1.0.0",
+    "section": "admiraldiscovery",
+    "text": "admiraldiscovery\nThis is a dedicated website that lists out in a tabular format standard ADaM datasets and their common variables with corresponding {admiral} functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving EOSDT or TRTSDT!"
+  },
+  {
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#admiral-cheat-sheet",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#admiral-cheat-sheet",
+    "title": "admiral 1.0.0",
+    "section": "admiral Cheat Sheet",
+    "text": "admiral Cheat Sheet\nInspired by other R package cheat sheets! We try and surface commonly needed functions for doing ADaM derivations with simple tables to show how the data is transforming."
+  },
+  {
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#way-back-machine",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#way-back-machine",
+    "title": "admiral 1.0.0",
+    "section": "Way Back Machine",
+    "text": "Way Back Machine\nStudies can last a long time. Adopting R as your primary analysis language for your study can introduce certain risks around package dependencies. Fixing those dependencies to certain package versions can help mitigate those risks. Unfortunately, as package websites are updated those helpful documents, examples and vignettes can be lost as the version changes. Do not lose heart {admiral} users. If you decided to fix to a certain version of {admiral}, we have you covered with our Way Back Machine that allows you to change the website documentation back to the version you are using."
+  },
+  {
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#last-updated",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#last-updated",
+    "title": "admiral 1.0.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:31:08.384806"
+    "text": "Last updated\n\n2024-01-05 13:10:53.498743"
   },
   {
-    "objectID": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#details",
-    "href": "posts/2023-12-21_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#details",
-    "title": "End of Year Update from the Pharmaverse Council",
+    "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#details",
+    "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#details",
+    "title": "admiral 1.0.0",
     "section": "Details",
     "text": "Details\n\nsource code, R environment"
   },
@@ -88,7 +116,7 @@
     "href": "posts/2023-06-28_welcome/index.html#last-updated",
     "title": "Hello pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:31:05.11643"
+    "text": "Last updated\n\n2024-01-05 13:10:49.483322"
   },
   {
     "objectID": "posts/2023-06-28_welcome/index.html#details",
@@ -151,7 +179,7 @@
     "href": "posts/2023-11-27_higher_order/higher_order.html#last-updated",
     "title": "Believe in a higher order!",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:56.947715"
+    "text": "Last updated\n\n2024-01-05 13:10:41.971393"
   },
   {
     "objectID": "posts/2023-11-27_higher_order/higher_order.html#details",
@@ -193,7 +221,7 @@
     "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
     "title": "How to use Code Sections",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:52.79134"
+    "text": "Last updated\n\n2024-01-05 13:10:38.02142"
   },
   {
     "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
@@ -305,7 +333,7 @@
     "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
     "title": "Rounding",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:43.48572"
+    "text": "Last updated\n\n2024-01-05 13:10:29.020999"
   },
   {
     "objectID": "posts/2023-07-24_rounding/rounding.html#details",
@@ -347,7 +375,7 @@
     "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
     "title": "Blanks and NAs",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:40.456831"
+    "text": "Last updated\n\n2024-01-05 13:10:26.059533"
   },
   {
     "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
@@ -396,7 +424,7 @@
     "href": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#last-updated",
     "title": "The pharmaverse (hi)story",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:36.32313"
+    "text": "Last updated\n\n2024-01-05 13:10:22.165884"
   },
   {
     "objectID": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#details",
@@ -410,7 +438,7 @@
     "href": "index.html",
     "title": "Pharmaverse Blog",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nEnd of Year Update from the Pharmaverse Council\n\n\n\n\n\n\n\ncommunity\n\n\n\n\n\n\n\n\n\n\n\nJan 4, 2024\n\n\nMike Stackhouse\n\n\n\n\n\n\n  \n\n\n\n\nEnd of Year Update from the Pharmaverse Council\n\n\n\n\n\n\n\ncommunity\n\n\n\n\n\n\n\n\n\n\n\nDec 21, 2023\n\n\nMike Stackhouse\n\n\n\n\n\n\n  \n\n\n\n\nBelieve in a higher order!\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nA brief foray into the higher order functions in the {admiral} package.\n\n\n\n\n\n\nNov 27, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nFloating point\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nThe untold story of how admiral deals with floating points.\n\n\n\n\n\n\nOct 30, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nReproducing the R Submissions Pilot 2 Shiny Application using Rhino\n\n\n\n\n\n\n\nsubmission\n\n\ncommunity\n\n\n\n\n\n\n\n\n\n\n\nOct 10, 2023\n\n\nIsmael Rodriguez, Vedha Viyash, André Veríssimo, APPSILON\n\n\n\n\n\n\n  \n\n\n\n\nDate/Time Functions and Imputation in {admiral}\n\n\n\n\n\n\n\nadmiral\n\n\nADaM\n\n\nDate/Time\n\n\n\n\nDates, times and imputation can be a frustrating facet of any programming language. Here’s how {admiral} makes all of this easy!\n\n\n\n\n\n\nSep 26, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nThe pharmaverse (hi)story\n\n\n\n\n\n\n\ncommunity\n\n\n\n\n\n\n\n\n\n\n\nAug 30, 2023\n\n\nNicholas Eugenio\n\n\n\n\n\n\n  \n\n\n\n\nRounding\n\n\n\n\n\n\n\nrounding\n\n\n\n\nExploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges\n\n\n\n\n\n\nAug 22, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nIt’s all relative? - Calculating Relative Days using admiral\n\n\n\n\n\n\n\nadmiral\n\n\nADaMs\n\n\n\n\n\n\n\n\n\n\n\nAug 8, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nCross-Industry Open Source Package Development\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\n\n\n\n\n\n\n\nJul 25, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nHow to use Code Sections\n\n\n\n\n\n\n\nADaMs\n\n\nTips and Tricks\n\n\n\n\n\n\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nBlanks and NAs\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nfalcon\n\n\n\n\n\n\n\nfalcon\n\n\ndisplays\n\n\n\n\n\n\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n  \n\n\n\n\nHello pharmaverse\n\n\n\n\n\n\n\ncommunity\n\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nHackathon Feedback Application\n\n\n\n\n\n\n\nR\n\n\nshiny\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nUse admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nEnd of Year Update from the Pharmaverse Council\n\n\n\n\n\n\n\ncommunity\n\n\n\n\n\n\n\n\n\n\n\nJan 4, 2024\n\n\nMike Stackhouse\n\n\n\n\n\n\n  \n\n\n\n\nadmiral 1.0.0\n\n\n\n\n\n\n\nadmiral\n\n\nADaMs\n\n\n\n\n1.0.0 brings a commitment to stability, new features, a few bug fixes, argument alignment and onboarding resources!\n\n\n\n\n\n\nJan 4, 2024\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nBelieve in a higher order!\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nA brief foray into the higher order functions in the {admiral} package.\n\n\n\n\n\n\nNov 27, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nFloating point\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nThe untold story of how admiral deals with floating points.\n\n\n\n\n\n\nOct 30, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nReproducing the R Submissions Pilot 2 Shiny Application using Rhino\n\n\n\n\n\n\n\nsubmission\n\n\ncommunity\n\n\n\n\n\n\n\n\n\n\n\nOct 10, 2023\n\n\nIsmael Rodriguez, Vedha Viyash, André Veríssimo, APPSILON\n\n\n\n\n\n\n  \n\n\n\n\nDate/Time Functions and Imputation in {admiral}\n\n\n\n\n\n\n\nadmiral\n\n\nADaM\n\n\nDate/Time\n\n\n\n\nDates, times and imputation can be a frustrating facet of any programming language. Here’s how {admiral} makes all of this easy!\n\n\n\n\n\n\nSep 26, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nThe pharmaverse (hi)story\n\n\n\n\n\n\n\ncommunity\n\n\n\n\n\n\n\n\n\n\n\nAug 30, 2023\n\n\nNicholas Eugenio\n\n\n\n\n\n\n  \n\n\n\n\nRounding\n\n\n\n\n\n\n\nrounding\n\n\n\n\nExploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges\n\n\n\n\n\n\nAug 22, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n  \n\n\n\n\nIt’s all relative? - Calculating Relative Days using admiral\n\n\n\n\n\n\n\nadmiral\n\n\nADaMs\n\n\n\n\n\n\n\n\n\n\n\nAug 8, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nCross-Industry Open Source Package Development\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\n\n\n\n\n\n\n\nJul 25, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nHow to use Code Sections\n\n\n\n\n\n\n\nADaMs\n\n\nTips and Tricks\n\n\n\n\n\n\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n  \n\n\n\n\nBlanks and NAs\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nfalcon\n\n\n\n\n\n\n\nfalcon\n\n\ndisplays\n\n\n\n\n\n\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n  \n\n\n\n\nHello pharmaverse\n\n\n\n\n\n\n\ncommunity\n\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n  \n\n\n\n\nHackathon Feedback Application\n\n\n\n\n\n\n\nR\n\n\nshiny\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\n\n\n\n\ncommunity\n\n\nadmiral\n\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n  \n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\n\n\n\n\nadmiral\n\n\n\n\nUse admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "R/readme.html",
@@ -487,7 +515,7 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:38.178846"
+    "text": "Last updated\n\n2024-01-05 13:10:23.927892"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
@@ -536,7 +564,7 @@
     "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
     "title": "falcon",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:41.815841"
+    "text": "Last updated\n\n2024-01-05 13:10:27.429802"
   },
   {
     "objectID": "posts/2023-07-09_falcon/falcon.html#details",
@@ -578,7 +606,7 @@
     "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
     "title": "Admiral Hackathon 2023 Revisited",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:46.916435"
+    "text": "Last updated\n\n2024-01-05 13:10:32.369975"
   },
   {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
@@ -627,7 +655,7 @@
     "href": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#last-updated",
     "title": "Reproducing the R Submissions Pilot 2 Shiny Application using Rhino",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:51.022125"
+    "text": "Last updated\n\n2024-01-05 13:10:36.317363"
   },
   {
     "objectID": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#details",
@@ -676,7 +704,7 @@
     "href": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#last-updated",
     "title": "End of Year Update from the Pharmaverse Council",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:54.211214"
+    "text": "Last updated\n\n2024-01-05 13:10:39.395876"
   },
   {
     "objectID": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#details",
@@ -725,7 +753,7 @@
     "href": "posts/2023-10-30_floating_point/floating_point.html#last-updated",
     "title": "Floating point",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:30:59.620697"
+    "text": "Last updated\n\n2024-01-05 13:10:44.484925"
   },
   {
     "objectID": "posts/2023-10-30_floating_point/floating_point.html#details",
@@ -746,7 +774,7 @@
     "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
     "title": "It’s all relative? - Calculating Relative Days using admiral",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:31:03.737172"
+    "text": "Last updated\n\n2024-01-05 13:10:48.142948"
   },
   {
     "objectID": "posts/2023-08-08_study_day/study_day.html#details",
@@ -781,7 +809,7 @@
     "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
     "title": "Derive a new parameter computed from the value of other parameters",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-01-04 14:31:06.995587"
+    "text": "Last updated\n\n2024-01-05 13:10:51.281009"
   },
   {
     "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",

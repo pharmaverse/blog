@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Straub">
+<meta name="dcterms.date" content="2024-01-04">
+<meta name="description" content="1.0.0 brings a commitment to stability, new features, a few bug fixes, argument alignment and onboarding resources!">
+
+<title>Pharmaverse Blog - admiral 1.0.0</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: #eeeeee;
+      }
+</style>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Pharmaverse Blog - admiral 1.0.0">
+<meta property="og:description" content="1.0.0 brings a commitment to stability, new features, a few bug fixes, argument alignment and onboarding resources!">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/new_features.jpg">
+<meta property="og:site-name" content="Pharmaverse Blog">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Pharmaverse Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/pharmaverse/blog" rel="" target=""><i class="bi bi-github" role="img" aria-label="github">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">admiral 1.0.0</h1>
+                  <div>
+        <div class="description">
+          1.0.0 brings a commitment to stability, new features, a few bug fixes, argument alignment and onboarding resources!
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">admiral</div>
+                <div class="quarto-category">ADaMs</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Ben Straub </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 4, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#commitment-to-stability" id="toc-commitment-to-stability" class="nav-link active" data-scroll-target="#commitment-to-stability">Commitment to Stability</a></li>
+  <li><a href="#new-features" id="toc-new-features" class="nav-link" data-scroll-target="#new-features">New Features</a>
+  <ul class="collapse">
+  <li><a href="#derive_vars_extreme_event" id="toc-derive_vars_extreme_event" class="nav-link" data-scroll-target="#derive_vars_extreme_event"><code>derive_vars_extreme_event()</code></a></li>
+  <li><a href="#derive_var_merged_ef_msrc" id="toc-derive_var_merged_ef_msrc" class="nav-link" data-scroll-target="#derive_var_merged_ef_msrc"><code>derive_var_merged_ef_msrc()</code></a></li>
+  <li><a href="#derive_vars_computed" id="toc-derive_vars_computed" class="nav-link" data-scroll-target="#derive_vars_computed"><code>derive_vars_computed()</code></a></li>
+  </ul></li>
+  <li><a href="#argument-alignment-and-bug-fixes" id="toc-argument-alignment-and-bug-fixes" class="nav-link" data-scroll-target="#argument-alignment-and-bug-fixes">Argument Alignment and Bug Fixes</a>
+  <ul class="collapse">
+  <li><a href="#argument-alignment" id="toc-argument-alignment" class="nav-link" data-scroll-target="#argument-alignment">Argument Alignment</a></li>
+  <li><a href="#bug-fixes" id="toc-bug-fixes" class="nav-link" data-scroll-target="#bug-fixes">Bug Fixes</a></li>
+  </ul></li>
+  <li><a href="#new-on-boarding-resources" id="toc-new-on-boarding-resources" class="nav-link" data-scroll-target="#new-on-boarding-resources">New On-boarding Resources</a>
+  <ul class="collapse">
+  <li><a href="#admiraldiscovery" id="toc-admiraldiscovery" class="nav-link" data-scroll-target="#admiraldiscovery">admiraldiscovery</a></li>
+  <li><a href="#admiral-cheat-sheet" id="toc-admiral-cheat-sheet" class="nav-link" data-scroll-target="#admiral-cheat-sheet">admiral Cheat Sheet</a></li>
+  <li><a href="#way-back-machine" id="toc-way-back-machine" class="nav-link" data-scroll-target="#way-back-machine">Way Back Machine</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p><a href="https://pharmaverse.github.io/admiral/index.html"><code>admiral 1.0.0</code></a> is out on <a href="https://cran.r-project.org/web/packages/admiral/index.html">CRAN</a>. This release brings several new features to your tool set for working with ADaMs in R. <a href="https://pharmaverse.github.io/admiral/index.html"><code>admiral 1.0.0</code></a> also brings needed stability to users who were wishing to adopt <a href="https://pharmaverse.github.io/admiral/index.html">admiral</a>, but were a little worried by the fast deprecation and experimentation for <code>pre-v1.0.0</code> releases.</p>
+<p>This blog post will discuss our commitment to stability, walk you through the new features available, discuss some of the bug fixes, a push for common APIs across our functions, and showcase the resources available to help you on-board to <a href="https://pharmaverse.github.io/admiral/index.html">admiral</a>.</p>
+<section id="commitment-to-stability" class="level1">
+<h1>Commitment to Stability</h1>
+<p><code>{admiral}</code> was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html">history blog post</a> for some of additional context on its development. Over the last three years, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and with some minor tweaks could be made redundant in favor of other functions. This has lead to some deprecation of either whole functions or arguments as we have sought to consolidate. Unfortunately, this creates a lot of frustration for users.</p>
+<p>Enter Superseded!!</p>
+<p>Now with the release of <code>1.0.0</code> we are going to <em>supersede</em> functions going forward. This is the process where when we introduce new functions to replace other functions, we will no longer fast-deprecate the replaced functions. Now we will supersede them, i.e.&nbsp;we will keep the function in the codebase for a long time, but recommend the use of the new function. If the function were to be removed from the codebase this will be done many years from the time it is superseded. Please note that although superseded functions are not in scope for active development, any bugs identified within them will nevertheless be fixed.</p>
+</section>
+<section id="new-features" class="level1">
+<h1>New Features</h1>
+<p>We have 3 new functions available in this release:</p>
+<ul>
+<li><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">derive_vars_extreme_event()</a></li>
+<li><a href="https://pharmaverse.github.io/admiral/reference/derive_var_merged_ef_msrc.html">derive_var_merged_ef_msrc()</a></li>
+<li><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html">derive_vars_computed()</a></li>
+</ul>
+<p>and a new option in <a href="https://pharmaverse.github.io/admiral/reference/derive_var_atoxgr_dir.html">derive_var_atoxgr_dir()</a> and <a href="https://pharmaverse.github.io/admiral/reference/derive_var_anrind.html">derive_var_anrind()</a> to handle floating point issues.</p>
+<section id="derive_vars_extreme_event" class="level2">
+<h2 class="anchored" data-anchor-id="derive_vars_extreme_event"><code>derive_vars_extreme_event()</code></h2>
+<p>This function takes available records from user-defined events by selecting the extreme observations and appending them as a variable(s) to your dataset. <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">derive_vars_extreme_event()</a> works similar to <a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html"><code>derive_extreme_event()</code></a>, but instead of adding observations the function will add variable(s).</p>
+<p>Let’s take a peek with a very simple example where we just use ADSL! The documentation for <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">derive_vars_extreme_event()</a> has a much richer example with events from other domains that is more aligned to where you would use this function.</p>
+<p>Let us make some dummy <code>ADSL</code> data and load up our packages. The goal here is to add two new variables <code>LSTALVDT</code> and <code>DTHFL</code> based on a list of objects that are used to specify the following:</p>
+<ul>
+<li>the dataset to look at</li>
+<li>a set of conditions</li>
+<li>what to set the values for the new variables</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>STUDYID, <span class="sc">~</span>USUBJID, <span class="sc">~</span>TRTEDT, <span class="sc">~</span>DTHDT,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1130"</span>, <span class="fu">ymd</span>(<span class="st">"2014-08-16"</span>), <span class="fu">ymd</span>(<span class="st">"2014-09-13"</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1133"</span>, <span class="fu">ymd</span>(<span class="st">"2013-04-28"</span>), <span class="fu">ymd</span>(<span class="st">""</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1211"</span>, <span class="fu">ymd</span>(<span class="st">"2013-01-12"</span>), <span class="fu">ymd</span>(<span class="st">""</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"09-1081"</span>, <span class="fu">ymd</span>(<span class="st">"2014-04-27"</span>), <span class="fu">ymd</span>(<span class="st">""</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"09-1088"</span>, <span class="fu">ymd</span>(<span class="st">"2014-10-09"</span>), <span class="fu">ymd</span>(<span class="st">"2014-11-01"</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In this example, we only use <code>ADSL</code> as the source dataset, so it is a bit contrived, but much more compact for us. Note the use of the <code>events</code> that is taking in our list of event objects and the different conditions and values we set to create our <code>LSTALVDT</code> and <code>DTHFL</code> variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">derive_vars_extreme_event</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  adsl,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">events =</span> <span class="fu">list</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">event</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">dataset_name =</span> <span class="st">"adsl"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">condition =</span> <span class="sc">!</span><span class="fu">is.na</span>(DTHDT),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">set_values_to =</span> <span class="fu">exprs</span>(<span class="at">LSTALVDT =</span> DTHDT, <span class="at">DTHFL =</span> <span class="st">"Y"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">event</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">dataset_name =</span> <span class="st">"adsl"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">condition =</span> <span class="sc">!</span><span class="fu">is.na</span>(TRTEDT),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">set_values_to =</span> <span class="fu">exprs</span>(<span class="at">LSTALVDT =</span> TRTEDT, <span class="at">DTHFL =</span> <span class="st">"N"</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">source_datasets =</span> <span class="fu">list</span>(<span class="at">adsl =</span> adsl),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">order =</span> <span class="fu">exprs</span>(LSTALVDT),</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"last"</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">new_vars =</span> <span class="fu">exprs</span>(<span class="at">LSTALVDT =</span> LSTALVDT, <span class="at">DTHFL =</span> DTHFL)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 6
+  STUDYID USUBJID TRTEDT     DTHDT      LSTALVDT   DTHFL
+  &lt;chr&gt;   &lt;chr&gt;   &lt;date&gt;     &lt;date&gt;     &lt;date&gt;     &lt;chr&gt;
+1 PILOT01 01-1130 2014-08-16 2014-09-13 2014-09-13 Y    
+2 PILOT01 01-1133 2013-04-28 NA         2013-04-28 N    
+3 PILOT01 01-1211 2013-01-12 NA         2013-01-12 N    
+4 PILOT01 09-1081 2014-04-27 NA         2014-04-27 N    
+5 PILOT01 09-1088 2014-10-09 2014-11-01 2014-11-01 Y    </code></pre>
+</div>
+</div>
+<p>Okay! We used a very small example to showcase how to find extreme observations and appending this information as new variables to our <code>ADSL</code> dataset. Highly recommend checking out the more detailed example in the <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">function documentation</a> to see its true power!</p>
+</section>
+<section id="derive_var_merged_ef_msrc" class="level2">
+<h2 class="anchored" data-anchor-id="derive_var_merged_ef_msrc"><code>derive_var_merged_ef_msrc()</code></h2>
+<p>This function has some similarity to <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">derive_vars_extreme_event()</a>, but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.</p>
+<p>We develop some <em>simple</em> dummy data for <code>ADSL</code>, <code>CM</code> and <code>PR</code>. Our goal is to flag patients who have <code>CMCAT = "ANTI-CANCER"</code> in the <code>CM</code> dataset or have records in the <code>PR</code> dataset. Any participants who meet these conditions will have our new variable <code>CANCTRFL</code> set as <code>"Y"</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"1"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"3"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"4"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>cm <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID, <span class="sc">~</span>CMCAT,        <span class="sc">~</span>CMSEQ,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"1"</span>,      <span class="st">"ANTI-CANCER"</span>,      <span class="dv">1</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"1"</span>,      <span class="st">"GENERAL"</span>,          <span class="dv">2</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2"</span>,      <span class="st">"GENERAL"</span>,          <span class="dv">1</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"3"</span>,      <span class="st">"ANTI-CANCER"</span>,      <span class="dv">1</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>pr <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID, <span class="sc">~</span>PRSEQ,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2"</span>,      <span class="dv">1</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"3"</span>,      <span class="dv">1</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we have the argument <code>flag_events</code> that takes a list of objects where we define the conditions and datasets to check in.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">derive_var_merged_ef_msrc</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  adsl,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">flag_events =</span> <span class="fu">list</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">flag_event</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">dataset_name =</span> <span class="st">"cm"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">condition =</span> CMCAT <span class="sc">==</span> <span class="st">"ANTI-CANCER"</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">flag_event</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">dataset_name =</span> <span class="st">"pr"</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">source_datasets =</span> <span class="fu">list</span>(<span class="at">cm =</span> cm, <span class="at">pr =</span> pr),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">new_var =</span> CANCTRFL</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  USUBJID CANCTRFL
+  &lt;chr&gt;   &lt;chr&gt;   
+1 1       Y       
+2 2       Y       
+3 3       Y       
+4 4       &lt;NA&gt;    </code></pre>
+</div>
+</div>
+<p>Let’s go! We searched over multiple datasets, <code>CM</code> and <code>PR</code>, with multiple conditions and appended a new variable <code>CANCTRFL</code> to <code>ADSL</code> setting to <code>"Y"</code> if those conditions were met.</p>
+</section>
+<section id="derive_vars_computed" class="level2">
+<h2 class="anchored" data-anchor-id="derive_vars_computed"><code>derive_vars_computed()</code></h2>
+<p>This function is very similar to <a href="https://pharmaverse.github.io/admiral/reference/derive_param_computed.html">derive_param_computed()</a>, but instead of adding observations we are going to add variable(s). Very handy when wanting to add some additional variables to <code>ADSL</code>, e.g.&nbsp;baseline variables.</p>
+<p>Let’s make some dummy data for an <code>ADSL</code> and <code>ADVS</code>. Our goal is to derive a <code>BMIBL</code> variable pulled from <code>ADVS</code> and append to <code>ADSL</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>STUDYID,   <span class="sc">~</span>USUBJID, <span class="sc">~</span>AGE,   <span class="sc">~</span>AGEU,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1302"</span>,   <span class="dv">61</span>, <span class="st">"YEARS"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"17-1344"</span>,   <span class="dv">64</span>, <span class="st">"YEARS"</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>advs <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>STUDYID, <span class="sc">~</span>USUBJID, <span class="sc">~</span>PARAMCD, <span class="sc">~</span>PARAM, <span class="sc">~</span>VISIT, <span class="sc">~</span>AVAL, <span class="sc">~</span>AVALU, <span class="sc">~</span>ABLFL,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1302"</span>, <span class="st">"HEIGHT"</span>, <span class="st">"Height (cm)"</span>, <span class="st">"SCREENING"</span>, <span class="fl">177.8</span>, <span class="st">"cm"</span>, <span class="st">"Y"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1302"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"SCREENING"</span>, <span class="fl">81.19</span>, <span class="st">"kg"</span>, <span class="st">"N"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1302"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"BASELINE"</span>, <span class="fl">82.1</span>, <span class="st">"kg"</span>, <span class="st">"Y"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1302"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"WEEK 2"</span>, <span class="fl">81.19</span>, <span class="st">"kg"</span>, <span class="st">"N"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1302"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"WEEK 4"</span>, <span class="fl">82.56</span>, <span class="st">"kg"</span>, <span class="st">"N"</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"01-1302"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"WEEK 6"</span>, <span class="fl">80.74</span>, <span class="st">"kg"</span>, <span class="st">"N"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"17-1344"</span>, <span class="st">"HEIGHT"</span>, <span class="st">"Height (cm)"</span>, <span class="st">"SCREENING"</span>, <span class="fl">163.5</span>, <span class="st">"cm"</span>, <span class="st">"Y"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"17-1344"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"SCREENING"</span>, <span class="fl">58.06</span>, <span class="st">"kg"</span>, <span class="st">"N"</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"17-1344"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"BASELINE"</span>, <span class="fl">58.06</span>, <span class="st">"kg"</span>, <span class="st">"Y"</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"17-1344"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"WEEK 2"</span>, <span class="fl">58.97</span>, <span class="st">"kg"</span>, <span class="st">"N"</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"17-1344"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"WEEK 4"</span>, <span class="fl">57.97</span>, <span class="st">"kg"</span>, <span class="st">"N"</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PILOT01"</span>, <span class="st">"17-1344"</span>, <span class="st">"WEIGHT"</span>, <span class="st">"Weight (kg)"</span>, <span class="st">"WEEK 6"</span>, <span class="fl">58.97</span>, <span class="st">"kg"</span>, <span class="st">"N"</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Take a look at how we use <code>new_vars</code> and <code>filter_add</code>. We use a function inside of <code>new_vars</code> to help us calculate the <code>BMI</code> while using the <code>filter_add</code> argument to only look at baseline records for the calculation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">derive_vars_computed</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dataset =</span> adsl,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">dataset_add =</span> advs,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> <span class="fu">c</span>(<span class="st">"WEIGHT"</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">constant_by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">constant_parameters =</span> <span class="fu">c</span>(<span class="st">"HEIGHT"</span>),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">new_vars =</span> <span class="fu">exprs</span>(<span class="at">BMIBL =</span> <span class="fu">compute_bmi</span>(<span class="at">height =</span> AVAL.HEIGHT, <span class="at">weight =</span> AVAL.WEIGHT)),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_add =</span> ABLFL <span class="sc">==</span> <span class="st">"Y"</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  STUDYID USUBJID   AGE AGEU  BMIBL
+  &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+1 PILOT01 01-1302    61 YEARS  26.0
+2 PILOT01 17-1344    64 YEARS  21.7</code></pre>
+</div>
+</div>
+<p>Alright! Simple enough. We just took records from <code>ADVS</code>to help us calculate the <code>BMI</code> at baseline using this function and appended our new variable to <code>ADSL</code>.</p>
+</section>
+</section>
+<section id="argument-alignment-and-bug-fixes" class="level1">
+<h1>Argument Alignment and Bug Fixes</h1>
+<section id="argument-alignment" class="level2">
+<h2 class="anchored" data-anchor-id="argument-alignment">Argument Alignment</h2>
+<p>A huge push was made for <code>1.0.0</code> to help align our arguments across all of <code>{admiral}</code> functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For <code>1.0.0</code>, we really want users to have a solid API for <code>{admiral}</code> functions.</p>
+<p>Let’s take a peak at the function <a href="https://pharmaverse.github.io/admiral/reference/consolidate_metadata.html"><code>consolidate_metadata()</code></a> to even better understand our goal here.</p>
+<pre><code>consolidate_metadata(
+  datasets,
+  key_vars,
+  source_var = SOURCE,
+  check_vars = "warning",
+  check_keys,
+  check_type = "error"
+)</code></pre>
+<p>In previous versions of <code>{admiral}</code> the <code>consolidate_metadata()</code> function had the argument <code>check_keys</code>, which helps to check uniqueness. Other functions had a similar argument, but were called <code>check_unique</code>. Therefore, to better align our common API for <code>{admiral}</code> functions we decided to rename the <code>check_keys</code> argument to <code>check_unique</code>. You can follow the discussion around this renaming effort in this <a href="https://github.com/pharmaverse/admiral/issues/2184">GitHub Issue</a>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="check.png" class="img-fluid figure-img" width="450"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The argument has a deprecated tag in the function documentation and will issue a warning to users. There was quite a bit of renaming of arguments for <code>1.0.0</code> so there are quite a few of these tags in our documentation. In subsequent releases, these arguments will be removed. Please see the <a href="https://pharmaverse.github.io/admiral/news/index.html#admiral-100">changelog</a> if you would like to explore other functions that had arguments renamed. The issues are linked to each rename so you can follow along with the discussions!</p>
+</section>
+<section id="bug-fixes" class="level2">
+<h2 class="anchored" data-anchor-id="bug-fixes">Bug Fixes</h2>
+<p>We love fixing bugs and take them incredibly seriously - especially when identified by members from the community.</p>
+<p>If you find a pesky bug, please fill out a <a href="https://github.com/pharmaverse/admiral/issues/new/choose">Bug Report</a> on our Issues Tab.</p>
+<p>Each bug fixed by our development team is documented in our <a href="https://pharmaverse.github.io/admiral/news/index.html#updates-of-existing-functions-1-0-0">changelog</a> with the Issue linked.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="issue_tag.png" class="img-fluid figure-img" width="469"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For example, if you click through the issue for <a href="https://github.com/pharmaverse/admiral/issues/2291"><code>derive_extreme_event()</code></a> that identified a problem where the <code>condition</code> was ignored if the <code>mode</code> argument was used, you can see the Bug Report along with a reproducible example. You can also see the Pull Request for the exact code changes that are addressing this bug linked in the Issue! Way cool!</p>
+</section>
+</section>
+<section id="new-on-boarding-resources" class="level1">
+<h1>New On-boarding Resources</h1>
+<p><code>{admiral}</code> has a lot of functions for working with ADaMs. This can be overwhelming for new users and we really sympathize. To help new users onboarding to <code>{admiral}</code> we have developed the following resources:</p>
+<section id="admiraldiscovery" class="level2">
+<h2 class="anchored" data-anchor-id="admiraldiscovery"><a href="https://pharmaverse.github.io/admiraldiscovery/index.html">admiraldiscovery</a></h2>
+<p>This is a dedicated website that lists out in a tabular format standard ADaM datasets and their common variables with corresponding <code>{admiral}</code> functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving <code>EOSDT</code> or <code>TRTSDT</code>!</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="admiraldisc.png" class="img-fluid figure-img" width="652"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="admiral-cheat-sheet" class="level2">
+<h2 class="anchored" data-anchor-id="admiral-cheat-sheet"><a href="https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf">admiral Cheat Sheet</a></h2>
+<p>Inspired by other R package cheat sheets! We try and surface commonly needed functions for doing ADaM derivations with simple tables to show how the data is transforming.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="cheatsheet.png" class="img-fluid figure-img" width="781"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="way-back-machine" class="level2">
+<h2 class="anchored" data-anchor-id="way-back-machine">Way Back Machine</h2>
+<p>Studies can last a long time. Adopting R as your primary analysis language for your study can introduce certain risks around package dependencies. Fixing those dependencies to certain package versions can help mitigate those risks. Unfortunately, as package websites are updated those helpful documents, examples and vignettes can be lost as the version changes. Do not lose heart <code>{admiral}</code> users. If you decided to fix to a certain version of <code>{admiral}</code>, we have you covered with our <strong>Way Back Machine</strong> that allows you to change the website documentation back to the version you are using.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="wayback.png" class="img-fluid figure-img" width="770"></p>
+</figure>
+</div>
+</div>
+</div>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2024-01-05 13:10:53.498743</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2024,
+  author = {Straub, Ben},
+  title = {Admiral 1.0.0},
+  date = {2024-01-04},
+  url = {https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Straub, Ben. 2024. <span>“Admiral 1.0.0.”</span> January 4, 2024. <a href="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html">https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
