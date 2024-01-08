@@ -15,12 +15,12 @@ c(
 
 # Fill in the info, e.g.:
 create_post(
-  post_name = "pharmaverse story", # needs to be character vector (length 1)
-  post_date = "2023-08-30", # needs to be character vector (length 1)
+  post_name = "admiral_1_0", # needs to be character vector (length 1)
+  post_date = "2023-12-18", # needs to be character vector (length 1)
   description = "", # you can fill the description in later as well
-  author = c("Nicholas Eugenio"), # one or more authors are permitted
-  cover_image = "pharmaverse", # chose one of the above (see line 8)
-  tags = c("community") # chose (multiple) from line 10
+  author = c("Ben Straub"), # one or more authors are permitted
+  cover_image = "new_features", # chose one of the above (see line 8)
+  tags = c("admiral") # chose (multiple) from line 10
 )
 
 
