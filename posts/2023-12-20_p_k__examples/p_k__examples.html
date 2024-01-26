@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Ben Straub">
-<meta name="dcterms.date" content="2023-07-10">
-<meta name="description" content="Reading SAS datasets into R. The data is not always as it seems!">
+<meta name="author" content="Jeff Dickinson">
+<meta name="dcterms.date" content="2024-01-26">
+<meta name="description" content="Explore PK ADaM Examples on Pharmaverse Examples Page">
 
-<title>Pharmaverse Blog - Blanks and NAs</title>
+<title>Pharmaverse Blog - PK Examples</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -114,12 +114,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Pharmaverse Blog - Blanks and NAs">
-<meta property="og:description" content="Reading SAS datasets into R. The data is not always as it seems!">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/admiral.png">
+<meta property="og:title" content="Pharmaverse Blog - PK Examples">
+<meta property="og:description" content="Explore PK ADaM Examples on Pharmaverse Examples Page">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/pharmaverse.png">
 <meta property="og:site_name" content="Pharmaverse Blog">
-<meta property="og:image:height" content="276">
-<meta property="og:image:width" content="369">
+<meta property="og:image:height" content="300">
+<meta property="og:image:width" content="300">
 </head>
 
 <body class="floating nav-fixed">
@@ -156,14 +156,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Blanks and NAs</h1>
+      <h1 class="title">PK Examples</h1>
                   <div>
         <div class="description">
-          Reading SAS datasets into R. The data is not always as it seems!
+          Explore PK ADaM Examples on Pharmaverse Examples Page
         </div>
       </div>
                           <div class="quarto-categories">
+                <div class="quarto-category">community</div>
                 <div class="quarto-category">admiral</div>
+                <div class="quarto-category">metacore</div>
+                <div class="quarto-category">metatools</div>
+                <div class="quarto-category">xportr</div>
               </div>
                   </div>
   </div>
@@ -174,14 +178,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Ben Straub </p>
+               <p>Jeff Dickinson </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 10, 2023</p>
+        <p class="date">January 26, 2024</p>
       </div>
     </div>
     
@@ -196,9 +200,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#loading-packages-and-making-dummy-data" id="toc-loading-packages-and-making-dummy-data" class="nav-link active" data-scroll-target="#loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</a></li>
-  <li><a href="#a-simple-conversion" id="toc-a-simple-conversion" class="nav-link" data-scroll-target="#a-simple-conversion">A simple conversion</a></li>
-  <li><a href="#thats-it" id="toc-thats-it" class="nav-link" data-scroll-target="#thats-it">That’s it!</a></li>
+  <li><a href="#pharmaverse-pk-examples" id="toc-pharmaverse-pk-examples" class="nav-link active" data-scroll-target="#pharmaverse-pk-examples">Pharmaverse PK Examples</a>
+  <ul class="collapse">
+  <li><a href="#first-load-packages" id="toc-first-load-packages" class="nav-link" data-scroll-target="#first-load-packages">First Load Packages</a></li>
+  <li><a href="#next-load-specifications-for-metacore" id="toc-next-load-specifications-for-metacore" class="nav-link" data-scroll-target="#next-load-specifications-for-metacore">Next Load Specifications for Metacore</a></li>
+  <li><a href="#load-source-datasets" id="toc-load-source-datasets" class="nav-link" data-scroll-target="#load-source-datasets">Load Source Datasets</a></li>
+  <li><a href="#derive-covariates-using-metatools" id="toc-derive-covariates-using-metatools" class="nav-link" data-scroll-target="#derive-covariates-using-metatools">Derive Covariates Using <code>{metatools}</code></a>
+  <ul class="collapse">
+  <li><a href="#derive-additional-baselines" id="toc-derive-additional-baselines" class="nav-link" data-scroll-target="#derive-additional-baselines">Derive Additional Baselines</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
 </nav>
@@ -215,91 +226,140 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>Reading in SAS-based datasets (<code>.sas7bdat</code> or <code>xpt</code>) into R has users calling the R package <a href="https://haven.tidyverse.org/">haven</a>. A typical call might invoke <code>read_sas()</code> or <code>read_xpt()</code> to bring in your source data to construct your ADaMs or SDTMs.</p>
-<p>Unfortunately, while using <a href="https://haven.tidyverse.org/">haven</a> the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like <code>is.na</code> in combination with <code>dplyr::filter()</code> to subset data. Check out <a href="https://bayer-group.github.io/sas2r/r-and-sas-syntax.html#handling-of-missing-values">Bayer’s SAS2R catalog: handling-of-missing-values</a> for more discussion on missing values and <code>NAs</code>.</p>
-<p>In the <a href="https://pharmaverse.github.io/admiral/">admiral</a> package, we have built a simple function called <code>convert_blanks_to_na()</code> to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to <code>NA_character_</code></p>
-<section id="loading-packages-and-making-dummy-data" class="level2">
-<h2 class="anchored" data-anchor-id="loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</h2>
+<section id="pharmaverse-pk-examples" class="level1">
+<h1>Pharmaverse PK Examples</h1>
+<p>A new <a href="https://pharmaverse.github.io/examples" target="_blank">pharmaverse examples website</a> has some exciting new features to explore.</p>
+<p>One of these is the ability to launch Posit Cloud to explore the example code and make your own modifications. This interactive Posit Cloud environment is preconfigured with all required package installations. Click here: <a href="https://posit.cloud/content/7279124" target="_blank">Launch Posit Cloud</a> to explore the examples code.</p>
+<p>This sample code here is based on the Population PK Analysis Data (ADPPK) model which follows the recently released <a href="https://www.cdisc.org/standards/foundational/adam/basic-data-structure-adam-poppk-implementation-guide-v1-0" target="_blank">CDISC Implementation Guide</a>.</p>
+<p>Population PK models generally make use of nonlinear mixed effects models that require numeric variables. The data used in the models will include both dosing and concentration records, relative time variables, and numeric covariate variables. For more details see the <code>{admiral}</code> <a href="https://pharmaverse.github.io/admiral/articles/pk_adnca.html" target="_blank">vignette</a>.</p>
+<section id="first-load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="first-load-packages">First Load Packages</h2>
+<p>First we will load the packages required for our project. We will use <code>{admiral}</code> for the creation of analysis data. <code>{admiral}</code> requires <code>{dplyr}</code>, <code>{lubridate}</code> and <code>{stringr}</code>. We will use <code>{metacore}</code> and <code>{metatools}</code> to store and manipulate metadata from our specifications. We will use <code>{xportr}</code> to perform checks on the final data and export to a transport file.</p>
+<p>The source SDTM data will come from the CDISC pilot study data stored in <code>{pharmaversesdtm}</code> and the ADaM ADSL data will come from <code>{pharmaverseadam}</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID, <span class="sc">~</span>RFICDTC,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"01"</span>, <span class="st">"2000-01-01"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"02"</span>, <span class="st">"2001-01-01"</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"03"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"04"</span>, <span class="st">"2001-01--"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">"2001---01"</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  USUBJID RFICDTC     
-  &lt;chr&gt;   &lt;chr&gt;       
-1 01      "2000-01-01"
-2 02      "2001-01-01"
-3 03      ""          
-4 04      "2001-01--" 
-5 05      "2001---01" 
-6 05      ""          </code></pre>
-</div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(metacore)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(metatools)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xportr)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pharmaversesdtm)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pharmaverseadam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="a-simple-conversion" class="level2">
-<h2 class="anchored" data-anchor-id="a-simple-conversion">A simple conversion</h2>
+<section id="next-load-specifications-for-metacore" class="level2">
+<h2 class="anchored" data-anchor-id="next-load-specifications-for-metacore">Next Load Specifications for Metacore</h2>
+<p>We have saved our specifications in an Excel file and will load them into <code>{metacore}</code> with the <code>metacore::spec_to_metacore()</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(df)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_na</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  USUBJID RFICDTC   
-  &lt;chr&gt;   &lt;chr&gt;     
-1 01      2000-01-01
-2 02      2001-01-01
-3 03      &lt;NA&gt;      
-4 04      2001-01-- 
-5 05      2001---01 
-6 05      &lt;NA&gt;      </code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(RFICDTC))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 2
-  USUBJID RFICDTC
-  &lt;chr&gt;   &lt;chr&gt;  
-1 03      &lt;NA&gt;   
-2 05      &lt;NA&gt;   </code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Load Specs for Metacore ----</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>metacore <span class="ot">&lt;-</span> <span class="fu">spec_to_metacore</span>(<span class="st">"pk_spec.xlsx"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_dataset</span>(<span class="st">"ADPPK"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="thats-it" class="level2">
-<h2 class="anchored" data-anchor-id="thats-it">That’s it!</h2>
-<p>A simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In <a href="https://pharmaverse.github.io/admiral/">admiral</a>, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function <code>use_ad_template()</code> to get the full R script for the below ADaMs.</p>
+<section id="load-source-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="load-source-datasets">Load Source Datasets</h2>
+<p>We will load our SDTM data from <code>{pharmaversesdtm}</code>. The main components of the Population PK will be exposure data from <code>EX</code> and pharmacokinetic concentration data from <code>PC</code>. Here we will use <code>ADSL</code> from <code>{pharmaverseadam}</code> for baseline characteristics and we will derive additional baselines from vital signs <code>VS</code> and laboratory data <code>LB</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list_all_templates</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Existing ADaM templates in package 'admiral':
-• ADAE
-• ADCM
-• ADEG
-• ADEX
-• ADLB
-• ADLBHY
-• ADMH
-• ADPC
-• ADPP
-• ADPPK
-• ADSL
-• ADVS</code></pre>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Load source datasets ----</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Load PC, EX, VS, LB and ADSL</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"pc"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"ex"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"vs"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"lb"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"adsl"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ex <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(ex)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>pc <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(pc)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>vs <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(vs)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>lb <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(lb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="derive-covariates-using-metatools" class="level2">
+<h2 class="anchored" data-anchor-id="derive-covariates-using-metatools">Derive Covariates Using <code>{metatools}</code></h2>
+<p>In this step we will create our numeric covariates using the <code>metatools::create_var_from_codelist()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#---- Derive Covariates ----</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Include numeric values for STUDYIDN, USUBJIDN, SEXN, RACEN etc.</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>covar <span class="ot">&lt;-</span> adsl <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> STUDYID, <span class="at">out_var =</span> STUDYIDN) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> SEX, <span class="at">out_var =</span> SEXN) <span class="sc">%&gt;%</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> RACE, <span class="at">out_var =</span> RACEN) <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> ETHNIC, <span class="at">out_var =</span> AETHNIC) <span class="sc">%&gt;%</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> AETHNIC, <span class="at">out_var =</span> AETHNICN) <span class="sc">%&gt;%</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> ARMCD, <span class="at">out_var =</span> COHORT) <span class="sc">%&gt;%</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> ARMCD, <span class="at">out_var =</span> COHORTC) <span class="sc">%&gt;%</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> COUNTRY, <span class="at">out_var =</span> COUNTRYN) <span class="sc">%&gt;%</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> COUNTRY, <span class="at">out_var =</span> COUNTRYL) <span class="sc">%&gt;%</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">STUDYIDN =</span> <span class="fu">as.numeric</span>(<span class="fu">word</span>(USUBJID, <span class="dv">1</span>, <span class="at">sep =</span> <span class="fu">fixed</span>(<span class="st">"-"</span>))),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">SITEIDN =</span> <span class="fu">as.numeric</span>(<span class="fu">word</span>(USUBJID, <span class="dv">2</span>, <span class="at">sep =</span> <span class="fu">fixed</span>(<span class="st">"-"</span>))),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">USUBJIDN =</span> <span class="fu">as.numeric</span>(<span class="fu">word</span>(USUBJID, <span class="dv">3</span>, <span class="at">sep =</span> <span class="fu">fixed</span>(<span class="st">"-"</span>))),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">SUBJIDN =</span> <span class="fu">as.numeric</span>(SUBJID),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">ROUTE =</span> <span class="fu">unique</span>(ex<span class="sc">$</span>EXROUTE),</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">FORM =</span> <span class="fu">unique</span>(ex<span class="sc">$</span>EXDOSFRM),</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">REGION1 =</span> COUNTRY,</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">REGION1N =</span> COUNTRYN,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">SUBJTYPC =</span> <span class="st">"Volunteer"</span>,</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> FORM, <span class="at">out_var =</span> FORMN) <span class="sc">%&gt;%</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> ROUTE, <span class="at">out_var =</span> ROUTEN) <span class="sc">%&gt;%</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_var_from_codelist</span>(metacore, <span class="at">input_var =</span> SUBJTYPC, <span class="at">out_var =</span> SUBJTYP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<section id="derive-additional-baselines" class="level3">
+<h3 class="anchored" data-anchor-id="derive-additional-baselines">Derive Additional Baselines</h3>
+<p>Next we add additional baselines from vital signs and laboratory data. Several common variables are computed using some of the built in functions in <code>{admiral}</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>labsbl <span class="ot">&lt;-</span> lb <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(LBBLFL <span class="sc">==</span> <span class="st">"Y"</span> <span class="sc">&amp;</span> LBTESTCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"CREAT"</span>, <span class="st">"ALT"</span>, <span class="st">"AST"</span>, <span class="st">"BILI"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">LBTESTCDB =</span> <span class="fu">paste0</span>(LBTESTCD, <span class="st">"BL"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(STUDYID, USUBJID, LBTESTCDB, LBSTRESN)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>covar_vslb <span class="ot">&lt;-</span> covar <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataset_add =</span> vs,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">filter_add =</span> VSTESTCD <span class="sc">==</span> <span class="st">"HEIGHT"</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(<span class="at">HTBL =</span> VSSTRESN)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataset_add =</span> vs,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">filter_add =</span> VSTESTCD <span class="sc">==</span> <span class="st">"WEIGHT"</span> <span class="sc">&amp;</span> VSBLFL <span class="sc">==</span> <span class="st">"Y"</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(<span class="at">WTBL =</span> VSSTRESN)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_transposed</span>(</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataset_merge =</span> labsbl,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">key_var =</span> LBTESTCDB,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">value_var =</span> LBSTRESN</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">BMIBL =</span> <span class="fu">compute_bmi</span>(<span class="at">height =</span> HTBL, <span class="at">weight =</span> WTBL),</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">BSABL =</span> <span class="fu">compute_bsa</span>(</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">height =</span> HTBL,</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">weight =</span> HTBL,</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">method =</span> <span class="st">"Mosteller"</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">CRCLBL =</span> <span class="fu">compute_egfr</span>(</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">creat =</span> CREATBL, <span class="at">creatu =</span> <span class="st">"SI"</span>, <span class="at">age =</span> AGE, <span class="at">weight =</span> WTBL, <span class="at">sex =</span> SEX,</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">method =</span> <span class="st">"CRCL"</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">EGFRBL =</span> <span class="fu">compute_egfr</span>(</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">creat =</span> CREATBL, <span class="at">creatu =</span> <span class="st">"SI"</span>, <span class="at">age =</span> AGE, <span class="at">weight =</span> WTBL, <span class="at">sex =</span> SEX,</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">method =</span> <span class="st">"CKD-EPI"</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">TBILBL =</span> BILIBL)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This covariate section of the code will be combined with the dosing and observation records from <code>EX</code> and <code>PC</code>.</p>
+<p>The rest of the code can be seen on the <a href="https://pharmaverse.github.io/examples" target="_blank">pharmaverse examples website</a> or in the <a href="https://posit.cloud/content/7279124" target="_blank">Posit Cloud environment</a>.</p>
+<p>Happy exploring!</p>
 <!--------------- appendices go here ----------------->
+</section>
 </section>
 <div class="cell">
 <div class="cell-output-display">
@@ -309,22 +369,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 
 
+</section>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-26 20:41:35.458323</p>
+<p>2024-01-26 20:41:33.44309</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
-  author = {Straub, Ben},
-  title = {Blanks and {NAs}},
-  date = {2023-07-10},
-  url = {https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-20_p_k__examples/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-20_p_k__examples/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dickinson2024,
+  author = {Dickinson, Jeff},
+  title = {PK {Examples}},
+  date = {2024-01-26},
+  url = {https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/p_k__examples.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html">https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dickinson2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Dickinson, Jeff. 2024. <span>“PK Examples.”</span> January 26, 2024. <a href="https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/p_k__examples.html">https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/p_k__examples.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

@@ -6,16 +6,621 @@
       version="2.0">
 <channel>
 <title>Pharmaverse Blog</title>
-<link>https://pharmaverse.github.io/blog/index.html</link>
+<link>https://pharmaverse.github.io/blog/</link>
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
-<generator>quarto-1.3.450</generator>
-<lastBuildDate>Thu, 04 Jan 2024 00:00:00 GMT</lastBuildDate>
+<generator>quarto-1.4.549</generator>
+<lastBuildDate>Fri, 26 Jan 2024 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>PK Examples</title>
+  <dc:creator>Jeff Dickinson</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/p_k__examples.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="pharmaverse-pk-examples" class="level1">
+<h1>Pharmaverse PK Examples</h1>
+<p>A new <a href="https://pharmaverse.github.io/examples" target="_blank">pharmaverse examples website</a> has some exciting new features to explore.</p>
+<p>One of these is the ability to launch Posit Cloud to explore the example code and make your own modifications. This interactive Posit Cloud environment is preconfigured with all required package installations. Click here: <a href="https://posit.cloud/content/7279124" target="_blank">Launch Posit Cloud</a> to explore the examples code.</p>
+<p>This sample code here is based on the Population PK Analysis Data (ADPPK) model which follows the recently released <a href="https://www.cdisc.org/standards/foundational/adam/basic-data-structure-adam-poppk-implementation-guide-v1-0" target="_blank">CDISC Implementation Guide</a>.</p>
+<p>Population PK models generally make use of nonlinear mixed effects models that require numeric variables. The data used in the models will include both dosing and concentration records, relative time variables, and numeric covariate variables. For more details see the <code>{admiral}</code> <a href="https://pharmaverse.github.io/admiral/articles/pk_adnca.html" target="_blank">vignette</a>.</p>
+<section id="first-load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="first-load-packages">First Load Packages</h2>
+<p>First we will load the packages required for our project. We will use <code>{admiral}</code> for the creation of analysis data. <code>{admiral}</code> requires <code>{dplyr}</code>, <code>{lubridate}</code> and <code>{stringr}</code>. We will use <code>{metacore}</code> and <code>{metatools}</code> to store and manipulate metadata from our specifications. We will use <code>{xportr}</code> to perform checks on the final data and export to a transport file.</p>
+<p>The source SDTM data will come from the CDISC pilot study data stored in <code>{pharmaversesdtm}</code> and the ADaM ADSL data will come from <code>{pharmaverseadam}</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load Packages</span></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(lubridate)</span>
+<span id="cb1-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(stringr)</span>
+<span id="cb1-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(metacore)</span>
+<span id="cb1-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(metatools)</span>
+<span id="cb1-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(xportr)</span>
+<span id="cb1-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(readr)</span>
+<span id="cb1-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(pharmaversesdtm)</span>
+<span id="cb1-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(pharmaverseadam)</span></code></pre></div>
+</div>
+</section>
+<section id="next-load-specifications-for-metacore" class="level2">
+<h2 class="anchored" data-anchor-id="next-load-specifications-for-metacore">Next Load Specifications for Metacore</h2>
+<p>We have saved our specifications in an Excel file and will load them into <code>{metacore}</code> with the <code>metacore::spec_to_metacore()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Load Specs for Metacore ----</span></span>
+<span id="cb2-2">metacore <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">spec_to_metacore</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pk_spec.xlsx"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select_dataset</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ADPPK"</span>)</span></code></pre></div>
+</div>
+</section>
+<section id="load-source-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="load-source-datasets">Load Source Datasets</h2>
+<p>We will load our SDTM data from <code>{pharmaversesdtm}</code>. The main components of the Population PK will be exposure data from <code>EX</code> and pharmacokinetic concentration data from <code>PC</code>. Here we will use <code>ADSL</code> from <code>{pharmaverseadam}</code> for baseline characteristics and we will derive additional baselines from vital signs <code>VS</code> and laboratory data <code>LB</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Load source datasets ----</span></span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load PC, EX, VS, LB and ADSL</span></span>
+<span id="cb3-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pc"</span>)</span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ex"</span>)</span>
+<span id="cb3-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"vs"</span>)</span>
+<span id="cb3-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lb"</span>)</span>
+<span id="cb3-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"adsl"</span>)</span>
+<span id="cb3-8"></span>
+<span id="cb3-9">ex <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">convert_blanks_to_na</span>(ex)</span>
+<span id="cb3-10">pc <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">convert_blanks_to_na</span>(pc)</span>
+<span id="cb3-11">vs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">convert_blanks_to_na</span>(vs)</span>
+<span id="cb3-12">lb <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">convert_blanks_to_na</span>(lb)</span></code></pre></div>
+</div>
+</section>
+<section id="derive-covariates-using-metatools" class="level2">
+<h2 class="anchored" data-anchor-id="derive-covariates-using-metatools">Derive Covariates Using <code>{metatools}</code></h2>
+<p>In this step we will create our numeric covariates using the <code>metatools::create_var_from_codelist()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#---- Derive Covariates ----</span></span>
+<span id="cb4-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Include numeric values for STUDYIDN, USUBJIDN, SEXN, RACEN etc.</span></span>
+<span id="cb4-3"></span>
+<span id="cb4-4">covar <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adsl <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> STUDYID, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> STUDYIDN) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> SEX, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> SEXN) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> RACE, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> RACEN) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> ETHNIC, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> AETHNIC) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> AETHNIC, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> AETHNICN) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> ARMCD, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> COHORT) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> ARMCD, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> COHORTC) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> COUNTRY, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> COUNTRYN) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> COUNTRY, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> COUNTRYL) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb4-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">STUDYIDN =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">word</span>(USUBJID, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fixed</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"-"</span>))),</span>
+<span id="cb4-16">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">SITEIDN =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">word</span>(USUBJID, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fixed</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"-"</span>))),</span>
+<span id="cb4-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">USUBJIDN =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">word</span>(USUBJID, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fixed</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"-"</span>))),</span>
+<span id="cb4-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">SUBJIDN =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(SUBJID),</span>
+<span id="cb4-19">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ROUTE =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unique</span>(ex<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>EXROUTE),</span>
+<span id="cb4-20">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">FORM =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unique</span>(ex<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>EXDOSFRM),</span>
+<span id="cb4-21">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">REGION1 =</span> COUNTRY,</span>
+<span id="cb4-22">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">REGION1N =</span> COUNTRYN,</span>
+<span id="cb4-23">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">SUBJTYPC =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Volunteer"</span>,</span>
+<span id="cb4-24">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-25">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> FORM, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> FORMN) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-26">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> ROUTE, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> ROUTEN) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-27">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_var_from_codelist</span>(metacore, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">input_var =</span> SUBJTYPC, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_var =</span> SUBJTYP)</span></code></pre></div>
+</div>
+<section id="derive-additional-baselines" class="level3">
+<h3 class="anchored" data-anchor-id="derive-additional-baselines">Derive Additional Baselines</h3>
+<p>Next we add additional baselines from vital signs and laboratory data. Several common variables are computed using some of the built in functions in <code>{admiral}</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">labsbl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lb <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(LBBLFL <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> LBTESTCD <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"CREAT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ALT"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AST"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"BILI"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">LBTESTCDB =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(LBTESTCD, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"BL"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(STUDYID, USUBJID, LBTESTCDB, LBSTRESN)</span>
+<span id="cb5-5"></span>
+<span id="cb5-6">covar_vslb <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> covar <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_merged</span>(</span>
+<span id="cb5-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dataset_add =</span> vs,</span>
+<span id="cb5-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter_add =</span> VSTESTCD <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HEIGHT"</span>,</span>
+<span id="cb5-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb5-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">HTBL =</span> VSSTRESN)</span>
+<span id="cb5-12">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_merged</span>(</span>
+<span id="cb5-14">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dataset_add =</span> vs,</span>
+<span id="cb5-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">filter_add =</span> VSTESTCD <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WEIGHT"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> VSBLFL <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>,</span>
+<span id="cb5-16">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb5-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">WTBL =</span> VSSTRESN)</span>
+<span id="cb5-18">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_vars_transposed</span>(</span>
+<span id="cb5-20">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">dataset_merge =</span> labsbl,</span>
+<span id="cb5-21">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb5-22">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">key_var =</span> LBTESTCDB,</span>
+<span id="cb5-23">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">value_var =</span> LBSTRESN</span>
+<span id="cb5-24">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-25">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb5-26">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">BMIBL =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compute_bmi</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> HTBL, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">weight =</span> WTBL),</span>
+<span id="cb5-27">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">BSABL =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compute_bsa</span>(</span>
+<span id="cb5-28">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> HTBL,</span>
+<span id="cb5-29">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">weight =</span> HTBL,</span>
+<span id="cb5-30">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">method =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Mosteller"</span></span>
+<span id="cb5-31">    ),</span>
+<span id="cb5-32">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">CRCLBL =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compute_egfr</span>(</span>
+<span id="cb5-33">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">creat =</span> CREATBL, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">creatu =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SI"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age =</span> AGE, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">weight =</span> WTBL, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sex =</span> SEX,</span>
+<span id="cb5-34">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">method =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"CRCL"</span></span>
+<span id="cb5-35">    ),</span>
+<span id="cb5-36">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">EGFRBL =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">compute_egfr</span>(</span>
+<span id="cb5-37">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">creat =</span> CREATBL, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">creatu =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SI"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age =</span> AGE, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">weight =</span> WTBL, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sex =</span> SEX,</span>
+<span id="cb5-38">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">method =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"CKD-EPI"</span></span>
+<span id="cb5-39">    )</span>
+<span id="cb5-40">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-41">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rename</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">TBILBL =</span> BILIBL)</span></code></pre></div>
+</div>
+<p>This covariate section of the code will be combined with the dosing and observation records from <code>EX</code> and <code>PC</code>.</p>
+<p>The rest of the code can be seen on the <a href="https://pharmaverse.github.io/examples" target="_blank">pharmaverse examples website</a> or in the <a href="https://posit.cloud/content/7279124" target="_blank">Posit Cloud environment</a>.</p>
+<p>Happy exploring!</p>
+<!--------------- appendices go here ----------------->
+</section>
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2024-01-26 20:41:33.44309</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-20_p_k__examples/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-20_p_k__examples/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dickinson2024,
+  author = {Dickinson, Jeff},
+  title = {PK {Examples}},
+  date = {2024-01-26},
+  url = {https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/p_k__examples.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dickinson2024" class="csl-entry quarto-appendix-citeas">
+Dickinson, Jeff. 2024. <span>“PK Examples.”</span> January 26, 2024. <a href="https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/p_k__examples.html">https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/p_k__examples.html</a>.
+</div></div></section></div> ]]></description>
+  <category>community</category>
+  <category>admiral</category>
+  <category>metacore</category>
+  <category>metatools</category>
+  <category>xportr</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/p_k__examples.html</guid>
+  <pubDate>Fri, 26 Jan 2024 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-12-20_p_k__examples/pharmaverse.png" medium="image" type="image/png" height="144" width="144"/>
+</item>
 <item>
   <title>End of Year Update from the Pharmaverse Council</title>
   <dc:creator>Mike Stackhouse</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -54,11 +659,11 @@
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:39.395876</p>
+<p>2024-01-26 20:41:18.732857</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{stackhouse2024,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{stackhouse2024,
   author = {Stackhouse, Mike},
   title = {End of {Year} {Update} from the {Pharmaverse} {Council}},
   date = {2024-01-04},
@@ -79,6 +684,7 @@ Council.”</span> January 4, 2024. <a href="https://pharmaverse.github.io/blog/
   <dc:creator>Ben Straub</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -826,7 +1432,7 @@ font-style: inherit;">"Y"</span></span>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/check.png" class="img-fluid figure-img" width="450"></p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/check.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="450"></p>
 </figure>
 </div>
 </div>
@@ -842,7 +1448,7 @@ font-style: inherit;">"Y"</span></span>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/issue_tag.png" class="img-fluid figure-img" width="469"></p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/issue_tag.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="469"></p>
 </figure>
 </div>
 </div>
@@ -860,7 +1466,7 @@ font-style: inherit;">"Y"</span></span>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiraldisc.png" class="img-fluid figure-img" width="652"></p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiraldisc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="652"></p>
 </figure>
 </div>
 </div>
@@ -873,7 +1479,7 @@ font-style: inherit;">"Y"</span></span>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/cheatsheet.png" class="img-fluid figure-img" width="781"></p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/cheatsheet.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="781"></p>
 </figure>
 </div>
 </div>
@@ -886,7 +1492,7 @@ font-style: inherit;">"Y"</span></span>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/wayback.png" class="img-fluid figure-img" width="770"></p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/wayback.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="770"></p>
 </figure>
 </div>
 </div>
@@ -905,11 +1511,11 @@ font-style: inherit;">"Y"</span></span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:53.498743</p>
+<p>2024-01-26 20:41:23.494016</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2024,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2024,
   author = {Straub, Ben},
   title = {Admiral 1.0.0},
   date = {2024-01-04},
@@ -930,6 +1536,7 @@ Straub, Ben. 2024. <span>“Admiral 1.0.0.”</span> January 4, 2024. <a href="h
   <dc:creator>Edoardo Mancini</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-11-27_higher_order/higher_order.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -1926,11 +2533,11 @@ font-style: inherit;">"last"</span>)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:41.971393</p>
+<p>2024-01-26 20:41:43.662167</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
   author = {Mancini, Edoardo},
   title = {Believe in a Higher Order!},
   date = {2023-11-27},
@@ -1951,6 +2558,7 @@ November 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-11-27_
   <dc:creator>Stefan Thoma</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-10-30_floating_point/floating_point.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -2209,9 +2817,8 @@ font-style: inherit;">resizable =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
-
-<div class="reactable html-widget html-fill-item" id="htmlwidget-b51f1bee061a69e63f26" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-b51f1bee061a69e63f26">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-e786a0fad157ae63b499" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e786a0fad157ae63b499">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>As you can see, the data-frame contains the column <code>GRADE_CRITERIA_CODE</code> which contains comparisons of floating point values. And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison initially:</p>
@@ -2906,9 +3513,8 @@ font-style: inherit;">resizable =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
-
-<div class="reactable html-widget html-fill-item" id="htmlwidget-821745d0538084e7b7f9" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-821745d0538084e7b7f9">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-f0f5f65940fac483c22b" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f0f5f65940fac483c22b">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -2980,11 +3586,11 @@ font-style: inherit;">1</span></span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:44.484925</p>
+<p>2024-01-26 20:41:53.185472</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
   author = {Thoma, Stefan},
   title = {Floating Point},
   date = {2023-10-30},
@@ -3011,6 +3617,7 @@ Thoma, Stefan. 2023. <span>“Floating Point.”</span> October 30, 2023. <a hre
 
 
 
+
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
 <p>There is significant momentum in driving the adoption of R packages in the life sciences industries, in particular, the R Consortium Submissions Working Group is dedicated to promoting the use of R for regulatory submissions to the FDA.</p>
@@ -3030,11 +3637,7 @@ Thoma, Stefan. 2023. <span>“Floating Point.”</span> October 30, 2023. <a hre
 </section>
 <section id="brief-introduction-to-rhino" class="level2">
 <h2 class="anchored" data-anchor-id="brief-introduction-to-rhino">Brief Introduction to Rhino</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="https://appsilon.com/fda-clinical-trial-submissions-with-r-shiny-rhino/"><img src="https://pharmaverse.github.io/blog/posts/2023-08-14_rhino_submission_2/images/Rhino image-01.png" class="img-fluid figure-img" width="145"></a></p>
-</figure>
-</div>
+<p><a href="https://appsilon.com/fda-clinical-trial-submissions-with-r-shiny-rhino/"><img src="https://pharmaverse.github.io/blog/posts/2023-08-14_rhino_submission_2/images/Rhino image-01.png" class="img-fluid" width="145"></a></p>
 <p>The <a href="https://appsilon.github.io/rhino/">Rhino framework</a> was developed by Appsilon to create enterprise-level Shiny applications, consistently and efficiently. This framework allows developers to apply the best software engineering practices, modularize code, test it thoroughly, enhance UI aesthetics, and monitor user adoption effectively.</p>
 <p>Rhino provides support in 3 main areas:</p>
 <ol type="1">
@@ -3098,7 +3701,7 @@ Thoma, Stefan. 2023. <span>“Floating Point.”</span> October 30, 2023. <a hre
 <h2 class="anchored" data-anchor-id="efficient-submissions-to-the-fda">Efficient Submissions to the FDA</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-08-14_rhino_submission_2/images/pkglite logo.png" class="img-fluid figure-img" width="144"></p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-08-14_rhino_submission_2/images/pkglite logo.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="144"></p>
 </figure>
 </div>
 <p>To comply with the <a href="https://www.fda.gov/files/medical%20devices/published/Tobacco-Electronic-Submission-File-Formats-and-Specifications.pdf">Electronic Submission File Formats and Specifications</a> for the eCTD submission, the programming code should carry a “.txt” extension. In the R Submissions Pilot 3 the group did not use {pkglite} as the FDA clarified that “.zip” and “.r” files are acceptable for submission. In this case, we utilized the {<a href="https://github.com/Merck/pkglite">pkglite</a>} R package to efficiently pack and unpack the FDA-pilot-app. This approach would facilitate the FDA reviewers in setting up the submission on their systems.</p>
@@ -3299,11 +3902,11 @@ font-style: inherit;">"rhinosubmission.txt"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:36.317363</p>
+<p>2024-01-26 20:41:28.665856</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{rodriguez2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{rodriguez2023,
   author = {Rodriguez, Ismael and Viyash, Vedha and Veríssimo, André and
     , APPSILON},
   title = {Reproducing the {R} {Submissions} {Pilot} 2 {Shiny}
@@ -3328,6 +3931,7 @@ Rhino.”</span> October 10, 2023. <a href="https://pharmaverse.github.io/blog/p
   <dc:creator>Edoardo Mancini</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -4383,7 +4987,7 @@ font-style: inherit;">"last"</span>)</span>
 
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
   author = {Mancini, Edoardo},
   title = {Date/Time {Functions} and {Imputation} in \{Admiral\}},
   date = {2023-09-26},
@@ -4406,6 +5010,7 @@ Mancini, Edoardo. 2023. <span>“Date/Time Functions and Imputation in
   <dc:creator>Nicholas Eugenio</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -4452,7 +5057,7 @@ Mancini, Edoardo. 2023. <span>“Date/Time Functions and Imputation in
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/logos.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Sample of pharmaverse packages</figcaption>
+<figcaption>Sample of pharmaverse packages</figcaption>
 </figure>
 </div>
 <!--------------- appendices go here ----------------->
@@ -4468,11 +5073,11 @@ Mancini, Edoardo. 2023. <span>“Date/Time Functions and Imputation in
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:22.165884</p>
+<p>2024-01-26 20:41:30.353902</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{eugenio2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{eugenio2023,
   author = {Eugenio, Nicholas},
   title = {The Pharmaverse (Hi)story},
   date = {2023-08-30},
@@ -4493,6 +5098,7 @@ August 30, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_ph
   <dc:creator>Kangjie Zhang</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -4916,11 +5522,11 @@ font-style: inherit;">round</span>(b)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:29.020999</p>
+<p>2024-01-26 20:41:39.060833</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
   author = {Zhang, Kangjie},
   title = {Rounding},
   date = {2023-08-22},
@@ -4940,6 +5546,7 @@ Zhang, Kangjie. 2023. <span>“Rounding.”</span> August 22, 2023. <a href="htt
   <dc:creator>Ben Straub</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/study_day.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -5105,11 +5712,11 @@ font-style: inherit;">DEMOEDY =</span> AENDT)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:48.142948</p>
+<p>2024-01-26 20:41:51.02964</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
   author = {Straub, Ben},
   title = {It’s All Relative? - {Calculating} {Relative} {Days} Using
     Admiral},
@@ -5132,6 +5739,7 @@ Using Admiral.”</span> August 8, 2023. <a href="https://pharmaverse.github.io/
   <dc:creator>Stefan Thoma</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-07-20_cross_company_dev/cross_industry_dev.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -5180,7 +5788,7 @@ font-style: inherit;">library</span>(admiral)</span></code></pre></div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://pharmaverse.github.io/blog/posts/2023-07-20_cross_company_dev/project_board.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">GitHub project board</figcaption>
+<figcaption>GitHub project board</figcaption>
 </figure>
 </div>
 <p>By design, <a href="https://github.com/pharmaverse/admiral">{admiral}</a> is community built. Most developers working on the project are statistical programmers working on clinical reporting themselves. As an open source project, community input is highly valued, and anyone using <a href="https://github.com/pharmaverse/admiral">{admiral}</a> is encouraged to submit issues or take on issues as part of the development team. We also do occasional events to bring the statistical programmers community and the developers closer together. Just last February we organised the <a href="https://github.com/pharmaverse/admiral">{admiral}</a> hackathon which had up to 500 participants.</p>
@@ -5198,7 +5806,7 @@ font-style: inherit;">library</span>(admiral)</span></code></pre></div>
 
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
   author = {Thoma, Stefan},
   title = {Cross-Industry {Open} {Source} {Package} {Development}},
   date = {2023-07-25},
@@ -5220,6 +5828,7 @@ Development.”</span> July 25, 2023. <a href="https://pharmaverse.github.io/blo
   <dc:creator>Edoardo Mancini</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/code_sections.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -5274,8 +5883,8 @@ font-style: inherit;">3</span></span></code></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/section_navigator.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Collapsed sections, outline view and the section navigator for the example above.</figcaption>
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/section_navigator.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+<figcaption>Collapsed sections, outline view and the section navigator for the example above.</figcaption>
 </figure>
 </div>
 </div>
@@ -5313,8 +5922,8 @@ font-style: inherit;">3</span></span></code></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/subsections.png" class="img-fluid figure-img" style="width:45.0%"></p>
-<figcaption class="figure-caption">Code subsections for the example above.</figcaption>
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/subsections.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:45.0%"></p>
+<figcaption>Code subsections for the example above.</figcaption>
 </figure>
 </div>
 </div>
@@ -5339,8 +5948,8 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/adae_code_sections.png" class="img-fluid figure-img" style="width:45.0%"></p>
-<figcaption class="figure-caption">A screenshot of the code sections in the ADAE template script</figcaption>
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-07-14_code_sections/adae_code_sections.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:45.0%"></p>
+<figcaption>A screenshot of the code sections in the ADAE template script</figcaption>
 </figure>
 </div>
 </div>
@@ -5362,11 +5971,11 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:38.02142</p>
+<p>2024-01-26 20:41:37.177297</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2023,
   author = {Mancini, Edoardo},
   title = {How to Use {Code} {Sections}},
   date = {2023-07-14},
@@ -5388,6 +5997,7 @@ Mancini, Edoardo. 2023. <span>“How to Use Code Sections.”</span> July
   <dc:creator>Ben Straub</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -5545,11 +6155,11 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:26.059533</p>
+<p>2024-01-26 20:41:35.458323</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
   author = {Straub, Ben},
   title = {Blanks and {NAs}},
   date = {2023-07-10},
@@ -5569,6 +6179,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
   <dc:creator>Vincent Shen</dc:creator>
   <link>https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -5605,11 +6216,11 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:27.429802</p>
+<p>2024-01-26 20:41:25.166687</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{shen2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{shen2023,
   author = {Shen, Vincent},
   title = {Falcon},
   date = {2023-07-09},
@@ -5628,8 +6239,9 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 <item>
   <title>Hello pharmaverse</title>
   <dc:creator>Ben Straub</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/index.html</link>
+  <link>https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/</link>
   <description><![CDATA[ 
+
 
 
 
@@ -5695,11 +6307,11 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:49.483322</p>
+<p>2024-01-26 20:41:17.380473</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
   author = {Straub, Ben},
   title = {Hello Pharmaverse},
   date = {2023-06-28},
@@ -5710,15 +6322,342 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 Straub, Ben. 2023. <span>“Hello Pharmaverse.”</span> June 28, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-28_welcome">https://pharmaverse.github.io/blog/posts/2023-06-28_welcome</a>.
 </div></div></section></div> ]]></description>
   <category>community</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/index.html</guid>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/</guid>
   <pubDate>Wed, 28 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/pharmaverse.PNG" medium="image"/>
 </item>
 <item>
+  <title>Derive a new parameter computed from the value of other parameters</title>
+  <dc:creator>Kangjie Zhang</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.</p>
+<p>The <a href="https://pharmaverse.github.io/admiral/"><code>admiral</code></a> function <a href="https://pharmaverse.github.io/admiral/reference/derive_param_computed.html"><code>derive_param_computed()</code></a> adds a parameter computed from the analysis value of other parameters.</p>
+<p>It works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code.</p>
+</section>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<p>A value level validation use case, where <code>derive_param_computed()</code> is used to validate a derived parameter - <code>PARAMCD = ADPCYMG</code> (Actual Dose per Cycle) in ADEX dataset.</p>
+<section id="derivation" class="level3">
+<h3 class="anchored" data-anchor-id="derivation">Derivation</h3>
+<p>Actual Dose per Cycle is derived from the Total Amount of Dose (<code>PARAMCD = TOTDOSE</code>) / Number of Cycles (<code>PARAMCD = NUMCYC</code>)</p>
+<p>In this example, <code>ADEX.AVAL when ADEX.PARAMCD = ADPCYMG</code> can be derived as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AAVAL%20(PARAMCD%20=%20ADPCYMG)%20=%20%5Cfrac%7BAVAL%20(PARAMCD%20=%20TOTDOSE)%7D%7BAVAL%20(PARAMCD%20=%20NUMCYC)%7D%0A"></p>
+</section>
+<section id="loading-packages-and-creating-example-data" class="level3">
+<h3 class="anchored" data-anchor-id="loading-packages-and-creating-example-data">Loading Packages and Creating Example Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tibble)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(diffdf)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">adex <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb1-7">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AVAL,</span>
+<span id="cb1-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Total Amount of Dose (mg)"</span>,  <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">180</span>,</span>
+<span id="cb1-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NUMCYC"</span>,  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of Cycles"</span>,           <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb1-10">)</span></code></pre></div>
+</div>
+</section>
+<section id="derive-new-parameter" class="level3">
+<h3 class="anchored" data-anchor-id="derive-new-parameter">Derive New Parameter</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">adex_admiral <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_param_computed</span>(</span>
+<span id="cb2-2">  adex,</span>
+<span id="cb2-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(USUBJID),</span>
+<span id="cb2-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">parameters =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NUMCYC"</span>),</span>
+<span id="cb2-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">set_values_to =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exprs</span>(</span>
+<span id="cb2-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">PARAMCD =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ADPCYMG"</span>,</span>
+<span id="cb2-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">PARAM =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Actual Dose per Cycle (mg)"</span>,</span>
+<span id="cb2-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">AVAL =</span> AVAL.TOTDOSE <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> AVAL.NUMCYC</span>
+<span id="cb2-9">  )</span>
+<span id="cb2-10">)</span></code></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  USUBJID PARAMCD PARAM                       AVAL
+  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;
+1 101     TOTDOSE Total Amount of Dose (mg)    180
+2 101     NUMCYC  Number of Cycles               3
+3 101     ADPCYMG Actual Dose per Cycle (mg)    60</code></pre>
+</div>
+</div>
+</section>
+<section id="compare" class="level3">
+<h3 class="anchored" data-anchor-id="compare">Compare</h3>
+<p>For validation purpose, the <a href="https://gowerc.github.io/diffdf/reference/diffdf.html">diffdf</a> package is used below to mimic SAS <code>proc compare</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adex_expected <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb4-2">  adex,</span>
+<span id="cb4-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb4-4">    <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>AVAL,</span>
+<span id="cb4-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ADPCYMG"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Actual Dose per Cycle (mg)"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span></span>
+<span id="cb4-6">  )</span>
+<span id="cb4-7">)</span>
+<span id="cb4-8"></span>
+<span id="cb4-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">diffdf</span>(adex_expected, adex_admiral, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">keys =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"USUBJID"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No issues were found!</code></pre>
+</div>
+</div>
+<!--------------- appendices go here ----------------->
+</section>
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2024-01-26 20:41:27.029597</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
+  author = {Zhang, Kangjie},
+  title = {Derive a New Parameter Computed from the Value of Other
+    Parameters},
+  date = {2023-06-27},
+  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas">
+Zhang, Kangjie. 2023. <span>“Derive a New Parameter Computed from the
+Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html">https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</a>.
+</div></div></section></div> ]]></description>
+  <category>admiral</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</guid>
+  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>Admiral Hackathon 2023 Revisited</title>
+  <dc:creator>Stefan Thoma</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- my typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
+<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/cosa">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
+<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
+<section id="introduction-to-r-workshop" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
+<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
+<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="admiral-hackathon" class="level2">
+<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
+<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
+<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
+<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
+<p>Congratulations to the winners:</p>
+<ul>
+<li><code>ViiV Team_GSK</code></li>
+<li><code>teamspoRt</code></li>
+<li><code>TatianaPXL</code></li>
+<li><code>Divyasneelam</code></li>
+<li><code>AdaMTeamIndia</code></li>
+<li><code>Sanofi_BP</code></li>
+<li><code>Jagadish</code> (our community hero)</li>
+<li><code>AZ_WAWA</code></li>
+</ul>
+<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
+<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/cosa">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
+<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.</p>
+<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2024-01-26 20:41:47.114662</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+  author = {Thoma, Stefan},
+  title = {Admiral {Hackathon} 2023 {Revisited}},
+  date = {2023-06-27},
+  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
+Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
+June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup</a>.
+</div></div></section></div> ]]></description>
+  <category>community</category>
+  <category>admiral</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/</guid>
+  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png" medium="image" type="image/png" height="144" width="144"/>
+</item>
+<item>
   <title>Hackathon Feedback Application</title>
   <dc:creator>Stefan Thoma</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/index.html</link>
+  <link>https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/</link>
   <description><![CDATA[ 
+
 
 
 
@@ -5976,7 +6915,7 @@ font-style: inherit;">100</span>)</span>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/register_team.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Screenshot of the register team interface</figcaption>
+<figcaption>Screenshot of the register team interface</figcaption>
 </figure>
 </div>
 <p>The challenge here was to adapt the number of input fields depending on the number of team members. This means that the team name and email interface must be rendered: First, we check how many team members are part of the group, this is stored in the <code>input$n_members</code> input variable. Then we create a <code>tagList</code> with as many elements as team members. Each element contains two columns, one for the email, one for the member name. This <code>tagList</code> is then returned and displayed to the user.</p>
@@ -6577,11 +7516,11 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:23.927892</p>
+<p>2024-01-26 20:41:48.784639</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
   author = {Thoma, Stefan},
   title = {Hackathon {Feedback} {Application}},
   date = {2023-06-27},
@@ -6596,321 +7535,9 @@ Thoma, Stefan. 2023. <span>“Hackathon Feedback Application.”</span> June
   <category>shiny</category>
   <category>community</category>
   <category>admiral</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/index.html</guid>
+  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/</guid>
   <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/shiny_klee.png" medium="image" type="image/png" height="141" width="144"/>
-</item>
-<item>
-  <title>Admiral Hackathon 2023 Revisited</title>
-  <dc:creator>Stefan Thoma</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<!--------------- my typical setup ----------------->
-<!--------------- post begins here ----------------->
-<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
-<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/cosa">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
-<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
-<section id="introduction-to-r-workshop" class="level2">
-<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
-<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
-<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
-<section id="admiral-hackathon" class="level2">
-<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
-<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
-<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
-<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
-<p>Congratulations to the winners:</p>
-<ul>
-<li><code>ViiV Team_GSK</code></li>
-<li><code>teamspoRt</code></li>
-<li><code>TatianaPXL</code></li>
-<li><code>Divyasneelam</code></li>
-<li><code>AdaMTeamIndia</code></li>
-<li><code>Sanofi_BP</code></li>
-<li><code>Jagadish</code> (our community hero)</li>
-<li><code>AZ_WAWA</code></li>
-</ul>
-<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
-<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/cosa">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
-<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the Pharmaverse aims to provide.</p>
-<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
-<!--------------- appendices go here ----------------->
-</section>
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2024-01-05 13:10:32.369975</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
-  author = {Thoma, Stefan},
-  title = {Admiral {Hackathon} 2023 {Revisited}},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas">
-Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
-June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup</a>.
-</div></div></section></div> ]]></description>
-  <category>community</category>
-  <category>admiral</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/index.html</guid>
-  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png" medium="image" type="image/png" height="144" width="144"/>
-</item>
-<item>
-  <title>Derive a new parameter computed from the value of other parameters</title>
-  <dc:creator>Kangjie Zhang</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<!--------------- my typical setup ----------------->
-<!--------------- post begins here ----------------->
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.</p>
-<p>The <a href="https://pharmaverse.github.io/admiral/"><code>admiral</code></a> function <a href="https://pharmaverse.github.io/admiral/reference/derive_param_computed.html"><code>derive_param_computed()</code></a> adds a parameter computed from the analysis value of other parameters.</p>
-<p>It works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code.</p>
-</section>
-<section id="example" class="level2">
-<h2 class="anchored" data-anchor-id="example">Example</h2>
-<p>A value level validation use case, where <code>derive_param_computed()</code> is used to validate a derived parameter - <code>PARAMCD = ADPCYMG</code> (Actual Dose per Cycle) in ADEX dataset.</p>
-<section id="derivation" class="level3">
-<h3 class="anchored" data-anchor-id="derivation">Derivation</h3>
-<p>Actual Dose per Cycle is derived from the Total Amount of Dose (<code>PARAMCD = TOTDOSE</code>) / Number of Cycles (<code>PARAMCD = NUMCYC</code>)</p>
-<p>In this example, <code>ADEX.AVAL when ADEX.PARAMCD = ADPCYMG</code> can be derived as:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AAVAL%20(PARAMCD%20=%20ADPCYMG)%20=%20%5Cfrac%7BAVAL%20(PARAMCD%20=%20TOTDOSE)%7D%7BAVAL%20(PARAMCD%20=%20NUMCYC)%7D%0A"></p>
-</section>
-<section id="loading-packages-and-creating-example-data" class="level3">
-<h3 class="anchored" data-anchor-id="loading-packages-and-creating-example-data">Loading Packages and Creating Example Data</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tibble)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr)</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(diffdf)</span>
-<span id="cb1-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(admiral)</span>
-<span id="cb1-5"></span>
-<span id="cb1-6">adex <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tribble</span>(</span>
-<span id="cb1-7">  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>AVAL,</span>
-<span id="cb1-8">  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Total Amount of Dose (mg)"</span>,  <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">180</span>,</span>
-<span id="cb1-9">  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"NUMCYC"</span>,  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Number of Cycles"</span>,           <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span></span>
-<span id="cb1-10">)</span></code></pre></div>
-</div>
-</section>
-<section id="derive-new-parameter" class="level3">
-<h3 class="anchored" data-anchor-id="derive-new-parameter">Derive New Parameter</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">adex_admiral <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_param_computed</span>(</span>
-<span id="cb2-2">  adex,</span>
-<span id="cb2-3">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(USUBJID),</span>
-<span id="cb2-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">parameters =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TOTDOSE"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"NUMCYC"</span>),</span>
-<span id="cb2-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">set_values_to =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(</span>
-<span id="cb2-6">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAMCD =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADPCYMG"</span>,</span>
-<span id="cb2-7">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAM =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Actual Dose per Cycle (mg)"</span>,</span>
-<span id="cb2-8">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">AVAL =</span> AVAL.TOTDOSE <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> AVAL.NUMCYC</span>
-<span id="cb2-9">  )</span>
-<span id="cb2-10">)</span></code></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 4
-  USUBJID PARAMCD PARAM                       AVAL
-  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;
-1 101     TOTDOSE Total Amount of Dose (mg)    180
-2 101     NUMCYC  Number of Cycles               3
-3 101     ADPCYMG Actual Dose per Cycle (mg)    60</code></pre>
-</div>
-</div>
-</section>
-<section id="compare" class="level3">
-<h3 class="anchored" data-anchor-id="compare">Compare</h3>
-<p>For validation purpose, the <a href="https://gowerc.github.io/diffdf/reference/diffdf.html">diffdf</a> package is used below to mimic SAS <code>proc compare</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adex_expected <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bind_rows</span>(</span>
-<span id="cb4-2">  adex,</span>
-<span id="cb4-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tribble</span>(</span>
-<span id="cb4-4">    <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>USUBJID,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAMCD,  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>PARAM,                       <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span>AVAL,</span>
-<span id="cb4-5">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"101"</span>,     <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADPCYMG"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Actual Dose per Cycle (mg)"</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">60</span></span>
-<span id="cb4-6">  )</span>
-<span id="cb4-7">)</span>
-<span id="cb4-8"></span>
-<span id="cb4-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">diffdf</span>(adex_expected, adex_admiral, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">keys =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"USUBJID"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>No issues were found!</code></pre>
-</div>
-</div>
-<!--------------- appendices go here ----------------->
-</section>
-</section>
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2024-01-05 13:10:51.281009</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
-  author = {Zhang, Kangjie},
-  title = {Derive a New Parameter Computed from the Value of Other
-    Parameters},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas">
-Zhang, Kangjie. 2023. <span>“Derive a New Parameter Computed from the
-Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html">https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</a>.
-</div></div></section></div> ]]></description>
-  <category>admiral</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</guid>
-  <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>

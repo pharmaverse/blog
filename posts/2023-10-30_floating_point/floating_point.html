@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -25,7 +25,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -84,7 +84,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -93,6 +99,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -104,7 +111,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         background: #eeeeee;
       }
 </style>
-
 <script src="../../site_libs/core-js-2.5.3/shim.min.js"></script>
 <script src="../../site_libs/react-18.2.0/react.min.js"></script>
 <script src="../../site_libs/react-18.2.0/react-dom.min.js"></script>
@@ -116,11 +122,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Pharmaverse Blog - Floating point">
 <meta property="og:description" content="The untold story of how admiral deals with floating points.">
 <meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-10-30_floating_point/admiral.png">
-<meta property="og:site-name" content="Pharmaverse Blog">
+<meta property="og:site_name" content="Pharmaverse Blog">
 <meta property="og:image:height" content="276">
 <meta property="og:image:width" content="369">
 </head>
@@ -128,10 +161,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Pharmaverse Blog</span>
     </a>
@@ -143,15 +176,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/pharmaverse/blog" rel="" target=""><i class="bi bi-github" role="img" aria-label="github">
+    <a class="nav-link" href="https://github.com/pharmaverse/blog"> <i class="bi bi-github" role="img" aria-label="github">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools">
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
-          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -194,7 +227,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
@@ -206,12 +239,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul>
 </nav>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
@@ -306,9 +340,8 @@ Exact floating point values
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(TERM, GRADE_CRITERIA_CODE) <span class="sc">%&gt;%</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">reactable</span>(<span class="at">defaultPageSize =</span> <span class="dv">4</span>, <span class="at">highlight =</span> <span class="cn">TRUE</span>, <span class="at">bordered =</span> <span class="cn">TRUE</span>, <span class="at">striped =</span> <span class="cn">TRUE</span>, <span class="at">resizable =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
-<div class="reactable html-widget html-fill-item" id="htmlwidget-b51f1bee061a69e63f26" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-b51f1bee061a69e63f26">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-e786a0fad157ae63b499" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e786a0fad157ae63b499">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>As you can see, the data-frame contains the column <code>GRADE_CRITERIA_CODE</code> which contains comparisons of floating point values. And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison initially:</p>
@@ -565,9 +598,8 @@ Exact floating point values
 <span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(TERM, GRADE_CRITERIA_CODE) <span class="sc">%&gt;%</span></span>
 <span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">reactable</span>(<span class="at">defaultPageSize =</span> <span class="dv">4</span>, <span class="at">highlight =</span> <span class="cn">TRUE</span>, <span class="at">bordered =</span> <span class="cn">TRUE</span>, <span class="at">striped =</span> <span class="cn">TRUE</span>, <span class="at">resizable =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-
-<div class="reactable html-widget html-fill-item" id="htmlwidget-821745d0538084e7b7f9" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-821745d0538084e7b7f9">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-f0f5f65940fac483c22b" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f0f5f65940fac483c22b">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -609,11 +641,11 @@ Exact floating point values
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-01-05 13:10:44.484925</p>
+<p>2024-01-26 20:41:53.185472</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div id="quarto-reuse" class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
   author = {Thoma, Stefan},
   title = {Floating Point},
   date = {2023-10-30},
@@ -664,6 +696,33 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       } else {
         el.classList.add('notransition');
       }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
     }
   }
   const toggleColorMode = (alternate) => {
@@ -732,13 +791,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return localAlternateSentinel;
     }
   }
-  let localAlternateSentinel = 'default';
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
   // Dark / light mode switch
   window.quartoToggleColorScheme = () => {
     // Read the current dark / light value 
     let toAlternate = !hasAlternateSentinel();
     toggleColorMode(toAlternate);
     setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
   };
   // Ensure there is a toggle, if there isn't float one in the top right
   if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -817,10 +878,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -830,8 +890,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -844,6 +913,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -887,6 +1075,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -912,6 +1101,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -972,6 +1187,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 
