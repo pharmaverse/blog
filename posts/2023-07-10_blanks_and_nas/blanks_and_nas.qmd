@@ -28,7 +28,7 @@ to bring in your source data to construct your ADaMs or SDTMs.
 
 Unfortunately, while using [haven](https://haven.tidyverse.org/) the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like `is.na` in combination with `dplyr::filter()` to subset data. Check out [Bayer's SAS2R catalog: handling-of-missing-values](https://bayer-group.github.io/sas2r/r-and-sas-syntax.html#handling-of-missing-values) for more discussion on missing values and `NAs`.
 
-In the [admiral](https://pharmaverse.github.io/admiral/cran-release/) package, we have built a simple function called `convert_blanks_to_na()` to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to `NA_character_`
+In the [admiral](https://pharmaverse.github.io/admiral/) package, we have built a simple function called `convert_blanks_to_na()` to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to `NA_character_`
 
 ## Loading Packages and Making Dummy Data
 
@@ -64,7 +64,7 @@ df_na %>% filter(is.na(RFICDTC))
 
 ## That's it!
 
-A simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In [admiral](https://pharmaverse.github.io/admiral/cran-release/), we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function `use_ad_template()` to get the full R script for the below ADaMs.
+A simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In [admiral](https://pharmaverse.github.io/admiral/), we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function `use_ad_template()` to get the full R script for the below ADaMs.
 
 ```{r}
 list_all_templates()
