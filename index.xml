@@ -10,7 +10,279 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.549</generator>
-<lastBuildDate>Fri, 26 Jan 2024 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 01 Feb 2024 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Testing Containers and WebAssembly in Submissions to the FDA</title>
+  <dc:creator>André Veríssimo</dc:creator>
+  <dc:creator>Tymoteusz Makowski</dc:creator>
+  <dc:creator>Pedro Silva</dc:creator>
+  <dc:creator>Vedha Viyash</dc:creator>
+  <dc:creator>APPSILON </dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p><a href="https://www.r-consortium.org/">The R Consortium Submission Working Group</a> has now successfully made two pilot submissions to the FDA. All the submissions done by the group are focused on improving practices for R-based clinical trial regulatory submissions. Now, the R submission Working Groups in collaboration with <a href="https://appsilon.com/">Appsilon</a> and Posit are exploring new technologies such as Containers and WebAssembly. In this article, we dive into the details of this exploration.</p>
+<section id="how-everything-started" class="level2">
+<h2 class="anchored" data-anchor-id="how-everything-started">How Everything Started</h2>
+<section id="pilot-1" class="level3">
+<h3 class="anchored" data-anchor-id="pilot-1">Pilot 1</h3>
+<p>This pilot was initially submitted on November 22, 2021. <strong>This submission was the first publicly available R-based submission to the FDA.</strong> This was a test <a href="https://github.com/RConsortium/submissions-pilot1-to-fda">submission</a> that aimed to explore the submission of an R package to the FDA following the eCTD specifications. The submission included an R package, R scripts for analysis, R-based analysis data reviewed guide (ADRG), and other important components. The final <a href="https://github.com/RConsortium/submissions-wg/blob/main/_Documents/Summary_R_Pilot_Submission2.pdf">response letter from the FDA</a> was received on March 14, 2022.</p>
+</section>
+</section>
+<section id="pilot-2" class="level2">
+<h2 class="anchored" data-anchor-id="pilot-2">Pilot 2</h2>
+<p><strong>This was one of the first submission packages containing a Shiny application</strong>. The main goal of this pilot was to test the submission of an R-based Shiny application bundled into a submission package and transfer it successfully to FDA reviewers. The <a href="https://github.com/RConsortium/submissions-pilot2-to-fda">submitted application</a> was built using the datasets and analysis that were used for the R Submission Pilot 1. The deployed version of this application is available on <a href="https://rconsortium.shinyapps.io/submissions-pilot2/">this site</a>. Alternatively, a Rhino-based version of the application can be found <a href="https://connect.appsilon.com/rhino-fda-pilot/">here</a>.</p>
+<p>The final response letter from the FDA was reviewed on September 27, 2023.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/images/teal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="159"></p>
+</figure>
+</div>
+<p>In this submission, there were many open-source R packages that were used to create and execute the Shiny application. A very well known shiny-based interactive exploration framework <strong>{teal}</strong> was used mainly for analyzing the clinical trial data; this package is included in the pharmaverse package repository. The full list of open-source and proprietary R analysis packages is available on this <a href="https://rsubmission-draft.website-us-east-1.linodeobjects.com/">Analysis Data Reviewer’s Guide</a> prepared by the R Consortium R Submissions Working Group for the Pilot 2.</p>
+</section>
+<section id="whats-next" class="level1">
+<h1>What’s next?</h1>
+<section id="pilot-3" class="level2">
+<h2 class="anchored" data-anchor-id="pilot-3">Pilot 3</h2>
+<p>This pilot was successfully submitted to FDA on Aug 28, 2023. <strong>This was the first publicly available R <a href="https://github.com/RConsortium/submissions-pilot3-adam-to-fda">submission</a> that included R scripts to produce ADaM datasets and TLFs</strong>. Both the ADaMs (SDTM .xpt sources from the CDISC Pilot study) and the TLFs (ADaMs .xpt sourced from the ADaMs generated in R by the Pilot 3 team) were created using R.&nbsp; The next steps for this pilot is to await FDA’s review and approval which may take several months to complete.</p>
+</section>
+<section id="pilot-4" class="level2">
+<h2 class="anchored" data-anchor-id="pilot-4">Pilot 4</h2>
+<p>This pilot aims to <strong>explore using technologies such as containers and WebAssembly</strong> software to package a Shiny application into a self-contained unit, streamlining the transfer and execution process for enhanced efficiency.</p>
+<p>This pilot is expected to be divided into two parallel submissions:</p>
+<p>(a) <a href="https://github.com/RConsortium/submissions-pilot4-webR">will investigate WebAssembly</a> and</p>
+<p>(b) <a href="http://github.com/Appsilon/experimental-fda-submission-4-podman/">will investigate containers</a>.</p>
+<section id="the-journey-with-webassembly-and-containers" class="level3">
+<h3 class="anchored" data-anchor-id="the-journey-with-webassembly-and-containers">The Journey with WebAssembly and Containers</h3>
+<p>Our team at Appsilon teamed up with the dynamic Pilot 4 crew to explore WebAssembly technology and containers. George Stagg and Winston Chang also joined the working group to discuss the web-assembly portion of Pilot 4. This partnership brought together our engineering prowess to contribute to these tools, injecting fresh perspectives into the ongoing pilot project.</p>
+<p>Some of the outcomes of the collaboration:</p>
+<ol type="1">
+<li><p>We were able to set up a robust container environment for this pilot project.&nbsp;</p></li>
+<li><p>We aided the progress made on the use of both experimental technologies: containers and WebAssembly.</p></li>
+<li><p>We developed a working prototype submission using <a href="https://podman.io/">Podman</a> container technology.</p></li>
+<li><p>We developed a working early-stage prototype for wrapping a small Shiny application using WebAssembly.</p></li>
+</ol>
+<section id="webassembly" class="level4">
+<h4 class="anchored" data-anchor-id="webassembly">WebAssembly</h4>
+<p><img src="https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/images/webr.png" class="img-fluid" width="231"></p>
+<p>WebAssembly allows languages like R to be executed at near-native speed directly within web browsers, providing users with the ability to run R code without having R installed locally. <a href="https://docs.r-wasm.org/webr/v0.2.0/"><strong>WebR</strong></a> is essentially the R programming language adapted to run in a web browser environment using WebAssembly. This project is under active development.&nbsp;</p>
+</section>
+</section>
+<section id="the-pilot-4-shiny-app-up-and-running-on-webr" class="level3">
+<h3 class="anchored" data-anchor-id="the-pilot-4-shiny-app-up-and-running-on-webr">The Pilot 4 Shiny App Up and Running on webR!</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/images/rconsortiumxappsilon.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>The deployed example of the Shiny app running on webR <a href="https://brilliant-elf-2da930.netlify.app/">is available here</a>. Check out the video of the application running below.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/wfk_IJ82e9E" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>During this pilot, engineers at Appsilon developed a prototype of a Shiny application running on webR. The application reuses most of the code from the previous pilot apps with some tweaks and a couple of hacks/changes to get around non CRAN dependencies, specially for data loading, WebR compatibilities, and shimming some of the functionality from {teal} and other packages that are (for now) not available on CRAN.</p>
+<section id="webr-shiny-app" class="level4">
+<h4 class="anchored" data-anchor-id="webr-shiny-app">webR Shiny App</h4>
+<p>During the <strong>second iteration</strong>, which was recently held, Pedro Silva shared the process of developing this Shiny app running on webR.</p>
+</section>
+<section id="the-process" class="level4">
+<h4 class="anchored" data-anchor-id="the-process">The Process</h4>
+<ol type="1">
+<li><p><strong>Leverage last 2 iterations of the application</strong></p>
+<ul>
+<li><p>Reuse as much code as possible</p></li>
+<li><p>Avoid touching the logic part</p></li>
+</ul></li>
+<li><p><strong>Restrict the number of dependencies to packages on CRAN</strong></p>
+<ul>
+<li>Replace/shim functionality that was lost from removing dependencies</li>
+</ul></li>
+</ol>
+<p>Here is the list of dependencies to packages on CRAN, those that worked are colored green, those that were removed are marked in orange. We ended up with just 3 problematic dependencies (bold).</p>
+<pre><code>|                                           |                                           |
+|------------------------------------|------------------------------------|
+| [library(config)]{style="color:orange"}   | [library(reactable)]{style="color:green"} |
+| **library(cowplot)**                      | [library(rhino)]{style="color:orange"}    |
+| [library(dplyr)]{style="color:green"}     | [library(rtables)]{style="color:green"}   |
+| [library(emmeans)]{style="color:green"}   | [library(shiny)]{style="color:green"}     |
+| [library(ggplot2)]{style="color:green"}   | [library(stringr)]{style="color:green"}   |
+| [library(glue)]{style="color:green"}      | **library(teal)**                         |
+| [library(haven)]{style="color:green"}     | **library(teal.data)**                    |
+| [library(htmltools)]{style="color:green"} | [library(tibble)]{style="color:green"}    |
+| [library(huxtable)]{style="color:green"}  | [library(tidyr)]{style="color:green"}     |
+| [library(magrittr)]{style="color:green"}  | [library(tippy)]{style="color:green"}     |
+| [library(markdown)]{style="color:green"}  | [library(Tplyr)]{style="color:green"}     |
+| [library(pkgload)]{style="color:green"}   | [library(utils)]{style="color:green"}     |
+| [library(purrr)]{style="color:green"}     | [library(visR)]{style="color:green"}      |</code></pre>
+<p>Issues with library(cowplot):</p>
+<ul>
+<li>Some issue with low-level dependencies when deployed</li>
+</ul>
+<p>Solution:</p>
+<ul>
+<li>Replace functionality with HTML</li>
+</ul>
+<p>Issues with library(teal):</p>
+<ul>
+<li>Uses {shiny.widgets} (not working for webR)</li>
+</ul>
+<p>Solution:</p>
+<ul>
+<li><p>Redo the UI</p></li>
+<li><p>Load modules directly</p></li>
+<li><p>Recreate filter functionality</p></li>
+</ul>
+<p>Issues with library(teal.data):</p>
+<ul>
+<li>Use rds exports</li>
+</ul>
+<p>Solution:</p>
+<ul>
+<li>Shim functionality, load data directly</li>
+</ul>
+<ol start="3" type="1">
+<li><p><strong>Leverage shinylive and httpuv to export and serve the application</strong></p>
+<ol type="a">
+<li><p><strong>Shinylive can help streamline the export process</strong></p>
+<ol type="i">
+<li><p><strong>Problems</strong></p>
+<ol type="1">
+<li><p><strong>shiny.live won’t let us have non-R files in the application directory - this is an outstanding bug that George asked us to raise an issue for.</strong></p></li>
+<li><p><strong>We wouldn’t be able to run the application as a traditional shiny app</strong></p></li>
+</ol></li>
+<li><p><strong>Solution:</strong></p></li>
+</ol>
+<pre><code>1.  **Custom build script**</code></pre></li>
+<li><p><strong>{httpuv} can help serve the application</strong></p>
+<ol type="i">
+<li><strong>{httpuv} would run natively on a machine to serve the Shiny app</strong></li>
+</ol></li>
+</ol></li>
+</ol>
+</section>
+<section id="application-structure" class="level4">
+<h4 class="anchored" data-anchor-id="application-structure">Application Structure</h4>
+<p>The figure below shows an overview of what we ended with:</p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/images/application-structure.png" class="img-fluid"></p>
+<p>Some of the issues and solutions found at the very beginning:</p>
+<ol type="1">
+<li>The previous applications were built using golem and another one in Rhino; the support for these frameworks is not great in webR up to now.
+<ol type="a">
+<li>Solution
+<ol type="i">
+<li>{box} works out of the box (reuse the rhino version modules)</li>
+<li>Simplify the structure and use a simple shiny modular structure</li>
+</ol></li>
+</ol></li>
+<li>Shinylive does not like non-R files when generating the bundle
+<ol type="a">
+<li>Solution
+<ol type="i">
+<li>Keep the app folder as clean as possible for now (www folder only)</li>
+</ol></li>
+</ol></li>
+<li>{teal} and {teal.data} are not on CRAN
+<ol type="a">
+<li>Solution
+<ol type="i">
+<li>Shim and used functionality</li>
+<li>Use a simple tab system for the UI structure</li>
+</ol></li>
+</ol></li>
+</ol>
+<p>The FDA were previously told that the shiny application being prepared for the Pilot 4 submission would not be a 1 to 1 mapping from the previous one submitted for the Pilot 2 due to certain constraints such as {teal} not being on CRAN; however, this didn’t represent a problem for them since they would mainly like to test the technology.</p>
+<p>Pedro Silva, one of the engineers working on the development of this app mentioned <strong>“While WebR is still in development, it shows tremendous promise! The loading is definitely still a pain point (over 100mb to set up the environment!) but it will only get better moving forward.”</strong></p>
+</section>
+<section id="containers" class="level4">
+<h4 class="anchored" data-anchor-id="containers">Containers</h4>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/images/podman-docker-singularity.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Containerization, particularly through technologies like <a href="https://appsilon.com/docker-vs-podman-vs-singularity/amp/">Docker, Podman or Singularity</a>, offers several advantages for deploying Shiny apps.</p>
+<section id="choosing-the-right-container" class="level5">
+<h5 class="anchored" data-anchor-id="choosing-the-right-container">Choosing the Right Container</h5>
+<p>Choosing the right container was a question that arose in this project. Although <strong>Docker</strong> is the most popular, we decided to move forward with <strong>Podman</strong>.&nbsp;</p>
+<p>In our exploration of containerization tools for deploying Shiny applications, we’ve identified key distinctions between Docker and Podman that influenced our choice.&nbsp;</p>
+<p><strong>Podman</strong> stands out for its daemonless architecture, enhancing security by eliminating the need for a central daemon process. Unlike Docker, Podman supports running containers as non-root users, a critical feature for meeting FDA reviewer requirements. Developed by Red Hat and maintained as an open-source project, Podman prioritizes security with its rootless container support, offering a robust solution for security-conscious users.&nbsp;</p>
+</section>
+<section id="goals" class="level5">
+<h5 class="anchored" data-anchor-id="goals">Goals</h5>
+<p>A Container-based method to deploy Pilot 2 Shiny App.</p>
+</section>
+<section id="what-we-did" class="level5">
+<h5 class="anchored" data-anchor-id="what-we-did">What we did</h5>
+<ol type="1">
+<li><p>Configurable Podman Dockerfile / docker-compose.yml</p>
+<ol type="a">
+<li>R version</li>
+<li>Registry / organization name / image name (differences between docker.io and ghcr.io)</li>
+</ol></li>
+<li><p>Documentation on creating the container</p></li>
+<li><p>CI: Automated build on amd64 and arm64 platforms</p></li>
+</ol>
+</section>
+<section id="podman-short-demo" class="level5">
+<h5 class="anchored" data-anchor-id="podman-short-demo">Podman short-demo</h5>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/H2WnpvVgmyE" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>Below is the dockerfile (recipe) for the container:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/images/file-recipe.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+</section>
+</section>
+</section>
+</section>
+<section id="next-steps" class="level1">
+<h1>Next Steps</h1>
+<p>The next steps are waiting for the review of the Pilot 3 by the FDA and to submit the two sections that explore the new technologies to regulatory authorities. Thanks to the collaboration between the R Submission Working Group and other institutions, there is already a working prototype of a {teal}-like Shiny application running on webR and further exploration with Podman is underway.&nbsp;</p>
+<ol type="1">
+<li>Submission to FDA</li>
+<li>Rhino Compatibility</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/images/rhino.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="161"></p>
+</figure>
+</div>
+<p>Appsilon is working on the side with Rhino compatibility, eventually we might be able to just add this framework into the Pilot 4 application.</p>
+<ol start="3" type="1">
+<li><p>{teal}</p>
+<p>This and other packages might be on CRAN soon. We could incorporate them after that, replacing the shims created for this version</p></li>
+<li><p>Boot Time</p>
+<p>We need to improve boot time (remove dependencies and keep working on webR).</p></li>
+</ol>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{veríssimo2024,
+  author = {Veríssimo, André and Makowski, Tymoteusz and Silva, Pedro
+    and Viyash, Vedha and , APPSILON},
+  title = {Testing {Containers} and {WebAssembly} in {Submissions} to
+    the {FDA}},
+  date = {2024-02-01},
+  url = {https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-veríssimo2024" class="csl-entry quarto-appendix-citeas">
+Veríssimo, André, Tymoteusz Makowski, Pedro Silva, Vedha Viyash, and
+APPSILON. 2024. <span>“Testing Containers and WebAssembly in Submissions
+to the FDA.”</span> February 1, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html">https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html</a>.
+</div></div></section></div> ]]></description>
+  <category>submission</category>
+  <category>community</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html</guid>
+  <pubDate>Thu, 01 Feb 2024 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2024-02-01_containers_webassembly_submission/FDA_WebR_Rhino.webp" medium="image" type="image/webp"/>
+</item>
 <item>
   <title>PK Examples</title>
   <dc:creator>Jeff Dickinson</dc:creator>
@@ -592,7 +864,7 @@ font-style: inherit;">TBILBL =</span> BILIBL)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:29.879149</p>
+<p>2024-02-01 12:42:36.670717</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-20_p_k__examples/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-20_p_k__examples/renv.lock">R environment</a></p>
@@ -1447,7 +1719,7 @@ font-style: inherit;">"Y"</span></span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:37.177593</p>
+<p>2024-02-01 12:42:44.050491</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/renv.lock">R environment</a></p>
@@ -1511,7 +1783,7 @@ Straub, Ben. 2024. <span>“Admiral 1.0.0.”</span> January 4, 2024. <a href="h
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:38.870695</p>
+<p>2024-02-01 12:42:45.713213</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../renv.lock">R environment</a></p>
@@ -2533,7 +2805,7 @@ font-style: inherit;">"last"</span>)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:06.874564</p>
+<p>2024-02-01 12:42:12.894734</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-03_higher_order/renv.lock">R environment</a></p>
@@ -2817,8 +3089,8 @@ font-style: inherit;">resizable =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
-<div class="reactable html-widget html-fill-item" id="htmlwidget-3261b32f1df218f9376b" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-3261b32f1df218f9376b">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-bc1e8a0a5275c63fec27" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bc1e8a0a5275c63fec27">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>As you can see, the data-frame contains the column <code>GRADE_CRITERIA_CODE</code> which contains comparisons of floating point values. And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison initially:</p>
@@ -3513,8 +3785,8 @@ font-style: inherit;">resizable =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
-<div class="reactable html-widget html-fill-item" id="htmlwidget-3ef87bac8dabaa2b38aa" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-3ef87bac8dabaa2b38aa">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-efa7bde2bc4245a5abb4" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-efa7bde2bc4245a5abb4">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -3586,7 +3858,7 @@ font-style: inherit;">1</span></span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:43.976417</p>
+<p>2024-02-01 12:42:49.540771</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/renv.lock">R environment</a></p>
@@ -3902,7 +4174,7 @@ font-style: inherit;">"rhinosubmission.txt"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:41.550192</p>
+<p>2024-02-01 12:42:47.195254</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/renv.lock">R environment</a></p>
@@ -5073,7 +5345,7 @@ Mancini, Edoardo. 2023. <span>“Date/Time Functions and Imputation in
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:26.757735</p>
+<p>2024-02-01 12:42:33.536958</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/renv.lock">R environment</a></p>
@@ -5522,7 +5794,7 @@ font-style: inherit;">round</span>(b)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:20.344918</p>
+<p>2024-02-01 12:42:27.242831</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/renv.lock">R environment</a></p>
@@ -5712,7 +5984,7 @@ font-style: inherit;">DEMOEDY =</span> AENDT)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:33.442683</p>
+<p>2024-02-01 12:42:40.324505</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
@@ -5971,7 +6243,7 @@ font-style: inherit;">"ADAE"</span>)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:18.44166</p>
+<p>2024-02-01 12:42:25.336389</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-14_code_sections/renv.lock">R environment</a></p>
@@ -6155,7 +6427,7 @@ font-style: inherit;">list_all_templates</span>()</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:09.63242</p>
+<p>2024-02-01 12:42:16.798817</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_na.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/renv.lock">R environment</a></p>
@@ -6216,7 +6488,7 @@ Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="ht
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:34.960458</p>
+<p>2024-02-01 12:42:41.841083</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/renv.lock">R environment</a></p>
@@ -6307,7 +6579,7 @@ Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://p
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:31.481975</p>
+<p>2024-02-01 12:42:38.30988</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-01-09_welcome/renv.lock">R environment</a></p>
@@ -6412,7 +6684,7 @@ Straub, Ben. 2023. <span>“Hello Pharmaverse.”</span> June 28, 2023. <a href=
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:14.841985</p>
+<p>2024-02-01 12:42:21.757191</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -6631,7 +6903,7 @@ font-style: inherit;">"PARAMCD"</span>))</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:16.723448</p>
+<p>2024-02-01 12:42:23.618603</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/admiral/renv.lock">R environment</a></p>
@@ -7516,7 +7788,7 @@ font-style: inherit;">2</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-01 12:24:22.445948</p>
+<p>2024-02-01 12:42:29.277076</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-19_shiny_run_script/renv.lock">R environment</a></p>
@@ -7538,278 +7810,6 @@ Thoma, Stefan. 2023. <span>“Hackathon Feedback Application.”</span> June
   <guid>https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/</guid>
   <pubDate>Tue, 27 Jun 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-06-27__hackathon_app/shiny_klee.png" medium="image" type="image/png" height="141" width="144"/>
-</item>
-<item>
-  <title>Testing Containers and WebAssembly in Submissions to the FDA</title>
-  <dc:creator>André Veríssimo</dc:creator>
-  <dc:creator>Tymoteusz Makowski</dc:creator>
-  <dc:creator>Pedro Silva</dc:creator>
-  <dc:creator>Vedha Viyash</dc:creator>
-  <dc:creator>APPSILON </dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/containers_and_webassembly_submissions.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<!--------------- typical setup ----------------->
-<!--------------- post begins here ----------------->
-<p><a href="https://www.r-consortium.org/">The R Consortium Submission Working Group</a> has now successfully made two pilot submissions to the FDA. All the submissions done by the group are focused on improving practices for R-based clinical trial regulatory submissions. Now, the R submission Working Groups in collaboration with <a href="https://appsilon.com/">Appsilon</a> and Posit are exploring new technologies such as Containers and WebAssembly. In this article, we dive into the details of this exploration.</p>
-<section id="how-everything-started" class="level2">
-<h2 class="anchored" data-anchor-id="how-everything-started">How Everything Started</h2>
-<section id="pilot-1" class="level3">
-<h3 class="anchored" data-anchor-id="pilot-1">Pilot 1</h3>
-<p>This pilot was initially submitted on November 22, 2021. <strong>This submission was the first publicly available R-based submission to the FDA.</strong> This was a test <a href="https://github.com/RConsortium/submissions-pilot1-to-fda">submission</a> that aimed to explore the submission of an R package to the FDA following the eCTD specifications. The submission included an R package, R scripts for analysis, R-based analysis data reviewed guide (ADRG), and other important components. The final <a href="https://github.com/RConsortium/submissions-wg/blob/main/_Documents/Summary_R_Pilot_Submission2.pdf">response letter from the FDA</a> was received on March 14, 2022.</p>
-</section>
-</section>
-<section id="pilot-2" class="level2">
-<h2 class="anchored" data-anchor-id="pilot-2">Pilot 2</h2>
-<p><strong>This was one of the first submission packages containing a Shiny application</strong>. The main goal of this pilot was to test the submission of an R-based Shiny application bundled into a submission package and transfer it successfully to FDA reviewers. The <a href="https://github.com/RConsortium/submissions-pilot2-to-fda">submitted application</a> was built using the datasets and analysis that were used for the R Submission Pilot 1. The deployed version of this application is available on <a href="https://rconsortium.shinyapps.io/submissions-pilot2/">this site</a>. Alternatively, a Rhino-based version of the application can be found <a href="https://connect.appsilon.com/rhino-fda-pilot/">here</a>.</p>
-<p>The final response letter from the FDA was reviewed on September 27, 2023.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/images/teal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="159"></p>
-</figure>
-</div>
-<p>In this submission, there were many open-source R packages that were used to create and execute the Shiny application. A very well known shiny-based interactive exploration framework <strong>{teal}</strong> was used mainly for analyzing the clinical trial data; this package is included in the pharmaverse package repository. The full list of open-source and proprietary R analysis packages is available on this <a href="https://rsubmission-draft.website-us-east-1.linodeobjects.com/">Analysis Data Reviewer’s Guide</a> prepared by the R Consortium R Submissions Working Group for the Pilot 2.</p>
-</section>
-<section id="whats-next" class="level1">
-<h1>What’s next?</h1>
-<section id="pilot-3" class="level2">
-<h2 class="anchored" data-anchor-id="pilot-3">Pilot 3</h2>
-<p>This pilot was successfully submitted to FDA on Aug 28, 2023. <strong>This was the first publicly available R <a href="https://github.com/RConsortium/submissions-pilot3-adam-to-fda">submission</a> that included R scripts to produce ADaM datasets and TLFs</strong>. Both the ADaMs (SDTM .xpt sources from the CDISC Pilot study) and the TLFs (ADaMs .xpt sourced from the ADaMs generated in R by the Pilot 3 team) were created using R.&nbsp; The next steps for this pilot is to await FDA’s review and approval which may take several months to complete.</p>
-</section>
-<section id="pilot-4" class="level2">
-<h2 class="anchored" data-anchor-id="pilot-4">Pilot 4</h2>
-<p>This pilot aims to <strong>explore using technologies such as containers and WebAssembly</strong> software to package a Shiny application into a self-contained unit, streamlining the transfer and execution process for enhanced efficiency.</p>
-<p>This pilot is expected to be divided into two parallel submissions:</p>
-<p>(a) <a href="https://github.com/RConsortium/submissions-pilot4-webR">will investigate WebAssembly</a> and</p>
-<p>(b) <a href="http://github.com/Appsilon/experimental-fda-submission-4-podman/">will investigate containers</a>.</p>
-<section id="the-journey-with-webassembly-and-containers" class="level3">
-<h3 class="anchored" data-anchor-id="the-journey-with-webassembly-and-containers">The Journey with WebAssembly and Containers</h3>
-<p>Our team at Appsilon teamed up with the dynamic Pilot 4 crew to explore WebAssembly technology and containers. George Stagg and Winston Chang also joined the working group to discuss the web-assembly portion of Pilot 4. This partnership brought together our engineering prowess to contribute to these tools, injecting fresh perspectives into the ongoing pilot project.</p>
-<p>Some of the outcomes of the collaboration:</p>
-<ol type="1">
-<li><p>We were able to set up a robust container environment for this pilot project.&nbsp;</p></li>
-<li><p>We aided the progress made on the use of both experimental technologies: containers and WebAssembly.</p></li>
-<li><p>We developed a working prototype submission using <a href="https://podman.io/">Podman</a> container technology.</p></li>
-<li><p>We developed a working early-stage prototype for wrapping a small Shiny application using WebAssembly.</p></li>
-</ol>
-<section id="webassembly" class="level4">
-<h4 class="anchored" data-anchor-id="webassembly">WebAssembly</h4>
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/images/webr.png" class="img-fluid" width="231"></p>
-<p>WebAssembly allows languages like R to be executed at near-native speed directly within web browsers, providing users with the ability to run R code without having R installed locally. <a href="https://docs.r-wasm.org/webr/v0.2.0/"><strong>WebR</strong></a> is essentially the R programming language adapted to run in a web browser environment using WebAssembly. This project is under active development.&nbsp;</p>
-</section>
-</section>
-<section id="the-pilot-4-shiny-app-up-and-running-on-webr" class="level3">
-<h3 class="anchored" data-anchor-id="the-pilot-4-shiny-app-up-and-running-on-webr">The Pilot 4 Shiny App Up and Running on webR!</h3>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/images/rconsortiumxappsilon.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>The deployed example of the Shiny app running on webR <a href="https://brilliant-elf-2da930.netlify.app/">is available here</a>. Check out the video of the application running below.</p>
-<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/wfk_IJ82e9E" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
-<p>During this pilot, engineers at Appsilon developed a prototype of a Shiny application running on webR. The application reuses most of the code from the previous pilot apps with some tweaks and a couple of hacks/changes to get around non CRAN dependencies, specially for data loading, WebR compatibilities, and shimming some of the functionality from {teal} and other packages that are (for now) not available on CRAN.</p>
-<section id="webr-shiny-app" class="level4">
-<h4 class="anchored" data-anchor-id="webr-shiny-app">webR Shiny App</h4>
-<p>During the <strong>second iteration</strong>, which was recently held, Pedro Silva shared the process of developing this Shiny app running on webR.</p>
-</section>
-<section id="the-process" class="level4">
-<h4 class="anchored" data-anchor-id="the-process">The Process</h4>
-<ol type="1">
-<li><p><strong>Leverage last 2 iterations of the application</strong></p>
-<ul>
-<li><p>Reuse as much code as possible</p></li>
-<li><p>Avoid touching the logic part</p></li>
-</ul></li>
-<li><p><strong>Restrict the number of dependencies to packages on CRAN</strong></p>
-<ul>
-<li>Replace/shim functionality that was lost from removing dependencies</li>
-</ul></li>
-</ol>
-<p>Here is the list of dependencies to packages on CRAN, those that worked are colored green, those that were removed are marked in orange. We ended up with just 3 problematic dependencies (bold).</p>
-<pre><code>|                                           |                                           |
-|------------------------------------|------------------------------------|
-| [library(config)]{style="color:orange"}   | [library(reactable)]{style="color:green"} |
-| **library(cowplot)**                      | [library(rhino)]{style="color:orange"}    |
-| [library(dplyr)]{style="color:green"}     | [library(rtables)]{style="color:green"}   |
-| [library(emmeans)]{style="color:green"}   | [library(shiny)]{style="color:green"}     |
-| [library(ggplot2)]{style="color:green"}   | [library(stringr)]{style="color:green"}   |
-| [library(glue)]{style="color:green"}      | **library(teal)**                         |
-| [library(haven)]{style="color:green"}     | **library(teal.data)**                    |
-| [library(htmltools)]{style="color:green"} | [library(tibble)]{style="color:green"}    |
-| [library(huxtable)]{style="color:green"}  | [library(tidyr)]{style="color:green"}     |
-| [library(magrittr)]{style="color:green"}  | [library(tippy)]{style="color:green"}     |
-| [library(markdown)]{style="color:green"}  | [library(Tplyr)]{style="color:green"}     |
-| [library(pkgload)]{style="color:green"}   | [library(utils)]{style="color:green"}     |
-| [library(purrr)]{style="color:green"}     | [library(visR)]{style="color:green"}      |</code></pre>
-<p>Issues with library(cowplot):</p>
-<ul>
-<li>Some issue with low-level dependencies when deployed</li>
-</ul>
-<p>Solution:</p>
-<ul>
-<li>Replace functionality with HTML</li>
-</ul>
-<p>Issues with library(teal):</p>
-<ul>
-<li>Uses {shiny.widgets} (not working for webR)</li>
-</ul>
-<p>Solution:</p>
-<ul>
-<li><p>Redo the UI</p></li>
-<li><p>Load modules directly</p></li>
-<li><p>Recreate filter functionality</p></li>
-</ul>
-<p>Issues with library(teal.data):</p>
-<ul>
-<li>Use rds exports</li>
-</ul>
-<p>Solution:</p>
-<ul>
-<li>Shim functionality, load data directly</li>
-</ul>
-<ol start="3" type="1">
-<li><p><strong>Leverage shinylive and httpuv to export and serve the application</strong></p>
-<ol type="a">
-<li><p><strong>Shinylive can help streamline the export process</strong></p>
-<ol type="i">
-<li><p><strong>Problems</strong></p>
-<ol type="1">
-<li><p><strong>shiny.live won’t let us have non-R files in the application directory - this is an outstanding bug that George asked us to raise an issue for.</strong></p></li>
-<li><p><strong>We wouldn’t be able to run the application as a traditional shiny app</strong></p></li>
-</ol></li>
-<li><p><strong>Solution:</strong></p></li>
-</ol>
-<pre><code>1.  **Custom build script**</code></pre></li>
-<li><p><strong>{httpuv} can help serve the application</strong></p>
-<ol type="i">
-<li><strong>{httpuv} would run natively on a machine to serve the Shiny app</strong></li>
-</ol></li>
-</ol></li>
-</ol>
-</section>
-<section id="application-structure" class="level4">
-<h4 class="anchored" data-anchor-id="application-structure">Application Structure</h4>
-<p>The figure below shows an overview of what we ended with:</p>
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/images/application-structure.png" class="img-fluid"></p>
-<p>Some of the issues and solutions found at the very beginning:</p>
-<ol type="1">
-<li>The previous applications were built using golem and another one in Rhino; the support for these frameworks is not great in webR up to now.
-<ol type="a">
-<li>Solution
-<ol type="i">
-<li>{box} works out of the box (reuse the rhino version modules)</li>
-<li>Simplify the structure and use a simple shiny modular structure</li>
-</ol></li>
-</ol></li>
-<li>Shinylive does not like non-R files when generating the bundle
-<ol type="a">
-<li>Solution
-<ol type="i">
-<li>Keep the app folder as clean as possible for now (www folder only)</li>
-</ol></li>
-</ol></li>
-<li>{teal} and {teal.data} are not on CRAN
-<ol type="a">
-<li>Solution
-<ol type="i">
-<li>Shim and used functionality</li>
-<li>Use a simple tab system for the UI structure</li>
-</ol></li>
-</ol></li>
-</ol>
-<p>The FDA were previously told that the shiny application being prepared for the Pilot 4 submission would not be a 1 to 1 mapping from the previous one submitted for the Pilot 2 due to certain constraints such as {teal} not being on CRAN; however, this didn’t represent a problem for them since they would mainly like to test the technology.</p>
-<p>Pedro Silva, one of the engineers working on the development of this app mentioned <strong>“While WebR is still in development, it shows tremendous promise! The loading is definitely still a pain point (over 100mb to set up the environment!) but it will only get better moving forward.”</strong></p>
-</section>
-<section id="containers" class="level4">
-<h4 class="anchored" data-anchor-id="containers">Containers</h4>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/images/podman-docker-singularity.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>Containerization, particularly through technologies like <a href="https://appsilon.com/docker-vs-podman-vs-singularity/amp/">Docker, Podman or Singularity</a>, offers several advantages for deploying Shiny apps.</p>
-<section id="choosing-the-right-container" class="level5">
-<h5 class="anchored" data-anchor-id="choosing-the-right-container">Choosing the Right Container</h5>
-<p>Choosing the right container was a question that arose in this project. Although <strong>Docker</strong> is the most popular, we decided to move forward with <strong>Podman</strong>.&nbsp;</p>
-<p>In our exploration of containerization tools for deploying Shiny applications, we’ve identified key distinctions between Docker and Podman that influenced our choice.&nbsp;</p>
-<p><strong>Podman</strong> stands out for its daemonless architecture, enhancing security by eliminating the need for a central daemon process. Unlike Docker, Podman supports running containers as non-root users, a critical feature for meeting FDA reviewer requirements. Developed by Red Hat and maintained as an open-source project, Podman prioritizes security with its rootless container support, offering a robust solution for security-conscious users.&nbsp;</p>
-</section>
-<section id="goals" class="level5">
-<h5 class="anchored" data-anchor-id="goals">Goals</h5>
-<p>A Container-based method to deploy Pilot 2 Shiny App.</p>
-</section>
-<section id="what-we-did" class="level5">
-<h5 class="anchored" data-anchor-id="what-we-did">What we did</h5>
-<ol type="1">
-<li><p>Configurable Podman Dockerfile / docker-compose.yml</p>
-<ol type="a">
-<li>R version</li>
-<li>Registry / organization name / image name (differences between docker.io and ghcr.io)</li>
-</ol></li>
-<li><p>Documentation on creating the container</p></li>
-<li><p>CI: Automated build on amd64 and arm64 platforms</p></li>
-</ol>
-</section>
-<section id="podman-short-demo" class="level5">
-<h5 class="anchored" data-anchor-id="podman-short-demo">Podman short-demo</h5>
-<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/H2WnpvVgmyE" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
-<p>Below is the dockerfile (recipe) for the container:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/images/file-recipe.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-</section>
-</section>
-</section>
-</section>
-</section>
-<section id="next-steps" class="level1">
-<h1>Next Steps</h1>
-<p>The next steps are waiting for the review of the Pilot 3 by the FDA and to submit the two sections that explore the new technologies to regulatory authorities. Thanks to the collaboration between the R Submission Working Group and other institutions, there is already a working prototype of a {teal}-like Shiny application running on webR and further exploration with Podman is underway.&nbsp;</p>
-<ol type="1">
-<li>Submission to FDA</li>
-<li>Rhino Compatibility</li>
-</ol>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/images/rhino.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="161"></p>
-</figure>
-</div>
-<p>Appsilon is working on the side with Rhino compatibility, eventually we might be able to just add this framework into the Pilot 4 application.</p>
-<ol start="3" type="1">
-<li><p>{teal}</p>
-<p>This and other packages might be on CRAN soon. We could incorporate them after that, replacing the shims created for this version</p></li>
-<li><p>Boot Time</p>
-<p>We need to improve boot time (remove dependencies and keep working on webR).</p></li>
-</ol>
-
-
-</section>
-
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{veríssimo2023,
-  author = {Veríssimo, André and Makowski, Tymoteusz and Silva, Pedro
-    and Viyash, Vedha and , APPSILON},
-  title = {Testing {Containers} and {WebAssembly} in {Submissions} to
-    the {FDA}},
-  date = {2023-02-01},
-  url = {https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/containers_and_webassembly_submissions.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-veríssimo2023" class="csl-entry quarto-appendix-citeas">
-Veríssimo, André, Tymoteusz Makowski, Pedro Silva, Vedha Viyash, and
-APPSILON. 2023. <span>“Testing Containers and WebAssembly in Submissions
-to the FDA.”</span> February 1, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/containers_and_webassembly_submissions.html">https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/containers_and_webassembly_submissions.html</a>.
-</div></div></section></div> ]]></description>
-  <category>submission</category>
-  <category>community</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/containers_and_webassembly_submissions.html</guid>
-  <pubDate>Wed, 01 Feb 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/FDA_WebR_Rhino.webp" medium="image" type="image/webp"/>
 </item>
 </channel>
 </rss>
