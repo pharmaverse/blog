@@ -24,7 +24,7 @@ long_slug <- "2023-12-30_containers_webassembly_submission"
 
 <!--------------- post begins here ----------------->
 
-[The R Consortium Submission Working Group](https://www.r-consortium.org/) has now successfully made two pilot submissions to the FDA. All the submissions done by the group are focused on improving practices for R-based clinical trial regulatory submissions. Now, the R submission Working Groups in collaboration with [Appsilon](https://appsilon.com/) and Posit are exploring new technologies such as Containers and WebAssembly. In this article, we dive into the details of this exploration.
+[The R Consortium Submission Working Group](https://www.r-consortium.org/) has now successfully made two pilot submissions to the FDA. All the submissions done by the group are focused on improving practices for R-based clinical trial regulatory submissions. Now, the R submission Working Groups, in collaboration with [Appsilon](https://appsilon.com/) and Posit, are exploring new technologies such as Containers and WebAssembly. In this article, we dive into the details of this exploration.
 
 ## How Everything Started
 
@@ -34,19 +34,19 @@ This pilot was initially submitted on November 22, 2021. **This submission was t
 
 ## Pilot 2
 
-**This was one of the first submission packages containing a Shiny application**. The main goal of this pilot was to test the submission of an R-based Shiny application bundled into a submission package and transfer it successfully to FDA reviewers. The [submitted application](https://github.com/RConsortium/submissions-pilot2-to-fda) was built using the datasets and analysis that were used for the R Submission Pilot 1. The deployed version of this application is available on [this site](https://rconsortium.shinyapps.io/submissions-pilot2/). Alternatively, a Rhino-based version of the application can be found [here](https://connect.appsilon.com/rhino-fda-pilot/).
+**This was one of the first submission packages containing a Shiny application**. The main goal of this pilot was to test the submission of an R-based Shiny application bundled into a submission package and transfer it successfully to FDA reviewers. The [submitted application](https://github.com/RConsortium/submissions-pilot2-to-fda) was built using the datasets and analyses that were used for the R Submission Pilot 1. The deployed version of this application is available on [this site](https://rconsortium.shinyapps.io/submissions-pilot2/). Alternatively, a Rhino-based version of the application can be found [here](https://connect.appsilon.com/rhino-fda-pilot/).
 
 The final response letter from the FDA was reviewed on September 27, 2023.
 
 ![](images/teal.png){fig-align="center" width="159"}
 
-In this submission, there were many open-source R packages that were used to create and execute the Shiny application. A very well known shiny-based interactive exploration framework **{teal}** was used mainly for analyzing the clinical trial data; this package is included in the pharmaverse package repository. The full list of open-source and proprietary R analysis packages is available on this [Analysis Data Reviewer's Guide](https://rsubmission-draft.website-us-east-1.linodeobjects.com/) prepared by the R Consortium R Submissions Working Group for the Pilot 2.
+In this submission, there were many open-source R packages that were used to create and execute the Shiny application. A very well-known shiny-based interactive exploration framework **{teal}** was used mainly for analyzing the clinical trial data; this package is included in the pharmaverse package repository. The full list of open-source and proprietary R analysis packages is available on this [Analysis Data Reviewer's Guide](https://rsubmission-draft.website-us-east-1.linodeobjects.com/) prepared by the R Consortium R Submissions Working Group for the Pilot 2.
 
 # What's next?
 
 ## Pilot 3
 
-This pilot was successfully submitted to FDA on Aug 28, 2023. **This was the first publicly available R [submission](https://github.com/RConsortium/submissions-pilot3-adam-to-fda) that included R scripts to produce ADaM datasets and TLFs**. Both the ADaMs (SDTM .xpt sources from the CDISC Pilot study) and the TLFs (ADaMs .xpt sourced from the ADaMs generated in R by the Pilot 3 team) were created using R.  The next steps for this pilot is to await FDA's review and approval which may take several months to complete.
+This pilot was successfully submitted to the FDA on Aug 28, 2023. **This was the first publicly available R [submission](https://github.com/RConsortium/submissions-pilot3-adam-to-fda) that included R scripts to produce ADaM datasets and TLFs**. Both the ADaMs (SDTM .xpt sources from the CDISC Pilot study) and the TLFs (ADaMs .xpt sourced from the ADaMs generated in R by the Pilot 3 team) were created using R.  The next step for this pilot is to await FDA's review and approval, which may take several months to complete.
 
 ## Pilot 4
 
@@ -94,7 +94,7 @@ During the **second iteration**, which was recently held, Pedro Silva shared the
 
 #### The Process
 
-1.  **Leverage last 2 iterations of the application**
+1.  **Leverage the last 2 iterations of the application**
 
     -   Reuse as much code as possible
 
@@ -104,10 +104,10 @@ During the **second iteration**, which was recently held, Pedro Silva shared the
 
     -   Replace/shim functionality that was lost from removing dependencies
 
-Here is the list of dependencies to packages on CRAN, those that worked are colored green, those that were removed are marked in orange. We ended up with just 3 problematic dependencies (bold).
+Here is the list of dependencies to packages on CRAN; those that worked are colored green, and those that were removed are marked in orange. We ended up with just 3 problematic dependencies (bold).
 ```
 |                                           |                                           |
-|------------------------------------|------------------------------------|
+|-------------------------------------------|-------------------------------------------|
 | [library(config)]{style="color:orange"}   | [library(reactable)]{style="color:green"} |
 | **library(cowplot)**                      | [library(rhino)]{style="color:orange"}    |
 | [library(dplyr)]{style="color:green"}     | [library(rtables)]{style="color:green"}   |
@@ -121,11 +121,12 @@ Here is the list of dependencies to packages on CRAN, those that worked are colo
 | [library(markdown)]{style="color:green"}  | [library(Tplyr)]{style="color:green"}     |
 | [library(pkgload)]{style="color:green"}   | [library(utils)]{style="color:green"}     |
 | [library(purrr)]{style="color:green"}     | [library(visR)]{style="color:green"}      |
+
 ```
 
 Issues with library(cowplot):
 
--   Some issue with low-level dependencies when deployed
+-   Some issues with low-level dependencies when deployed
 
 Solution:
 
@@ -153,23 +154,22 @@ Solution:
 
 3.  **Leverage shinylive and httpuv to export and serve the application**
 
-    a.  **Shinylive can help streamline the export process**
+    a.  Shinylive can help streamline the export process
 
-        i.  **Problems**
+        i.  Problems
 
-            1.  **shiny.live won't let us have non-R files in the application directory - this is an outstanding bug that George asked us to raise an issue for.**
+            1.  shiny.live won't let us have non-R files in the application directory - this is an outstanding bug that George asked us to raise an issue for.
 
-            2.  **We wouldn't be able to run the application as a traditional shiny app**
+            2.  We wouldn't be able to run the application as a traditional shiny app.
 
-        ii. **Solution:**
+        ii. Solution:
 
-        ```         
-        1.  **Custom build script**
-        ```
+            1.  Custom build script
+    
 
-    b.  **{httpuv} can help serve the application**
+    b.  {httpuv} can help serve the application
 
-        i.  **{httpuv} would run natively on a machine to serve the Shiny app**
+        i.  {httpuv} would run natively on a machine to serve the Shiny app
 
 #### Application Structure
 
@@ -191,9 +191,9 @@ Some of the issues and solutions found at the very beginning:
         i.  Shim and used functionality
         ii. Use a simple tab system for the UI structure
 
-The FDA were previously told that the shiny application being prepared for the Pilot 4 submission would not be a 1 to 1 mapping from the previous one submitted for the Pilot 2 due to certain constraints such as {teal} not being on CRAN; however, this didn't represent a problem for them since they would mainly like to test the technology.
+The FDA was previously told that the shiny application being prepared for the Pilot 4 submission would not be a 1 to 1 mapping from the previous one submitted for the Pilot 2 due to certain constraints such as {teal} not being on CRAN; however, this didn't represent a problem for them since they would mainly like to test the technology.
 
-Pedro Silva, one of the engineers working on the development of this app mentioned **"While WebR is still in development, it shows tremendous promise! The loading is definitely still a pain point (over 100mb to set up the environment!) but it will only get better moving forward."**
+Pedro Silva, one of the engineers working on the development of this app, mentioned **"While WebR is still in development, it shows tremendous promise! The loading is definitely still a pain point (over 100mb to set up the environment!) but it will only get better moving forward."**
 
 #### Containers
 
@@ -234,18 +234,18 @@ Below is the dockerfile (recipe) for the container:
 
 # Next Steps
 
-The next steps are waiting for the review of the Pilot 3 by the FDA and to submit the two sections that explore the new technologies to regulatory authorities. Thanks to the collaboration between the R Submission Working Group and other institutions, there is already a working prototype of a {teal}-like Shiny application running on webR and further exploration with Podman is underway. 
+The next steps are waiting for the review of Pilot 3 by the FDA and to submit the two sections that explore the new technologies to regulatory authorities. Thanks to the collaboration between the R Submission Working Group and other institutions, there is already a working prototype of a {teal}-like Shiny application running on webR and further exploration with Podman is underway. 
 
 1.  Submission to FDA
 2.  Rhino Compatibility
 
 ![](images/rhino.png){fig-align="center" width="161"}
 
-Appsilon is working on the side with Rhino compatibility, eventually we might be able to just add this framework into the Pilot 4 application.
+Appsilon is working on the side with Rhino compatibility; eventually, we might be able to just add this framework into the Pilot 4 application.
 
 3.  {teal}
 
-    This and other packages might be on CRAN soon. We could incorporate them after that, replacing the shims created for this version
+    This and other packages might be on CRAN soon. We could incorporate them after that, replacing the shims created for this version.
 
 4.  Boot Time
 
