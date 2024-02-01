@@ -7,7 +7,7 @@ author:
   - name: Vedha Viyash
   - name: APPSILON
 description: "In this post, we dig into the ongoing efforts undertaken to evaluate new technologies for submissions to the Food and Drug Administration (FDA). These transformative approaches, including WebAssembly and containers, hold immense potential to transform the regulatory landscape and streamline the submission process." # <---- please write a description
-date: "2023-12-30"
+date: "2023-02-01"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
 categories: [submission, community]
@@ -24,7 +24,7 @@ long_slug <- "2023-12-30_containers_webassembly_submission"
 
 <!--------------- post begins here ----------------->
 
-The R Consortium Submission Working Group has now successfully made two pilot submissions to the FDA. All the submissions done by the group are focused on improving practices for R-based clinical trial regulatory submissions. Now, the R submission Working Groups in collaboration with Appsilon and Posit are exploring new technologies such as Containers and WebAssembly. In this article, we dive into the details of this exploration.
+[The R Consortium Submission Working Group](https://www.r-consortium.org/) has now successfully made two pilot submissions to the FDA. All the submissions done by the group are focused on improving practices for R-based clinical trial regulatory submissions. Now, the R submission Working Groups in collaboration with [Appsilon](https://appsilon.com/) and Posit are exploring new technologies such as Containers and WebAssembly. In this article, we dive into the details of this exploration.
 
 ## How Everything Started
 
@@ -34,7 +34,7 @@ This pilot was initially submitted on November 22, 2021. **This submission was t
 
 ## Pilot 2
 
-**This was the first publicly available submission package that contained a Shiny application**. The main goal of this pilot was to test the submission of an R-based Shiny application bundled into a submission package and transfer it successfully to FDA reviewers. The [submitted application](https://github.com/RConsortium/submissions-pilot2-to-fda) was built using the datasets and analysis that were used for the R Submission Pilot 1. The deployed version of this application is available on [this site](https://rconsortium.shinyapps.io/submissions-pilot2/). Alternatively, a Rhino-based version of the application can be found [here](https://connect.appsilon.com/rhino-fda-pilot/).
+**This was one of the first submission packages containing a Shiny application**. The main goal of this pilot was to test the submission of an R-based Shiny application bundled into a submission package and transfer it successfully to FDA reviewers. The [submitted application](https://github.com/RConsortium/submissions-pilot2-to-fda) was built using the datasets and analysis that were used for the R Submission Pilot 1. The deployed version of this application is available on [this site](https://rconsortium.shinyapps.io/submissions-pilot2/). Alternatively, a Rhino-based version of the application can be found [here](https://connect.appsilon.com/rhino-fda-pilot/).
 
 The final response letter from the FDA was reviewed on September 27, 2023.
 
@@ -105,7 +105,7 @@ During the **second iteration**, which was recently held, Pedro Silva shared the
     -   Replace/shim functionality that was lost from removing dependencies
 
 Here is the list of dependencies to packages on CRAN, those that worked are colored green, those that were removed are marked in orange. We ended up with just 3 problematic dependencies (bold).
-
+```
 |                                           |                                           |
 |------------------------------------|------------------------------------|
 | [library(config)]{style="color:orange"}   | [library(reactable)]{style="color:green"} |
@@ -121,6 +121,7 @@ Here is the list of dependencies to packages on CRAN, those that worked are colo
 | [library(markdown)]{style="color:green"}  | [library(Tplyr)]{style="color:green"}     |
 | [library(pkgload)]{style="color:green"}   | [library(utils)]{style="color:green"}     |
 | [library(purrr)]{style="color:green"}     | [library(visR)]{style="color:green"}      |
+```
 
 Issues with library(cowplot):
 
@@ -250,6 +251,3 @@ Appsilon is working on the side with Rhino compatibility, eventually we might be
 
     We need to improve boot time (remove dependencies and keep working on webR).
 
-<!--------------- appendices go here ----------------->
-
-source("appendix.R") insert_appendix( repo_spec = "pharmaverse/blog", name = long_slug ) \`\`\`
