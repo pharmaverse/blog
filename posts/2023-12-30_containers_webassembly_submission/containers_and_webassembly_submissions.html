@@ -6,10 +6,15 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Nicholas Eugenio">
-<meta name="dcterms.date" content="2023-08-30">
+<meta name="author" content="André Veríssimo">
+<meta name="author" content="Tymoteusz Makowski">
+<meta name="author" content="Pedro Silva">
+<meta name="author" content="Vedha Viyash">
+<meta name="author" content="APPSILON">
+<meta name="dcterms.date" content="2023-02-01">
+<meta name="description" content="In this post, we dig into the ongoing efforts undertaken to evaluate new technologies for submissions to the Food and Drug Administration (FDA). These transformative approaches, including WebAssembly and containers, hold immense potential to transform the regulatory landscape and streamline the submission process.">
 
-<title>Pharmaverse Blog - The pharmaverse (hi)story</title>
+<title>Pharmaverse Blog - Testing Containers and WebAssembly in Submissions to the FDA</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,12 +84,10 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Pharmaverse Blog - The pharmaverse (hi)story">
-<meta property="og:description" content="">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse.png">
+<meta property="og:title" content="Pharmaverse Blog - Testing Containers and WebAssembly in Submissions to the FDA">
+<meta property="og:description" content="In this post, we dig into the ongoing efforts undertaken to evaluate new technologies for submissions to the Food and Drug Administration (FDA). These transformative approaches, including WebAssembly and containers, hold immense potential to transform the regulatory landscape and streamline the submission process.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/FDA_WebR_Rhino.webp">
 <meta property="og:site_name" content="Pharmaverse Blog">
-<meta property="og:image:height" content="300">
-<meta property="og:image:width" content="300">
 </head>
 
 <body class="floating nav-fixed">
@@ -121,8 +124,14 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">The pharmaverse (hi)story</h1>
-                                <div class="quarto-categories">
+      <h1 class="title">Testing Containers and WebAssembly in Submissions to the FDA</h1>
+                  <div>
+        <div class="description">
+          In this post, we dig into the ongoing efforts undertaken to evaluate new technologies for submissions to the Food and Drug Administration (FDA). These transformative approaches, including WebAssembly and containers, hold immense potential to transform the regulatory landscape and streamline the submission process.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">submission</div>
                 <div class="quarto-category">community</div>
               </div>
                   </div>
@@ -132,16 +141,20 @@ ul.task-list li input[type="checkbox"] {
   <div class="quarto-title-meta">
 
       <div>
-      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-heading">Authors</div>
       <div class="quarto-title-meta-contents">
-               <p>Nicholas Eugenio </p>
+               <p>André Veríssimo </p>
+               <p>Tymoteusz Makowski </p>
+               <p>Pedro Silva </p>
+               <p>Vedha Viyash </p>
+               <p>APPSILON </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">August 30, 2023</p>
+        <p class="date">February 1, 2023</p>
       </div>
     </div>
     
@@ -156,10 +169,21 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#human-history-and-pharmaverse-context" id="toc-human-history-and-pharmaverse-context" class="nav-link active" data-scroll-target="#human-history-and-pharmaverse-context">Human history and pharmaverse context</a></li>
-  <li><a href="#clinical-reporting-outputs" id="toc-clinical-reporting-outputs" class="nav-link" data-scroll-target="#clinical-reporting-outputs">Clinical reporting outputs</a></li>
-  <li><a href="#first-partnerships" id="toc-first-partnerships" class="nav-link" data-scroll-target="#first-partnerships">First partnerships</a></li>
-  <li><a href="#release-growth-and-developments" id="toc-release-growth-and-developments" class="nav-link" data-scroll-target="#release-growth-and-developments">Release, growth and developments</a></li>
+  <li><a href="#how-everything-started" id="toc-how-everything-started" class="nav-link active" data-scroll-target="#how-everything-started">How Everything Started</a>
+  <ul class="collapse">
+  <li><a href="#pilot-1" id="toc-pilot-1" class="nav-link" data-scroll-target="#pilot-1">Pilot 1</a></li>
+  </ul></li>
+  <li><a href="#pilot-2" id="toc-pilot-2" class="nav-link" data-scroll-target="#pilot-2">Pilot 2</a></li>
+  <li><a href="#whats-next" id="toc-whats-next" class="nav-link" data-scroll-target="#whats-next">What’s next?</a>
+  <ul class="collapse">
+  <li><a href="#pilot-3" id="toc-pilot-3" class="nav-link" data-scroll-target="#pilot-3">Pilot 3</a></li>
+  <li><a href="#pilot-4" id="toc-pilot-4" class="nav-link" data-scroll-target="#pilot-4">Pilot 4</a>
+  <ul class="collapse">
+  <li><a href="#the-journey-with-webassembly-and-containers" id="toc-the-journey-with-webassembly-and-containers" class="nav-link" data-scroll-target="#the-journey-with-webassembly-and-containers">The Journey with WebAssembly and Containers</a></li>
+  <li><a href="#the-pilot-4-shiny-app-up-and-running-on-webr" id="toc-the-pilot-4-shiny-app-up-and-running-on-webr" class="nav-link" data-scroll-target="#the-pilot-4-shiny-app-up-and-running-on-webr">The Pilot 4 Shiny App Up and Running on webR!</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">Next Steps</a></li>
   </ul>
 </nav>
 </nav>
@@ -176,76 +200,255 @@ ul.task-list li input[type="checkbox"] {
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>Pharmaverse: from motivation to present</p>
-<section id="human-history-and-pharmaverse-context" class="level2">
-<h2 class="anchored" data-anchor-id="human-history-and-pharmaverse-context">Human history and pharmaverse context</h2>
-<p>Since the Australian Aboriginal, the earliest peoples recorded to have inhabited the Earth and who have been in Australia for at least 65,000 to 80,000 years (<a href="https://www.britannica.com/topic/Australian-Aboriginal">Encyclopædia Britannica</a>), human beings live in group. Whether to protect yourself, increase your life expectancy or simply share tasks.</p>
-<p>For most aspects of life, it doesn’t make sense to think, act or work alone for two main reasons:</p>
-<ol type="1">
-<li><p>You will spend more energy and time;</p></li>
-<li><p>Someone else may be facing (or have faced) the same situation.</p></li>
-</ol>
-<p>The English poet John Donne used to say <em>“No man is an island entire of itself; every man is a piece of the continent, a part of the main;”</em>. I can’t disagree with him. And I dare say that Ari Siggaard Knoph (Novo Nordisk), Michael Rimler (GSK), Michael Stackhouse (Atorus), Ross Farrugia (Roche), and Sumesh Kalappurakal (Janssen) can’t disagree with him either. They are the founders of <a href="https://pharmaverse.org/">pharmaverse</a>, members of its Council and kindly shared their memories of how independent companies, in mid-2020, worked together in the creation of a set of packages developed to support the clinical reporting pipeline.</p>
-<p>If you are not familiar with this pipeline, the important thing to know is that, in a nutshell, pharmaceutical companies must follow a bunch of standardized procedures and formats (from Clinical Data Interchange Standards Consortium, <a href="https://www.cdisc.org/">CDISC</a>) when submitting clinical results to Health Authorities. The focus is on this: <strong>different</strong> companies seeking the <strong>same</strong> standards for outputs.</p>
-<p>Paraphrasing Ross Farrugia (Roche) <em>Breaking boundaries through open-source collaboration</em> presentation in <a href="https://www.youtube.com/watch?v=APMDOS4v9Hk">R/Pharma 2022</a> and thinking of the development of a new drug, we are talking about a “post-competitive” scenario: the drug has already been discovered and the companies should “just” produce and deliver standardized results.</p>
+<p><a href="https://www.r-consortium.org/">The R Consortium Submission Working Group</a> has now successfully made two pilot submissions to the FDA. All the submissions done by the group are focused on improving practices for R-based clinical trial regulatory submissions. Now, the R submission Working Groups in collaboration with <a href="https://appsilon.com/">Appsilon</a> and Posit are exploring new technologies such as Containers and WebAssembly. In this article, we dive into the details of this exploration.</p>
+<section id="how-everything-started" class="level2">
+<h2 class="anchored" data-anchor-id="how-everything-started">How Everything Started</h2>
+<section id="pilot-1" class="level3">
+<h3 class="anchored" data-anchor-id="pilot-1">Pilot 1</h3>
+<p>This pilot was initially submitted on November 22, 2021. <strong>This submission was the first publicly available R-based submission to the FDA.</strong> This was a test <a href="https://github.com/RConsortium/submissions-pilot1-to-fda">submission</a> that aimed to explore the submission of an R package to the FDA following the eCTD specifications. The submission included an R package, R scripts for analysis, R-based analysis data reviewed guide (ADRG), and other important components. The final <a href="https://github.com/RConsortium/submissions-wg/blob/main/_Documents/Summary_R_Pilot_Submission2.pdf">response letter from the FDA</a> was received on March 14, 2022.</p>
 </section>
-<section id="clinical-reporting-outputs" class="level2">
-<h2 class="anchored" data-anchor-id="clinical-reporting-outputs">Clinical reporting outputs</h2>
-<p>Rationally, we can say that companies face the same challenges in these steps of the process. Not so intuitively, we can also say they were working in silos on that before 2018. Just as Isaac Newton and Gottfried W. Leibniz <a href="https://en.wikipedia.org/wiki/History_of_calculus">independently developed the theory of infinitesimal calculus</a>, pharmaceutical companies were independently working on R solutions for this pipeline.</p>
-<p>But on August 16 and 17 of the mentioned year above, they gathered at the first edition of <a href="https://rinpharma.com/">R/Pharma conference</a> to discuss R and open-source tooling for drug development (the reasons why open-source is an advantageous approach can be found in this <a href="https://pharmaverse.github.io/blog/posts/2023-07-20_cross_company_dev/cross_industry_dev.html">post</a> written by Stefan Thoma). And according to Isabela Velásquez’s article, <a href="https://posit.co/blog/pharmaverse-packages-for-clinical-reporting-workflows/">Pharmaverse: Packages for clinical reporting workflows</a>, one of the most popular questions in this conference was “Is the package code available or on <a href="https://cran.r-project.org/">CRAN</a>?”.</p>
-<p>Well, many of them were. And not necessarily at that date, but just to mention a few: <a href="https://atorus-research.github.io/pharmaRTF/index.html"><em>pharmaRTF</em></a> and <a href="https://atorus-research.github.io/Tplyr/index.html"><em>Tplyr</em></a> from Atorus, <a href="https://merck.github.io/r2rtf/"><em>r2rtf</em></a> from Merck, <a href="https://insightsengineering.github.io/rtables/main/"><em>rtables</em></a> from Roche, etc. The thing is that, overall, there were almost 10000 other packages as well (today, almost 20000). And that took to another two questions:</p>
-<ol type="1">
-<li><p>With this overwhelming number of packages on CRAN, how to find the ones related to solving “clinical reporting problems”?</p></li>
-<li><p>Once the packages were found, how to choose which one to use among those that have the same functional purpose?</p></li>
-</ol>
-<p>So, again, companies re-started to working in silos to find those answers. But now, in collaborative silos and with common goals: create extremely useful packages to solve pharmaceutical-specific gaps once and solve them well!</p>
 </section>
-<section id="first-partnerships" class="level2">
-<h2 class="anchored" data-anchor-id="first-partnerships">First partnerships</h2>
-<p>In 2020, Michael Stackhouse (Atorus) and Michael Rimler (GSK) talked and formed a partnership between their companies to develop a few more packages, including <a href="https://github.com/atorus-research/metacore"><em>metacore</em></a>, to read, store and manipulate metadata for ADaMs/SDTMs in a standardized object; <a href="https://github.com/atorus-research/xportr"><em>xportr</em></a>, to create submission compliant SAS transport files and perform pharma specific dataset level validation checks; and <a href="https://github.com/pharmaverse/logrx"><em>logrx</em></a> (ex-<em>timber</em>), to build log to support reproducibility and traceability of an R script.</p>
-<p>Around the same time, Thomas Neitmann (currently at Denali Therapeutics, then at Roche) and Michael Rimler (GSK) discovered that both were working with ADaM in R, so Thomas Neitmann (currently at Denali Therapeutics, then at Roche), Ross Farrugia (Roche) and Michael Rimler (GSK) saw an opportunity there and GSK started their partnership with Roche to build and release <a href="https://github.com/pharmaverse/admiral"><em>admiral</em></a> package.</p>
-<p>The idea of working together, the sense of community, and the appetite from organizations built more and more, with incentive and priority established up into the programming heads council.</p>
-<p>Janssen had a huge effort in building R capabilities going on as well, by releasing <a href="https://github.com/pharmaverse/tidytlg"><em>tidytlg</em></a> and <a href="https://github.com/pharmaverse/envsetup"><em>envsetup</em></a>), so eventually Michael Rimler (GSK), Michael Stackhouse (Atorus) and Ross Farrugia (Roche) formalized <a href="https://pharmaverse.org/">pharmaverse</a> and formed the council, adding in Sumesh Kalappurakal (Janssen) and Ari Siggaard Knoph (Novo Nordisk) later joined as the fifth council member.</p>
-</section>
-<section id="release-growth-and-developments" class="level2">
-<h2 class="anchored" data-anchor-id="release-growth-and-developments">Release, growth and developments</h2>
-<p>At the end of their presentation <a href="https://www.youtube.com/watch?v=NW9qp5QOlIU">“Closing the Gap: Creating an End to End R Package Toolkit for the Clinical Reporting Pipeline.”</a>, in <a href="https://rinpharma.com/event/rinpharma2021/">R/Pharma 2021</a>, Ben Straub (GSK) and Eli Miller (Atorus) welcomed the community to the <a href="https://pharmaverse.org/">pharmaverse</a>, a curated collection of packages developed by various pharmaceutical companies to support open-source clinical workflows.</p>
-<p>From the outset, the name <a href="https://pharmaverse.org/">pharmaverse</a> was chosen so that it could be a neutral home, unrelated to any company. Also, it was established as not being a consortium, which means that founders don’t own, fund, or maintain the packages. Some individuals and companies maintain them but often allowing for community contributions and being licensed permissively so that there is always a feeling of community ownership. The focus of <a href="https://pharmaverse.org/">pharmaverse</a> early on, and today, is on inter organization cooperation, to build an environment where, if organizations identify that they have a joint problem that they want to solve, this is the right space to work on and release it.</p>
-<p><a href="https://pharmaverse.org/">Pharmaverse</a> has grown a lot, at the time of writing this post we have &gt;25 packages recommended in <a href="https://pharmaverse.org/e2eclinical/">pharmaverse</a>, and this has led to a partnership with <a href="https://phuse.global/About_PHUSE">PHUSE</a> to get support from their organization and platform, and because they are eager to advance and support <a href="https://pharmaverse.org/charter/">pharmaverse mission</a>.</p>
-<p>Despite all its structure, it is impossible to say that we have a single solution for each clinical reporting analysis when it comes to <a href="https://pharmaverse.org/">pharmaverse</a>, a single pathway is impractical. Instead, it is necessary to accept viable tools fitting different pathways into <a href="https://pharmaverse.org/">pharmaverse</a> to direct and give people options as to what might work for them. After all, even though we live together as a community, we still have our own unique internal problems.</p>
+<section id="pilot-2" class="level2">
+<h2 class="anchored" data-anchor-id="pilot-2">Pilot 2</h2>
+<p><strong>This was one of the first submission packages containing a Shiny application</strong>. The main goal of this pilot was to test the submission of an R-based Shiny application bundled into a submission package and transfer it successfully to FDA reviewers. The <a href="https://github.com/RConsortium/submissions-pilot2-to-fda">submitted application</a> was built using the datasets and analysis that were used for the R Submission Pilot 1. The deployed version of this application is available on <a href="https://rconsortium.shinyapps.io/submissions-pilot2/">this site</a>. Alternatively, a Rhino-based version of the application can be found <a href="https://connect.appsilon.com/rhino-fda-pilot/">here</a>.</p>
+<p>The final response letter from the FDA was reviewed on September 27, 2023.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="logos.png" class="img-fluid figure-img"></p>
-<figcaption>Sample of pharmaverse packages</figcaption>
+<p><img src="images/teal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="159"></p>
 </figure>
 </div>
-<!--------------- appendices go here ----------------->
+<p>In this submission, there were many open-source R packages that were used to create and execute the Shiny application. A very well known shiny-based interactive exploration framework <strong>{teal}</strong> was used mainly for analyzing the clinical trial data; this package is included in the pharmaverse package repository. The full list of open-source and proprietary R analysis packages is available on this <a href="https://rsubmission-draft.website-us-east-1.linodeobjects.com/">Analysis Data Reviewer’s Guide</a> prepared by the R Consortium R Submissions Working Group for the Pilot 2.</p>
 </section>
-<div class="cell">
-<div class="cell-output-display">
-
-
+<section id="whats-next" class="level1">
+<h1>What’s next?</h1>
+<section id="pilot-3" class="level2">
+<h2 class="anchored" data-anchor-id="pilot-3">Pilot 3</h2>
+<p>This pilot was successfully submitted to FDA on Aug 28, 2023. <strong>This was the first publicly available R <a href="https://github.com/RConsortium/submissions-pilot3-adam-to-fda">submission</a> that included R scripts to produce ADaM datasets and TLFs</strong>. Both the ADaMs (SDTM .xpt sources from the CDISC Pilot study) and the TLFs (ADaMs .xpt sourced from the ADaMs generated in R by the Pilot 3 team) were created using R.&nbsp; The next steps for this pilot is to await FDA’s review and approval which may take several months to complete.</p>
+</section>
+<section id="pilot-4" class="level2">
+<h2 class="anchored" data-anchor-id="pilot-4">Pilot 4</h2>
+<p>This pilot aims to <strong>explore using technologies such as containers and WebAssembly</strong> software to package a Shiny application into a self-contained unit, streamlining the transfer and execution process for enhanced efficiency.</p>
+<p>This pilot is expected to be divided into two parallel submissions:</p>
+<p>(a) <a href="https://github.com/RConsortium/submissions-pilot4-webR">will investigate WebAssembly</a> and</p>
+<p>(b) <a href="http://github.com/Appsilon/experimental-fda-submission-4-podman/">will investigate containers</a>.</p>
+<section id="the-journey-with-webassembly-and-containers" class="level3">
+<h3 class="anchored" data-anchor-id="the-journey-with-webassembly-and-containers">The Journey with WebAssembly and Containers</h3>
+<p>Our team at Appsilon teamed up with the dynamic Pilot 4 crew to explore WebAssembly technology and containers. George Stagg and Winston Chang also joined the working group to discuss the web-assembly portion of Pilot 4. This partnership brought together our engineering prowess to contribute to these tools, injecting fresh perspectives into the ongoing pilot project.</p>
+<p>Some of the outcomes of the collaboration:</p>
+<ol type="1">
+<li><p>We were able to set up a robust container environment for this pilot project.&nbsp;</p></li>
+<li><p>We aided the progress made on the use of both experimental technologies: containers and WebAssembly.</p></li>
+<li><p>We developed a working prototype submission using <a href="https://podman.io/">Podman</a> container technology.</p></li>
+<li><p>We developed a working early-stage prototype for wrapping a small Shiny application using WebAssembly.</p></li>
+</ol>
+<section id="webassembly" class="level4">
+<h4 class="anchored" data-anchor-id="webassembly">WebAssembly</h4>
+<p><img src="images/webr.png" class="img-fluid" width="231"></p>
+<p>WebAssembly allows languages like R to be executed at near-native speed directly within web browsers, providing users with the ability to run R code without having R installed locally. <a href="https://docs.r-wasm.org/webr/v0.2.0/"><strong>WebR</strong></a> is essentially the R programming language adapted to run in a web browser environment using WebAssembly. This project is under active development.&nbsp;</p>
+</section>
+</section>
+<section id="the-pilot-4-shiny-app-up-and-running-on-webr" class="level3">
+<h3 class="anchored" data-anchor-id="the-pilot-4-shiny-app-up-and-running-on-webr">The Pilot 4 Shiny App Up and Running on webR!</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/rconsortiumxappsilon.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
 </div>
+<p>The deployed example of the Shiny app running on webR <a href="https://brilliant-elf-2da930.netlify.app/">is available here</a>. Check out the video of the application running below.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/wfk_IJ82e9E" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>During this pilot, engineers at Appsilon developed a prototype of a Shiny application running on webR. The application reuses most of the code from the previous pilot apps with some tweaks and a couple of hacks/changes to get around non CRAN dependencies, specially for data loading, WebR compatibilities, and shimming some of the functionality from {teal} and other packages that are (for now) not available on CRAN.</p>
+<section id="webr-shiny-app" class="level4">
+<h4 class="anchored" data-anchor-id="webr-shiny-app">webR Shiny App</h4>
+<p>During the <strong>second iteration</strong>, which was recently held, Pedro Silva shared the process of developing this Shiny app running on webR.</p>
+</section>
+<section id="the-process" class="level4">
+<h4 class="anchored" data-anchor-id="the-process">The Process</h4>
+<ol type="1">
+<li><p><strong>Leverage last 2 iterations of the application</strong></p>
+<ul>
+<li><p>Reuse as much code as possible</p></li>
+<li><p>Avoid touching the logic part</p></li>
+</ul></li>
+<li><p><strong>Restrict the number of dependencies to packages on CRAN</strong></p>
+<ul>
+<li>Replace/shim functionality that was lost from removing dependencies</li>
+</ul></li>
+</ol>
+<p>Here is the list of dependencies to packages on CRAN, those that worked are colored green, those that were removed are marked in orange. We ended up with just 3 problematic dependencies (bold).</p>
+<pre><code>|                                           |                                           |
+|------------------------------------|------------------------------------|
+| [library(config)]{style="color:orange"}   | [library(reactable)]{style="color:green"} |
+| **library(cowplot)**                      | [library(rhino)]{style="color:orange"}    |
+| [library(dplyr)]{style="color:green"}     | [library(rtables)]{style="color:green"}   |
+| [library(emmeans)]{style="color:green"}   | [library(shiny)]{style="color:green"}     |
+| [library(ggplot2)]{style="color:green"}   | [library(stringr)]{style="color:green"}   |
+| [library(glue)]{style="color:green"}      | **library(teal)**                         |
+| [library(haven)]{style="color:green"}     | **library(teal.data)**                    |
+| [library(htmltools)]{style="color:green"} | [library(tibble)]{style="color:green"}    |
+| [library(huxtable)]{style="color:green"}  | [library(tidyr)]{style="color:green"}     |
+| [library(magrittr)]{style="color:green"}  | [library(tippy)]{style="color:green"}     |
+| [library(markdown)]{style="color:green"}  | [library(Tplyr)]{style="color:green"}     |
+| [library(pkgload)]{style="color:green"}   | [library(utils)]{style="color:green"}     |
+| [library(purrr)]{style="color:green"}     | [library(visR)]{style="color:green"}      |</code></pre>
+<p>Issues with library(cowplot):</p>
+<ul>
+<li>Some issue with low-level dependencies when deployed</li>
+</ul>
+<p>Solution:</p>
+<ul>
+<li>Replace functionality with HTML</li>
+</ul>
+<p>Issues with library(teal):</p>
+<ul>
+<li>Uses {shiny.widgets} (not working for webR)</li>
+</ul>
+<p>Solution:</p>
+<ul>
+<li><p>Redo the UI</p></li>
+<li><p>Load modules directly</p></li>
+<li><p>Recreate filter functionality</p></li>
+</ul>
+<p>Issues with library(teal.data):</p>
+<ul>
+<li>Use rds exports</li>
+</ul>
+<p>Solution:</p>
+<ul>
+<li>Shim functionality, load data directly</li>
+</ul>
+<ol start="3" type="1">
+<li><p><strong>Leverage shinylive and httpuv to export and serve the application</strong></p>
+<ol type="a">
+<li><p><strong>Shinylive can help streamline the export process</strong></p>
+<ol type="i">
+<li><p><strong>Problems</strong></p>
+<ol type="1">
+<li><p><strong>shiny.live won’t let us have non-R files in the application directory - this is an outstanding bug that George asked us to raise an issue for.</strong></p></li>
+<li><p><strong>We wouldn’t be able to run the application as a traditional shiny app</strong></p></li>
+</ol></li>
+<li><p><strong>Solution:</strong></p></li>
+</ol>
+<pre><code>1.  **Custom build script**</code></pre></li>
+<li><p><strong>{httpuv} can help serve the application</strong></p>
+<ol type="i">
+<li><strong>{httpuv} would run natively on a machine to serve the Shiny app</strong></li>
+</ol></li>
+</ol></li>
+</ol>
+</section>
+<section id="application-structure" class="level4">
+<h4 class="anchored" data-anchor-id="application-structure">Application Structure</h4>
+<p>The figure below shows an overview of what we ended with:</p>
+<p><img src="images/application-structure.png" class="img-fluid"></p>
+<p>Some of the issues and solutions found at the very beginning:</p>
+<ol type="1">
+<li>The previous applications were built using golem and another one in Rhino; the support for these frameworks is not great in webR up to now.
+<ol type="a">
+<li>Solution
+<ol type="i">
+<li>{box} works out of the box (reuse the rhino version modules)</li>
+<li>Simplify the structure and use a simple shiny modular structure</li>
+</ol></li>
+</ol></li>
+<li>Shinylive does not like non-R files when generating the bundle
+<ol type="a">
+<li>Solution
+<ol type="i">
+<li>Keep the app folder as clean as possible for now (www folder only)</li>
+</ol></li>
+</ol></li>
+<li>{teal} and {teal.data} are not on CRAN
+<ol type="a">
+<li>Solution
+<ol type="i">
+<li>Shim and used functionality</li>
+<li>Use a simple tab system for the UI structure</li>
+</ol></li>
+</ol></li>
+</ol>
+<p>The FDA were previously told that the shiny application being prepared for the Pilot 4 submission would not be a 1 to 1 mapping from the previous one submitted for the Pilot 2 due to certain constraints such as {teal} not being on CRAN; however, this didn’t represent a problem for them since they would mainly like to test the technology.</p>
+<p>Pedro Silva, one of the engineers working on the development of this app mentioned <strong>“While WebR is still in development, it shows tremendous promise! The loading is definitely still a pain point (over 100mb to set up the environment!) but it will only get better moving forward.”</strong></p>
+</section>
+<section id="containers" class="level4">
+<h4 class="anchored" data-anchor-id="containers">Containers</h4>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/podman-docker-singularity.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
 </div>
+<p>Containerization, particularly through technologies like <a href="https://appsilon.com/docker-vs-podman-vs-singularity/amp/">Docker, Podman or Singularity</a>, offers several advantages for deploying Shiny apps.</p>
+<section id="choosing-the-right-container" class="level5">
+<h5 class="anchored" data-anchor-id="choosing-the-right-container">Choosing the Right Container</h5>
+<p>Choosing the right container was a question that arose in this project. Although <strong>Docker</strong> is the most popular, we decided to move forward with <strong>Podman</strong>.&nbsp;</p>
+<p>In our exploration of containerization tools for deploying Shiny applications, we’ve identified key distinctions between Docker and Podman that influenced our choice.&nbsp;</p>
+<p><strong>Podman</strong> stands out for its daemonless architecture, enhancing security by eliminating the need for a central daemon process. Unlike Docker, Podman supports running containers as non-root users, a critical feature for meeting FDA reviewer requirements. Developed by Red Hat and maintained as an open-source project, Podman prioritizes security with its rootless container support, offering a robust solution for security-conscious users.&nbsp;</p>
+</section>
+<section id="goals" class="level5">
+<h5 class="anchored" data-anchor-id="goals">Goals</h5>
+<p>A Container-based method to deploy Pilot 2 Shiny App.</p>
+</section>
+<section id="what-we-did" class="level5">
+<h5 class="anchored" data-anchor-id="what-we-did">What we did</h5>
+<ol type="1">
+<li><p>Configurable Podman Dockerfile / docker-compose.yml</p>
+<ol type="a">
+<li>R version</li>
+<li>Registry / organization name / image name (differences between docker.io and ghcr.io)</li>
+</ol></li>
+<li><p>Documentation on creating the container</p></li>
+<li><p>CI: Automated build on amd64 and arm64 platforms</p></li>
+</ol>
+</section>
+<section id="podman-short-demo" class="level5">
+<h5 class="anchored" data-anchor-id="podman-short-demo">Podman short-demo</h5>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/H2WnpvVgmyE" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>Below is the dockerfile (recipe) for the container:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/file-recipe.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+</section>
+</section>
+</section>
+</section>
+<section id="next-steps" class="level1">
+<h1>Next Steps</h1>
+<p>The next steps are waiting for the review of the Pilot 3 by the FDA and to submit the two sections that explore the new technologies to regulatory authorities. Thanks to the collaboration between the R Submission Working Group and other institutions, there is already a working prototype of a {teal}-like Shiny application running on webR and further exploration with Podman is underway.&nbsp;</p>
+<ol type="1">
+<li>Submission to FDA</li>
+<li>Rhino Compatibility</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/rhino.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="161"></p>
+</figure>
+</div>
+<p>Appsilon is working on the side with Rhino compatibility, eventually we might be able to just add this framework into the Pilot 4 application.</p>
+<ol start="3" type="1">
+<li><p>{teal}</p>
+<p>This and other packages might be on CRAN soon. We could incorporate them after that, replacing the shims created for this version</p></li>
+<li><p>Boot Time</p>
+<p>We need to improve boot time (remove dependencies and keep working on webR).</p></li>
+</ol>
 
 
+</section>
 
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2024-02-01 12:24:26.757735</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/index.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-30_pharmaverse_story/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{eugenio2023,
-  author = {Eugenio, Nicholas},
-  title = {The Pharmaverse (Hi)story},
-  date = {2023-08-30},
-  url = {https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html},
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{veríssimo2023,
+  author = {Veríssimo, André and Makowski, Tymoteusz and Silva, Pedro
+    and Viyash, Vedha and , APPSILON},
+  title = {Testing {Containers} and {WebAssembly} in {Submissions} to
+    the {FDA}},
+  date = {2023-02-01},
+  url = {https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/containers_and_webassembly_submissions.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-eugenio2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Eugenio, Nicholas. 2023. <span>“The Pharmaverse (Hi)story.”</span>
-August 30, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html">https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-veríssimo2023" class="csl-entry quarto-appendix-citeas" role="listitem">
+Veríssimo, André, Tymoteusz Makowski, Pedro Silva, Vedha Viyash, and
+APPSILON. 2023. <span>“Testing Containers and WebAssembly in Submissions
+to the FDA.”</span> February 1, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/containers_and_webassembly_submissions.html">https://pharmaverse.github.io/blog/posts/2023-12-30_containers_webassembly_submission/containers_and_webassembly_submissions.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
