@@ -53,7 +53,7 @@
     "href": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#last-updated",
     "title": "Reproducing the R Submissions Pilot 2 Shiny Application using Rhino",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:30.567946"
+    "text": "Last updated\n\n2024-02-02 15:10:27.285698"
   },
   {
     "objectID": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#details",
@@ -130,7 +130,7 @@
     "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#last-updated",
     "title": "admiral 1.0.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:27.108576"
+    "text": "Last updated\n\n2024-02-02 15:10:23.902434"
   },
   {
     "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#details",
@@ -151,7 +151,7 @@
     "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
     "title": "It’s all relative? - Calculating Relative Days using admiral",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:23.055849"
+    "text": "Last updated\n\n2024-02-02 15:10:19.922922"
   },
   {
     "objectID": "posts/2023-08-08_study_day/study_day.html#details",
@@ -200,7 +200,7 @@
     "href": "posts/2023-12-20_p_k__examples/p_k__examples.html#last-updated",
     "title": "PK Examples",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:19.311646"
+    "text": "Last updated\n\n2024-02-02 15:10:16.260173"
   },
   {
     "objectID": "posts/2023-12-20_p_k__examples/p_k__examples.html#details",
@@ -312,7 +312,7 @@
     "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
     "title": "Rounding",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:08.903153"
+    "text": "Last updated\n\n2024-02-02 15:10:06.276652"
   },
   {
     "objectID": "posts/2023-07-24_rounding/rounding.html#details",
@@ -347,7 +347,7 @@
     "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
     "title": "Derive a new parameter computed from the value of other parameters",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:05.004185"
+    "text": "Last updated\n\n2024-02-02 15:10:02.39332"
   },
   {
     "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
@@ -424,7 +424,7 @@
     "href": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html#pilot-4",
     "title": "Testing Containers and WebAssembly in Submissions to the FDA",
     "section": "Pilot 4",
-    "text": "Pilot 4\nThis pilot aims to explore using technologies such as containers and WebAssembly software to package a Shiny application into a self-contained unit, streamlining the transfer and execution process for enhanced efficiency.\nThis pilot is expected to be divided into two parallel submissions:\n(a) will investigate WebAssembly and\n(b) will investigate containers.\n\nThe Journey with WebAssembly and Containers\nOur team at Appsilon teamed up with the dynamic Pilot 4 crew to explore WebAssembly technology and containers. George Stagg and Winston Chang also joined the working group to discuss the web-assembly portion of Pilot 4. This partnership brought together our engineering prowess to contribute to these tools, injecting fresh perspectives into the ongoing pilot project.\nSome of the outcomes of the collaboration:\n\nWe were able to set up a robust container environment for this pilot project. \nWe aided the progress made on the use of both experimental technologies: containers and WebAssembly.\nWe developed a working prototype submission using Podman container technology.\nWe developed a working early-stage prototype for wrapping a small Shiny application using WebAssembly.\n\n\nWebAssembly\n\nWebAssembly allows languages like R to be executed at near-native speed directly within web browsers, providing users with the ability to run R code without having R installed locally. WebR is essentially the R programming language adapted to run in a web browser environment using WebAssembly. This project is under active development. \n\n\n\nThe Pilot 4 Shiny App Up and Running on webR!\n\n\n\n\n\nThe deployed example of the Shiny app running on webR is available here. Check out the video of the application running below.\n\nDuring this pilot, engineers at Appsilon developed a prototype of a Shiny application running on webR. The application reuses most of the code from the previous pilot apps with some tweaks and a couple of hacks/changes to get around non CRAN dependencies, specially for data loading, WebR compatibilities, and shimming some of the functionality from {teal} and other packages that are (for now) not available on CRAN.\n\nwebR Shiny App\nDuring the second iteration, which was recently held, Pedro Silva shared the process of developing this Shiny app running on webR.\n\n\nThe Process\n\nLeverage the last 2 iterations of the application\n\nReuse as much code as possible\nAvoid touching the logic part\n\nRestrict the number of dependencies to packages on CRAN\n\nReplace/shim functionality that was lost from removing dependencies\n\n\nHere is the list of dependencies to packages on CRAN; those that worked are colored green, and those that were removed are marked in orange. We ended up with just 3 problematic dependencies (bold).\n|                                           |                                           |\n|-------------------------------------------|-------------------------------------------|\n| [library(config)]{style=\"color:orange\"}   | [library(reactable)]{style=\"color:green\"} |\n| **library(cowplot)**                      | [library(rhino)]{style=\"color:orange\"}    |\n| [library(dplyr)]{style=\"color:green\"}     | [library(rtables)]{style=\"color:green\"}   |\n| [library(emmeans)]{style=\"color:green\"}   | [library(shiny)]{style=\"color:green\"}     |\n| [library(ggplot2)]{style=\"color:green\"}   | [library(stringr)]{style=\"color:green\"}   |\n| [library(glue)]{style=\"color:green\"}      | **library(teal)**                         |\n| [library(haven)]{style=\"color:green\"}     | **library(teal.data)**                    |\n| [library(htmltools)]{style=\"color:green\"} | [library(tibble)]{style=\"color:green\"}    |\n| [library(huxtable)]{style=\"color:green\"}  | [library(tidyr)]{style=\"color:green\"}     |\n| [library(magrittr)]{style=\"color:green\"}  | [library(tippy)]{style=\"color:green\"}     |\n| [library(markdown)]{style=\"color:green\"}  | [library(Tplyr)]{style=\"color:green\"}     |\n| [library(pkgload)]{style=\"color:green\"}   | [library(utils)]{style=\"color:green\"}     |\n| [library(purrr)]{style=\"color:green\"}     | [library(visR)]{style=\"color:green\"}      |\n\nIssues with library(cowplot):\n\nSome issues with low-level dependencies when deployed\n\nSolution:\n\nReplace functionality with HTML\n\nIssues with library(teal):\n\nUses {shiny.widgets} (not working for webR)\n\nSolution:\n\nRedo the UI\nLoad modules directly\nRecreate filter functionality\n\nIssues with library(teal.data):\n\nUse rds exports\n\nSolution:\n\nShim functionality, load data directly\n\n\nLeverage shinylive and httpuv to export and serve the application\n\nShinylive can help streamline the export process\n\nProblems\n\nshiny.live won’t let us have non-R files in the application directory - this is an outstanding bug that George asked us to raise an issue for.\nWe wouldn’t be able to run the application as a traditional shiny app.\n\nSolution:\n\nCustom build script\n\n\n{httpuv} can help serve the application\n\n{httpuv} would run natively on a machine to serve the Shiny app\n\n\n\n\n\nApplication Structure\nThe figure below shows an overview of what we ended with:\n\nSome of the issues and solutions found at the very beginning:\n\nThe previous applications were built using golem and another one in Rhino; the support for these frameworks is not great in webR up to now.\n\nSolution\n\n{box} works out of the box (reuse the rhino version modules)\nSimplify the structure and use a simple shiny modular structure\n\n\nShinylive does not like non-R files when generating the bundle\n\nSolution\n\nKeep the app folder as clean as possible for now (www folder only)\n\n\n{teal} and {teal.data} are not on CRAN\n\nSolution\n\nShim and used functionality\nUse a simple tab system for the UI structure\n\n\n\nThe FDA was previously told that the shiny application being prepared for the Pilot 4 submission would not be a 1 to 1 mapping from the previous one submitted for the Pilot 2 due to certain constraints such as {teal} not being on CRAN; however, this didn’t represent a problem for them since they would mainly like to test the technology.\nPedro Silva, one of the engineers working on the development of this app, mentioned “While WebR is still in development, it shows tremendous promise! The loading is definitely still a pain point (over 100mb to set up the environment!) but it will only get better moving forward.”\n\n\nContainers\n\n\n\n\n\nContainerization, particularly through technologies like Docker, Podman or Singularity, offers several advantages for deploying Shiny apps.\n\nChoosing the Right Container\nChoosing the right container was a question that arose in this project. Although Docker is the most popular, we decided to move forward with Podman. \nIn our exploration of containerization tools for deploying Shiny applications, we’ve identified key distinctions between Docker and Podman that influenced our choice. \nPodman stands out for its daemonless architecture, enhancing security by eliminating the need for a central daemon process. Unlike Docker, Podman supports running containers as non-root users, a critical feature for meeting FDA reviewer requirements. Developed by Red Hat and maintained as an open-source project, Podman prioritizes security with its rootless container support, offering a robust solution for security-conscious users. \n\n\nGoals\nA Container-based method to deploy Pilot 2 Shiny App.\n\n\nWhat we did\n\nConfigurable Podman Dockerfile / docker-compose.yml\n\nR version\nRegistry / organization name / image name (differences between docker.io and ghcr.io)\n\nDocumentation on creating the container\nCI: Automated build on amd64 and arm64 platforms\n\n\n\nPodman short-demo\n\nBelow is the dockerfile (recipe) for the container:"
+    "text": "Pilot 4\nThis pilot aims to explore using technologies such as containers and WebAssembly software to package a Shiny application into a self-contained unit, streamlining the transfer and execution process for enhanced efficiency.\nThis pilot is expected to be divided into two parallel submissions:\n(a) will investigate WebAssembly and\n(b) will investigate containers.\n\nThe Journey with WebAssembly and Containers\nOur team at Appsilon teamed up with the dynamic Pilot 4 crew to explore WebAssembly technology and containers. George Stagg and Winston Chang also joined the working group to discuss the web-assembly portion of Pilot 4. This partnership brought together our engineering prowess to contribute to these tools, injecting fresh perspectives into the ongoing pilot project.\nSome of the outcomes of the collaboration:\n\nWe were able to set up a robust container environment for this pilot project. \nWe aided the progress made on the use of both experimental technologies: containers and WebAssembly.\nWe developed a working prototype submission using Podman container technology.\nWe developed a working early-stage prototype for wrapping a small Shiny application using WebAssembly.\n\n\nWebAssembly\n\nWebAssembly allows languages like R to be executed at near-native speed directly within web browsers, providing users with the ability to run R code without having R installed locally. WebR is essentially the R programming language adapted to run in a web browser environment using WebAssembly. This project is under active development. \n\n\n\nThe Pilot 4 Shiny App Up and Running on webR!\n\n\n\n\n\nThe deployed example of the Shiny app running on webR is available here. Check out the video of the application running below.\n\nDuring this pilot, engineers at Appsilon developed a prototype of a Shiny application running on webR. The application reuses most of the code from the previous pilot apps with some tweaks and a couple of hacks/changes to get around non CRAN dependencies, specially for data loading, WebR compatibilities, and shimming some of the functionality from {teal} and other packages that are (for now) not available on CRAN.\n\nwebR Shiny App\nDuring the second iteration, which was recently held, Pedro Silva shared the process of developing this Shiny app running on webR.\n\n\nThe Process\n\nLeverage the last 2 iterations of the application\n\nReuse as much code as possible\nAvoid touching the logic part\n\nRestrict the number of dependencies to packages on CRAN\n\nReplace/shim functionality that was lost from removing dependencies\n\n\nHere is the list of dependencies to packages on CRAN; those that worked are colored green, and those that were removed are marked in orange. We ended up with just 3 problematic dependencies (bold).\n\n\n\n\n\nIssues with library(cowplot):\n\nSome issues with low-level dependencies when deployed\n\nSolution:\n\nReplace functionality with HTML\n\nIssues with library(teal):\n\nUses {shiny.widgets} (not working for webR)\n\nSolution:\n\nRedo the UI\nLoad modules directly\nRecreate filter functionality\n\nIssues with library(teal.data):\n\nUse rds exports\n\nSolution:\n\nShim functionality, load data directly\n\n\nLeverage shinylive and httpuv to export and serve the application\n\nShinylive can help streamline the export process\n\nProblems\n\nshiny.live won’t let us have non-R files in the application directory - this is an outstanding bug that George asked us to raise an issue for.\nWe wouldn’t be able to run the application as a traditional shiny app.\n\nSolution:\n\nCustom build script\n\n\n{httpuv} can help serve the application\n\n{httpuv} would run natively on a machine to serve the Shiny app\n\n\n\n\n\nApplication Structure\nThe figure below shows an overview of what we ended with:\n\nSome of the issues and solutions found at the very beginning:\n\nThe previous applications were built using golem and another one in Rhino; the support for these frameworks is not great in webR up to now.\n\nSolution\n\n{box} works out of the box (reuse the rhino version modules)\nSimplify the structure and use a simple shiny modular structure\n\n\nShinylive does not like non-R files when generating the bundle\n\nSolution\n\nKeep the app folder as clean as possible for now (www folder only)\n\n\n{teal} and {teal.data} are not on CRAN\n\nSolution\n\nShim and used functionality\nUse a simple tab system for the UI structure\n\n\n\nThe FDA was previously told that the shiny application being prepared for the Pilot 4 submission would not be a 1 to 1 mapping from the previous one submitted for the Pilot 2 due to certain constraints such as {teal} not being on CRAN; however, this didn’t represent a problem for them since they would mainly like to test the technology.\nPedro Silva, one of the engineers working on the development of this app, mentioned “While WebR is still in development, it shows tremendous promise! The loading is definitely still a pain point (over 100mb to set up the environment!) but it will only get better moving forward.”\n\n\nContainers\n\n\n\n\n\nContainerization, particularly through technologies like Docker, Podman or Singularity, offers several advantages for deploying Shiny apps.\n\nChoosing the Right Container\nChoosing the right container was a question that arose in this project. Although Docker is the most popular, we decided to move forward with Podman. \nIn our exploration of containerization tools for deploying Shiny applications, we’ve identified key distinctions between Docker and Podman that influenced our choice. \nPodman stands out for its daemonless architecture, enhancing security by eliminating the need for a central daemon process. Unlike Docker, Podman supports running containers as non-root users, a critical feature for meeting FDA reviewer requirements. Developed by Red Hat and maintained as an open-source project, Podman prioritizes security with its rootless container support, offering a robust solution for security-conscious users. \n\n\nGoals\nA Container-based method to deploy Pilot 2 Shiny App.\n\n\nWhat we did\n\nConfigurable Podman Dockerfile / docker-compose.yml\n\nR version\nRegistry / organization name / image name (differences between docker.io and ghcr.io)\n\nDocumentation on creating the container\nCI: Automated build on amd64 and arm64 platforms\n\n\n\nPodman short-demo\n\nBelow is the dockerfile (recipe) for the container:"
   },
   {
     "objectID": "index.html",
@@ -452,7 +452,7 @@
     "href": "posts/2023-11-27_higher_order/higher_order.html#last-updated",
     "title": "Believe in a higher order!",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:41:53.386617"
+    "text": "Last updated\n\n2024-02-02 15:09:50.593077"
   },
   {
     "objectID": "posts/2023-11-27_higher_order/higher_order.html#details",
@@ -494,7 +494,7 @@
     "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
     "title": "Blanks and NAs",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:41:57.567537"
+    "text": "Last updated\n\n2024-02-02 15:09:54.915465"
   },
   {
     "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
@@ -536,7 +536,7 @@
     "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
     "title": "Admiral Hackathon 2023 Revisited",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:03.016986"
+    "text": "Last updated\n\n2024-02-02 15:10:00.380934"
   },
   {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
@@ -578,7 +578,7 @@
     "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
     "title": "How to use Code Sections",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:06.860951"
+    "text": "Last updated\n\n2024-02-02 15:10:04.223983"
   },
   {
     "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
@@ -648,7 +648,7 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:11.108553"
+    "text": "Last updated\n\n2024-02-02 15:10:08.425093"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
@@ -697,7 +697,7 @@
     "href": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#last-updated",
     "title": "The pharmaverse (hi)story",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:15.84579"
+    "text": "Last updated\n\n2024-02-02 15:10:12.821424"
   },
   {
     "objectID": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#details",
@@ -746,7 +746,7 @@
     "href": "posts/2023-06-28_welcome/index.html#last-updated",
     "title": "Hello pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:21.001184"
+    "text": "Last updated\n\n2024-02-02 15:10:17.919408"
   },
   {
     "objectID": "posts/2023-06-28_welcome/index.html#details",
@@ -795,7 +795,7 @@
     "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
     "title": "falcon",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:24.706831"
+    "text": "Last updated\n\n2024-02-02 15:10:21.563099"
   },
   {
     "objectID": "posts/2023-07-09_falcon/falcon.html#details",
@@ -844,7 +844,7 @@
     "href": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#last-updated",
     "title": "End of Year Update from the Pharmaverse Council",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:28.928506"
+    "text": "Last updated\n\n2024-02-02 15:10:25.688065"
   },
   {
     "objectID": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#details",
@@ -893,7 +893,7 @@
     "href": "posts/2023-10-30_floating_point/floating_point.html#last-updated",
     "title": "Floating point",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-02-01 15:42:33.126961"
+    "text": "Last updated\n\n2024-02-02 15:10:29.786267"
   },
   {
     "objectID": "posts/2023-10-30_floating_point/floating_point.html#details",
