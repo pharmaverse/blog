@@ -1,0 +1,65 @@
+---
+title: "teal is now available on CRAN 🎉"
+author:
+  - name: Dony Unardi
+description: "Announcing the release of teal v0.15.0 on CRAN!"
+date: "2024-02-14"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [community]
+# feel free to change the image
+image: "teal.png"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2024-02-13_teal_on_cran"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+![](teal.png){fig-align="center" width="220"}
+
+We're thrilled to announce that `teal` v0.15.0 has been released on CRAN!
+
+This marks a significant milestone in our journey, and we're incredibly excited about the possibilities `teal` brings to the R community, particularly within clinical trial settings.
+
+One of the most notable changes in this release is the introduction of `teal_data` class. This addition enhances how data is handled within the `teal` framework, paving the way for custom data modules tailored to the needs of our R users, both inside and outside the clinical trial space. With `teal_data`, users can expect improved efficiency and flexibility in managing their data, opening doors to innovative approaches in data analysis and visualization.
+
+While we're enthusiastic about the advancements `teal` v0.15.0 brings, we have to introduce breaking changes to this version.
+
+But worry not, we've got you covered!
+
+To ease the transition, we've provided comprehensive guidance on migrating your applications from version 0.14.0 to 0.15.0. Check out our migration guide [here](https://github.com/insightsengineering/teal/discussions/945), and feel free to ask any questions you may have in the discussion thread.
+
+As we roll out `teal` v0.15.0, we're also working diligently on releasing *teal modules* packages to CRAN to fully support this version. While we're still in the process, we encourage you to dive into the latest `teal` release and start exploring its capabilities. To get started, make sure to install the development versions of `teal.transform`, `teal.reporter`, and any other modules you're using.
+
+To simplify the process, you can execute the following code to verify that you have the correct `teal` and *teal modules* versions:
+```r
+# installing latest stable release from CRAN
+install.packages(c("teal.logger", "teal.code", "teal.widgets", "teal.data", "teal.slice", "teal"))
+
+# installing dev version from pharmaverse
+install.packages(c("teal.reporter", "teal.transform", "teal.modules.general", "teal.modules.clinical"), repos = c("https://pharmaverse.r-universe.dev", getOption("repos")))
+```
+
+Rest assured, we're committed to completing the release of the *teal modules* as swiftly as possible to provide users with an uninterrupted experience.
+
+As always, thank you for your continued support and enthusiasm for `teal`. We can't wait to see the incredible ways in which `teal` empowers you to revolutionize your data exploration in R.
+
+For further details about the release, please refer to [this link](https://github.com/insightsengineering/teal/releases/tag/v0.15.0).
+
+Feel free to explore the `teal` website [here](https://insightsengineering.github.io/teal/latest-tag/) to learn more about the latest features.
+
+![](teal_screenshot.jpg){fig-align="center"}
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug
+)
+```
