@@ -6,10 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Ben Straub">
-<meta name="dcterms.date" content="2023-08-08">
+<meta name="author" content="Dony Unardi">
+<meta name="dcterms.date" content="2024-02-14">
+<meta name="description" content="Announcing the release of teal v0.15.0 on CRAN!">
 
-<title>Pharmaverse Blog - It’s all relative? - Calculating Relative Days using admiral</title>
+<title>Pharmaverse Blog - teal is now available on CRAN 🎉</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -113,12 +114,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Pharmaverse Blog - It’s all relative? - Calculating Relative Days using admiral">
-<meta property="og:description" content="">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/admiral.png">
+<meta property="og:title" content="Pharmaverse Blog - teal is now available on CRAN 🎉">
+<meta property="og:description" content="Announcing the release of teal v0.15.0 on CRAN!">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-02-13_teal_on_cran/teal.png">
 <meta property="og:site_name" content="Pharmaverse Blog">
-<meta property="og:image:height" content="276">
-<meta property="og:image:width" content="369">
+<meta property="og:image:height" content="1080">
+<meta property="og:image:width" content="1080">
 </head>
 
 <body class="floating nav-fixed">
@@ -155,10 +156,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">It’s all relative? - Calculating Relative Days using admiral</h1>
-                                <div class="quarto-categories">
-                <div class="quarto-category">admiral</div>
-                <div class="quarto-category">ADaMs</div>
+      <h1 class="title">teal is now available on CRAN 🎉</h1>
+                  <div>
+        <div class="description">
+          Announcing the release of teal v0.15.0 on CRAN!
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">community</div>
               </div>
                   </div>
   </div>
@@ -169,14 +174,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Ben Straub </p>
+               <p>Dony Unardi </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">August 8, 2023</p>
+        <p class="date">February 14, 2024</p>
       </div>
     </div>
     
@@ -202,67 +207,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>Creating <code>--DY</code> variables for your ADaMs is super easy using <a href="https://pharmaverse.github.io/admiral/v0.11.1/reference/derive_vars_dy.html"><code>derive_vars_dy()</code></a> from the <a href="https://pharmaverse.github.io/admiral/">admiral package</a>.</p>
-<p>Let’s build some dummy data with 4 subjects, a start date/time for treatment (<code>TRTSDTM</code>), an analysis start date/time variable (<code>ASTDTM</code>) and an analysis end date variable (<code>AENDT</code>).</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>adam <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID, <span class="sc">~</span>TRTSDTM, <span class="sc">~</span>ASTDTM, <span class="sc">~</span>AENDT,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"001"</span>, <span class="st">"2014-01-17T23:59:59"</span>, <span class="st">"2014-01-18T13:09:O9"</span>, <span class="st">"2014-01-20"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"002"</span>, <span class="st">"2014-02-25T23:59:59"</span>, <span class="st">"2014-03-18T14:09:O9"</span>, <span class="st">"2014-03-24"</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"003"</span>, <span class="st">"2014-02-12T23:59:59"</span>, <span class="st">"2014-02-18T11:03:O9"</span>, <span class="st">"2014-04-17"</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"004"</span>, <span class="st">"2014-03-17T23:59:59"</span>, <span class="st">"2014-03-19T13:09:O9"</span>, <span class="st">"2014-05-04"</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">TRTSDTM =</span> <span class="fu">as_datetime</span>(TRTSDTM),</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">ASTDTM =</span> <span class="fu">as_datetime</span>(ASTDTM),</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">AENDT =</span> <span class="fu">ymd</span>(AENDT)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="teal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="220"></p>
+</figure>
 </div>
-<p>Okay! Next we run our dataset through <code>derive_vars_dy()</code>, specifying:</p>
-<ul>
-<li>the reference date of the variable we want the calculation to be done against (<code>reference_date</code> argument);</li>
-<li>the variables required to help calculate the relative days (<code>source_vars</code> argument).</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">derive_vars_dy</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  adam,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">reference_date =</span> TRTSDTM,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">source_vars =</span> <span class="fu">exprs</span>(ASTDTM, AENDT)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 6
-  USUBJID TRTSDTM             ASTDTM              AENDT      ASTDY AENDY
-  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;
-1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20     2     4
-2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24    22    28
-3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17     7    65
-4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04     3    49</code></pre>
+<p>We’re thrilled to announce that <code>teal</code> v0.15.0 has been released on CRAN!</p>
+<p>This marks a significant milestone in our journey, and we’re incredibly excited about the possibilities <code>teal</code> brings to the R community, particularly within clinical trial settings.</p>
+<p>One of the most notable changes in this release is the introduction of <code>teal_data</code> class. This addition enhances how data is handled within the <code>teal</code> framework, paving the way for custom data modules tailored to the needs of our R users, both inside and outside the clinical trial space. With <code>teal_data</code>, users can expect improved efficiency and flexibility in managing their data, opening doors to innovative approaches in data analysis and visualization.</p>
+<p>While we’re enthusiastic about the advancements <code>teal</code> v0.15.0 brings, we have to introduce breaking changes to this version.</p>
+<p>But worry not, we’ve got you covered!</p>
+<p>To ease the transition, we’ve provided comprehensive guidance on migrating your applications from version 0.14.0 to 0.15.0. Check out our migration guide <a href="https://github.com/insightsengineering/teal/discussions/945">here</a>, and feel free to ask any questions you may have in the discussion thread.</p>
+<p>As we roll out <code>teal</code> v0.15.0, we’re also working diligently on releasing <em>teal modules</em> packages to CRAN to fully support this version. While we’re still in the process, we encourage you to dive into the latest <code>teal</code> release and start exploring its capabilities. To get started, make sure to install the development versions of <code>teal.transform</code>, <code>teal.reporter</code>, and any other modules you’re using.</p>
+<p>To simplify the process, you can execute the following code to verify that you have the correct <code>teal</code> and <em>teal modules</em> versions:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># installing latest stable release from CRAN</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"teal.logger"</span>, <span class="st">"teal.code"</span>, <span class="st">"teal.widgets"</span>, <span class="st">"teal.data"</span>, <span class="st">"teal.slice"</span>, <span class="st">"teal"</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># installing dev version from pharmaverse</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"teal.reporter"</span>, <span class="st">"teal.transform"</span>, <span class="st">"teal.modules.general"</span>, <span class="st">"teal.modules.clinical"</span>), <span class="at">repos =</span> <span class="fu">c</span>(<span class="st">"https://pharmaverse.r-universe.dev"</span>, <span class="fu">getOption</span>(<span class="st">"repos"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Rest assured, we’re committed to completing the release of the <em>teal modules</em> as swiftly as possible to provide users with an uninterrupted experience.</p>
+<p>As always, thank you for your continued support and enthusiasm for <code>teal</code>. We can’t wait to see the incredible ways in which <code>teal</code> empowers you to revolutionize your data exploration in R.</p>
+<p>For further details about the release, please refer to <a href="https://github.com/insightsengineering/teal/releases/tag/v0.15.0">this link</a>.</p>
+<p>Feel free to explore the <code>teal</code> website <a href="https://insightsengineering.github.io/teal/latest-tag/">here</a> to learn more about the latest features.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="teal_screenshot.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
 </div>
-</div>
-<p>That’s it! We got both our <code>ASTDY</code> and <code>AENDY</code> variables in only a few short lines of code!</p>
-<p>What if I want my variables to have a different naming convention?</p>
-<p>Easy! In the <code>source_vars</code> argument if you want your variables to be called <code>DEMOADY</code> and <code>DEMOEDY</code> just do <code>DEMOADY = ASTDTM</code> and <code>DEMOEDY = AENDT</code> and <code>derive_vars_dy()</code> will do the rest!</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">derive_vars_dy</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  adam,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">reference_date =</span> TRTSDTM,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">source_vars =</span> <span class="fu">exprs</span>(<span class="at">DEMOADY =</span> ASTDTM, <span class="at">DEMOEDY =</span> AENDT)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 6
-  USUBJID TRTSDTM             ASTDTM              AENDT      DEMOADY DEMOEDY
-  &lt;chr&gt;   &lt;dttm&gt;              &lt;dttm&gt;              &lt;date&gt;       &lt;dbl&gt;   &lt;dbl&gt;
-1 001     2014-01-17 23:59:59 2014-01-18 13:09:09 2014-01-20       2       4
-2 002     2014-02-25 23:59:59 2014-03-18 14:09:09 2014-03-24      22      28
-3 003     2014-02-12 23:59:59 2014-02-18 11:03:09 2014-04-17       7      65
-4 004     2014-03-17 23:59:59 2014-03-19 13:09:09 2014-05-04       3      49</code></pre>
-</div>
-</div>
-<p>If you want to get <code>--DT</code> or <code>--DTM</code> variables using <code>admiral</code> then check out <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dt.html"><code>derive_vars_dt()</code></a> and <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dtm.html"><code>derive_vars_dtm()</code></a>. If things are messy in your data, e.g.&nbsp;partial dates, both functions have great imputation abilities, which we will cover in an upcoming blog post!</p>
 <!--------------- appendices go here ----------------->
 <div class="cell">
 <div class="cell-output-display">
@@ -275,21 +246,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-02-14 18:45:16.704736</p>
+<p>2024-02-14 18:45:21.350264</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-08_study_day/renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
-  author = {Straub, Ben},
-  title = {It’s All Relative? - {Calculating} {Relative} {Days} Using
-    Admiral},
-  date = {2023-08-08},
-  url = {https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/study_day.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-02-13_teal_on_cran/code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-02-13_teal_on_cran/renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{unardi2024,
+  author = {Unardi, Dony},
+  title = {Teal Is Now Available on {CRAN} 🎉},
+  date = {2024-02-14},
+  url = {https://pharmaverse.github.io/blog/posts/2024-02-13_teal_on_cran/teal_on_cran.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Straub, Ben. 2023. <span>“It’s All Relative? - Calculating Relative Days
-Using Admiral.”</span> August 8, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/study_day.html">https://pharmaverse.github.io/blog/posts/2023-08-08_study_day/study_day.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-unardi2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Unardi, Dony. 2024. <span>“Teal Is Now Available on CRAN 🎉.”</span>
+February 14, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-02-13_teal_on_cran/teal_on_cran.html">https://pharmaverse.github.io/blog/posts/2024-02-13_teal_on_cran/teal_on_cran.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
