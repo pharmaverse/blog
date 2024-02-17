@@ -20,7 +20,7 @@ create_post(
   description = "", # you can fill the description in later as well
   author = c("Pooja Kumari"), # one or more authors are permitted
   cover_image = "pharmaverse", # chose one of the above (see line 8)
-  tags = c("submission", "ADaMs", "conferences", "admiral", "xportr", "metatools", "metacore" ) # chose (multiple) from line 10
+  tags = c("submission", "ADaMs", "conferences", "admiral", "xportr", "metatools", "metacore") # chose (multiple) from line 10
 )
 
 
