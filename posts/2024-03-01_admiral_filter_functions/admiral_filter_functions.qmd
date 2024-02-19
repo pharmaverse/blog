@@ -78,20 +78,20 @@ adae2 <- tribble(
 
 
 ex <- tribble(
-  ~USUBJID, ~EXSEQ, ~EXDOSE,    ~EXTRT,
-  "01-701-1015",      1,      54,    "XANO",
-  "01-701-1015",      2,      54,    "XANO",
-  "01-701-1015",      3,      54,    "XANO",
-  "01-701-1034",      1,      54,    "XANO",
-  "01-701-1034",      2,      54,    "XANO",
-  "01-701-1115",      1,       0, "PLACEBO",
-  "01-701-1115",      2,       0, "PLACEBO",
-  "01-701-1115",      3,       0, "PLACEBO",
-  "01-701-1146",      1,       0, "PLACEBO",
-  "01-701-1146",      2,       0, "PLACEBO",
-  "01-701-1146",      3,       0, "PLACEBO",
-  "01-701-1444",      1,      54,    "XANO",
-  "01-701-1444",      2,      54,    "XANO"
+  ~USUBJID, ~EXSEQ, ~EXDOSE, ~EXTRT,
+  "01-701-1015", 1, 54, "XANO",
+  "01-701-1015", 2, 54, "XANO",
+  "01-701-1015", 3, 54, "XANO",
+  "01-701-1034", 1, 54, "XANO",
+  "01-701-1034", 2, 54, "XANO",
+  "01-701-1115", 1, 0, "PLACEBO",
+  "01-701-1115", 2, 0, "PLACEBO",
+  "01-701-1115", 3, 0, "PLACEBO",
+  "01-701-1146", 1, 0, "PLACEBO",
+  "01-701-1146", 2, 0, "PLACEBO",
+  "01-701-1146", 3, 0, "PLACEBO",
+  "01-701-1444", 1, 54, "XANO",
+  "01-701-1444", 2, 54, "XANO"
 )
 ```
 
@@ -145,10 +145,10 @@ One final argument which can be useful as a fail-safe, but isn't showcased in th
 >  *Note* it is of course possible to achieve the same result using `{tidyverse}` tools:
 
 ```{r}
-ex %>% 
-  arrange(USUBJID, desc(EXSEQ)) %>% 
-  group_by(USUBJID) %>% 
-  filter(row_number() == 1) %>% 
+ex %>%
+  arrange(USUBJID, desc(EXSEQ)) %>%
+  group_by(USUBJID) %>%
+  filter(row_number() == 1) %>%
   ungroup()
 ```
 
