@@ -24,9 +24,16 @@ long_slug <- "2024-03-01_admiral_filter_functions"
 
 Filtering and merging datasets is the bread and butter of statistical programming. Whether it's on the way to an ADaM variable derivation, or in an effort to pull out a list of patients matching a specific condition for a TLG, or another task entirely, most steps in the statistical programming workflow feature some combination of these two tasks. 
 
-The `{tidyverse}` functions `filter()`, `group_by()`, and`*_join()` are a fantastic toolset for filtering and merging, and can often suffice to carry out these sorts of operations. Often, however, this will be a multi-step process, requiring more than one set of pipe (`%>%`) chains if multiple datasets are involved. As such, the `{admiral}` package builds on this concept by offering a very practical toolset of utility functions, henceforth referred to altogether as `filter_*()`. These are wrappers of common combinations of `{tidyverse}` function calls that enable the ADaM programmer to carry out such operations "in stride" within their ADaM workflow - in typical `{admiral}` style!
+The `{tidyverse}` functions `filter()`, `group_by()`, and`*_join()` are a fantastic toolset for filtering and merging, and can often suffice to carry out these sorts of operations. Often, however, this will be a multi-step process, requiring more than one set of pipe (`%>%`) chains if multiple datasets are involved. As such, the [{admiral}](https://pharmaverse.github.io/admiral/index.html) package builds on this concept by offering a very practical toolset of utility functions, henceforth referred to altogether as `filter_*()`. These are wrappers of common combinations of `{tidyverse}` function calls that enable the ADaM programmer to carry out such operations "in stride" within their ADaM workflow - in typical `{admiral}` style!
 
-Many of the `filter_*()` functions feature heavily within the `{admiral}` codebase, but they can be very handy in their own right: hopefully by the end of this blog post, you will be convinced of this too.
+Many of the `filter_*()` functions feature heavily within the `{admiral}` codebase, but they can be very handy in their own right. You can learn more about them from:
+
+* The relevant section in the [Reference page of the admiral documentation website](https://pharmaverse.github.io/admiral/reference/#utilities-for-filtering-observations);
+* The short visual explanations in the second page of the [{admiral Cheat Sheet}](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf);
+
+![](filter_fns_cheatsheet.png){fig-align="center" width="500"}
+
+* ...and the rest of this blog post!
 
 ## Required Packages
 
@@ -97,7 +104,7 @@ ex <- tribble(
 
 # `filter_exist()` and `filter_not_exist()`
 
-Commonly we may wish to identify a set of patients from ADSL who satisfy (or do not satisfy) some condition. This condition can be relative to data found in ADSL or another ADaM dataset. For formal workflows, we would likely consider creating some sort of flag to encode this information, but for a more "quick and dirty" approach we can use `filter_exist()` or `filter_not_exist()`. 
+Commonly we may wish to identify a set of patients from ADSL who satisfy (or do not satisfy) some condition. This condition can be relative to data found in ADSL or another ADaM dataset. For formal workflows, we would likely consider creating some sort of flag to encode this information, but for a more "quick and dirty" approach we can use [filter_exist()](https://pharmaverse.github.io/admiral/reference/filter_exist.html) or [filter_not_exist()](https://pharmaverse.github.io/admiral/reference/filter_not_exist.html). 
 
 For instance, suppose we want to obtain demographic information for the patients who have suffered moderate or severe fatigue using the datasets created above. A simple application of `filter_exist()` suffices: firstly, we feed in `adsl` as the input dataset and `adae1` as the secondary dataset (inside which the filtering condition is applied). We make sure to specify `by_vars = USUBJID` to view the datasets patient-by-patient, and apply the condition on `dataset_add` (i.e. `adae1`) using the `filter_add` parameter.
 
@@ -127,7 +134,7 @@ That's it! `filter_exist()` and `filter_not_exist()` are as simple as they are u
 
 Another frequent task is to select the first or last observation within a by-group. Two possible examples where this may feature are a) selecting the most recent adverse event for a patient, or b) selecting the last dose for a patient. 
 
-We showcase below using `filter_extreme()` for the latter example. Using `ex` as defined above, we simply feed this into the function, specifying again to group the dataset by patient using `by_vars = exprs(USUBJID)` and order observations using the selection `order = exprs(EXSEQ)`. Finally, we indicate that we are interested in the last dose for each patient through the `mode = last`:
+We showcase below using [filter_extreme()](https://pharmaverse.github.io/admiral/reference/filter_extreme.html) for the latter example. Using `ex` as defined above, we simply feed this into the function, specifying again to group the dataset by patient using `by_vars = exprs(USUBJID)` and order observations using the selection `order = exprs(EXSEQ)`. Finally, we indicate that we are interested in the last dose for each patient through the `mode = last`:
 
 ```{r}
 filter_extreme(
@@ -156,7 +163,7 @@ ex %>%
 
 # `filter_relative()`
 
-Other times we might find ourselves wanting to filter observations directly before or after the observation where a specified condition is fulfilled. Using `{tidyverse}` tools, this can quickly get quite involved. Enter `filter_relative()`!  
+Other times we might find ourselves wanting to filter observations directly before or after the observation where a specified condition is fulfilled. Using `{tidyverse}` tools, this can quickly get quite involved. Enter [filter_relative()](https://pharmaverse.github.io/admiral/reference/filter_relative.html)!  
 
 In the example below we showcase how `filter_relative()` extracts the AEs directly after the first occurrence of `AEDECOD == FATIGUE` in the above-generated `adae1`. As before, we pass the `dataset` and `by_vars` arguments, after which we specify to order the observations by `AESTDTC` using `order = exprs(AESTDTC)` and the condition using `condition = AEDECOD == "FATIGUE"`. Then, we specify we want records directly _after_ the condition is satisfied using `selection = after` and that we do not want the reference observations (i.e. those that satisfy the `condition`) using `inclusive = FALSE`. Moreover, with `mode = "first"` we indicate that we want to use as reference the record where the condition is satisfied for the _first_ time. Finally, we indicate that we do not want to keep the groups with no observations satisfying the `condition` with `keep_no_ref_groups = FALSE`:
 
@@ -177,7 +184,7 @@ The arguments showcased above are flexible enough that we could modify our code 
 
 # `filter_joined()`
 
-The functions we have seen so far in this post have had relatively well-defined remits, and so a relatively contained set of arguments. `filter_joined()`, however, breaks that mold: this function enables one to filter observations using a condition while taking other observations (possibly from a different dataset) into account. We present a simple example below.
+The functions we have seen so far in this post have had relatively well-defined remits, and so a relatively contained set of arguments. [filter_joined()](https://pharmaverse.github.io/admiral/reference/filter_joined), however, breaks that mold: this function enables one to filter observations using a condition while taking other observations (possibly from a different dataset) into account. We present a simple example below.
 
 Let's try using `adae2` to extract the  observations with a duration longer than 30 days (`ADURN >= 30`) and on or after 7 days before a COVID AE `(ACOVFL == "Y")`. It is easier in this case to present the `filter_joined()` call and subsequently explain it:
 
