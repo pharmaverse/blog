@@ -17,6 +17,17 @@ image: "new_features.jpg"
 ```{r setup, include=FALSE}
 long_slug <- "2023-12-18_admiral_1_0"
 # renv::use(lockfile = "renv.lock")
+
+pkg <- function(package) {
+  url <- downlit::href_package(package)
+  glue::glue("<a href='{url}'>{package}</a>")
+}
+
+fun <- function(fun) {
+  parts <- strsplit(fun, "::")[[1]]
+  url <- downlit::href_topic(parts[2], package = parts[1])
+  glue::glue("<a href='{url}'>{fun}()</a>")
+}
 ```
 
 <!--------------- post begins here ----------------->
@@ -29,7 +40,7 @@ This blog post will discuss our commitment to stability, walk you through the ne
 
 # Commitment to Stability
 
-{{< pkg admiral >}} was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this [history blog post](https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html) for some of additional context on its development. Over the last three years, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and with some minor tweaks could be made redundant in favor of other functions.  This has lead to some deprecation of either whole functions or arguments as we have sought to consolidate. Unfortunately, this creates a lot of frustration for users.
+`r pkg("admiral")` was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this [history blog post](https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html) for some of additional context on its development. Over the last three years, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and with some minor tweaks could be made redundant in favor of other functions.  This has lead to some deprecation of either whole functions or arguments as we have sought to consolidate. Unfortunately, this creates a lot of frustration for users.
 
 Enter Superseded!!
 
@@ -40,9 +51,9 @@ Now with the release of `1.0.0` we are going to _supersede_ functions going forw
 
 We have 3 new functions available in this release: 
 
-* [derive_vars_extreme_event()](https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html)
-* [derive_var_merged_ef_msrc()](https://pharmaverse.github.io/admiral/reference/derive_var_merged_ef_msrc.html)
-* [derive_vars_computed()](https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html)
+* `r fun("admiral::derive_vars_extreme_event")`
+* `r fun("admiral::derive_var_merged_ef_msrc")`
+* `r fun("admiral::derive_vars_computed")`
 
 and a new option in [derive_var_atoxgr_dir()](https://pharmaverse.github.io/admiral/reference/derive_var_atoxgr_dir.html) and [derive_var_anrind()](https://pharmaverse.github.io/admiral/reference/derive_var_anrind.html) to handle floating point issues.
 
