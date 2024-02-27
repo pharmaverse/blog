@@ -92,8 +92,8 @@ Here are the steps to use the blog's Docker image:
 docker pull ghcr.io/pharmaverse/blog:latest
 ```
 
-4. Clone this blog repository and take note of the location of the repo.
-5. Run this code:
+4. Clone this `blog` repository and take note of the location of the repo in your local machine.
+5. Update the code below specifying the location of your 'blog' repository and execute the script:
 ```bash
 docker run --rm -ti -e PASSWORD=yourpassword -p 8787:8787 -v <location of your blog repo>:/home/rstudio/work ghcr.io/pharmaverse/blog
 ```
@@ -108,7 +108,7 @@ This command will run the `blog` Docker image and mount your local folder to the
 
 6. Open http://localhost:8787/ and you should see the RStudio welcome page.
 7. The username will be `rstudio`, and the password is `yourpassword`.
-8. Once logged in, go to the work folder, and you should see the contents of the repo.
+8. Once logged in, go to the work folder, and you should see the contents of the `blog` repository.
 9. Click the `quarto-blog.Rproj` file to open the project.
 10. You can test by opening the `index.qmd` and rendering the document.
 11. Quarto should run, and you should be able to see the rendered blog locally.
@@ -117,4 +117,4 @@ This command will run the `blog` Docker image and mount your local folder to the
 
 Please note that there is no SSH capability in the image, so you can't push your update to the repo from the image directly. To push the update, you would have to do it from your local terminal.
 
-A Dockerfile is also provided in this repo if you want to build the image yourself and add more functionalities.
+A Dockerfile is also provided in this repo if you want to build the image locally and add more functionalities.
