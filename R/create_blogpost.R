@@ -15,10 +15,10 @@ c(
 
 # Fill in the info, e.g.:
 create_post(
-  post_name = "iscr_conference", # needs to be character vector (length 1)
-  post_date = "2024-02-17", # needs to be character vector (length 1)
+  post_name = "My Blog", # needs to be character vector (length 1)
+  post_date = "2024-12-01", # needs to be character vector (length 1)
   description = "", # you can fill the description in later as well
-  author = c("Pooja Kumari"), # one or more authors are permitted
+  author = c("My Name"), # one or more authors are permitted
   cover_image = "pharmaverse", # chose one of the above (see line 8)
   tags = c("submission", "ADaMs", "conferences", "admiral", "xportr", "metatools", "metacore") # chose (multiple) from line 10
 )
