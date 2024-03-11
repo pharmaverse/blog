@@ -115,6 +115,6 @@ This command will run the `blog` Docker image and mount your local folder to the
 12. Develop your blog post and re-render as needed.
 13. Once complete, you can close the RStudio session, shut down the image, and push your update to the blog repo.
 
-Please note that there is no SSH capability in the image, so you can't push your update to the repo from the image directly. To push the update, you would have to do it from your local terminal.
+Please note that there is no SSH or git capability in the docker image, so you can't push your update to the repo from the image directly. To push the update, you would have to do it from your local RStudio or terminal.
 
 A Dockerfile is also provided in this repo if you want to build the image locally and add more functionalities.
