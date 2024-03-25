@@ -21,21 +21,21 @@ long_slug <- "2024-03-18_xportr_0_4_0"
 
 <!--------------- post begins here ----------------->
 
-# `XPT` Meets [`xportr`](https://atorus-research.github.io/xportr/)!
-In the pharmaceuticals and healthcare industries, it is crucial to maintain a standard structure for data exchange and regulatory submissions, enter `xpt` datasets! `XPT` datasets are binary files that are typically created by SAS software, they contain structured data, including variables, labels, and metadata. In order to develop `xpt` formatted files in R, let's introducing you to [`xportr`](https://atorus-research.github.io/xportr/).
+# `xpt` Meets [`xportr`](https://atorus-research.github.io/xportr/)!
+In the pharmaceuticals and healthcare industries, it is crucial to maintain a standard structure for data exchange and regulatory submissions, enter `xpt` datasets! `xpt` datasets are binary files that are typically created by SAS software, they contain structured data, including variables, labels, and metadata. In order to develop `xpt` formatted files in R, let's introducing you to [`xportr`](https://atorus-research.github.io/xportr/).
 
-[`xportr`](https://atorus-research.github.io/xportr/) is tools to build CDISC compliant data sets and check for CDISC compliance. By using  [`xportr`](https://atorus-research.github.io/xportr/), programmers are able to build these CDISC compliant files. 
+[`xportr`](https://atorus-research.github.io/xportr/) is a tool to build CDISC compliant data sets and check for CDISC compliance. By using  [`xportr`](https://atorus-research.github.io/xportr/), programmers are able to build these CDISC compliant files. 
 
 # What is [`xportr`](https://atorus-research.github.io/xportr/)?
 
-[`xportr`](https://atorus-research.github.io/xportr/) has been developed through collaborations between developers from different parts of the industry [click here for a full list](https://atorus-research.github.io/xportr/authors.html). This collaborative effort ensures that [`xportr`](https://atorus-research.github.io/xportr/) meets the diverse needs and requirements of users across various domains. By leveraging insights and expertise from different stakeholders, [`xportr`](https://atorus-research.github.io/xportr/) continues to evolve and improve, maintaining its relevance and effectiveness in the ever-changing landscape of data management and analysis. With its meticulous design flow, users can expects to develop `xpt` files that has been vetted by many checks in the backend and CDISC compliant. 
+[`xportr`](https://atorus-research.github.io/xportr/) has been developed through collaborations between developers from different parts of the industry [click here for a full list](https://atorus-research.github.io/xportr/authors.html). This collaborative effort ensures that [`xportr`](https://atorus-research.github.io/xportr/) meets the diverse needs and requirements of users across various domains. By leveraging insights and expertise from different stakeholders, [`xportr`](https://atorus-research.github.io/xportr/) continues to evolve and improve, maintaining its relevance and effectiveness in the ever-changing landscape of data management and analysis. With its meticulous design flow, users can expect to develop `xpt` files that have been vetted by many checks in the backend and which are CDISC compliant. 
 ![](xportr_design_flow.png){fig-align="center" width="500"}
 
-[`xportr`](https://atorus-research.github.io/xportr/) is currently on version 0.4.0 and you can keep up with all of its improvements by follow the [`Changelog here`](https://atorus-research.github.io/xportr/news/index.html)
+[`xportr`](https://atorus-research.github.io/xportr/) is currently on version 0.4.0 and you can keep up with all of its improvements by following the [`Changelog here`](https://atorus-research.github.io/xportr/news/index.html)
 
 # Why [`xportr`](https://atorus-research.github.io/xportr/)?
 
-Have I already mentioned that [`xportr`](https://atorus-research.github.io/xportr/) is an essential R package for generating `xpt` datasets! This package have functions to apply metadata information to your CDISC compliant datasets that were created in R, perform checks and provide useful feedbacks. In this blog post, we'll explore some high level of the capabilities of [`xportr`](https://atorus-research.github.io/xportr/), and its development.
+Have I already mentioned that [`xportr`](https://atorus-research.github.io/xportr/) is an essential R package for generating `xpt` datasets? This package includes functions to apply metadata information to your CDISC compliant datasets that were created in R, perform checks and provide useful feedbacks. In this blog post, we'll explore some high level capabilities of [`xportr`](https://atorus-research.github.io/xportr/), and its development.
 
 # How does it work?
 
@@ -69,8 +69,18 @@ metadata <- data.frame(
 )
 ```
 
-Users can use the [`xportr_metadata()`](https://atorus-research.github.io/xportr/reference/xportr_metadata.html) function along with [`xportr_type()`](https://atorus-research.github.io/xportr/reference/xportr_type.html) and [`xportr_order()`](https://atorus-research.github.io/xportr/reference/xportr_order.html) to not only apply metadata attributes to your data, receive feedbacks on your data based on your spec, all while also performing valuable checks.
+Users can use the [`xportr_metadata()`](https://atorus-research.github.io/xportr/reference/xportr_metadata.html) function along with [`xportr_type()`](https://atorus-research.github.io/xportr/reference/xportr_type.html) and [`xportr_order()`](https://atorus-research.github.io/xportr/reference/xportr_order.html) to not only apply metadata attributes to your data but also receive feedback on your data based on your spec. Additionally, some of those functions performing valuable checks like:
 
+  * Variable names must start with a letter (not an underscore), be comprised of only uppercase letters (A-Z), numerals (0-9) and be free of non-ASCII characters, symbols, and underscores.
+  * Allotted length for each column containing character (text) data should be set to the maximum length of the variable used across all data sets (≤ 200)
+  * Coerces variables to only numeric or character types
+  * Display format support for numeric float and date/time values
+  * Variables names are ≤ 8 characters.
+  * Variable labels are ≤ 40 characters.
+  * Data set labels are ≤ 40 characters.
+  * Presence of non-ASCII characters in Variable Names, Labels or data set labels.
+
+For example:
 ```{r, warnings = FALSE}
 adsl %>%
   xportr_metadata(metadata, "test") %>%
@@ -86,11 +96,11 @@ You can also use additional functions like [`xportr_write()`](https://atorus-res
 - **Data Integrity**: [`xportr`](https://atorus-research.github.io/xportr/) preserves data integrity by retaining variable labels, formats, and other metadata during data export operations.
 - **User-Friendly Interface**: [`xportr`](https://atorus-research.github.io/xportr/) provides a user-friendly interface with intuitive functions for generating `xpt` datasets and performing data manipulation tasks.
 
-# About the other kid on the blog, (`JSON`)! Is The Future `XPT` or JSON?
+# About the other kid on the blog, (`JSON`)! Is The Future `xpt` or JSON?
 
-`XPT` datasets are standardized, structured files used for storing clinical trial data, making them essential for regulatory submissions and data analysis. They remain indispensable in certain industries and with advancements in data management and analysis tools, the future of `xpt` datasets lies in improved efficiency, compatibility, and ensuring seamless integration with emerging technologies and data formats.
+`xpt` datasets are standardized, structured files used for storing clinical trial data, making them essential for regulatory submissions and data analysis. They remain indispensable in certain industries and with advancements in data management and analysis tools, the future of `xpt` datasets lies in improved efficiency, compatibility, and ensuring seamless integration with emerging technologies and data formats.
 
-As data continues to play a central role in decision-making and innovation, the future of JavaScript Object Notation (JSON) datasets are worth exploring. JSON datasets offer flexibility, simplicity, and interoperability, making them increasingly popular for data storage and exchange. JSON's lightweight and human-readable format make it suitable for a wide range of applications, including web development, APIs, IoT, and data storage. While `xpt` datasets remain prevalent in certain industries, there's a growing interest in JSON datasets across various domains. Although we will not be exploring JSON datasets, this formatted data type was worth mentioning in this blog.
+As data continues to play a central role in decision-making and innovation, the future of JavaScript Object Notation (JSON) datasets is worth exploring. JSON datasets offer flexibility, simplicity, and interoperability, making them increasingly popular for data storage and exchange. In fact, R users can refer to [`this article`](https://www.atorusresearch.com/datasetjson-0-0-1-release/) for a summary about JSON and the R package [`datasetjson`](https://atorus-research.github.io/datasetjson/) available on [`CRAN`](https://cloud.r-project.org/web/packages/datasetjson/index.html). JSON's lightweight and human-readable format make it suitable for a wide range of applications, including web development, APIs, IoT, and data storage. While `xpt` datasets remain prevalent in certain industries, there's a growing interest in JSON datasets across various domains. Although we will not be exploring JSON datasets, this formatted data type was worth mentioning in this blog.
 
 # Let's Recap!
 
