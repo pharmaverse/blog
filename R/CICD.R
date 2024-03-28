@@ -8,7 +8,7 @@ spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE),
 )
 
 # now check those words and whether or not they are really mistakes.
-# once you fixed all mistaked you can:
+# once you fixed all mistakes you can:
 words <- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE),
   ignore = readr::read_lines("inst/WORDLIST.txt")
 )
