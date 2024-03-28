@@ -2,11 +2,11 @@
 title: "xportr 0.4.0"
 author:
   - name: Sadchla Mascary
-description: "Let's Talk About xportr 0.4.0, An R Package Within Pharmaverse Universe! "
-date: "2024-03-18"
+description: "xportr is a tool tailor-made for clinical programmers, enabling them to generate CDISC-compliant XPT files for SDTM and/or ADaM. It streamlines the preparation on xpt files, ensuring they are primed for submission to clinical data validation applications or regulatory agencies."
+date: "2024-03-29"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
-categories: [ADaMs, xportr]
+categories: [ADaMs, SDTMs, xportr]
 # feel free to change the image
 image: "xportr.png"
 
@@ -15,7 +15,7 @@ image: "xportr.png"
 <!--------------- typical setup ----------------->
 
 ```{r setup, include=FALSE}
-long_slug <- "2024-03-18_xportr_0_4_0"
+long_slug <- "2024-03-29_xportr_0_4_0"
 # renv::use(lockfile = "renv.lock")
 ```
 
@@ -24,18 +24,14 @@ long_slug <- "2024-03-18_xportr_0_4_0"
 # `xpt` Meets [`xportr`](https://atorus-research.github.io/xportr/)!
 In the pharmaceuticals and healthcare industries, it is crucial to maintain a standard structure for data exchange and regulatory submissions, enter `xpt` datasets! `xpt` datasets are binary files that are typically created by SAS software, they contain structured data, including variables, labels, and metadata. In order to develop `xpt` formatted files in R, let's introducing you to [`xportr`](https://atorus-research.github.io/xportr/).
 
-[`xportr`](https://atorus-research.github.io/xportr/) is a tool to build CDISC compliant data sets and check for CDISC compliance. By using  [`xportr`](https://atorus-research.github.io/xportr/), programmers are able to build these CDISC compliant files. 
-
 # What is [`xportr`](https://atorus-research.github.io/xportr/)?
 
-[`xportr`](https://atorus-research.github.io/xportr/) has been developed through collaborations between developers from different parts of the industry [click here for a full list](https://atorus-research.github.io/xportr/authors.html). This collaborative effort ensures that [`xportr`](https://atorus-research.github.io/xportr/) meets the diverse needs and requirements of users across various domains. By leveraging insights and expertise from different stakeholders, [`xportr`](https://atorus-research.github.io/xportr/) continues to evolve and improve, maintaining its relevance and effectiveness in the ever-changing landscape of data management and analysis. With its meticulous design flow, users can expect to develop `xpt` files that have been vetted by many checks in the backend and which are CDISC compliant. 
-![](xportr_design_flow.png){fig-align="center" width="500"}
-
-[`xportr`](https://atorus-research.github.io/xportr/) is currently on version 0.4.0 and you can keep up with all of its improvements by following the [`Changelog here`](https://atorus-research.github.io/xportr/news/index.html)
+[`xportr`](https://atorus-research.github.io/xportr/) is the result of collaboration among developers from various domains within the pharmaceutical industry. [click here for a full list](https://atorus-research.github.io/xportr/authors.html). This collaborative effort ensures that [`xportr`](https://atorus-research.github.io/xportr/) meets the diverse needs and requirements of users across various domains. By leveraging insights and expertise from different stakeholders, [`xportr`](https://atorus-research.github.io/xportr/) continues to evolve and improve, maintaining its relevance and effectiveness in the ever-changing landscape of data management and analysis. [`xportr`](https://atorus-research.github.io/xportr/) is currently on version 0.4.0 (you can keep up with all of its improvements by following the [`Changelog here`](https://atorus-research.github.io/xportr/news/index.html)) and with its meticulous design flow, users can expect to develop `xpt` files that have been vetted by many checks in the backend and which are CDISC compliant. 
+![](xportr_design_flow.png){fig-align="center" width="800"}
 
 # Why [`xportr`](https://atorus-research.github.io/xportr/)?
 
-Have I already mentioned that [`xportr`](https://atorus-research.github.io/xportr/) is an essential R package for generating `xpt` datasets? This package includes functions to apply metadata information to your CDISC compliant datasets that were created in R, perform checks and provide useful feedbacks. In this blog post, we'll explore some high level capabilities of [`xportr`](https://atorus-research.github.io/xportr/), and its development.
+Did I mention that [`xportr`](https://atorus-research.github.io/xportr/) is an indispensable R package for creating `xpt` datasets? This toolkit offers functions to apply metadata information to your CDISC-compliant datasets created in R, conduct strict checks, and offer valuable feedbacks about formats, format lengths, etc. In this blog post, we'll explore some high level capabilities of [`xportr`](https://atorus-research.github.io/xportr/), and its development.
 
 # How does it work?
 
@@ -88,7 +84,30 @@ adsl %>%
   xportr_order()
 ```
 
-You can also use additional functions like [`xportr_write()`](https://atorus-research.github.io/xportr/reference/xportr_write.html) to generate your `xpt` file.
+In addition to the functions mentioned above, users have access to other functionalities such as [`xportr_write()`](https://atorus-research.github.io/xportr/reference/xportr_write.html), which facilitates the conversion of a local data frame into an `xpt` file. For instance, if we utilize the ADSL dataframe defined earlier, we can create a variable `var_spec` using the following syntax.
+```{r eval=FALSE}
+var_spec <- data.frame(
+  dataset = "adsl",
+  label = "Subject-Level Analysis Dataset",
+  data_label = "ADSL"
+)
+```
+
+Users can then create their ADSL `xpt` file in the following manner:
+```{r eval=FALSE}
+xportr_write(adsl,
+  path = paste0(tempdir(), "/adsl.xpt"),
+  domain = "adsl",
+  metadata = var_spec,
+  strict_checks = FALSE
+)
+```
+
+[`xportr`](https://atorus-research.github.io/xportr/) also includes other important functions such as:
+  * [`xportr_length()`](https://atorus-research.github.io/xportr/reference/xportr_length.html) to assign the SAS length to a specified data frame. 
+  * [`xportr_label()`](https://atorus-research.github.io/xportr/reference/xportr_length.html) to enable users to assign variable labels from metadata at the variable level to a specified data frame.
+  * [`xportr_format()`](https://atorus-research.github.io/xportr/reference/xportr_format.html), which allow users to apply a SAS format from a variable level metadata to a given data frame
+Further details on all [`xportr`](https://atorus-research.github.io/xportr/) functions can be found [`here`](https://atorus-research.github.io/xportr/reference/index.html).
 
 # Key Features of [`xportr`](https://atorus-research.github.io/xportr/):
 
