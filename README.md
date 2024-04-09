@@ -1,3 +1,5 @@
+# pharmaverse blog <img src="media/pharmaverseblog.png" align="right" width="200" style="margin-left:50px;"/>
+
 ## Purpose
 
 The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts.  These posts will be hosted on this [pharmaverse blog](https://pharmaverse.github.io/blog/) and promoted on the pharmaverse slack channels as well as on LinkedIn.

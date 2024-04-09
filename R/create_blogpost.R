@@ -7,11 +7,7 @@ source("R/help_create_blogpost.R")
 ## The available images are at the moment:
 list.files("media") %>% tools::file_path_sans_ext()
 ## Please choose (possibly multiple) from this tags list:
-c(
-  "metadata", "submission", "qc", "ADaMs", "SDTMs", "community",
-  "conferences", "admiral", "roak", "xportr", "metatools", "metacore",
-  "displays", "falcon"
-)
+c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical")
 
 # Fill in the info, e.g.:
 create_post(
