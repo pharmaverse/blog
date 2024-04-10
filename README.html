@@ -2,9 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-
-<meta name="generator" content="quarto-1.3.353">
-
+<meta name="generator" content="quarto-1.2.269">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -22,6 +20,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -47,6 +108,8 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<section id="pharmaverse-blog" class="level1">
+<h1>pharmaverse blog <img src="media/pharmaverseblog.png" align="right" width="200" style="margin-left:50px;"></h1>
 <section id="purpose" class="level2">
 <h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
 <p>The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this <a href="https://pharmaverse.github.io/blog/">pharmaverse blog</a> and promoted on the pharmaverse slack channels as well as on LinkedIn.</p>
@@ -89,7 +152,6 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="how-can-i-make-a-blog-post" class="level2">
 <h2 class="anchored" data-anchor-id="how-can-i-make-a-blog-post">How can I make a Blog Post</h2>
-
 <p><strong>Step 1:</strong> Reach out to us through <a href="https://pharmaverse.slack.com">pharmaverse/slack</a> or make an issue on our <a href="https://github.com/pharmaverse/blog/issues">GitHub</a>.</p>
 <p><strong>Step 2:</strong> Branch off <code>main</code></p>
 <p><strong>Step 3:</strong> Create a new Blog Post skeleton using the <code>create_blog_post.R</code> script in the <code>R/</code> folder.</p>
@@ -105,7 +167,38 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>Step 6:</strong> Poke us to do a review!</p>
 <p>Most importantly:</p>
 <p><strong>Step 7:</strong> Have fun :)</p>
-
+</section>
+<section id="how-to-use-the-blog-docker-image-for-local-development" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-use-the-blog-docker-image-for-local-development">How to Use the <code>blog</code> Docker Image for Local Development</h2>
+<p>Contributors can benefit from using the <a href="https://github.com/pharmaverse/blog/pkgs/container/blog"><code>blog</code> Docker image</a> when creating their blog posts. This way, contributors don’t have to install all dependencies from other blog posts and can solely focus on their own blog post and its dependencies.</p>
+<p>Here are the steps to use the blog’s Docker image:</p>
+<ol type="1">
+<li>Ensure you have <a href="https://docs.docker.com/get-docker/">Docker Desktop</a> installed.</li>
+<li>Start Docker Desktop on your machine.</li>
+<li>Perform a Docker pull from the blog’s GitHub registry by running this code:</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull ghcr.io/pharmaverse/blog:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="4" type="1">
+<li>Clone this <code>blog</code> repository and take note of the location of the repo in your local machine.</li>
+<li>Update the code below specifying the location of your ‘blog’ repository and execute the script:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> PASSWORD=yourpassword <span class="at">-p</span> 8787:8787 <span class="at">-v</span> <span class="op">&lt;</span>location of your blog repo<span class="op">&gt;</span>:/home/rstudio/work ghcr.io/pharmaverse/blog</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here’s an example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-ti</span> <span class="at">-e</span> PASSWORD=yourpassword <span class="at">-p</span> 8787:8787 <span class="at">-v</span> ~/Documents/blog:/home/rstudio/work ghcr.io/pharmaverse/blog</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This command will run the <code>blog</code> Docker image and mount your local folder to the image.</p>
+<ol start="6" type="1">
+<li>Open http://localhost:8787/ and you should see the RStudio welcome page.</li>
+<li>The username will be <code>rstudio</code>, and the password is <code>yourpassword</code>.</li>
+<li>Once logged in, go to the work folder, and you should see the contents of the <code>blog</code> repository.</li>
+<li>Click the <code>quarto-blog.Rproj</code> file to open the project.</li>
+<li>You can test by opening the <code>index.qmd</code> and rendering the document.</li>
+<li>Quarto should run, and you should be able to see the rendered blog locally.</li>
+<li>Develop your blog post and re-render as needed.</li>
+<li>Once complete, you can close the RStudio session, shut down the image, and push your update to the blog repo.</li>
+</ol>
+<p>Please note that there is no SSH or git capability in the docker image, so you can’t push your update to the repo from the image directly. To push the update, you would have to do it from your local RStudio or terminal.</p>
+<p>A Dockerfile is also provided in this repo if you want to build the image locally and add more functionalities.</p>
+</section>
 </section>
 
 </main>
