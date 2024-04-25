@@ -15,7 +15,8 @@ insert_source <- function(repo_spec, name,
                           collection = "posts",
                           branch = "main",
                           host = "https://github.com",
-                          text = "source code") {
+                          text = "source code",
+                          file_name) {
   path <- paste(
     host,
     repo_spec,
@@ -23,7 +24,7 @@ insert_source <- function(repo_spec, name,
     branch,
     collection,
     name,
-    "code_sections.qmd",
+    file_name,
     sep = "/"
   )
   return(markdown_link(text, path))
@@ -47,7 +48,7 @@ insert_lockfile <- function(repo_spec, name,
     branch,
     collection,
     name,
-    "renv.lock",
+    "session_info.txt",
     sep = "/"
   )
   return(markdown_link(text, path))
@@ -57,7 +58,11 @@ insert_lockfile <- function(repo_spec, name,
 
 # top level function ------------------------------------------------------
 
-insert_appendix <- function(repo_spec, name, collection = "posts") {
+insert_appendix <- function(repo_spec, name, collection = "posts", file_name) {
+  # write session info to txt
+  session_info <- sessionInfo()
+  writeLines(capture.output(session_info), con = "session_info.txt")
+
   appendices <- paste(
     markdown_appendix(
       name = "Last updated",
@@ -67,7 +72,8 @@ insert_appendix <- function(repo_spec, name, collection = "posts") {
     markdown_appendix(
       name = "Details",
       content = paste(
-        insert_source(repo_spec, name, collection),
+        insert_source(repo_spec, name, collection, file_name = file_name),
+        # get renv information,
         insert_lockfile(repo_spec, name, collection),
         sep = ", "
       )

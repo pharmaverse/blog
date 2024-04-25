@@ -1,9 +1,10 @@
+
 # markdown helpers --------------------------------------------------------
 
-markdown_appendix <- function(name, content) {
+markdown_appendix <- function (name, content) {
   paste(paste("##", name, "{.appendix}"), " ", content, sep = "\n")
 }
-markdown_link <- function(text, path) {
+markdown_link <- function (text, path) {
   paste0("[", text, "](", path, ")")
 }
 
@@ -57,7 +58,7 @@ insert_lockfile <- function(repo_spec, name,
 
 # top level function ------------------------------------------------------
 
-insert_appendix <- function(repo_spec, name, collection = "posts") {
+insert_appendix <- function (repo_spec, name, collection = "posts") {
   appendices <- paste(
     markdown_appendix(
       name = "Last updated",
@@ -69,8 +70,7 @@ insert_appendix <- function(repo_spec, name, collection = "posts") {
       content = paste(
         insert_source(repo_spec, name, collection),
         insert_lockfile(repo_spec, name, collection),
-        sep = ", "
-      )
+        sep = ", ")
     ),
     sep = "\n"
   )
