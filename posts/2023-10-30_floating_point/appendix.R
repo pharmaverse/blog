@@ -15,18 +15,9 @@ insert_source <- function(repo_spec, name,
                           collection = "posts",
                           branch = "main",
                           host = "https://github.com",
-                          text = "source code",
+                          text = "Session info",
                           file_name) {
-  path <- paste(
-    host,
-    repo_spec,
-    "tree",
-    branch,
-    collection,
-    name,
-    file_name,
-    sep = "/"
-  )
+  path <- "https://pharmaverse.github.io/blog/_site/session_info.html"
   return(markdown_link(text, path))
 }
 
