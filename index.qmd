@@ -27,14 +27,14 @@ posts <- list.dirs(
 )
 
 # extract the slugs
-slugs <- gsub("^.*_", "", posts)
+slugs <- sub(".*?_", "", posts)
 
 # lines to insert to a netlify _redirect file
 post_redirects <- paste0("/", slugs, " ", "/posts/", posts)
 
 # function to extract post categories from index.qmd files
 get_post_categories <- function(post) {
-  file <- here::here("posts", post) |> fs::path("index.qmd")
+  file <- here::here("posts", post)  |> list.files(pattern = ".qmd", full.names = TRUE)
   if (!fs::file_exists(file)) {
     return(character(0))
   }
