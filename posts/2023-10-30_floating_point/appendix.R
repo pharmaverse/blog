@@ -17,7 +17,7 @@ insert_source <- function(repo_spec, name,
                           host = "https://github.com",
                           text = "Session info",
                           file_name) {
-  path <- "https://pharmaverse.github.io/blog/_site/session_info.html"
+  path <- "https://pharmaverse.github.io/blog/session_info.html"
   return(markdown_link(text, path))
 }
 
