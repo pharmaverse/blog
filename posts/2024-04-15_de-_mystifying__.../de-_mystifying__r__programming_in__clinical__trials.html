@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Mike Stackhouse">
-<meta name="dcterms.date" content="2024-01-04">
-<meta name="description" content="2023 Was a big year - let’s talk about it!">
+<meta name="author" content="Venkatesan Balu">
+<meta name="dcterms.date" content="2024-04-15">
+<meta name="description" content="A blog highlighting the benefits/limitations of using R Programming and using the right tools to create value">
 
-<title>pharmaverse blog - End of Year Update from the pharmaverse Council</title>
+<title>pharmaverse blog - De-Mystifying R Programming in Clinical Trials</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,10 +79,12 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="pharmaverse blog - End of Year Update from the pharmaverse Council">
-<meta property="og:description" content="2023 Was a big year - let’s talk about it!">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../pharmaverse.PNG">
+<meta property="og:title" content="pharmaverse blog - De-Mystifying R Programming in Clinical Trials">
+<meta property="og:description" content="A blog highlighting the benefits/limitations of using R Programming and using the right tools to create value">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-04-15_de-_mystifying__.../Rlogo.png">
 <meta property="og:site_name" content="pharmaverse blog">
+<meta property="og:image:height" content="2000">
+<meta property="og:image:width" content="3000">
 </head>
 
 <body class="floating nav-fixed">
@@ -118,14 +120,14 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">End of Year Update from the pharmaverse Council</h1>
+      <h1 class="title">De-Mystifying R Programming in Clinical Trials</h1>
                   <div>
         <div class="description">
-          2023 Was a big year - let’s talk about it!
+          A blog highlighting the benefits/limitations of using R Programming and using the right tools to create value
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">Community</div>
+                <div class="quarto-category">community</div>
               </div>
                   </div>
   </div>
@@ -136,14 +138,14 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Mike Stackhouse </p>
+               <p>Venkatesan Balu </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">January 4, 2024</p>
+        <p class="date">April 15, 2024</p>
       </div>
     </div>
     
@@ -158,10 +160,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#was-a-big-year" id="toc-was-a-big-year" class="nav-link active" data-scroll-target="#was-a-big-year">2023 Was a Big Year</a></li>
-  <li><a href="#what-we-accomplished" id="toc-what-we-accomplished" class="nav-link" data-scroll-target="#what-we-accomplished">What We Accomplished</a></li>
-  <li><a href="#where-next" id="toc-where-next" class="nav-link" data-scroll-target="#where-next">Where Next?</a></li>
-  <li><a href="#p.s." id="toc-p.s." class="nav-link" data-scroll-target="#p.s.">P.S.</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#opportunities-for-r-programming-in-clinical-trials" id="toc-opportunities-for-r-programming-in-clinical-trials" class="nav-link" data-scroll-target="#opportunities-for-r-programming-in-clinical-trials">Opportunities for R Programming in Clinical Trials</a></li>
+  <li><a href="#current-usage-trends-of-r" id="toc-current-usage-trends-of-r" class="nav-link" data-scroll-target="#current-usage-trends-of-r">Current Usage Trends of R</a></li>
+  <li><a href="#sas-or-r-programming-which-is-better" id="toc-sas-or-r-programming-which-is-better" class="nav-link" data-scroll-target="#sas-or-r-programming-which-is-better">SAS® or R Programming: Which is Better?</a></li>
+  <li><a href="#benefits-of-using-r-programming" id="toc-benefits-of-using-r-programming" class="nav-link" data-scroll-target="#benefits-of-using-r-programming">Benefits of Using R Programming</a></li>
+  <li><a href="#identifying-the-limitations-in-using-r-programming" id="toc-identifying-the-limitations-in-using-r-programming" class="nav-link" data-scroll-target="#identifying-the-limitations-in-using-r-programming">Identifying the Limitations in Using R Programming</a></li>
+  <li><a href="#leveraging-the-right-tools-to-capture-value" id="toc-leveraging-the-right-tools-to-capture-value" class="nav-link" data-scroll-target="#leveraging-the-right-tools-to-capture-value">Leveraging the Right Tools to Capture Value</a></li>
   </ul>
 </nav>
 </nav>
@@ -178,25 +183,52 @@ ul.task-list li input[type="checkbox"] {
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<section id="was-a-big-year" class="level2">
-<h2 class="anchored" data-anchor-id="was-a-big-year">2023 Was a Big Year</h2>
-<p>This was a big year for open-source work in clinical submissions in general. We saw Roche speak about shifting to an <a href="https://www.youtube.com/watch?v=nqJsLSLd39A">open-source backbone for clinical trials</a>. Novo Nordisk spoke publicly of an <a href="https://www.youtube.com/watch?v=t33dS17QHuA">R based submission to the FDA</a>. These are true marks of progress being made in R becoming a first class language for clinical reporting.</p>
-<p>Back in August, Nicholas Eugenio released a <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html">blog post</a> on the history of pharmaverse. It’s funny to think about the fact that only 3 years ago, the idea of cross organization collaboration on R packages and building a community around this in the clinical world was just a conversation between friends. Since then, we have a community of more than 1200 people on Slack, 350 on LinkedIn, interest from over 150 organizations, and over 30 packages. If 2020 through 2022 was the birth of pharmaverse, 2023 was finding our identity as a community. For the council, 2024 will be about continuing to mature and find more ways that we can continue to support the community.</p>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>The use of R programming in clinical trials has not always been the most popular and obvious in the past. Despite experiencing significant growth in recent years, the adoption of R programming in clinical trials is not as widespread and evident as anticipated. Practical implementation faces obstacles due to various factors, including occasional misunderstandings, particularly in the context of validation, and a notable lack of awareness regarding its capabilities. However, despite these challenges, R is steadily establishing a growing presence within the pharmaceutical industry.</p>
 </section>
-<section id="what-we-accomplished" class="level2">
-<h2 class="anchored" data-anchor-id="what-we-accomplished">What We Accomplished</h2>
-<p>One of our biggest moves in 2023 was to form our partnership with <a href="https://phuse.global/PHUSE_Open_Source_Technology">PHUSE</a>. This latched us into an existing community with shared values and a platform that helps us continue to build the pharmaverse community. At the <a href="https://www.phuse-events.org/attend/frontend/reg/thome.csp?pageID=11403&amp;eventID=19&amp;traceRedir=2">PHUSE EU Connect</a> we had our first opportunity to host a pharmaverse meetup and bring together pharmaverse contributors in person. Additionally, there was an excellent panel session highlighting our use and adoption of open-source across industry, including the pharmaceutical, commercial, and software perspectives. As we move forward, we’ll continue to use this platform to find ways we can host events and encourage collaboration within the pharmaverse community.</p>
-<p>This year our community was also able to launch new platforms to share updates and knowledge throughout the industry. The <a href="https://pharmaverse.github.io/examples/">pharmaverse examples</a> webpage was launched to show pharmaverse packages in action, and the <a href="https://pharmaverse.github.io/blog/">pharmaverse blog</a> (which I’m using right here!) provides a platform to share updates and community news.</p>
+<section id="opportunities-for-r-programming-in-clinical-trials" class="level2">
+<h2 class="anchored" data-anchor-id="opportunities-for-r-programming-in-clinical-trials">Opportunities for R Programming in Clinical Trials</h2>
+<p>Although R is versatile and applicable in various settings, it is commonly associated with scientific computing and statistics. In the context of clinical trials, where researchers aim to understand and enhance drug development and testing processes, R has become a prominent tool for analyzing the collected data. While SAS® has been a longstanding programming language for clinical trials, the industry has been exploring alternative options. There is a quest for sustainable technology and tools that can effectively address industry challenges.</p>
+<p>To drive innovation, there is a need to move away from traditional, inefficient processes and tools toward solutions that are efficient, simple, easy to implement, reliable, and cost-effective. Collaboration among industry stakeholders is crucial to develop a robust technology ecosystem and establish consensus on validation and regulatory benchmarks. Equally vital is preparing the workforce with the necessary skillsets to meet future demands.</p>
 </section>
-<section id="where-next" class="level2">
-<h2 class="anchored" data-anchor-id="where-next">Where Next?</h2>
-<p>Back in October, I had the opportunity to do an interview with Michael Rimler for the <a href="https://youtu.be/F3vehIoJgdA?si=80p0pKobZqjlXChj">PHUSE video series</a> Open Source Technologies in Clinical Data Analytics. The last question he asked me was what I expect the state of data analytics in life science to be in 2 to 3 years. My response was that when that time comes, I hope I couldn’t have predicted where we would be - because back in 2020 I could never have predicted where we are now. The progress we’ve made is unbelievable, and the pharmaverse community has played a huge role in getting us where we are today. For the pharmaverse community, I hope to see that progress continue as we move into next year. As a council, our goal is to continue to mature this community. How can we support and foster collaboration between our organizations? How can we leverage this platform to drive the industry forward?</p>
-<p>For you as an individual, there’s always an opportunity to get involved - and you don’t have to be a package developer to contribute. You can <a href="https://pharmaverse.org/contribute/wg/">join a working group</a>, write <a href="https://github.com/pharmaverse/examples">examples</a>, or author a <a href="https://github.com/pharmaverse/blog">blog post</a>. Furthermore, you can get started with the pharmaverse packages, provide feedback via issues, and advocate for their use within your own organization. The pharmaverse community doesn’t exist without you, and we’re happy to have you all here to help us build this together.</p>
+<section id="current-usage-trends-of-r" class="level2">
+<h2 class="anchored" data-anchor-id="current-usage-trends-of-r">Current Usage Trends of R</h2>
+<p>Analyzing the current trends of R in the pharmaceutical industry reveals that its usage still has room for growth when related to Pharma Regulatory Submissions. However, R finds extensive use in public health projects, healthcare economics, exploratory and scientific analysis, trend identification, generating plots/graphs, specific statistical analysis, and machine learning. R continues to advance steadily in clinical trials, however lacks widespread usage within the clinical space.</p>
+<p>This is an area that we see gradually evolving thanks to a number of across-industry efforts such as pharmaverse.</p>
 </section>
-<section id="p.s." class="level2">
-<h2 class="anchored" data-anchor-id="p.s.">P.S.</h2>
-<p>At PHUSE US Connect 2024 this coming February, be on the lookout for one of the keynote presentations from Michael Rimler and Ross Farrugia! We hope to see you there!</p>
-<p>Here’s to a 2024 full of progress and collaboration!</p>
+<section id="sas-or-r-programming-which-is-better" class="level2">
+<h2 class="anchored" data-anchor-id="sas-or-r-programming-which-is-better">SAS® or R Programming: Which is Better?</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Signpost.jpg" class="img-fluid figure-img" width="500"></p>
+<figcaption>SAS® or R?</figcaption>
+</figure>
+</div>
+<p>The ongoing debate in the programming community revolves around whether to replace SAS® with R, use both, or explore other alternatives like Python. Instead of adopting an either-or scenario, leveraging the strengths of each programming language for specific Data Science problems is recommended, recognizing that one size does not fit all. Despite the challenges early adopters of R have faced in regulatory compliance, there have been notable successes that highlight the benefits and potential of using R in regulated industries. Early adopters of R have faced challenges, with regulatory compliance for R packages being a common issue.</p>
+<p>For R to be considered for tasks related to regulatory submission, a rigorous risk assessment of R packages, feasibility analysis, and the establishment of processes for R usage through pilot projects with necessary documentation becomes imperative. We see great progress in this area through efforts such as the <a href="https://rconsortium.github.io/submissions-wg/">R Consortium R Submissions WG</a>.</p>
+</section>
+<section id="benefits-of-using-r-programming" class="level2">
+<h2 class="anchored" data-anchor-id="benefits-of-using-r-programming">Benefits of Using R Programming</h2>
+<p>R, as a language and environment for statistical computing and graphics, possesses characteristics that make it a potentially powerful tool for Data Analysis. With approximately 2 million users worldwide and three decades of legacy, R stands out as open-source software receiving substantial support from the community. Its availability under the GNU General Public License and extensive documentation contribute to its strength. R is versatile, running on various platforms, offering a wide array of statistical and graphical techniques, and its ease of producing publication-quality plots enhances its appeal.</p>
+<p>The pharmaceutical industry has witnessed the emergence of various R packages tailored for Clinical Trial reporting. Examples include <code>{rtables}</code> for creating tables for reporting clinical trials, <code>{admiral}</code> for CDISC ADaM, <code>{pkglite}</code> to support eSubmission, and many others. Pharmaverse packages cater to different aspects of clinical trial data analysis, showcasing the versatility of R in this domain.</p>
+<p>This article talks more about use of R in clinical trials and how this will be used by taking advantages of open source of R. The FDA emphasizes the need for fully documenting software packages used for statistical analysis in submissions. The use of R poses specific challenges related to validation, given its free and open-source nature. To address this, the <a href="https://www.pharmar.org/">R Validation Hub</a> has released guidance documents focusing in this space.</p>
+<p>Given that the cost of the R package is non-chargeable, it can also serve as a potential tool for API integration. For instance, in signal detection, R packages can prove to be valuable tools due to the intricate derivation process for EBGM in the Bayesian approach, which aims to mitigate false positive signals resulting from multiple comparisons. The computation adjusts the observed-to-expected reporting ratio for temporal trends and confounding variables such as age and sex. While both methods can estimate this, the accessibility of R as free software enables easy integration into any system as an API or for macro estimation purposes without any copyrights issue. As always though consult the license of any package being used to be sure your usage is in compliance.</p>
+</section>
+<section id="identifying-the-limitations-in-using-r-programming" class="level2">
+<h2 class="anchored" data-anchor-id="identifying-the-limitations-in-using-r-programming">Identifying the Limitations in Using R Programming</h2>
+<p>It is crucial to note that software cost is essential to any company, including Pharma and Biotechs. While R and RStudio® are free and SAS® requires an annual license, using R instead of SAS® may not always lower costs. The cost of software is only one part of the equation. To be used in a highly regulated industry such as pharmaceuticals, software validation, maintenance, and support are critical, and their costs need to be considered. Although R is free and open source, it comes with a learning curve, and in short term the industry might face a shortage of experienced pharma R programmers compared to those familiar with SAS®.</p>
+</section>
+<section id="leveraging-the-right-tools-to-capture-value" class="level2">
+<h2 class="anchored" data-anchor-id="leveraging-the-right-tools-to-capture-value">Leveraging the Right Tools to Capture Value</h2>
+<p>Capturing the value of R programming starts with a clear vision for its use and a systematic approach to identifying and prioritizing the needs in the industry. Clinical Data Science is evolving rapidly, and the industry actively seeks alternative solutions to unlock valuable insights from diverse datasets. Recognizing the need for innovation, collaboration, and efficient tools is crucial. Rather than viewing SAS®, R, and Python as mutually exclusive, leveraging the strengths of each for appropriate Data Science problems provides a nuanced and effective approach.</p>
+<p>Ensuring data quality, scientific integrity, and regulatory compliance through risk assessment frameworks, validation, and documentation are imperative in this dynamic landscape. Pharmaverse is also actively steering the pharmaceutical industry’s path by pioneering connections and advocating for R, thus exemplifying the broader trend of industries acknowledging the value and potential of open-source tools in tackling complex challenges.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="RightTool.png" class="img-fluid figure-img"></p>
+<figcaption>Leveraging the Right Tools</figcaption>
+</figure>
+</div>
 <!--------------- appendices go here ----------------->
 </section>
 <div class="cell">
@@ -210,20 +242,20 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-02 09:07:32.97054</p>
+<p>2024-05-02 09:07:30.097916</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../renv.lock">R environment</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{stackhouse2024,
-  author = {Stackhouse, Mike},
-  title = {End of {Year} {Update} from the Pharmaverse {Council}},
-  date = {2024-01-04},
-  url = {https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-04-15_de-_mystifying__.../code_sections.qmd">source code</a>, <a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-04-15_de-_mystifying__.../renv.lock">R environment</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{balu2024,
+  author = {Balu, Venkatesan},
+  title = {De-Mystifying {R} {Programming} in {Clinical} {Trials}},
+  date = {2024-04-15},
+  url = {https://pharmaverse.github.io/blog/posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-stackhouse2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Stackhouse, Mike. 2024. <span>“End of Year Update from the Pharmaverse
-Council.”</span> January 4, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html">https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-balu2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Balu, Venkatesan. 2024. <span>“De-Mystifying R Programming in Clinical
+Trials.”</span> April 15, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html">https://pharmaverse.github.io/blog/posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
