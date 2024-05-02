@@ -15,9 +15,18 @@ insert_source <- function(repo_spec, name,
                           collection = "posts",
                           branch = "main",
                           host = "https://github.com",
-                          text = "Session info",
+                          text = "Source",
                           file_name) {
-  path <- "https://pharmaverse.github.io/blog/session_info.html"
+  path <- paste(
+    host,
+    repo_spec,
+    "tree",
+    branch,
+    collection,
+    name,
+    file_name,
+    sep = "/"
+  )
   return(markdown_link(text, path))
 }
 
@@ -31,17 +40,9 @@ insert_lockfile <- function(repo_spec, name,
                             collection = "posts",
                             branch = "main",
                             host = "https://github.com",
-                            text = "R environment") {
-  path <- paste(
-    host,
-    repo_spec,
-    "tree",
-    branch,
-    collection,
-    name,
-    "session_info.txt",
-    sep = "/"
-  )
+                            text = "Session info") {
+  path <- path <- "https://pharmaverse.github.io/blog/session_info.html"
+
   return(markdown_link(text, path))
 }
 
