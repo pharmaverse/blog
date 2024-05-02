@@ -5,7 +5,7 @@ on:
   pull_request: {branches: ['main']}
 
 jobs:
-  spellcheck:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -17,14 +17,13 @@ jobs:
           use-public-rspm: true
 
       - name: Install dependencies
-        run: |
-          R -e "install.packages(c('jsonlite', 'tidyverse', 'spelling', 'janitor', 'diffdf', 'admiral', 'patchwork', 'here', 'reactable', 'pharmaversesdtm', 'metacore', 'metatools', 'xportr', 'pharmaverseadam', 'link', 'sessioninfo', 'roxygen2'))"
-        shell: Rscript {0}
-
-      - name: Install additional packages
-        run: |
-          R -e "install.packages(c('testthat', 'stringr'))"
-        shell: Rscript {0}
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            tidyverse
+            spelling
+            roxygen2
+            stringr
 
       - name: Run Spelling Check test
         run: |
@@ -35,3 +34,6 @@ jobs:
         run: |
           R -e "testthat::test_that(desc = 'No Typo', code = testthat::expect_equal(object = spelling::spell_check_files(list.files(pattern = '.*.qmd$', recursive = TRUE), ignore = readr::read_lines('inst/WORDLIST.txt')), expected = NULL))"
         shell: Rscript {0}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
