@@ -50,9 +50,6 @@ insert_lockfile <- function(repo_spec, name,
 # top level function ------------------------------------------------------
 
 insert_appendix <- function(repo_spec, name, collection = "posts", file_name) {
-  # write session info to txt
-  session_info <- sessionInfo()
-  writeLines(capture.output(session_info), con = "session_info.txt")
 
   appendices <- paste(
     markdown_appendix(
