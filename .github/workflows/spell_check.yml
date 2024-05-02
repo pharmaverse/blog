@@ -25,15 +25,13 @@ jobs:
             roxygen2
             stringr
 
+
       - name: Run Spelling Check test
-        run: |
-          R -e "spelling::spell_check_files(list.files(pattern = '.*.qmd$', recursive = TRUE), ignore = readr::read_lines('inst/WORDLIST.txt'))"
-        shell: Rscript {0}
+        run: R -e "spelling::spell_check_files(list.files(pattern = '.*.qmd$', recursive = TRUE), ignore = readr::read_lines('inst/WORDLIST.txt'))"
 
       - name: Run Typo Test
-        run: |
-          R -e "testthat::test_that(desc = 'No Typo', code = testthat::expect_equal(object = spelling::spell_check_files(list.files(pattern = '.*.qmd$', recursive = TRUE), ignore = readr::read_lines('inst/WORDLIST.txt')), expected = NULL))"
-        shell: Rscript {0}
+        run: R -e "testthat::test_that(desc = 'No Typo', code = testthat::expect_equal(object = spelling::spell_check_files(list.files(pattern = '.*.qmd$', recursive = TRUE), ignore = readr::read_lines('inst/WORDLIST.txt')), expected = NULL))"
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
