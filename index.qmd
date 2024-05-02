@@ -35,7 +35,7 @@ post_redirects <- paste0("/", slugs, " ", "/posts/", posts)
 # function to extract post categories from index.qmd files
 get_post_categories <- function(post) {
   file <- here::here("posts", post) |> list.files(pattern = ".qmd", full.names = TRUE)
-  if (is.null(file) || is.na(file_exists(file)) || !fs::file_exists(file)) {
+  if (is.null(file) || is.na(fs::file_exists(file)) || !fs::file_exists(file)) {
     return(character(0))
   }
   file |>
