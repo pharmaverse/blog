@@ -12,7 +12,7 @@ image: "pharmaverse.PNG"
 <!--------------- my typical setup ----------------->
 
 ```{r setup, include=FALSE}
-long_slug <- "2023-01-09_welcome"
+long_slug <- "2023-06-28_welcome"
 # renv::use(lockfile = "renv.lock")
 ```
 
@@ -81,7 +81,9 @@ Step 4: Poke us to do a review!
 source("appendix.R")
 insert_appendix(
   repo_spec = "pharmaverse/blog",
-  name = long_slug
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
 )
 ```
 

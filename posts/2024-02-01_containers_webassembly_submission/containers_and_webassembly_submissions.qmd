@@ -18,7 +18,7 @@ image: "FDA_WebR_Rhino.webp"
 <!--------------- typical setup ----------------->
 
 ```{r setup, include=FALSE}
-long_slug <- "2023-12-30_containers_webassembly_submission"
+long_slug <- "2024-02-01_containers_webassembly_submission"
 # renv::use(lockfile = "renv.lock")
 ```
 
@@ -234,4 +234,14 @@ Appsilon is working on the side with Rhino compatibility; eventually, we might b
 4.  Boot Time
 
     We need to improve boot time (remove dependencies and keep working on webR).
+
+```{r, echo = FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
 

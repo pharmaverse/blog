@@ -15,7 +15,7 @@ image: "admiral.png"
 <!--------------- typical setup ----------------->
 
 ```{r setup, include=FALSE}
-long_slug <- "2023-08-21_date_functions_and_imputation"
+long_slug <- "2023-09-26_date_functions_and_imputation"
 # renv::use(lockfile = "renv.lock")
 
 library(admiraldev)
@@ -318,10 +318,11 @@ For an even more detailed treatment of this topic, users are once again invited 
 <!--------------- appendices go here ----------------->
 
 ```{r, echo=FALSE}
-#| eval: false
 source("appendix.R")
 insert_appendix(
   repo_spec = "pharmaverse/blog",
-  name = long_slug
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
 )
 ```
