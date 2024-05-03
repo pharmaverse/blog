@@ -1,5 +1,6 @@
-# markdown helpers --------------------------------------------------------
 library(dplyr)
+# markdown helpers --------------------------------------------------------
+
 markdown_appendix <- function(name, content) {
   paste(paste("##", name, "{.appendix}"), " ", content, sep = "\n")
 }
