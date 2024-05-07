@@ -1,0 +1,70 @@
+---
+title: "TLG Catalog + WebR = ❤️"
+author:
+  - name: Pawel Rucki
+description: "Introducing WebR to TLG Catalog: A Game Changer for Interactive Learning"
+date: "2024-05-07"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [TLG, Shiny]
+# feel free to change the image
+image: "tlg_catalog.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2024-05-07_t_lg__catalog_+_..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+[![](tlg_catalog.png){fig-align="center" width="220"}](https://insightsengineering.github.io/tlg-catalog)
+
+[TLG Catalog website](https://insightsengineering.github.io/tlg-catalog)
+
+# Introducing WebR to TLG Catalog: A Game Changer for Interactive Learning
+
+I'm thrilled to announce a major update to the [TLG Catalog](https://insightsengineering.github.io/tlg-catalog). We have integrated [`WebR`](https://docs.r-wasm.org/webr/latest/) to the website transforming the way you interact with the R code. You don't have to copy and run code separately, open containers and/or install packages. With WebR, you can now interact with the TLG source R code directly in your browser, making learning more interactive and enjoyable than ever before!
+
+![](recording_static.gif){fig-align="center"}
+
+## What is `WebR`?
+
+> WebR makes it possible to run R code in the browser without the need for an R server to execute the code: the R interpreter runs directly on the user’s machine.
+
+_Source: [WebR documentation](https://quarto-webr.thecoatlessprofessor.com/)_
+
+In short, [`WebR`](https://docs.r-wasm.org/webr/latest/) is a project that aims to port R into [`WebAssemby`](https://webassembly.org/) (WASM) which then allows to run compiled code in the website. A special thanks to George Stagg from Posit for making this integration possible. While [`WebR`](https://docs.r-wasm.org/webr/latest/) is still in active development, a significant progress had been made recently increasing its robustness and efficiency.
+
+However, it's important to note a limitation: not all packages are compatible with [`WebR`](https://docs.r-wasm.org/webr/latest/). A package must be compiled for WebAssembly to be used with [`WebR`](https://docs.r-wasm.org/webr/latest/). Fortunately, there's a dedicated [WebR binary R package repository](https://repo.r-wasm.org) hosting close to 20,000 packages. For packages not yet available, you can utilize a dedicated [GitHub Actions workflow](https://github.com/r-wasm/actions) to build them yourself, or use [r-universe](https://ropensci.org/blog/2023/11/17/runiverse-wasm/).
+
+## Implementation Details
+
+The integration of [`WebR`](https://docs.r-wasm.org/webr/latest/) into [TLG Catalog](https://insightsengineering.github.io/tlg-catalog) was made possible through a dedicated [`quarto-webr` Quarto extension](https://quarto-webr.thecoatlessprofessor.com/), which simplifies the integration process. The main challenge was to ensure a DRY (Don't Repeat Yourself) approach with respect to the existing codebase. This was achieved through leveraging lesser-known `knitr` features, including `knitr::knit_code$get()` to reuse code chunks as well as `results = "asis"` to create code chunk from within another (parent) code chunk. The source code for this is open-source and available on GitHub.
+
+## Interactive `teal` Applications via `shinylive`
+
+The benefits of [`WebR`](https://docs.r-wasm.org/webr/latest/) extend beyond TLG outputs. It also enhances all existing [`teal`](https://insightsengineering.github.io/teal/) applications. Users can now interact with applications and even live-edit their source code! Everything is inside the website itself without any additional application hosting service. This was made possible through the [`shinylive` Quarto extension](https://quarto-ext.github.io/shinylive/) leveraging [`Shinylive`](https://shiny.posit.co/py/docs/shinylive.html) under the hood. A huge thank you to the `Shiny` team for their contributions!
+
+![](recording_app.gif){fig-align="center"}
+
+## Summary
+
+The addition of interactivity via [`WebR`](https://docs.r-wasm.org/webr/latest/) marks a significant milestone for [TLG Catalog](https://insightsengineering.github.io/tlg-catalog). This update unlocks a myriad of possibilities previously unavailable, such as live code editing, step-by-step code execution, access to function documentation, and dynamic data exploration. This advancement brings R closer to users, especially those new to the language, fostering a more engaging and effective learning experience.
+
+Happy learning!
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
