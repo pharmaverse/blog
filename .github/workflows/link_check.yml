@@ -6,12 +6,12 @@ jobs:
   linkChecker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: switch .qmd to .md
         run: source("R/switch.R")
         shell: Rscript {0}
-        
+
       - name: Link Checker
         uses: lycheeverse/lychee-action@v1.8.0
         with:
