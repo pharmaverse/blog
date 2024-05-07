@@ -14,7 +14,7 @@ image: "pharmaverse.PNG"
 <!--------------- typical setup ----------------->
 
 ```{r setup, include=FALSE}
-long_slug <- "2023-08-30_pharmaverse_story"
+long_slug <- "2023-10-10_pharmaverse_story"
 # renv::use(lockfile = "renv.lock")
 ```
 
@@ -97,6 +97,8 @@ After all, even though we live together as a community, we still have our own un
 source("appendix.R")
 insert_appendix(
   repo_spec = "pharmaverse/blog",
-  name = long_slug
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
 )
 ```

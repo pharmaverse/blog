@@ -14,7 +14,7 @@ editor:
 <!--------------- my typical setup ----------------->
 
 ```{r setup, include=FALSE}
-long_slug <- "2023-07-20_shiny_run_script"
+long_slug <- "2023-07-20_cross_company_dev"
 # renv::use(lockfile = "renv.lock")
 ```
 
@@ -142,10 +142,11 @@ The [{admiral}](https://github.com/pharmaverse/admiral) project serves as a test
 <!--------------- appendices go here ----------------->
 
 ```{r, echo=FALSE}
-#| eval: false
 source("appendix.R")
 insert_appendix(
-  repo_spec = "pharmaverse/comms_wg",
-  name = long_slug
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
 )
 ```

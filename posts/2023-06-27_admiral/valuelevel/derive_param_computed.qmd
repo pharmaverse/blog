@@ -12,7 +12,7 @@ image: "derive_param_computed.jpg"
 <!--------------- my typical setup ----------------->
 
 ```{r setup1, include=FALSE}
-long_slug <- "admiral"
+long_slug <- "2023-06-27_admiral"
 # renv::use(lockfile = "renv.lock")
 ```
 
@@ -103,6 +103,8 @@ diffdf(adex_expected, adex_admiral, keys = c("USUBJID", "PARAMCD"))
 source("appendix.R")
 insert_appendix(
   repo_spec = "pharmaverse/blog",
-  name = long_slug
+  name = paste0(long_slug, "/valuelevel"),
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
 )
 ```

@@ -6,7 +6,7 @@ description: "Updates to the pharmaverse council"
 date: "2024-04-29"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
-categories: [community]
+categories: [Community]
 # feel free to change the image
 image: "pharmaverse.PNG"
 ---
@@ -65,6 +65,8 @@ On behalf of the council, Ari Siggaard Knoph
 source("appendix.R")
 insert_appendix(
   repo_spec = "pharmaverse/blog",
-  name = long_slug
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
 )
 ```

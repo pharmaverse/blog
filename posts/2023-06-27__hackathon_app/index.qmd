@@ -15,7 +15,7 @@ editor:
 <!--------------- my typical setup ----------------->
 
 ```{r setup, include=FALSE}
-long_slug <- "2023-06-19_shiny_run_script"
+long_slug <- "2023-06-27__hackathon_app"
 # renv::use(lockfile = "renv.lock")
 ```
 
@@ -385,6 +385,8 @@ From our perspective, the application provided a great added value to the hackat
 source("appendix.R")
 insert_appendix(
   repo_spec = "pharmaverse/blog",
-  name = long_slug
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
 )
 ```
