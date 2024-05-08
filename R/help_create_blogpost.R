@@ -40,7 +40,8 @@ create_post <- function(post_name,
                           "metacore",
                           "displays",
                           "falcon",
-                          "NEST"
+                          "Shiny",
+                          "TLG"
                         )) {
   path_to_img <- "media"
   available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
