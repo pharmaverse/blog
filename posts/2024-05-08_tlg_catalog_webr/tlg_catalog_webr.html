@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Vincent Shen">
-<meta name="dcterms.date" content="2023-07-09">
-<meta name="description" content="The {falcon} initiative is an industry collaborative effort under pharmaversewith the aspiration of building and open-sourcing a comprehensive catalog of harmonized TLGs for clinical study reporting.">
+<meta name="author" content="Pawel Rucki">
+<meta name="dcterms.date" content="2024-05-08">
+<meta name="description" content="Introducing WebR to TLG Catalog: A Game Changer for Interactive Learning">
 
-<title>pharmaverse blog - falcon</title>
+<title>pharmaverse blog - TLG Catalog 🤝 WebR</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,12 +79,12 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="pharmaverse blog - falcon">
-<meta property="og:description" content="The {falcon} initiative is an industry collaborative effort under pharmaversewith the aspiration of building and open-sourcing a comprehensive catalog of harmonized TLGs for clinical study reporting.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.png">
+<meta property="og:title" content="pharmaverse blog - TLG Catalog 🤝 WebR">
+<meta property="og:description" content="Introducing WebR to TLG Catalog: A Game Changer for Interactive Learning">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog.png">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="599">
-<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="1501">
+<meta property="og:image:width" content="1299">
 </head>
 
 <body class="floating nav-fixed">
@@ -124,14 +124,15 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">falcon</h1>
+      <h1 class="title">TLG Catalog 🤝 WebR</h1>
                   <div>
         <div class="description">
-          The <a href="https://pharmaverse.github.io/falcon/">{falcon} initiative</a> is an industry collaborative effort under <a href="https://pharmaverse.org/">pharmaverse</a>with the aspiration of building and open-sourcing a comprehensive catalog of harmonized TLGs for clinical study reporting.
+          Introducing WebR to TLG Catalog: A Game Changer for Interactive Learning
         </div>
       </div>
                           <div class="quarto-categories">
                 <div class="quarto-category">TLG</div>
+                <div class="quarto-category">Shiny</div>
               </div>
                   </div>
   </div>
@@ -142,14 +143,14 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Vincent Shen </p>
+               <p>Pawel Rucki </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 9, 2023</p>
+        <p class="date">May 8, 2024</p>
       </div>
     </div>
     
@@ -164,10 +165,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#what-is-falcon" id="toc-what-is-falcon" class="nav-link active" data-scroll-target="#what-is-falcon">What is {falcon}?</a></li>
-  <li><a href="#why-do-we-build-it" id="toc-why-do-we-build-it" class="nav-link" data-scroll-target="#why-do-we-build-it">Why do we build it?</a></li>
-  <li><a href="#what-has-been-done-so-far" id="toc-what-has-been-done-so-far" class="nav-link" data-scroll-target="#what-has-been-done-so-far">What has been done so far?</a></li>
-  <li><a href="#next-steps-vision" id="toc-next-steps-vision" class="nav-link" data-scroll-target="#next-steps-vision">Next steps &amp; vision</a></li>
+  <li><a href="#introducing-webr-to-tlg-catalog-a-game-changer-for-interactive-learning" id="toc-introducing-webr-to-tlg-catalog-a-game-changer-for-interactive-learning" class="nav-link active" data-scroll-target="#introducing-webr-to-tlg-catalog-a-game-changer-for-interactive-learning">Introducing WebR to TLG Catalog: A Game Changer for Interactive Learning</a>
+  <ul class="collapse">
+  <li><a href="#what-is-webr" id="toc-what-is-webr" class="nav-link" data-scroll-target="#what-is-webr">What is <code>WebR</code>?</a></li>
+  <li><a href="#implementation-details" id="toc-implementation-details" class="nav-link" data-scroll-target="#implementation-details">Implementation Details</a></li>
+  <li><a href="#interactive-teal-applications-via-shinylive" id="toc-interactive-teal-applications-via-shinylive" class="nav-link" data-scroll-target="#interactive-teal-applications-via-shinylive">Interactive <code>teal</code> Applications via <code>shinylive</code></a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul></li>
   </ul>
 </nav>
 </nav>
@@ -184,23 +188,46 @@ ul.task-list li input[type="checkbox"] {
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<section id="what-is-falcon" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-falcon">What is {falcon}?</h2>
-<p>The <a href="https://pharmaverse.github.io/falcon/">{falcon} initiative</a> is an industry collaborative effort under <a href="https://pharmaverse.org/">pharmaverse</a> that unites Boehringer Ingelheim, Moderna, Roche, and Sanofi with the aspiration of building and open-sourcing a comprehensive catalog of harmonized tables, listings, and graphs (TLGs) for clinical study reporting. By leveraging existing open-source R packages, {falcon} aims to simplify the process of output review, comparison, and meta-analyses, while fostering efficient communication among stakeholders in the pharmaceutical industry.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://insightsengineering.github.io/tlg-catalog"><img src="tlg_catalog.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="220"></a></p>
+</figure>
+</div>
+<p><a href="https://insightsengineering.github.io/tlg-catalog">TLG Catalog website</a></p>
+<section id="introducing-webr-to-tlg-catalog-a-game-changer-for-interactive-learning" class="level1">
+<h1>Introducing WebR to TLG Catalog: A Game Changer for Interactive Learning</h1>
+<p>I’m thrilled to announce a major update to the <a href="https://insightsengineering.github.io/tlg-catalog">TLG Catalog</a>. We have integrated <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> to the website transforming the way you interact with the R code. You don’t have to copy and run code separately, open containers and/or install packages. With WebR, you can now interact with the TLG source R code directly in your browser, making learning more interactive and enjoyable than ever before!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="recording_static.gif" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<section id="what-is-webr" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-webr">What is <code>WebR</code>?</h2>
+<blockquote class="blockquote">
+<p>WebR makes it possible to run R code in the browser without the need for an R server to execute the code: the R interpreter runs directly on the user’s machine.</p>
+</blockquote>
+<p><em>Source: <a href="https://quarto-webr.thecoatlessprofessor.com/">WebR documentation</a></em></p>
+<p>In short, <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> is a project that aims to port R into <a href="https://webassembly.org/"><code>WebAssembly</code></a> (WASM) which then allows to run compiled code in the website. A special thanks to George Stagg from Posit for making this integration possible. While <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> is still in active development, a significant progress had been made recently increasing its robustness and efficiency.</p>
+<p>However, it’s important to note a limitation: not all packages are compatible with <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a>. A package must be compiled for WebAssembly to be used with <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a>. Fortunately, there’s a dedicated <a href="https://repo.r-wasm.org">WebR binary R package repository</a> hosting close to 20,000 packages. For packages not yet available, you can utilize a dedicated <a href="https://github.com/r-wasm/actions">GitHub Actions workflow</a> to build them yourself, or use <a href="https://r-universe.dev/">r-universe</a> platform that <a href="https://ropensci.org/blog/2023/11/17/runiverse-wasm/">will build it for you</a>.</p>
 </section>
-<section id="why-do-we-build-it" class="level2">
-<h2 class="anchored" data-anchor-id="why-do-we-build-it">Why do we build it?</h2>
-<p>The collaborative effort focuses on improving the clarity, consistency, and accessibility of TLGs by addressing variations and redundancies in their creation and use. This harmonized approach allows for streamlined reporting processes and facilitates effective communication of study results within the industry and to regulatory authorities.</p>
+<section id="implementation-details" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-details">Implementation Details</h2>
+<p>The integration of <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> into <a href="https://insightsengineering.github.io/tlg-catalog">TLG Catalog</a> was made possible through a dedicated <a href="https://quarto-webr.thecoatlessprofessor.com/"><code>quarto-webr</code> Quarto extension</a>, which simplifies the integration process. The main challenge was to ensure a DRY (Don’t Repeat Yourself) approach with respect to the existing codebase. This was achieved through leveraging lesser-known <code>knitr</code> features, including <code>knitr::knit_code$get()</code> to reuse code chunks as well as <code>results = "asis"</code> to create code chunk from within another (parent) code chunk. The source code for this is open-source and available on <a href="https://github.com/insightsengineering/tlg-catalog/blob/main/book/_utils/webr.qmd">GitHub</a>.</p>
 </section>
-<section id="what-has-been-done-so-far" class="level2">
-<h2 class="anchored" data-anchor-id="what-has-been-done-so-far">What has been done so far?</h2>
-<p>Drawing inspiration from the FDA Standard Safety Tables and Figures Integrated Guide, the {falcon} initiative has successfully developed and open-sourced 11 templates to date. 4 product owners and 11 developers from 4 companies have collaborated to make these templates available and also published them on the official {falcon} website at <a href="https://pharmaverse.github.io/falcon/">https://pharmaverse.github.io/falcon/</a>.</p>
+<section id="interactive-teal-applications-via-shinylive" class="level2">
+<h2 class="anchored" data-anchor-id="interactive-teal-applications-via-shinylive">Interactive <code>teal</code> Applications via <code>shinylive</code></h2>
+<p>The benefits of <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> extend beyond TLG outputs. It also enhances all existing <a href="https://insightsengineering.github.io/teal/"><code>teal</code></a> applications. Users can now interact with applications and even live-edit their source code! Everything is inside the website itself without any additional application hosting service. This was made possible through the <a href="https://quarto-ext.github.io/shinylive/"><code>shinylive</code> Quarto extension</a> leveraging <a href="https://shiny.posit.co/py/docs/shinylive.html"><code>Shinylive</code></a> under the hood. A huge thank you to the <code>Shiny</code> team for their contributions!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="recording_app.gif" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
 </section>
-<section id="next-steps-vision" class="level2">
-<h2 class="anchored" data-anchor-id="next-steps-vision">Next steps &amp; vision</h2>
-<p>Future plans for {falcon} involve expanding the catalog through continuous collaboration from participating companies and inviting wider industry engagement. The ultimate goal is to promote harmonization of TLGs for clinical reporting across the pharmaceutical industry, leading to greater efficiency, collaboration, and innovation. Even though templates currently come from a published FDA guide, the collaborating companies are open to share and discuss similarities and differences on analysis concepts and output layouts of their own implementations in clinical reporting, for both safety and efficacy analyses.</p>
-<p>In addition, while currently all templates were built using {rtables}, {tern}, {rlistings} and drew inspiration from the open-sourced <a href="https://insightsengineering.github.io/tlg-catalog/">TLG-Catalog</a>, moving forward, we plan to support creating the same templates using alternative table engines such as {gt}.</p>
-<p>{falcon} will be presented at the upcoming PHUSE EU (Standards Implementation stream), where we will share the collaboration journey of {falcon} so far, providing more details on the current progress, long-term vision, and strategies for this initiative. Attendees will gain insights into the challenges and opportunities of harmonizing clinical reporting through open-source collaboration and learn about the potential benefits and future direction of {falcon}.</p>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>The addition of interactivity via <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> marks a significant milestone for <a href="https://insightsengineering.github.io/tlg-catalog">TLG Catalog</a>. This update unlocks a myriad of possibilities previously unavailable, such as live code editing, step-by-step code execution, access to function documentation, and dynamic data exploration. This advancement brings R closer to users, especially those new to the language, fostering a more engaging and effective learning experience.</p>
+<p>Happy learning!</p>
 <!--------------- appendices go here ----------------->
 <div class="cell">
 <div class="cell-output cell-output-stderr">
@@ -225,22 +252,23 @@ Attaching package: 'dplyr'</code></pre>
 
 
 </section>
+</section>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-08 15:37:32.71095</p>
+<p>2024-05-08 15:37:10.73831</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-09_falcon/falcon.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{shen2023,
-  author = {Shen, Vincent},
-  title = {Falcon},
-  date = {2023-07-09},
-  url = {https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{rucki2024,
+  author = {Rucki, Pawel},
+  title = {TLG {Catalog} 🤝 {WebR}},
+  date = {2024-05-08},
+  url = {https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-shen2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Shen, Vincent. 2023. <span>“Falcon.”</span> July 9, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.html">https://pharmaverse.github.io/blog/posts/2023-07-09_falcon/falcon.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-rucki2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Rucki, Pawel. 2024. <span>“TLG Catalog 🤝 WebR.”</span> May 8, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html">https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

@@ -10,7 +10,107 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.554</generator>
-<lastBuildDate>Thu, 02 May 2024 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 08 May 2024 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>TLG Catalog 🤝 WebR</title>
+  <dc:creator>Pawel Rucki</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://insightsengineering.github.io/tlg-catalog"><img src="https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="220"></a></p>
+</figure>
+</div>
+<p><a href="https://insightsengineering.github.io/tlg-catalog">TLG Catalog website</a></p>
+<section id="introducing-webr-to-tlg-catalog-a-game-changer-for-interactive-learning" class="level1">
+<h1>Introducing WebR to TLG Catalog: A Game Changer for Interactive Learning</h1>
+<p>I’m thrilled to announce a major update to the <a href="https://insightsengineering.github.io/tlg-catalog">TLG Catalog</a>. We have integrated <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> to the website transforming the way you interact with the R code. You don’t have to copy and run code separately, open containers and/or install packages. With WebR, you can now interact with the TLG source R code directly in your browser, making learning more interactive and enjoyable than ever before!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/recording_static.gif" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<section id="what-is-webr" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-webr">What is <code>WebR</code>?</h2>
+<blockquote class="blockquote">
+<p>WebR makes it possible to run R code in the browser without the need for an R server to execute the code: the R interpreter runs directly on the user’s machine.</p>
+</blockquote>
+<p><em>Source: <a href="https://quarto-webr.thecoatlessprofessor.com/">WebR documentation</a></em></p>
+<p>In short, <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> is a project that aims to port R into <a href="https://webassembly.org/"><code>WebAssembly</code></a> (WASM) which then allows to run compiled code in the website. A special thanks to George Stagg from Posit for making this integration possible. While <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> is still in active development, a significant progress had been made recently increasing its robustness and efficiency.</p>
+<p>However, it’s important to note a limitation: not all packages are compatible with <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a>. A package must be compiled for WebAssembly to be used with <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a>. Fortunately, there’s a dedicated <a href="https://repo.r-wasm.org">WebR binary R package repository</a> hosting close to 20,000 packages. For packages not yet available, you can utilize a dedicated <a href="https://github.com/r-wasm/actions">GitHub Actions workflow</a> to build them yourself, or use <a href="https://r-universe.dev/">r-universe</a> platform that <a href="https://ropensci.org/blog/2023/11/17/runiverse-wasm/">will build it for you</a>.</p>
+</section>
+<section id="implementation-details" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-details">Implementation Details</h2>
+<p>The integration of <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> into <a href="https://insightsengineering.github.io/tlg-catalog">TLG Catalog</a> was made possible through a dedicated <a href="https://quarto-webr.thecoatlessprofessor.com/"><code>quarto-webr</code> Quarto extension</a>, which simplifies the integration process. The main challenge was to ensure a DRY (Don’t Repeat Yourself) approach with respect to the existing codebase. This was achieved through leveraging lesser-known <code>knitr</code> features, including <code>knitr::knit_code$get()</code> to reuse code chunks as well as <code>results = "asis"</code> to create code chunk from within another (parent) code chunk. The source code for this is open-source and available on <a href="https://github.com/insightsengineering/tlg-catalog/blob/main/book/_utils/webr.qmd">GitHub</a>.</p>
+</section>
+<section id="interactive-teal-applications-via-shinylive" class="level2">
+<h2 class="anchored" data-anchor-id="interactive-teal-applications-via-shinylive">Interactive <code>teal</code> Applications via <code>shinylive</code></h2>
+<p>The benefits of <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> extend beyond TLG outputs. It also enhances all existing <a href="https://insightsengineering.github.io/teal/"><code>teal</code></a> applications. Users can now interact with applications and even live-edit their source code! Everything is inside the website itself without any additional application hosting service. This was made possible through the <a href="https://quarto-ext.github.io/shinylive/"><code>shinylive</code> Quarto extension</a> leveraging <a href="https://shiny.posit.co/py/docs/shinylive.html"><code>Shinylive</code></a> under the hood. A huge thank you to the <code>Shiny</code> team for their contributions!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/recording_app.gif" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>The addition of interactivity via <a href="https://docs.r-wasm.org/webr/latest/"><code>WebR</code></a> marks a significant milestone for <a href="https://insightsengineering.github.io/tlg-catalog">TLG Catalog</a>. This update unlocks a myriad of possibilities previously unavailable, such as live code editing, step-by-step code execution, access to function documentation, and dynamic data exploration. This advancement brings R closer to users, especially those new to the language, fostering a more engaging and effective learning experience.</p>
+<p>Happy learning!</p>
+<!--------------- appendices go here ----------------->
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2024-05-08 15:37:10.73831</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{rucki2024,
+  author = {Rucki, Pawel},
+  title = {TLG {Catalog} 🤝 {WebR}},
+  date = {2024-05-08},
+  url = {https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-rucki2024" class="csl-entry quarto-appendix-citeas">
+Rucki, Pawel. 2024. <span>“TLG Catalog 🤝 WebR.”</span> May 8, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html">https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html</a>.
+</div></div></section></div> ]]></description>
+  <category>TLG</category>
+  <category>Shiny</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html</guid>
+  <pubDate>Wed, 08 May 2024 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog.png" medium="image" type="image/png" height="166" width="144"/>
+</item>
 <item>
   <title>De-Mystifying R Programming in Clinical Trials</title>
   <dc:creator>Venkatesan Balu</dc:creator>
@@ -96,7 +196,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:20.452438</p>
+<p>2024-05-08 15:37:57.252226</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -178,7 +278,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:22.008097</p>
+<p>2024-05-08 15:37:58.861964</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-04-29_appsilon_and__sa.../appsilon_and__sanofi_joins_the_pharmaverse_council!.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -264,7 +364,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:40:51.433055</p>
+<p>2024-05-08 15:37:29.480757</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-04-08_tmc_cran/tmc_cran.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -593,7 +693,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:14.120738</p>
+<p>2024-05-08 15:37:50.801743</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -697,7 +797,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:40:53.02368</p>
+<p>2024-05-08 15:37:31.084371</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-03-11_tips_for__first_.../tips_for__first__time__contributors.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -818,7 +918,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:25.026501</p>
+<p>2024-05-08 15:38:02.004451</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-03-04_inside_the__phar.../inside_the__pharmaverse.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -955,7 +1055,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:40:44.543709</p>
+<p>2024-05-08 15:37:22.665651</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1725,7 +1825,7 @@ font-style: inherit;">7</span></span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:00.279067</p>
+<p>2024-05-08 15:37:38.048105</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1866,7 +1966,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:12.182767</p>
+<p>2024-05-08 15:37:48.896367</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-02-14_iscr_conference/iscr_conference.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1993,7 +2093,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:40:33.62528</p>
+<p>2024-05-08 15:37:12.313527</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-02-13_teal_on_cran/teal_on_cran.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2280,7 +2380,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:40:35.499209</p>
+<p>2024-05-08 15:37:14.133482</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2884,7 +2984,7 @@ font-style: inherit;">TBILBL =</span> BILIBL)</span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:40:57.860436</p>
+<p>2024-05-08 15:37:35.680799</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-20_p_k__examples/p_k__examples.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -3751,7 +3851,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:04.543355</p>
+<p>2024-05-08 15:37:41.378244</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/admiral_1_0.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -3828,7 +3928,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:23.506212</p>
+<p>2024-05-08 15:38:00.423652</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -4850,7 +4950,7 @@ font-style: inherit;">"last"</span>)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:40:49.45302</p>
+<p>2024-05-08 15:37:27.499328</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-11-27_higher_order/higher_order.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -5135,8 +5235,8 @@ font-style: inherit;">resizable =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
-<div class="reactable html-widget html-fill-item" id="htmlwidget-5f192f3dd23e943e8f75" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-5f192f3dd23e943e8f75">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-6a41987dd0688630f8cd" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6a41987dd0688630f8cd">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Amylase, High","Lipase, High"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"ccaa297eedbe0b2b624ea3477967a787"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>As you can see, the data-frame contains the column <code>GRADE_CRITERIA_CODE</code> which contains comparisons of floating point values. And there was a discrepancy of what Gordon expected to see, and how R actually computed the comparison initially:</p>
@@ -5831,8 +5931,8 @@ font-style: inherit;">resizable =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span></code></pre></div>
 <div class="cell-output-display">
-<div class="reactable html-widget html-fill-item" id="htmlwidget-4e4f7cd0d77bd5d51835" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-4e4f7cd0d77bd5d51835">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-67ba751b5135192c6f34" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-67ba751b5135192c6f34">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"TERM":["Acidosis","Albumin, Low","Alkaline Phosphatase, High","Alkalosis","ALT, High","Amylase, High","AST, High","Bicarbonate, Low","Direct Bilirubin, High","Direct Bilirubin, High","Total Bilirubin, High","Total Bilirubin, High","Calcium, High","Calcium, High","Calcium (Ionized), High","Calcium, Low","Calcium, Low","Calcium (Ionized), Low","Creatine Kinase, High","Creatinine, High","Glucose Fasting, High","Glucose Nonfasting, High","Glucose, Low","Glucose, Low","Lactate, High","Lipase, High","Cholesterol, Fasting, High","Cholesterol, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","LDL, Fasting, High","Triglycerides, Fasting, High","Magnesium, Low","Phosphate, Low","Phosphate, Low","Phosphate, Low","Potassium, High","Potassium, Low","Sodium, High","Sodium, Low","Uric Acid, High","Absolute CD4+ Count, Low","Absolute CD4+ Count, Low","Absolute Lymphocyte Count, Low","Absolute Lymphocyte Count, Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Absolute Neutrophil Count (ANC), Low","Fibrinogen Decreased","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","Hemoglobin, Low","INR, High","Methemoglobin","PTT, High","Platelets, Decreased","PT, High","WBC, Decreased","WBC, Decreased"],"GRADE_CRITERIA_CODE":["case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 7.3  ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  20 ~ \"3\",  signif(AVAL, signif_dig) < 30 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 7.5 ~ \"4\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(10*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >= signif(5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(2.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.25*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 8 ~ \"4\",  signif(AVAL, signif_dig) < 11 ~ \"3\",  signif(AVAL, signif_dig) < 16 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  signif(ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >  2*17.1 ~ \"4\",  signif(AVAL, signif_dig) >  1.5*17.1 ~ \"3\",  signif(AVAL, signif_dig) >  17.1 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >=  5*ANRHI ~ \"4\",  signif(AVAL, signif_dig) >=  2.6*ANRHI ~ \"3\",  signif(AVAL, signif_dig) >= 1.6*ANRHI ~ \"2\",  signif(AVAL, signif_dig) >= 1.1*ANRHI ~ \"1\",  signif(AVAL, signif_dig) < 1.1*ANRHI ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.13 ~ \"3\",  signif(AVAL, signif_dig) >= 2.88 ~ \"2\",  signif(AVAL, signif_dig) >= 2.65 ~ \"1\",  signif(AVAL, signif_dig) < 2.65 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 3.38 ~ \"4\",  signif(AVAL, signif_dig) >= 3.23 ~ \"3\",  signif(AVAL, signif_dig) >= 3.1 ~ \"2\",  signif(AVAL, signif_dig) >= 2.88 ~ \"1\",  signif(AVAL, signif_dig) < 2.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 1.8 ~ \"4\",  signif(AVAL, signif_dig) >= 1.6 ~ \"3\",  signif(AVAL, signif_dig) >= 1.5 ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) > signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) <= signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.53 ~ \"4\",  signif(AVAL, signif_dig) < 1.75 ~ \"3\",  signif(AVAL, signif_dig) < 1.95 ~ \"2\",  signif(AVAL, signif_dig) < 2.1 ~ \"1\",  signif(AVAL, signif_dig) >= 2.1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.38 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 1.63 ~ \"2\",  signif(AVAL, signif_dig) < 1.88 ~ \"1\",  signif(AVAL, signif_dig) >= 1.88 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.8 ~ \"4\",  signif(AVAL, signif_dig) < 0.9 ~ \"3\",  signif(AVAL, signif_dig) < 1 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(20*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(10*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(6*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(3*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(3*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  !is.na(ANRHI) & signif(AVAL, signif_dig) >=  signif(3.5*ANRHI, signif_dig) ~ \"4\",  !is.na(BASE) & signif(AVAL, signif_dig) >=  signif(2*BASE, signif_dig) ~ \"4\",  !is.na(ANRHI) & signif(AVAL, signif_dig) >  signif(1.8*ANRHI, signif_dig) ~ \"3\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.5*BASE, signif_dig) ~ \"3\",  !is.na(ANRHI) & signif(AVAL, signif_dig) > signif(1.3*ANRHI, signif_dig) ~ \"2\",  !is.na(BASE) & signif(AVAL, signif_dig) >= signif(1.3*BASE, signif_dig) ~ \"2\",  is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 6.95 ~ \"2\",  signif(AVAL, signif_dig) >= 6.11 ~ \"1\",  signif(AVAL, signif_dig) < 6.11 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 27.75 ~ \"4\",  signif(AVAL, signif_dig) >= 13.89 ~ \"3\",  signif(AVAL, signif_dig) >= 8.89 ~ \"2\",  signif(AVAL, signif_dig) >= 6.44 ~ \"1\",  signif(AVAL, signif_dig) < 6.44 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 3.05 ~ \"2\",  signif(AVAL, signif_dig) < 3.55 ~ \"1\",  signif(AVAL, signif_dig) >= 3.55 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.67 ~ \"4\",  signif(AVAL, signif_dig) < 2.22 ~ \"3\",  signif(AVAL, signif_dig) < 2.78 ~ \"2\",  signif(AVAL, signif_dig) < 3 ~ \"1\",  signif(AVAL, signif_dig) >= 3 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >= signif(2*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(5*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 6.19 ~ \"2\",  signif(AVAL, signif_dig) >= 5.18 ~ \"1\",  signif(AVAL, signif_dig) < 5.18 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 7.77 ~ \"3\",  signif(AVAL, signif_dig) >= 5.15 ~ \"2\",  signif(AVAL, signif_dig) >= 4.4 ~ \"1\",  signif(AVAL, signif_dig) < 4.4 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 4.12 ~ \"2\",  signif(AVAL, signif_dig) >= 3.37 ~ \"1\",  signif(AVAL, signif_dig) < 3.37 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) >= 4.9 ~ \"3\",  signif(AVAL, signif_dig) >= 3.34 ~ \"2\",  signif(AVAL, signif_dig) >= 2.85 ~ \"1\",  signif(AVAL, signif_dig) < 2.85 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) > 11.4 ~ \"4\",  signif(AVAL, signif_dig) > 5.7 ~ \"3\",  signif(AVAL, signif_dig) > 3.42 ~ \"2\",  signif(AVAL, signif_dig) >= 1.71 ~ \"1\",  signif(AVAL, signif_dig) < 1.71 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 0.3 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.7 ~ \"1\",  signif(AVAL, signif_dig) >= 0.7 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.32 ~ \"4\",  signif(AVAL, signif_dig) < 0.45 ~ \"3\",  signif(AVAL, signif_dig) < 0.65 ~ \"2\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) < signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 0.97 ~ \"2\",  signif(AVAL, signif_dig) < 1.13 ~ \"1\",  signif(AVAL, signif_dig) >= 1.13 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.48 ~ \"4\",  signif(AVAL, signif_dig) < 0.81 ~ \"3\",  signif(AVAL, signif_dig) < 1.13 ~ \"2\",  signif(AVAL, signif_dig) < 1.45 ~ \"1\",  signif(AVAL, signif_dig) >= 1.45 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 7 ~ \"4\",  signif(AVAL, signif_dig) >= 6.5 ~ \"3\",  signif(AVAL, signif_dig) >= 6 ~ \"2\",  signif(AVAL, signif_dig) >= 5.6 ~ \"1\",  signif(AVAL, signif_dig) < 5.6 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 2 ~ \"4\",  signif(AVAL, signif_dig) < 2.5 ~ \"3\",  signif(AVAL, signif_dig) < 3 ~ \"2\",  signif(AVAL, signif_dig) < 3.4 ~ \"1\",  signif(AVAL, signif_dig) >= 3.4 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 160 ~ \"4\",  signif(AVAL, signif_dig) >= 154 ~ \"3\",  signif(AVAL, signif_dig) >= 150 ~ \"2\",  signif(AVAL, signif_dig) >= 146 ~ \"1\",  signif(AVAL, signif_dig) < 146 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <= 120 ~ \"4\",  signif(AVAL, signif_dig) < 125 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) < 135 ~ \"1\",  signif(AVAL, signif_dig) >= 135 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >= 890 ~ \"4\",  signif(AVAL, signif_dig) >= 710 ~ \"3\",  signif(AVAL, signif_dig) >= 590 ~ \"2\",  signif(AVAL, signif_dig) >= 450 ~ \"1\",  signif(AVAL, signif_dig) < 450 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.1 ~ \"4\",  signif(AVAL, signif_dig) < 0.2 ~ \"3\",  signif(AVAL, signif_dig) < 0.3 ~ \"2\",  signif(AVAL, signif_dig) < 0.4 ~ \"1\",  signif(AVAL, signif_dig) >= 0.4 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.35 ~ \"4\",  signif(AVAL, signif_dig) < 0.5 ~ \"3\",  signif(AVAL, signif_dig) < 0.6 ~ \"2\",  signif(AVAL, signif_dig) < 0.65 ~ \"1\",  signif(AVAL, signif_dig) >= 0.65 ~ \"0\"  )","NA_character_","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.4 ~ \"4\",  signif(AVAL, signif_dig) < 0.6 ~ \"3\",  signif(AVAL, signif_dig) < 0.8 ~ \"2\",  signif(AVAL, signif_dig) <= 1 ~ \"1\",  signif(AVAL, signif_dig) > 1 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 0.75 ~ \"4\",  signif(AVAL, signif_dig) < 1 ~ \"3\",  signif(AVAL, signif_dig) < 1.25 ~ \"2\",  signif(AVAL, signif_dig) <= 1.5 ~ \"1\",  signif(AVAL, signif_dig) > 1.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1.5 ~ \"4\",  signif(AVAL, signif_dig) < 3 ~ \"3\",  signif(AVAL, signif_dig) < 4 ~ \"2\",  signif(AVAL, signif_dig) <= 5 ~ \"1\",  signif(AVAL, signif_dig) > 5 ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) <  0.5 ~ \"4\",  is.na(ANRLO) ~ NA_character_,  signif(AVAL, signif_dig) <  signif(0.25*ANRLO, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) < 0.75 ~ \"3\",  signif(AVAL, signif_dig) <  signif(0.5*ANRLO, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) <  1 ~ \"2\",  signif(AVAL, signif_dig) <  signif(0.75*ANRLO, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) <  2 ~ \"1\",  signif(AVAL, signif_dig) <  signif(ANRLO, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) >= signif(ANRLO, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 70 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) <= 109 ~ \"1\",  signif(AVAL, signif_dig) > 109 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(SEX)  | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 65 ~ \"4\",  signif(AVAL, signif_dig) < 85 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 104 ~ \"1\",  signif(AVAL, signif_dig) > 104 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 60 ~ \"4\",  signif(AVAL, signif_dig) < 70 ~ \"3\",  signif(AVAL, signif_dig) < 85 ~ \"2\",  signif(AVAL, signif_dig) <= 96 ~ \"1\",  signif(AVAL, signif_dig) > 96 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 67 ~ \"4\",  signif(AVAL, signif_dig) < 80 ~ \"3\",  signif(AVAL, signif_dig) < 95 ~ \"2\",  signif(AVAL, signif_dig) <= 110 ~ \"1\",  signif(AVAL, signif_dig) > 110 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 80 ~ \"4\",  signif(AVAL, signif_dig) < 90 ~ \"3\",  signif(AVAL, signif_dig) < 110 ~ \"2\",  signif(AVAL, signif_dig) <= 130 ~ \"1\",  signif(AVAL, signif_dig) > 130 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 90 ~ \"4\",  signif(AVAL, signif_dig) < 100 ~ \"3\",  signif(AVAL, signif_dig) < 130 ~ \"2\",  signif(AVAL, signif_dig) <= 140 ~ \"1\",  signif(AVAL, signif_dig) > 140 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.5*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) >=  20 ~ \"4\",  signif(AVAL, signif_dig) >=  15 ~ \"3\",  signif(AVAL, signif_dig) >= 10 ~ \"2\",  signif(AVAL, signif_dig) >= 5 ~ \"1\",  signif(AVAL, signif_dig) < 5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(2.33*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.66*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) ~ NA_character_,  signif(AVAL, signif_dig) < 25 ~ \"4\",  signif(AVAL, signif_dig) < 50 ~ \"3\",  signif(AVAL, signif_dig) < 100 ~ \"2\",  signif(AVAL, signif_dig) < 125 ~ \"1\",  signif(AVAL, signif_dig) >= 125 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(ANRHI) ~ NA_character_,  signif(AVAL, signif_dig) >=  signif(3*ANRHI, signif_dig) ~ \"4\",  signif(AVAL, signif_dig) >=  signif(1.5*ANRHI, signif_dig) ~ \"3\",  signif(AVAL, signif_dig) >= signif(1.25*ANRHI, signif_dig) ~ \"2\",  signif(AVAL, signif_dig) >= signif(1.1*ANRHI, signif_dig) ~ \"1\",  signif(AVAL, signif_dig) < signif(1.1*ANRHI, signif_dig) ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 1 ~ \"4\",  signif(AVAL, signif_dig) < 1.5 ~ \"3\",  signif(AVAL, signif_dig) < 2 ~ \"2\",  signif(AVAL, signif_dig) < 2.5 ~ \"1\",  signif(AVAL, signif_dig) >= 2.5 ~ \"0\"  )","case_when(  is.na(AVAL) | is.na(BRTHDT) | is.na(LBDT) ~ NA_character_,  signif(AVAL, signif_dig) < 2.5 ~ \"4\",  signif(AVAL, signif_dig) < 4 ~ \"3\",  signif(AVAL, signif_dig) < 5.5 ~ \"2\",  signif(AVAL, signif_dig) < 7 ~ \"1\",  signif(AVAL, signif_dig) >= 7 ~ \"0\"  )"]},"columns":[{"id":"TERM","name":"TERM","type":"character"},{"id":"GRADE_CRITERIA_CODE","name":"GRADE_CRITERIA_CODE","type":"character"}],"resizable":true,"defaultPageSize":4,"highlight":true,"bordered":true,"striped":true,"dataKey":"8fa319e59eefe4722d1000fa5630ae3a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -5904,7 +6004,7 @@ font-style: inherit;">1</span></span></code></pre></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:29.115314</p>
+<p>2024-05-08 15:38:06.176268</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-30_floating_point/floating_point.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -6235,7 +6335,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:16.091688</p>
+<p>2024-05-08 15:37:52.748974</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-08-14_rhino_submission_2/rhino_submission_2.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -7328,7 +7428,7 @@ font-style: inherit;">"last"</span>)</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:41:18.585773</p>
+<p>2024-05-08 15:37:55.29609</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -7431,7 +7531,7 @@ Attaching package: 'dplyr'</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-05-07 13:40:40.780039</p>
+<p>2024-05-08 15:37:18.995773</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-10-10_pharmaverse_story/pharmaverse_story.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -7450,468 +7550,6 @@ August 30, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_ph
   <guid>https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html</guid>
   <pubDate>Wed, 30 Aug 2023 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse.PNG" medium="image"/>
-</item>
-<item>
-  <title>Rounding</title>
-  <dc:creator>Kangjie Zhang</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<!--------------- typical setup ----------------->
-<!--------------- post begins here ----------------->
-<section id="rounding-methods" class="level2">
-<h2 class="anchored" data-anchor-id="rounding-methods">Rounding methods</h2>
-<p>Both SAS and base R have the function <code>round()</code>, which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:</p>
-<ul>
-<li><p>SAS <code>round()</code> <a href="https://en.wikipedia.org/wiki/Rounding#Rounding_half_up">rounds half up</a>. This is the most common method of rounding.</p></li>
-<li><p>base R <code>round()</code> <a href="https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest">rounds to the nearest even</a>. Therefore <code>round(0.5)</code> is <code>0</code> and <code>round(-1.5)</code> is <code>-2</code>. Note from the base R round documentation:</p>
-<ul>
-<li><div>
-<blockquote class="blockquote">
-<p>this is dependent on OS services and on representation error (since e.g.&nbsp;<code>0.15</code> is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so <code>round(0.15, 1)</code> could be either <code>0.1</code> or <code>0.2</code>).</p>
-</blockquote>
-</div></li>
-</ul></li>
-</ul>
-<p>Although base R does not have the option for “round half up”, there are functions available in other R packages (e.g., <code>janitor</code>, <code>tidytlg</code>).</p>
-<p>In general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.</p>
-<table class="table">
-<colgroup>
-<col style="width: 13%">
-<col style="width: 23%">
-<col style="width: 23%">
-<col style="width: 8%">
-<col style="width: 10%">
-<col style="width: 17%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: center;"></th>
-<th style="text-align: center;">round half up</th>
-<th style="text-align: center;">round to even</th>
-<th style="text-align: center;">round up</th>
-<th style="text-align: center;">round down</th>
-<th style="text-align: center;">round towards zero</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">Example: 1.45</td>
-<td style="text-align: center;"><p>1.5</p>
-<p>(round to 1 decimal place)</p></td>
-<td style="text-align: center;"><p>1.4</p>
-<p>(round to 1 decimal place)</p></td>
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">1</td>
-</tr>
-</tbody>
-</table>
-<p>Here are the corresponding ways to implement these methods in SAS and R.</p>
-<table class="table">
-<colgroup>
-<col style="width: 7%">
-<col style="width: 31%">
-<col style="width: 13%">
-<col style="width: 15%">
-<col style="width: 13%">
-<col style="width: 15%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: center;"></th>
-<th style="text-align: center;">round half up</th>
-<th style="text-align: center;">round to even</th>
-<th style="text-align: center;">round up</th>
-<th style="text-align: center;">round down</th>
-<th style="text-align: center;">round towards zero</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">SAS</td>
-<td style="text-align: center;"><code>round()</code></td>
-<td style="text-align: center;"><code>rounde()</code></td>
-<td style="text-align: center;"><code>ceil()</code></td>
-<td style="text-align: center;"><code>floor()</code></td>
-<td style="text-align: center;"><code>int()</code></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">R</td>
-<td style="text-align: center;"><div style="background-color: yellow">
-<p><code>janitor::round_half_up()</code></p>
-<div style="background-color: yellow">
-<div>
-<p><code>tidytlg::roundSAS()</code></p>
-</div>
-</div>
-</div></td>
-<td style="text-align: center;"><div>
-<p><code>base::round()</code></p>
-</div></td>
-<td style="text-align: center;"><div>
-<p><code>base::ceiling()</code></p>
-</div></td>
-<td style="text-align: center;"><div>
-<p><code>base::floor()</code></p>
-</div></td>
-<td style="text-align: center;"><div>
-<p><code>base::trunc()</code></p>
-</div></td>
-</tr>
-</tbody>
-</table>
-<p>This table is summarized from links below, where more detailed discussions can be found -</p>
-<ul>
-<li><p>Two SAS blogs about <a href="https://blogs.sas.com/content/iml/2019/11/11/round-to-even.html">round-to-even</a> and <a href="https://blogs.sas.com/content/iml/2011/10/03/rounding-up-rounding-down.html">rounding-up-rounding-down</a></p></li>
-<li><p>R documentation: Base R <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/Round.html">Round</a>, <a href="https://sfirke.github.io/janitor/reference/round_half_up.html"><code>janitor::round_half_up()</code></a>, <a href="https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html"><code>tidytlg::roundSAS()</code></a></p></li>
-<li><p><a href="https://psiaims.github.io/CAMIS/">CAMIS</a> (Comparing Analysis Method Implementations in Software): A cross-industry initiative to document discrepant results between software. <a href="https://psiaims.github.io/CAMIS/Comp/r-sas_rounding.html">Rounding</a> is one of the comparisons, and there are much more <a href="https://psiaims.github.io/CAMIS/">on this page</a>!</p></li>
-</ul>
-</section>
-<section id="round-half-up-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="round-half-up-in-r">Round half up in R</h2>
-<p>The motivation for having a ‘round half up’ function is clear: it’s a widely used rounding method, but there are no such options available in base R.</p>
-<p>There are multiple forums that have discussed this topic, and quite a few functions already available. But which ones to choose? Are they safe options?</p>
-<p>The first time I needed to round half up in R, I chose the function from a <a href="https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf">PHUSE paper</a> and applied it to my study. It works fine for a while until I encountered the following precision issue when double programming in R for TLGs made in SAS.</p>
-<section id="numerical-precision-issue" class="level3">
-<h3 class="anchored" data-anchor-id="numerical-precision-issue">Numerical precision issue</h3>
-<p>Example of rounding half up for 2436.845, with 2 decimal places:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># a function that rounds half up</span></span>
-<span id="cb1-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># exact copy from: https://www.lexjansen.com/phuse-us/2020/ct/CT05.pdf</span></span>
-<span id="cb1-3">ut_round <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>(x, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>) {</span>
-<span id="cb1-4">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># x is the value to be rounded</span></span>
-<span id="cb1-5">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># n is the precision of the rounding</span></span>
-<span id="cb1-6">  scale <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">^</span>n</span>
-<span id="cb1-7">  y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">trunc</span>(x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> scale <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sign</span>(x) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> scale</span>
-<span id="cb1-8">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Return the rounded number</span></span>
-<span id="cb1-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(y)</span>
-<span id="cb1-10">}</span>
-<span id="cb1-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># round half up for 2436.845, with 2 decimal places</span></span>
-<span id="cb1-12"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ut_round</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2436.845</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2436.84</code></pre>
-</div>
-</div>
-<p>The expected result is 2436.85, but the output rounds it down. Thanks to the community effort, there are already discussions and resolution available in a <a href="https://stackoverflow.com/questions/12688717/round-up-from-5#comment110611119_12688836">StackOverflow post</a> -</p>
-<blockquote class="blockquote">
-<p>There are numerical precision issues, e.g., <code>round2(2436.845, 2)</code> returns <code>2436.84.</code> Changing <code>z + 0.5 to z + 0.5 + sqrt(.Machine$double.eps)</code> seems to work for me. – Gregor Thomas Jun 24, 2020 at 2:16</p>
-</blockquote>
-<ul>
-<li><p><code>.Machine$double.eps</code> is a built-in constant in R that represents the smallest positive floating-point number that can be represented on the system (reference: <a href="https://www.math.ucla.edu/~anderson/rw1001/library/base/html/zMachine.html">Machine Characteristics</a>)</p></li>
-<li><p>The expression <code>+ sqrt(.Machine$double.eps)</code> is used to add a very small value to mitigate floating-point precision issues.</p></li>
-<li><p>For more information about computational precision and floating-point, see the following links -</p>
-<ul>
-<li>R: <a href="https://cran.r-project.org/doc/FAQ/R-FAQ.html#Why-doesn_0027t-R-think-these-numbers-are-equal_003f">Why doesn’t R think these numbers are equal?</a></li>
-<li>SAS: <a href="https://documentation.sas.com/doc/en/lrcon/9.4/p0ji1unv6thm0dn1gp4t01a1u0g6.htm">Numerical Accuracy in SAS Software</a></li>
-</ul></li>
-</ul>
-<p>After the fix:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># revised rounds half up</span></span>
-<span id="cb3-2">ut_round1 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>(x, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>) {</span>
-<span id="cb3-3">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># x is the value to be rounded</span></span>
-<span id="cb3-4">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># n is the precision of the rounding</span></span>
-<span id="cb3-5">  scale <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">^</span>n</span>
-<span id="cb3-6">  y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">trunc</span>(x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> scale <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sign</span>(x) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(.Machine<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>double.eps)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> scale</span>
-<span id="cb3-7">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Return the rounded number</span></span>
-<span id="cb3-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(y)</span>
-<span id="cb3-9">}</span>
-<span id="cb3-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># round half up for 2436.845, with 2 decimal places</span></span>
-<span id="cb3-11"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ut_round1</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2436.845</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2436.85</code></pre>
-</div>
-</div>
-</section>
-<section id="we-are-not-alone" class="level3">
-<h3 class="anchored" data-anchor-id="we-are-not-alone">We are not alone</h3>
-<p>The same issue occurred in the following functions/options as well, and has been raised by users:</p>
-<ul>
-<li><p><code>janitor::round_half_up()</code>: <a href="https://github.com/sfirke/janitor/issues/396">issue</a> was raised and fixed in v2.1.0</p></li>
-<li><p><code>Tplyr</code>: <code>options(tplyr.IBMRounding = TRUE)</code>, <a href="https://github.com/atorus-research/Tplyr/issues/124">issue</a> was raised</p></li>
-<li><p><code>scrutiny::round_up_from()/round_up()</code>: <a href="https://github.com/lhdjung/scrutiny/issues/43">issue</a> was raised and fixed</p></li>
-<li><p>... and many others!</p></li>
-</ul>
-</section>
-<section id="which-ones-to-use" class="level3">
-<h3 class="anchored" data-anchor-id="which-ones-to-use">Which ones to use?</h3>
-<p>The following functions have the precision issue mentioned above fixed, they all share the same logic from this <a href="https://stackoverflow.com/questions/12688717/round-up-from-5">StackOverflow post</a>.</p>
-<ul>
-<li><a href="https://sfirke.github.io/janitor/reference/round_half_up.html"><code>janitor::round_half_up()</code></a> <strong>version &gt;= 2.1.0</strong></li>
-<li><a href="https://pharmaverse.github.io/tidytlg/main/reference/roundSAS.html"><code>tidytlg::roundSAS()</code></a>
-<ul>
-<li>this function has two more arguments that can convert the result to character and allow a character string to indicate missing values</li>
-</ul></li>
-<li><a href="https://lhdjung.github.io/scrutiny/reference/rounding-common.html"><code>scrutiny::round_up_from()/round_up()</code></a> <strong>version &gt;= 0.2.5</strong>
-<ul>
-<li><p><code>round_up_from()</code> has a <code>threshold</code> argument for rounding up, which adds flexibility for rounding up</p></li>
-<li><p><code>round_up()</code> rounds up from 5, which is a special case of <code>round_up_from()</code></p></li>
-</ul></li>
-</ul>
-</section>
-<section id="are-they-safe-options" class="level3">
-<h3 class="anchored" data-anchor-id="are-they-safe-options">Are they safe options?</h3>
-<p>Those “round half up” functions do not offer the same level of precision and accuracy as the base R round function.</p>
-<p>For example, let’s consider a value <code>a</code> that is slightly less than <code>1.5</code>. If we choose round half up approach to round <code>a</code> to 0 decimal places, an output of <code>1</code> is expected. However, those functions yield a result of <code>2</code> because <code>1.5 - a</code> is less than <code>sqrt(.Machine$double.eps)</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">a <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(.Machine<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>double.eps)</span>
-<span id="cb5-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ut_round1</span>(a, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">janitor<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round_half_up</span>(a, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">digits =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
-</div>
-</div>
-<p>This behavior aligns the floating point number comparison functions <code>all.equal()</code> and <code>dplyr::near()</code> with default tolerance <code>.Machine$double.eps^0.5</code>, where 1.5 and <code>a</code> are treated as equal.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">all.equal</span>(a, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">near</span>(a, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-</div>
-<p>We can get the expected results from base R <code>round</code> as it provides greater accuracy.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(a)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
-</div>
-</div>
-<p>Here is an example when base R <code>round</code> reaches the precision limit:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># b is slightly less than 1.5</span></span>
-<span id="cb15-2">b <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> .Machine<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>double.eps</span>
-<span id="cb15-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 1 is expected but the result is 2</span></span>
-<span id="cb15-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(b)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
-</div>
-</div>
-<p>The precision and accuracy requirements can vary depending on the application. Therefore, it is essential to be aware each function’s performance in your specific context before making a choice.</p>
-</section>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<blockquote class="blockquote">
-<p>With the differences in default behaviour across languages, you could consider your QC strategy and whether an acceptable level of fuzz in the electronic comparisons could be allowed for cases such as rounding when making comparisons between 2 codes written in different languages as long as this is documented. Alternatively you could document the exact rounding approach to be used in the SAP and then match this regardless of programming language used. - Ross Farrugia</p>
-</blockquote>
-<p>Thanks Ross Farrugia, Ben Straub, Edoardo Mancini and Liming for reviewing this blog post and providing valuable feedback!</p>
-<p>If you spot an issue or have different opinions, please don’t hesitate to raise them through <a href="https://github.com/pharmaverse/blog">pharmaverse/blog</a>!</p>
-<!--------------- appendices go here ----------------->
-<div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'dplyr'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stats':
-
-    filter, lag</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    intersect, setdiff, setequal, union</code></pre>
-</div>
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-</section>
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2024-05-07 13:40:42.616992</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/rounding.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
-  author = {Zhang, Kangjie},
-  title = {Rounding},
-  date = {2023-08-22},
-  url = {https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas">
-Zhang, Kangjie. 2023. <span>“Rounding.”</span> August 22, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html">https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html</a>.
-</div></div></section></div> ]]></description>
-  <category>Technical</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.html</guid>
-  <pubDate>Tue, 22 Aug 2023 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2023-07-24_rounding/rounding.png" medium="image" type="image/png" height="138" width="144"/>
 </item>
 </channel>
 </rss>
