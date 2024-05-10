@@ -1,0 +1,53 @@
+---
+title: "New {admiral} extention package: {admiralpeds} coming soon ! "
+author:
+  - name: Fanny Gautier, Lina Patil
+description: "{admiralpeds} announcement"
+date: "2024-05-10"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [metadata, ADaMs, admiral]
+# feel free to change the image
+image: "pharmaverse.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2024-05-10_new_{admiral}_ex..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+`admiralpeds 0.1`(https://pharmaverse.github.io/admiralpeds/index.html) is __coming soon__ [on CRAN](https://cran.r-project.org/web/packages/admiralpeds/index.html)!
+Pediatrics extension package for ADaM in R Asset Library `{admiral}` : its first release is planned by end of June 2024.
+
+# Purpose
+
+The purpose of this new extension is to provide a complementary (to `{admiral}`) toolbox that enables users to develop specifics ADaMs datasets for pediatric clinical trials.
+Initially the package will focus on child growth/development charts: [WHO and CDC growth charts](https://www.cdc.gov/growthcharts/who_charts.htm), among infants and children ages birth to 19 years included. 
+
+# New Features
+
+We are starting with 2 new functions in this future release: 
+
+* [derive_params_growth_age()](https://pharmaverse.github.io/admiralpeds/reference/derive_params_growth_age.html)
+* [derive_params_growth_height()](https://pharmaverse.github.io/admiral/reference/derive_params_growth_height.html)
+
+The first function `derive_params_growth_age()` is based on the current age of the patients, while the second one `derive_params_growth_height()` depends on the height or length of the patients. The two functions are flexible enough to chose your own metadata which could be company dependent and chose the parameters to derive (e.g. "BMI", "HEIGHT", "WEIGHT", "HEAD CIRCUMFERENCE").
+
+
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
