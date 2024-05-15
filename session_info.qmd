@@ -1,9 +1,30 @@
 ---
 title: "Session Info"
-description: "This page displays the session information for the site."
+description: "List of all packages (and package versions) required to render all blog posts."
 ---
 
+
+```{r, include = FALSE, eval = TRUE, message = FALSE}
+# Read the contents of the publish.yml file
+publish_yml <- readLines(".github/workflows/publish.yml")
+
+
+# Convert the YAML content to a list
+publish_list <- yaml::yaml.load(publish_yml)
+
+# Extract the package names from the list
+package_names <- publish_list$jobs$`build-deploy`$steps[[4]]$with$packages
+
+# Split the package names into a vector
+package_names <- strsplit(package_names, "\n")[[1]]
+
+
+# Load all the packages
+for (package in package_names) {
+  library(package, character.only = TRUE)
+}
+```
+
 ```{r}
-library(sessioninfo)
 session_info()
 ```
