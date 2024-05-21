@@ -1,0 +1,83 @@
+---
+title: "Our experience as new admiral developers, coming from a CRO"
+author:
+  - name: Fanny Gautier
+  - name: Lina Patil
+description: "Having joined the {admiral} family quite recently, we are very excited to share with you our first steps and thoughts in this new adventure"
+date: "2024-05-21"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Community, Conferences]
+# feel free to change the image
+image: "pharmaverse.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2024-05-21_our_experience_a..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+# what experience you had when you started 
+
+As a starting point, we have gone through the [{admiral} documentation](https://pharmaverse.github.io/admiraldev/articles/programming_strategy.html), and [how to create a package](https://r-pkgs.org/) websites to get familiar with the work and processes. There is no need to memorize everything, it’s only to get an overview and know that the documentation is available and can be reviewed at any time. Then, we were encouraged to take on and resolve our first dummy issue which was to create an initial and easy function. This was a concrete example to proceed with the full process of creation, documentation and building site. What was amazing is that we have received so much support from the {admiral} Community on how to get started with this dummy issue.  
+
+Moreover, weekly meetings have been set up for the first few weeks to support our integration in the team and to address any queries or issues we may have. This helped us a lot to familiarize ourselves with the processes and requirements of this open-source project. 
+
+In addition to these meetings, bi-weekly meetings were scheduled with the core development team to discuss and dispatch the tasks within the team, as well as issues newcomers are facing during their on-boarding. Before a new version is released, this bi-weekly meeting becomes a weekly meeting. 
+
+All this support made us feel good and gave us the confidence in tackling and fixing the issues, as well as with the entire {admiral} process. 
+
+On reflection, we didn’t see a substantial difference when coming from a CRO rather than coming from a Pharma company. But it might actually be the exposure to R which could differ. Indeed, while coming from a CRO, the tasks and projects depend on the clients we work for. We have been lucky to work on a project using R and Github for the past two years before joining the {admiral} team. We have to admit that this previous experience helped us a lot during the onboarding. 
+
+The beginning of Github can be scary and may seem complicated due to the potential for mistakes which might impact the entire project. While going through the processes and learning how it exactly works, it’s most of the time a simple process, and while working on the right parallel branch, nothing serious can happen. This is the most important point of working with Github: work on the right parallel branch, never/rarely on the main branch directly! 
+
+This is also where lots of discussions take place. Indeed, this is the place where the issues/tasks are officially described and stored.  
+
+# How you upskilled 
+
+During this open-source experience, we have had the opportunity to dive into a couple of existing issues that have expanded our technical knowledge (various packages: devtools, pkgdown, etc. themselves used for the creation of packages) and sharpened our problem-solving abilities. We received guidance from {admiral} team’s expertise on how to address the issues and improve our implementation. They helped us improve the quality of our code and broaden our understanding of best practices in development with their insights and suggestions.  
+
+{admiral} is not only developing code. It is also the development of the corresponding documentation and vignettes, as well as maintaining the online user guideline. This is also a forum where colleagues and users share opinions, what they think, how they would resolve an issue or how it is handled in their own company. There’s also a lot of communication around individual topics. 
+
+While completing tasks or resolving bugs which were identified in existing functions, it requires digging into the corresponding functions and learning how exactly they work. By becoming an {admiral} developer, we also become an {admiral} user. 
+
+The tasks are numerous and can correspond to any programming level. 
+
+# What have been the challenges/learnings 
+
+In terms of challenges, setting up the environment was time consuming. Of course, the main environment is company dependent, but following the first setup, there can be challenges to make the {admiral} package work as expected.  
+
+Some packages are required to run single steps. As the renv package has been deprecated for the use of {admiral} earlier this year, a single step is now necessary: *devtools::install_dev_deps(dependencies = TRUE)*. You just need to know it. Once all necessary packages are well installed and launched, it can be very easy to start developing some code or resolve some issues. 
+
+Another challenge is to understand the automatic CI/CD (Continuous Integration / Continuous Delivery) checks and their dependencies with other packages such as {admiraldev}. The CI/CD checks are made not to break down the current code while being updated. Some of these tests are implemented within the {admiraldev} package and used in {admiral} while creating a Pull request. Those updates can thus have some impacts on the {admiral} package itself. 
+
+# What have you enjoyed 
+
+Becoming a co-developer and active contributor to {admiral} was an excellent opportunity for us to learn and to grow, and a challenge which we accepted with enthusiasm. By utilizing our backend expertise, we demonstrated our ability to adapt to new programming languages, frameworks, and tools. By working on this open-source issue, we were able to expand our technical horizons and strengthen our problem-solving abilities. 
+
+Overall, our experience as a developer working on open-source projects has equipped us with essential skills in teamwork, communication, conflict resolution, and leadership. 
+
+What we enjoyed the most in this cross-company project is the team spirit and sharing of knowledge. You learn that there is no stupid question, and in addition to the mentoring that you receive at the beginning you are free to ask any questions and can be ensured to receive various valuable answers and suggestions. The process is also quite meticulous and painstakingly documented. You can’t really make any mistakes, and if something goes wrong, there won’t be any impact on the project: before merging your own updates to the main branch, a Pull Request with a reviewer and an approval is necessary. Some updates can be requested before being approved and merged as needed, which makes us feel more comfortable and confident.  
+As there is no such thing as zero risk, if such a situation occurs, it will most likely be discovered and can be fixed for the next release. 
+
+Comments are always welcome, whatever it is, but our favorite one in the process is the "Well done!": __Pat yourself on the back for a job well done! Much love to your accomplishment!__ 
+
+ 
+
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
