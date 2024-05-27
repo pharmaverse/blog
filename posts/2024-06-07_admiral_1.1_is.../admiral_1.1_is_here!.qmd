@@ -1,0 +1,145 @@
+---
+title: "{admiral} 1.1 is here!"
+author:
+  - name: Edoardo Mancini
+  - name: Ben Straub
+description: "Get to know what awaits you with the new release of the {admiral} package, including enhanced error messaging, improved documentation and much more!"
+date: "2024-06-07"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [ADaMs]
+# feel free to change the image
+image: "admiral.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2024-06-07_{admiral}_1.1_is..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+[`admiral 1.1.0`](https://pharmaverse.github.io/admiral/index.html) is out on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html)! 
+Though it may seem like just yesterday that `{admiral}` achieved its [milestone 1.0 release](https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html), in actual fact six long months have gone by - testament to our commitment to now release twice-yearly rather than quarterly. During this time, we in the `{admiral}` team received lots of positive feedback from our community, but have nevertheless worked tirelessly to improve our package. This new release comes with various quality of life changes, targeted additions to our functions' capabilities and  improvements to our documentation that all contribute to improve each and every user's experience - all while ensuring that our commitment to stability and a low amount of breaking changes is still met.
+
+Thi blog post will showcase some of the highlights of this release, but you can explore the full contents in our [Changelog](https://pharmaverse.github.io/admiral/news/index.html).
+
+# Improved error messaging
+
+Our marquee update for `{admiral}` 1.1 is certainly our new and improved error messaging. Through a deep rework of our `{admiraldev}` package we have completely reworked how errors and warnings are thrown by `{admiral}` - all without creating any breaking changes for our users. In our new error messages:
+
+* The name of the calling function appears on the top line to orient the user where the error is coming from.
+* Color coding of words is now present so that the messages are easier on the eyes and easier to read.
+* When applicable, the message is followed by an informative message (with the standard `i` prefix) providing details on what to do to address the error.
+* Informative messages may include a hyperlink (🤯) of the code to run to get more details. Clicking the link will auto-run the code in your console and print the examples of incompatible inputs.
+
+Try it out yourself by running the code below!
+
+```{r, eval = F}
+library(admiral)
+library(tidyverse)
+
+adsl <- tribble(
+  ~USUBJID, ~TRTSDT,           ~EOSDT,
+  "01",     ymd("2020-12-06"), ymd("2021-03-06"),
+  "02",     ymd("2021-01-16"), ymd("2021-02-03")
+) %>%
+  mutate(STUDYID = "AB42")
+
+ae <- tribble(
+  ~USUBJID, ~AESTDTC,           ~AESEQ, ~AEDECOD,
+  "01",     "2021-01-03T10:56", 1,      "Flu",
+  "01",     "2021-03-04",       2,      "Cough",
+  "01",     "2021",             3,      "Flu"
+) %>%
+  mutate(STUDYID = "AB42")
+
+ae_ext <- derive_vars_dt(
+  ae,
+  dtc = AESTDTC,
+  new_vars_prefix = "AEST",
+  highest_imputation = "M",
+  flag_imputation = "none"
+)
+
+ttae <- event_source(
+  dataset_name = "ae",
+  date = AESTDT,
+  set_values_to = exprs(
+    EVNTDESC = "AE",
+    SRCDOM = "AE",
+    SRCVAR = "AESTDTC",
+    SRCSEQ = AESEQ
+  )
+)
+
+eos <- censor_source(
+  dataset_name = "adsl",
+  date = EOSDT,
+  set_values_to = exprs(
+    EVNTDESC = "END OF STUDY",
+    SRCDOM = "ADSL",
+    SRCVAR = "EOSDT"
+  )
+)
+
+derive_param_tte(
+  dataset_adsl = adsl,
+  by_vars = exprs(AEDECOD),
+  start_date = TRTSDT,
+  event_conditions = list(ttae),
+  censor_conditions = list(eos),
+  source_datasets = list(adsl = adsl, ae = ae_ext),
+  set_values_to = exprs(
+    PARAMCD = "TTAE", # This is incorrect syntax! Not unique!
+    PARAM = paste("Time to First", AEDECOD, "Adverse Event"),
+    PARCAT1 = "TTAE",
+    PARCAT2 = AEDECOD
+  )
+)
+```
+
+```{r, fig.align = 'center', echo=FALSE}
+knitr::include_graphics("admiral_error.png")
+```
+
+While we hope you don't encounter too many errors and warnings while working with `{admiral}`, we also hope that when you do, our improved messaging will put you on the right path towards correcting them 😀.
+
+# New _Get Started_ vignette and User Guide Rework
+
+* New page removing ADSL and ADVS examples, focusing on main idea and various functions
+* Reworked structure of user guids
+
+# New _Concepts and Conventions_ vignette
+
+* Talk about our conventions in `{admiral}`
+* Talk about `exprs()` documentation 
+
+# Improved _Visits and Periods_ vignette
+
+The [Visits and Periods](https://pharmaverse.github.io/admiral/articles/visits_periods.html) User Guide is one of `{admiral}`'s most popular - so much so that the authors of this post may or may not themselves refer to it often in their study work... The process of dealing with study periods and phases in particular can be complex and varies from study to study depending on design. Thus, `{admiral}`  necessarily leaves some programming to be done ad-hoc by the ADaM programmer, but now with  `{admiral}` 1.1 this vignette has been enhanced to include a worked example (complete with a dummy crossover design - see image below) to showcase how one may go about this difficult task. The vignette has also been reorganised for improved coherence.
+
+```{r, fig.align = 'center', echo=FALSE}
+knitr::include_graphics("dummy_study_design.png")
+```
+
+# What's next?
+
+So, what's next of `{admiral}`? Starting in July, we will be working towards a an `{admiral}` 1.2 release in another six months time, but we want to hear from you, the `{admiral}1 community! What do you think we should focus our efforts on, and what should be our priorities? let us know in the [pharmaverse Slack](https://pharmaverse.slack.com/), or by creating an issue or discussion in our [GitHub repo](https://github.com/pharmaverse/admiral).
+
+Happy ADaM programming!
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
