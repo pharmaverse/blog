@@ -172,12 +172,12 @@ adae <- tribble(
   "1", ymd_hm("2022-01-13T20:15"), ymd_hm("2022-03-01T01:23"), "1", "2",
   # starting during treatment
   "1", ymd_hm("2022-01-01T12:00"), ymd_hm("2022-01-02T23:25"), "4", "3"
-) %>% 
+) %>%
   mutate(
     TRTSDTM = ymd_hm("2022-01-01T01:01"),
     TRTEDTM = ymd_hm("2022-04-30T23:59")
   )
-  
+
 derive_var_trtemfl(
   adae,
   new_var = TRTEMFL,
@@ -186,7 +186,7 @@ derive_var_trtemfl(
   intensity = AETOXGR,
   group_var = AEGRPID,
   subject_keys = exprs(USUBJID)
-) %>% 
+) %>%
   select(ASTDTM, AENDTM, AETOXGR, AEGRPID, TRTEMFL)
 ```
 
