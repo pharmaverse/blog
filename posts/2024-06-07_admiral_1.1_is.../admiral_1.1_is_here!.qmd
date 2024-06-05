@@ -117,12 +117,11 @@ knitr::include_graphics("admiral_error.png")
 
 While we hope you don't encounter too many errors and warnings while working with `{admiral}`, we also hope that when you do, our improved messaging will put you on the right path towards correcting them 😀.
 
-# New metadata: `country_code_lookup()`
+# New metadata object for ISO 3166 dates
 
-`{admiral}` now offers a new metadata object, `country_code_lookup`, that can aid metadata added to decode countries based on [ISO 3166 codes](https://www.iso.org/iso-3166-country-codes.html). Our hugely-flexible` derive_vars_merged()` then comes in handy if you ever need to leverage this metadata:
+`{admiral}` now offers a new metadata object, `admiral::country_code_lookup`, that can aid metadata added to decode countries based on [ISO 3166 codes](https://www.iso.org/iso-3166-country-codes.html). Our hugely-flexible` derive_vars_merged()` then comes in handy if you ever need to leverage this metadata:
 
 ```{r}
-# Create reference dataset
 adsl <- tribble(
   ~USUBJID, ~COUNTRY,
   "ST01-01", "AUT",
@@ -143,6 +142,10 @@ adsl %>%
 ```
 
 If you were worried about having to type these up manually yourself, fear not as we now have you covered!
+
+# New helper functions for metadata-driven programming
+
+Driven by a request from our GSK users, the `{admiral}` back-end now contains helper functions to `admiral::derive_vars_merged()` (`admiral::get_flagged_records()`) and `admiral::derive_vars_query()` (`admiral::get_vars_query()`) so that those can be called independently if required. This should aid efforts to automate execution of `{admiral}` code in a metadata-drive way. You can read more about the the reasoning behind this update in the following [discussion](https://github.com/pharmaverse/admiral/discussions/2349) on GitHub.
 
 # New _Get Started_ vignette and User Guide Rework
 
