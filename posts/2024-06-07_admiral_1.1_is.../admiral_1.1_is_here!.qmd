@@ -10,7 +10,6 @@ date: "2024-06-07"
 categories: [ADaMs]
 # feel free to change the image
 image: "admiral.png"
-
 ---
 
 <!--------------- typical setup ----------------->
@@ -22,8 +21,10 @@ long_slug <- "2024-06-07_{admiral}_1.1_is..."
 
 <!--------------- post begins here ----------------->
 
-[`admiral 1.1.0`](https://pharmaverse.github.io/admiral/index.html) is out on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html)! 
-Though it may seem like just yesterday that `{admiral}` achieved its [milestone 1.0 release](https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html), in actual fact six long months have gone by - testament to our commitment to now release twice-yearly rather than quarterly. During this time, we in the `{admiral}` team received lots of positive feedback from our community, but have nevertheless worked tirelessly to improve our package. This new release comes with various quality of life changes, targeted additions to our functions' capabilities and  improvements to our documentation that all contribute to improve each and every user's experience - all while ensuring that our commitment to stability and a low amount of breaking changes is still met.
+`admiral 1.1.0` is out on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html)!
+Though it may seem like just yesterday that `{admiral}` achieved its [milestone 1.0 release](https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html), in actual fact six long months have gone by - testament to our commitment to now release twice-yearly rather than quarterly.
+During this time, we in the `{admiral}` team received lots of positive feedback from our community, but have nevertheless worked tirelessly to improve our package.
+This new release comes with various quality of life changes, targeted additions to our functions' capabilities and improvements to our documentation that all contribute to improve each and every user's experience - all while ensuring that our commitment to stability and a low amount of breaking changes is still met.
 
 This blog post will showcase some of the highlights of this release, but you can explore the full contents in our [Changelog](https://pharmaverse.github.io/admiral/news/index.html).
 
@@ -41,12 +42,14 @@ library(lubridate)
 
 # Improved error messaging
 
-Our marquee update for `{admiral}` 1.1 is certainly our new and improved error messaging. Through a deep rework of our `{admiraldev}` package we have completely reworked how errors and warnings are thrown by `{admiral}` - all without creating any breaking changes for our users. In our new error messages:
+Our marquee update for `{admiral}` 1.1 is certainly our new and improved error messaging.
+Through a deep rework of our `{admiraldev}` package we have completely reworked how errors and warnings are thrown by `{admiral}` - all without creating any breaking changes for our users.
+In our new error messages:
 
-* The name of the calling function appears on the top line to orient the user where the error is coming from.
-* Color coding of words is now present so that the messages are easier on the eyes and easier to read.
-* When applicable, the message is followed by an informative message (with the standard `i` prefix) providing details on what to do to address the error.
-* Informative messages may include a hyperlink (🤯) of the code to run to get more details. Clicking the link will auto-run the code in your console and print the examples of incompatible inputs.
+-   The name of the calling function appears on the top line to orient the user where the error is coming from.
+-   Color coding of words is now present so that the messages are easier on the eyes and easier to read.
+-   When applicable, the message is followed by an informative message (with the standard `i` prefix) providing details on what to do to address the error.
+-   Informative messages may include a hyperlink (🤯) of the code to run to get more details. Clicking the link will auto-run the code in your console and print the examples of incompatible inputs.
 
 Try it out yourself by running the code below!
 
@@ -119,7 +122,8 @@ While we hope you don't encounter too many errors and warnings while working wit
 
 # New metadata object for ISO 3166 dates
 
-`{admiral}` now offers a new metadata object, `admiral::country_code_lookup`, that can aid metadata added to decode countries based on [ISO 3166 codes](https://www.iso.org/iso-3166-country-codes.html). Our hugely-flexible` derive_vars_merged()` then comes in handy if you ever need to leverage this metadata:
+`{admiral}` now offers a new metadata object, `admiral::country_code_lookup`, that can aid metadata added to decode countries based on [ISO 3166 codes](https://www.iso.org/iso-3166-country-codes.html).
+Our hugely-flexible`derive_vars_merged()` then comes in handy if you ever need to leverage this metadata:
 
 ```{r}
 adsl <- tribble(
@@ -145,41 +149,89 @@ If you were worried about having to type these up manually yourself, fear not as
 
 # New helper functions for metadata-driven programming
 
-Driven by a request from our GSK users, the `{admiral}` back-end now contains helper functions to `admiral::derive_vars_merged()` (`admiral::get_flagged_records()`) and `admiral::derive_vars_query()` (`admiral::get_vars_query()`) so that those can be called independently if required. This should aid efforts to automate execution of `{admiral}` code in a metadata-drive way. You can read more about the the reasoning behind this update in the following [discussion](https://github.com/pharmaverse/admiral/discussions/2349) on GitHub.
+Driven by a request from our GSK users, the `{admiral}` back-end now contains helper functions to `admiral::derive_vars_merged()` (`admiral::get_flagged_records()`) and `admiral::derive_vars_query()` (`admiral::get_vars_query()`) so that those can be called independently if required.
+This should aid efforts to automate execution of `{admiral}` code in a metadata-drive way.
+You can read more about the the reasoning behind this update in the following [discussion](https://github.com/pharmaverse/admiral/discussions/2349) on GitHub.
 
 # Enhancements to `admiral::derive_var_trtemfl()`
 
-# Improved _Visits and Periods_ vignette
+The function `admiral::derive_var_trtemfl()` now comes with a new (optional) argument, `group_var`.
+This allows users to derive Treatment Emergent Flags in Adverse Event ADaMs in the case where data are collected as one episode of AE with multiple lines.Indeed, if the argument is specified, `admiral::derive_var_trtemfl()` then assumes that AEs are recorded as one episode of AE with multiple lines using a grouping variable. Events starting during treatment or before treatment and worsening afterward are then flagged. Once an AE record in a group is flagged, all subsequent records in the treatment window are flagged regardless of severity.
+Take a look at the example below, which uses the grouping variable `AEGRPID`. In particular, observe how the second of the four AEs with `AEGRPID = 2` occurs while on treatment and marks a worsening of severity since `AETOXGR` increases by one. As such, that AE and the following one are flagged as treatment emergent.
 
-The [Visits and Periods](https://pharmaverse.github.io/admiral/articles/visits_periods.html) User Guide is one of `{admiral}`'s most popular - so much so that the authors of this post may or may not themselves refer to it often in their study work... The process of dealing with study periods and phases in particular can be complex and varies from study to study depending on design. Thus, `{admiral}`  necessarily leaves some programming to be done ad-hoc by the ADaM programmer, but now with  `{admiral}` 1.1 this vignette has been enhanced to include a worked example (complete with a dummy crossover design - see image below) to showcase how one may go about this difficult task. The vignette has also been reorganised for improved coherence.
+```{r}
+adae <- tribble(
+  ~USUBJID, ~ASTDTM, ~AENDTM, ~AETOXGR, ~AEGRPID,
+  # before treatment
+  "1", ymd_hm("2021-12-13T20:15"), ymd_hm("2021-12-15T12:45"), "1", "1",
+  "1", ymd_hm("2021-12-14T20:15"), ymd_hm("2021-12-14T22:00"), "3", "1",
+  # starting before treatment and ending during treatment
+  "1", ymd_hm("2021-12-30T20:15"), ymd_hm("2022-01-14T01:23"), "3", "2",
+  "1", ymd_hm("2022-01-05T20:00"), ymd_hm("2022-06-01T11:00"), "1", "2",
+  "1", ymd_hm("2022-01-10T20:15"), ymd_hm("2022-01-11T01:23"), "2", "2",
+  "1", ymd_hm("2022-01-13T20:15"), ymd_hm("2022-03-01T01:23"), "1", "2",
+  # starting during treatment
+  "1", ymd_hm("2022-01-01T12:00"), ymd_hm("2022-01-02T23:25"), "4", "3"
+) %>% 
+  mutate(
+    TRTSDTM = ymd_hm("2022-01-01T01:01"),
+    TRTEDTM = ymd_hm("2022-04-30T23:59")
+  )
+  
+derive_var_trtemfl(
+  adae,
+  new_var = TRTEMFL,
+  trt_end_date = TRTEDTM,
+  end_window = 10,
+  intensity = AETOXGR,
+  group_var = AEGRPID,
+  subject_keys = exprs(USUBJID)
+) %>% 
+  select(ASTDTM, AENDTM, AETOXGR, AEGRPID, TRTEMFL)
+```
+
+# Improved *Visits and Periods* vignette
+
+The [Visits and Periods](https://pharmaverse.github.io/admiral/articles/visits_periods.html) User Guide is one of `{admiral}`'s most popular - so much so that the authors of this post may or may not themselves refer to it often in their study work... The process of dealing with study periods and phases in particular can be complex and varies from study to study depending on design.
+Thus, `{admiral}` necessarily leaves some programming to be done ad-hoc by the ADaM programmer, but now with `{admiral}` 1.1 this vignette has been enhanced to include a worked example (complete with a dummy crossover design - see image below) to showcase how one may go about this difficult task.
+The vignette has also been reorganized for improved coherence.
 
 ```{r, fig.align = 'center', echo=FALSE}
 knitr::include_graphics("dummy_study_design.png")
 ```
 
-# New _Get Started_ vignette 
+# New *Get Started* vignette
 
-In this release cycle, we took the opportunity to review and revamp our [Get Started](https://pharmaverse.github.io/admiral/dev/articles/admiral.html) vignette. The new and improved version of this page now places more focus on showcasing the main idea of `{admiral}`, i.e. constructing ADaM dataset by chaining together a series of modular blocks. Then, the page goes through some examples of the different types of blocks (that is, function calls) one can encounter, including adding variables to a dataset, adding records to a dataset and changing the nature of the existing datasets in some way.
+In this release cycle, we took the opportunity to review and revamp our [Get Started](https://pharmaverse.github.io/admiral/dev/articles/admiral.html) vignette.
+The new and improved version of this page now places more focus on showcasing the main idea of `{admiral}`, i.e. constructing ADaM dataset by chaining together a series of modular blocks.
+Then, the page goes through some examples of the different types of blocks (that is, function calls) one can encounter, including adding variables to a dataset, adding records to a dataset and changing the nature of the existing datasets in some way.
 
-# New _Concepts and Conventions_ vignette and User Guide Re-jig
+# New *Programming Concepts and Conventions* vignette and User Guide Re-jig
 
-Coupled with the rework to the [Get Started](https://pharmaverse.github.io/admiral/dev/articles/admiral.html) vignette, we now have a brand-new [Programming Concepts and Conventions](https://pharmaverse.github.io/admiral/articles/concepts_conventions.html) User Guide. Here, we aim to discuss some of the common programming concepts and conventions that have been adopted within the `{admiral}` family of packages, including how we handle missing values and how we work with expressions, quoting and unquoting. We hope this new page can assume encyclopaedic qualities for our users, especially for those topics like expressions that have an associated learning curve!
+Coupled with the rework to the [Get Started](https://pharmaverse.github.io/admiral/dev/articles/admiral.html) vignette, we now have a brand-new [Programming Concepts and Conventions](https://pharmaverse.github.io/admiral/articles/concepts_conventions.html) User Guide.
+Here, we aim to discuss some of the common programming concepts and conventions that have been adopted within the `{admiral}` family of packages, including how we handle missing values and how we work with expressions, quoting and unquoting.
+We hope this new page can assume encyclopaedic qualities for our users, especially for those topics like expressions that have an associated learning curve!
 
-In parallel, we took the opportunity to reorganize how are vignettes are categorized on the website, in order to present them in a more intuitive and tidy arrangement. There are now split into General Guides, ADaM Script Guides and Special Topics Guides. You can now see the full new arrangement below:
+In parallel, we took the opportunity to reorganize how are vignettes are categorized on the website, in order to present them in a more intuitive and tidy arrangement.
+There are now split into General Guides, ADaM Script Guides and Special Topics Guides.
+You can now see the full new arrangement below:
 
 ```{r, fig.align = 'center', echo=FALSE}
 knitr::include_graphics("admiral_ug.png")
 ```
 
- Let us know what you think of the new vignettes and organisation of the website!
+Let us know what you think of the new vignettes and organization of the website!
 
 # What's next?
 
-So, what's next for `{admiral}`? Starting in July, we will be working towards a an `{admiral}` 1.2 release in another six months time, but we want to hear from you, the `{admiral}1 community! What do you think we should focus our efforts on, and what should be our priorities? let us know in the [pharmaverse Slack](https://pharmaverse.slack.com/), or by creating an issue or discussion in our [GitHub repo](https://github.com/pharmaverse/admiral).
+So, what's next for `{admiral}`?
+Starting in July, we will be working towards a an `{admiral}` 1.2 release in another six months time, but we want to hear from you, the \`{admiral}1 community!
+What do you think we should focus our efforts on, and what should be our priorities?
+let us know in the [pharmaverse Slack](https://pharmaverse.slack.com/), or by creating an issue or discussion in our [GitHub repo](https://github.com/pharmaverse/admiral).
 
 Happy ADaM programming!
 
-__PS: Stay tuned for further announcments/blog posts regarding out upcoming new package extensions - `{admiralpeds}` and `{admiralmetabolic}`!__
+**PS: Stay tuned for further announcements/blog posts regarding out upcoming new package extensions - `{admiralpeds}` and `{admiralmetabolic}`!**
 
 <!--------------- appendices go here ----------------->
 
