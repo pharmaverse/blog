@@ -27,6 +27,18 @@ Though it may seem like just yesterday that `{admiral}` achieved its [milestone 
 
 Thi blog post will showcase some of the highlights of this release, but you can explore the full contents in our [Changelog](https://pharmaverse.github.io/admiral/news/index.html).
 
+# Setup
+
+The examples in this post require the following packages:
+
+```{r}
+library(admiral)
+library(dplyr, warn.conflicts = FALSE)
+library(tibble)
+library(tidyverse)
+library(lubridate)
+```
+
 # Improved error messaging
 
 Our marquee update for `{admiral}` 1.1 is certainly our new and improved error messaging. Through a deep rework of our `{admiraldev}` package we have completely reworked how errors and warnings are thrown by `{admiral}` - all without creating any breaking changes for our users. In our new error messages:
@@ -39,9 +51,6 @@ Our marquee update for `{admiral}` 1.1 is certainly our new and improved error m
 Try it out yourself by running the code below!
 
 ```{r, eval = F}
-library(admiral)
-library(tidyverse)
-
 adsl <- tribble(
   ~USUBJID, ~TRTSDT,           ~EOSDT,
   "01",     ymd("2020-12-06"), ymd("2021-03-06"),
@@ -107,6 +116,33 @@ knitr::include_graphics("admiral_error.png")
 ```
 
 While we hope you don't encounter too many errors and warnings while working with `{admiral}`, we also hope that when you do, our improved messaging will put you on the right path towards correcting them 😀.
+
+# New metadata: `country_code_lookup()`
+
+`{admiral}` now offers a new metadata object, `country_code_lookup`, that can aid metadata added to decode countries based on [ISO 3166 codes](https://www.iso.org/iso-3166-country-codes.html). Our hugely-flexible` derive_vars_merged()` then comes in handy if you ever need to leverage this metadata:
+
+```{r}
+# Create reference dataset
+adsl <- tribble(
+  ~USUBJID, ~COUNTRY,
+  "ST01-01", "AUT",
+  "ST01-02", "MWI",
+  "ST01-03", "GBR",
+  "ST01-04", "CHE",
+  "ST01-05", "NOR",
+  "ST01-06", "JPN",
+  "ST01-07", "USA"
+)
+
+adsl %>%
+  derive_vars_merged(
+    dataset_add = country_code_lookup,
+    new_vars = exprs(COUNTRYN = country_number, COUNTRYL = country_name),
+    by_vars = exprs(COUNTRY = country_code)
+  )
+```
+
+If you were worried about having to type these up manually yourself, fear not as we now have you covered!
 
 # New _Get Started_ vignette and User Guide Rework
 
