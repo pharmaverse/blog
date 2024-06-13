@@ -155,7 +155,7 @@ Driven by a request from our GSK users, the {admiral} back-end now contains help
 This should aid efforts to automate execution of {admiral} code in a metadata-drive way.
 You can read more about the the reasoning behind this update in the following [discussion](https://github.com/pharmaverse/admiral/discussions/2349) on GitHub.
 
-# Enhancements to admiral::derive_var_trtemfl()
+# Enhancements to `derive_var_trtemfl()`
 
 The function admiral::derive_var_trtemfl() now comes with a new (optional) argument, `group_var`.
 This allows users to derive Treatment Emergent Flags in Adverse Event ADaMs in the case where data are collected as one episode of AE with multiple lines. Indeed, if the argument is specified, admiral::derive_var_trtemfl() then assumes that AEs are recorded as one episode of AE with multiple lines using a grouping variable. Events starting during treatment or before treatment and worsening afterward are then flagged. Once an AE record in a group is flagged, all subsequent records in the treatment window are flagged regardless of severity.
