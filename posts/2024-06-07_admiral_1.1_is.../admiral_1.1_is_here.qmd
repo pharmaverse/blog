@@ -155,7 +155,7 @@ Driven by a request from our GSK users, the {admiral} back-end now contains help
 This should aid efforts to automate execution of {admiral} code in a metadata-drive way.
 You can read more about the the reasoning behind this update in the following [discussion](https://github.com/pharmaverse/admiral/discussions/2349) on GitHub.
 
-# Enhancements to `derive_var_trtemfl()`
+# Enhancements to derive_var_trtemfl()
 
 The function admiral::derive_var_trtemfl() now comes with a new (optional) argument, `group_var`.
 This allows users to derive Treatment Emergent Flags in Adverse Event ADaMs in the case where data are collected as one episode of AE with multiple lines. Indeed, if the argument is specified, admiral::derive_var_trtemfl() then assumes that AEs are recorded as one episode of AE with multiple lines using a grouping variable. Events starting during treatment or before treatment and worsening afterward are then flagged. Once an AE record in a group is flagged, all subsequent records in the treatment window are flagged regardless of severity.
@@ -194,7 +194,7 @@ derive_var_trtemfl(
 
 # Improved *Visits and Periods* vignette
 
-The [Visits and Periods](https://pharmaverse.github.io/admiral/articles/visits_periods.html) User Guide is one of {admiral}'s most popular - so much so that the authors of this post may or may not themselves refer to it often in their study work... The process of dealing with study periods and phases in particular can be complex and varies from study to study depending on design.
+The [Visits and Periods](https://pharmaverse.github.io/admiral/articles/visits_periods.html) User Guide is one of {admiral}'s most popular - so much so that the authors of this post may or may not themselves refer to it often in their study work. The process of dealing with study periods and phases in particular can be complex and varies from study to study depending on design.
 Thus, {admiral} necessarily leaves some programming to be done ad-hoc by the ADaM programmer, but now with {admiral} 1.1 this vignette has been enhanced to include a worked example (complete with a dummy crossover design - see image below) to showcase how one may go about this difficult task.
 The vignette has also been reorganized for improved coherence.
 
@@ -208,14 +208,16 @@ In this release cycle, we took the opportunity to review and revamp our [Get Sta
 The new and improved version of this page now places more focus on showcasing the main idea of {admiral}, i.e. constructing ADaM dataset by chaining together a series of modular blocks.
 Then, the page goes through some examples of the different types of blocks (that is, function calls) one can encounter, including adding variables to a dataset, adding records to a dataset and changing the nature of the existing datasets in some way.
 
-# New *Programming Concepts and Conventions* vignette and User Guide Re-jig
+# New *Programming Concepts and Conventions* vignette
 
 Coupled with the rework to the [Get Started](https://pharmaverse.github.io/admiral/dev/articles/admiral.html) vignette, we now have a brand-new [Programming Concepts and Conventions](https://pharmaverse.github.io/admiral/articles/concepts_conventions.html) User Guide.
 Here, we aim to discuss some of the common programming concepts and conventions that have been adopted within the {admiral} family of packages, including how we handle missing values and how we work with expressions, quoting and unquoting.
 We hope this new page can assume encyclopaedic qualities for our users, especially for those topics like expressions that have an associated learning curve!
 
-In parallel, we took the opportunity to reorganize how are vignettes are categorized on the website, in order to present them in a more intuitive and tidy arrangement.
-There are now split into General Guides, ADaM Script Guides and Special Topics Guides.
+# User Guide Reorganization
+
+We took the opportunity to reorganize how our vignettes are categorized on the website, in order to present them in a more intuitive and tidy arrangement.
+They are now split into General Guides, ADaM Script Guides and Special Topics Guides.
 You can now see the full new arrangement below:
 
 ```{r, fig.align = 'center', echo=FALSE}
