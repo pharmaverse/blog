@@ -1,0 +1,70 @@
+---
+title: "New {admiral} extension packages: {admiralpeds} & more coming soon!"
+author:
+  - name: Fanny Gautier
+  - name: Lina Patil
+description: "We are very excited to announce that new extension packages are expected very soon in the {admiral} family: {admiralpeds}, a pediatrics extension, and another extension (name TBC) for obesity in clinical trials"
+date: "2024-06-17"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Metadata, ADaM, Community]
+# feel free to change the image
+image: "coming_soon.png"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2024-05-10_new_admiral_ex..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+[![](admiralpeds.png){fig-align="center" width="220"}](https://pharmaverse.github.io/admiralpeds/index.html)
+
+📢 In the pharmaverse, we are not just adopting new tools, but also fostering a culture of collaboration, innovation and a commitment to continuous learning. We are thus thrilled to update you on the latest developments from our {admiral} family team: [`{admiralpeds} 0.1`](https://pharmaverse.github.io/admiralpeds/index.html) is __coming soon__ [on CRAN](https://cran.r-project.org)!
+
+`{admiralpeds}` is a pediatrics extension package for  `{admiral}`. Its first release is planned by July 2024.
+
+# Collaboration
+
+3 companies (Roche, Pfizer, and Cytel), a variety of other community contributors, and David Freedman, a passionate consultant retired from CDC, are working together to create this extension 🤝.
+
+# Purpose
+
+The purpose of this new extension is to provide a complementary (to `{admiral}`) toolbox that enables users to develop specific ADaMs datasets for pediatric clinical trials.
+Initially the package will focus on anthropometric indicators via child growth/development charts: from WHO and CDC standards. 
+
+For guidance and a smooth use of this new extension, ADaM dataset templates, test data, a website and vignettes will all be available at the release time.
+
+# New Features
+
+We are starting with 2 new functions to derive Z-scores (SDS) and percentiles: 
+
+* `admiralpeds::derive_params_growth_age()`
+* `admiralpeds::derive_params_growth_height()`
+
+The first function, `derive_params_growth_age()` is based on the current age of the patients, while the second one, `derive_params_growth_height()` depends on the height or body length of the patients. The two functions are flexible enough to choose your own metadata. This could either be company dependent, or the pre-defined ones based on WHO and CDC charts, as created in our `ADVS` ADaM template. You can also choose the desired parameters (e.g. "BMI", "HEIGHT", "WEIGHT", "HEAD CIRCUMFERENCE").
+
+# Waiting for the release
+
+As for all packages, an entire month will be used for package testing before the release. If you'd like to be involved in this testing phase during June 2024 then please reach out to either of the blog authors via the [pharmaverse Slack workspace](https://app.slack.com/client/T028PB489D3).
+More technical details about `{admiralpeds}` to come at that time, so __stay tuned__ 👀 and subscribe to our [newsletter](https://tinyurl.com/28gp2ek3) !
+
+# What else?
+
+We also are excited to announce that some very early preparations have started on the next package extension joining our family - which will primarily be a collaboration between Roche and Novo Nordisk focused initially on endpoints in clinical trials for obesity. The package name is still to be decided, with the front runner being `{admiralmetabolic}`. Watch this space for more news!
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE, message=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
