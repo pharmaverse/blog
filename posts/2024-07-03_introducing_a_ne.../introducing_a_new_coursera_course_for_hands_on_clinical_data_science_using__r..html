@@ -6,11 +6,12 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Joel Laxamana">
 <meta name="author" content="Stefan Thoma">
-<meta name="dcterms.date" content="2023-06-27">
-<meta name="description" content="Let’s have a look at the Admiral Hackathon 2023 together.">
+<meta name="dcterms.date" content="2024-07-03">
+<meta name="description" content="“Releasing our second (hands-on) Coursera course, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.”">
 
-<title>Admiral Hackathon 2023 Revisited – pharmaverse blog</title>
+<title>Introducing a new Coursera course for hands-on clinical data science using R. – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -76,15 +77,19 @@ ul.task-list li input[type="checkbox"] {
         background: #eeeeee;
       }
 </style>
+<script src="../../site_libs/bslib-component-js-0.7.0/components.min.js"></script>
+<script src="../../site_libs/bslib-component-js-0.7.0/web-components.min.js" type="module"></script>
+<link href="../../site_libs/bslib-component-css-0.7.0/components.css" rel="stylesheet">
+<script src="../../site_libs/bslib-tag-require-0.7.0/tag-require.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Admiral Hackathon 2023 Revisited – pharmaverse blog">
-<meta property="og:description" content="Let’s have a look at the Admiral Hackathon 2023 together.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png">
+<meta property="og:title" content="Introducing a new Coursera course for hands-on clinical data science using R. – pharmaverse blog">
+<meta property="og:description" content="“Releasing our second (hands-on) Coursera course, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.”">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../pharmaverse.png">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="543">
-<meta property="og:image:width" content="544">
+<meta property="og:image:height" content="284">
+<meta property="og:image:width" content="320">
 </head>
 
 <body class="floating nav-fixed">
@@ -124,15 +129,14 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Admiral Hackathon 2023 Revisited</h1>
+      <h1 class="title">Introducing a <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">new Coursera course</a> for hands-on clinical data science using R.</h1>
                   <div>
         <div class="description">
-          Let’s have a look at the Admiral Hackathon 2023 together.
+          <p>“Releasing <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">our second (hands-on) Coursera course</a>, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.”</p>
         </div>
       </div>
                           <div class="quarto-categories">
                 <div class="quarto-category">Community</div>
-                <div class="quarto-category">ADaM</div>
               </div>
                   </div>
   </div>
@@ -141,8 +145,9 @@ ul.task-list li input[type="checkbox"] {
   <div class="quarto-title-meta">
 
       <div>
-      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-heading">Authors</div>
       <div class="quarto-title-meta-contents">
+               <p>Joel Laxamana </p>
                <p>Stefan Thoma </p>
             </div>
     </div>
@@ -150,7 +155,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 27, 2023</p>
+        <p class="date">July 3, 2024</p>
       </div>
     </div>
     
@@ -161,15 +166,7 @@ ul.task-list li input[type="checkbox"] {
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#introduction-to-r-workshop" id="toc-introduction-to-r-workshop" class="nav-link active" data-scroll-target="#introduction-to-r-workshop"><em>Introduction to R</em> workshop</a></li>
-  <li><a href="#admiral-hackathon" id="toc-admiral-hackathon" class="nav-link" data-scroll-target="#admiral-hackathon"><code>admiral</code> Hackathon</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
-  </ul>
-</nav>
+    
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -182,71 +179,35 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<!--------------- my typical setup ----------------->
+<!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
-<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/cosa">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
-<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
-<section id="introduction-to-r-workshop" class="level2">
-<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
-<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+<template></template>
+
+</bslib-tooltip>
 </div>
 </div>
-</div>
-<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
-<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="admiral-hackathon" class="level2">
-<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
-<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
-<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
-<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
-<p>Congratulations to the winners:</p>
-<ul>
-<li><code>ViiV Team_GSK</code></li>
-<li><code>teamspoRt</code></li>
-<li><code>TatianaPXL</code></li>
-<li><code>Divyasneelam</code></li>
-<li><code>AdaMTeamIndia</code></li>
-<li><code>Sanofi_BP</code></li>
-<li><code>Jagadish</code> (our community hero)</li>
-<li><code>AZ_WAWA</code></li>
-</ul>
-<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
-<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/cosa">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
-<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the pharmaverse aims to provide.</p>
-<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
+<p>Shifting to R in an industry traditionally reliant on SAS is no small feat. It requires not just new tools, but also significant upskilling for programmers. Roche-Genentech is addressing this need by offering three publicly available Coursera courses aimed at enhancing the skills of current data scientists within the pharmaceutical sector and introducing our work to those outside the industry. In this post, we are excited to announce the release of <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">our second Coursera course</a>, and we will discuss how R open-source software is being embraced across the industry and particularly within Roche-Genentech. Additionally, we will provide an overview of the three Coursera courses and explain why such initiatives are essential for a successful transition to open-source tools and a new mindset.</p>
+<p>In recent years, the pharmaceutical industry has witnessed a significant shift towards adopting open-source software and programming languages for various applications. Among them, R has emerged as a game-changer, revolutionizing the way we approach Health Authority electronic submissions and pharmaceutical analysis.</p>
+<p>As the industry embraces new ways of working, R has gained immense popularity due to its flexibility, versatility, and extensive range of open-source packages and tools. Open source tools specifically created for the clinical data scientist are collected under and shared within the <a href="https://pharmaverse.org/">pharmaverse</a>, enabling data scientists and researchers to leverage the power of R for a wide array of applications, including clinical trial studies, data set creation, and analytical reports.</p>
+<p>Within Roche-Genentech, a dedicated working group of Data Scientists recognized the potential of R in a pharmaceutical regulatory setting. Leveraging their expertise and <a href="https://pharmaverse.org/">pharmaverse</a> knowledge, they developed a series of trainings on Coursera. These trainings provide hands-on demonstrations and examples, guiding industry professionals on how to effectively utilize R in running a complete clinical trial study. Specifically, the first training, <a href="https://www.coursera.org/learn/making-data-science-work-for-clinical-reporting">Making Data Science Work for Clinical Reporting</a>, offers a broad introduction to the work as a data scientist within the pharmaceutical industry. This should be of particular interest to aspiring clinical data scientists. The second training – which we are releasing this week – dives deep into the workflow of a clinical data scientist and introduces the tools we use on a daily basis. Looking into the future, there will be a project capstone training course that integrates the concepts from the preceding two courses, culminating in comprehensive learning, providing a strong foundation of knowledge for aspiring data scientists using R in the Pharma industry.</p>
+<p>Here is an outline of what participants will gain from the training we are releasing this week.</p>
+<p><a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r"><strong>Hands-On Clinical Reporting Using R</strong></a></p>
+<ol type="1">
+<li><p>Fundamentals &amp; SDTM; the Study Data Tabulation Model</p></li>
+<li><p>ADaM Transformations (Introductory, using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>)</p></li>
+<li><p>ADaM Transformations (Advanced, using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>)</p></li>
+<li><p>Static Tables, Listings, and Graphs (using NEST including <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>tern</template> <a href="https://insightsengineering.github.io/tern/" class="r-link-pkg" target="_blank">{tern}</a> </bslib-tooltip>, <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>GitHub - insightsengineering/rtables: Reporting tables with R</template> <a href="https://github.com/insightsengineering/rtables" class="r-link-pkg" target="_blank">{rtables}</a> </bslib-tooltip>, and <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>rlistings</template> <a href="https://insightsengineering.github.io/rlistings/" class="r-link-pkg" target="_blank">{rlistings}</a> </bslib-tooltip>)</p></li>
+<li><p>Interactive Data Displays (using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>teal</template> <a href="https://insightsengineering.github.io/teal/" class="r-link-pkg" target="_blank">{teal}</a> </bslib-tooltip>)</p></li>
+</ol>
+<p>In essence, participants will learn how to navigate and manipulate datasets using R, ensuring data integrity and accuracy. Additionally, R’s powerful statistical capabilities enable the creation of insightful Tables, Listings, and Figures/Graphs (TLF/Gs), which are vital components of regulatory submissions. Even further, the Coursera training offered by Roche-Genentech will empower industry professionals to unlock the full potential of R Shiny in their analytical reports. This feature enables researchers to present complex data in a user-friendly and interactive manner, enhancing the understanding and interpretation of results.</p>
+<p><em>A stepping stone towards the future:</em> For those in the industry who are embracing these new ways of working, the Coursera training provided by Roche-Genentech serves as a valuable stepping stone into the world of R open-source software. The training equips participants with the necessary skills to harness the power of R, facilitating efficient and effective pharmaceutical analysis.</p>
+<p>In conclusion, the adoption of R open-source software and programming language is transforming the pharmaceutical industry, enabling professionals to streamline their processes, enhance data analysis, and improve regulatory submissions. Roche-Genentech’s commitment to sharing knowledge and expertise through the Coursera trainings demonstrates their dedication to advancing the <a href="https://pharmaverse.org/">pharmaverse</a> As the industry continues to embrace this new direction, the future of pharmaceutical analysis looks increasingly promising with R at its core.</p>
+<p>Your journey to revolutionizing your pharmaceutical analysis knowledge awaits!</p>
+<p>Huge thanks to <a href="https://www.linkedin.com/in/adrian-c-23420033/">Adrian Chan</a> who led the effort of building <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">this course</a> and the instructors Jana Stoilova, <a href="https://www.linkedin.com/in/jlaxamana/">Joel Laxamana, M.S.</a>, <a href="https://www.linkedin.com/in/leena-khatri-a8a364108/">Leena Khatri</a>, <a href="https://www.linkedin.com/in/tamor/">Tatiana Alonso Amor</a> &amp; <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
 <!--------------- appendices go here ----------------->
-</section>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -258,20 +219,24 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-07-10 12:05:54.153801</p>
+<p>2024-07-10 12:05:35.802986</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-27_hackathon_writeup/index.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
-  author = {Thoma, Stefan},
-  title = {Admiral {Hackathon} 2023 {Revisited}},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{laxamana2024,
+  author = {Laxamana, Joel and Thoma, Stefan},
+  title = {Introducing a {[}New {Coursera}
+    Course{]}(https://Www.coursera.org/Learn/Hands-on-Clinical-Reporting-Using-r)
+    for Hands-on Clinical Data Science Using {R.}},
+  date = {2024-07-03},
+  url = {https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
-June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-laxamana2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Laxamana, Joel, and Stefan Thoma. 2024. <span>“Introducing a [New
+Coursera
+Course](https://Www.coursera.org/Learn/Hands-on-Clinical-Reporting-Using-r)
+for Hands-on Clinical Data Science Using R.”</span> July 3, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html">https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
