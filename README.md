@@ -90,6 +90,25 @@ Most importantly:
   and it will create the link in your blog post.  See the raw code in this post [admiral 1.0.0](https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html) to see
   it in action.
 
+* You can use this code snippet to install all packages needed for the blog site or use the docker image cited below.
+```
+install.packages(c("jsonlite",
+                   "tidyverse",
+                   "spelling",
+                   "janitor",
+                   "diffdf",
+                   "admiral",
+                   "patchwork",
+                   "here",
+                   "reactable",
+                   "pharmaversesdtm",
+                   "metacore",
+                   "metatools",
+                   "xportr",
+                   "pharmaverseadam",
+                   "link",
+                   "sessioninfo"))
+```
 ## How to Use the `blog` Docker Image for Local Development
 
 Contributors can benefit from using the [`blog` Docker image](https://github.com/pharmaverse/blog/pkgs/container/blog) when creating their blog posts.
