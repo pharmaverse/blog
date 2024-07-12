@@ -40,7 +40,7 @@ Next, we would create a simple app - basically following [the official teal guid
 library(teal)
 library(pharmaverseadam)
 
-# Step 2: create teal data object
+# Step 2: create a teal data object
 data <- cdisc_data(
   ADAE = pharmaverseadam::adae,
   ADSL = pharmaverseadam::adsl
@@ -58,9 +58,9 @@ shinyApp(app$ui, app$server)
 
 ### **Let’s Take a Closer Look at Each Step:**
 
--   **At step 1** we import libraries to use functions and datasets exported by those.
+-   **At step 1**, we import libraries to use functions and datasets exported by those.
 
--   **In step 2** we create a teal data object that can be used in a teal app. There are a couple of subtle details here: instead of the default teal_data() function we use a special wrapper around it designed specifically for clinical trial data - cdisc_data(). Its advantage is that it will automatically generate join_keys() for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking datanames and join_keys slots:
+-   **In step 2**, we create a teal data object that can be used in a teal app. There are a couple of subtle details here: instead of the default teal_data() function we use a special wrapper around it designed specifically for clinical trial data - cdisc_data(). Its advantage is that it will automatically generate join_keys() for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking data names and join_keys slots:
 
 ``` r
 r$> data@datanames
@@ -74,17 +74,17 @@ ADAE: [STUDYID, USUBJID, ASTDTM, AETERM, AESEQ]
   --> ADSL: [STUDYID, USUBJID]
 ```
 
--   **In step 3** we initialize the teal app itself by passing a data object to it, and adding an example module - it’s not much, but will let us verify that the app works. The output app object is just a list with ui and server functions.
+-   **In step 3**, we initialize the teal app by passing it a data object and adding an example module—it’s not much, but it will let us verify that the app works. The output app object is just a list with UI and server functions.
 
--   **Finally step 4** should be familiar to all Shiny users - we need to pass the ui and server function from the app object generated at step 3.
+-   **Finally step 4** should be familiar to all Shiny users - we need to pass the UI and server function from the app object generated at step 3.
 
 When we run the app, this is what we will see in the web browser:
 
 ![](images/Asset 1.gif)
 
-As you can see with just a few lines of code we were able to create a working app with some interesting capabilities. We have two datasets that we can switch between. For each dataset we have keys defined (marked with a special key icon in variable dropdown). And when we filter one dataset, the other one gets filtered as well - because they are connected with a key.
+As you can see, with just a few lines of code, we were able to create a working app with some interesting capabilities. We have two datasets that we can switch between. For each dataset, we have keys defined (marked with a special key icon in the variable dropdown). When we filter one dataset, the other one gets filtered as well because they are connected with a key.
 
-This is truly impressive, but there is just one problem… If we click the “Show R code” button, we will notice that the data used in the app is not “reproducible”. It simply means that the app currently does not have the information of where the data comes from, so it cannot instruct the users on how to obtain the same data.
+This is truly impressive, but there is just one problem… If we click the “Show R code” button, we will notice that the data used in the app is not “reproducible.” This simply means that the app currently does not have information about where the data comes from, so it cannot instruct users on how to obtain the same data.
 
 ![](images/Asset 2.gif)
 
@@ -99,15 +99,15 @@ datanames(data) <- c("ADAE", "ADSL")
 join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 ```
 
-Generating the data using within function - is the recommended way. However, this way we need to manually provide datanames using a helper function. We also need to provide join_keys ourselves, but given that the datanames are standard ADaM names, we can take advantage of a special default_cdisc_join_keys object.
+The recommended method is to generate the data using a within function. However, this method requires manually providing databases using a helper function. We also need to provide join_keys ourselves, but given that the data names are standard ADaM names, we can take advantage of a special default_cdisc_join_keys object.
 
-It is also worth noting that {teal} has its own implementation of within generic, 
+It is also worth noting that {teal} has its implementation of `within` generic.
 
 This is what we will see now when running the application:
 
 ![](images/Asset 3.gif)
 
-Now we have reproducible data. But what about the app itself? Surely `{teal}` features don’t end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:
+Now we have reproducible data. But what about the app itself? Surely, `{teal}` features don’t end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:
 
 ``` r
 pak::pkg_install(
@@ -154,7 +154,7 @@ barchart_module <- tm_g_barchart_simple(
 
 ![](images/Asset 5.gif)
 
-Best part about this module is that when a card is added to the report, it has R code that will reproduce exactly the same output that we see in the app.
+The best part about this module is that when a card is added to the report, it has R code that will reproduce exactly the same output that we see in the app.
 
 Here is the entire code for the application. In just 40 lines of code we were able to create a feature-rich application with the ability to interact with ADaM data, create visualizations and generate reproducible reports.
 
