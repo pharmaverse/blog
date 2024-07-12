@@ -25,7 +25,7 @@ Every developer must solve two difficult problems when creating a Shiny applicat
 
 This blog should help you get an idea of how easy it is to get started with the [pharmaverse](https://pharmaverse.org/) ecosystem. We will create an interactive clinical data dashboard using [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/)  and will use [`{pharmaverseadam}`](https://pharmaverse.github.io/pharmaverseadam/) as the data source.
 
-First, you would need to install the two packages. It is recommended to use `{pak}` to take advantage of parallel downloads and builds (ote that you can use it together with `{renv}` for locking dependencies).
+First, you would need to install the two packages. It is recommended to use [`{pak}`](https://pak.r-lib.org/) to take advantage of parallel downloads and builds (note that you can use it together with [`{renv}`](https://rstudio.github.io/renv/articles/renv.html) for locking dependencies).
 
 ``` r
 pak::pkg_install(c("teal", "pharmaverseadam"))
@@ -60,7 +60,7 @@ shinyApp(app$ui, app$server)
 
 -   **At step 1**, we import libraries to use functions and datasets exported by those.
 
--   **In step 2**, we create a teal data object that can be used in a teal app. There are a couple of subtle details here: instead of the default teal_data() function we use a special wrapper around it designed specifically for clinical trial data - cdisc_data(). Its advantage is that it will automatically generate join_keys() for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking data names and join_keys slots:
+-   **In step 2**, we create a teal data object that can be used in a teal app. There are a couple of subtle details here: instead of the default teal_data() function, we use a special wrapper around it, designed specifically for clinical trial data - cdisc_data(). Its advantage is that it will automatically generate join_keys() for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking data names and join_keys slots:
 
 ``` r
 r$> data@datanames
@@ -99,15 +99,15 @@ datanames(data) <- c("ADAE", "ADSL")
 join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 ```
 
-The recommended method is to generate the data using a within function. However, this method requires manually providing databases using a helper function. We also need to provide join_keys ourselves, but given that the data names are standard ADaM names, we can take advantage of a special default_cdisc_join_keys object.
+The recommended method is to generate the data using a within function. However, this method requires manually providing databases using a helper function. We also need to provide `join_keys` ourselves, but given that the data names are standard ADaM names, we can take advantage of a special `default_cdisc_join_keys` object.
 
-It is also worth noting that {teal} has its implementation of `within` generic.
+It is also worth noting that [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) has its implementation of `within` generic.
 
 This is what we will see now when running the application:
 
 ![](images/Asset 3.gif)
 
-Now we have reproducible data. But what about the app itself? Surely, `{teal}` features don’t end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:
+Now we have reproducible data. But what about the app itself? Surely, [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) features don’t end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:
 
 ``` r
 pak::pkg_install(
@@ -128,7 +128,7 @@ app <- init(
 )
 ```
 
-This is possible thanks to the magic that teal is doing under the hood - passing the data object to each module. And now we will have access to a nice tabular view of the data, and a tool to explore each variable in greater detail.
+This is possible thanks to the magic that [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) is doing under the hood - passing the data object to each module. And now we will have access to a nice tabular view of the data, and a tool to explore each variable in greater detail.
 
 ![](images/Asset 4.gif)\
 This is great on its own, but as a bonus, we even get the ability to build a report based on some of the modules that we have. For example, we can generate some plots in the variable browser, add them to the report and preview it. Some modules would also add a block of R code showing how to get the exact same data that was used to generate a report card.
@@ -203,6 +203,6 @@ shinyApp(app$ui, app$server)
 
 ## **Conclusion** 
 
-In conclusion, Teal and PharmaverseAdam make it much easier to create interactive and reproducible clinical data dashboards. By following this guide, you can quickly build a Shiny app that not only visualizes your data but also maintains reproducibility and customization options. \
+In conclusion, [Teal](https://github.com/insightsengineering/teal) and [PharmaverseAdam](https://github.com/pharmaverse/pharmaverseadam) make it much easier to create interactive and reproducible clinical data dashboards. By following this guide, you can quickly build a Shiny app that not only visualizes your data but also maintains reproducibility and customization options. 
 
 Get the latest updates from the Pharmaverse delivered to your inbox. [Subscribe to our newsletter today.](https://forms.office.com/e/AJu4xWEGJx)
