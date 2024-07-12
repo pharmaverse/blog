@@ -1,0 +1,207 @@
+---
+title: "Simplifying Clinical Data Dashboards with Teal and PharmaverseAdam"
+author:
+  - name: Pavel Demin
+  - name: APPSILON
+description: "Learn how to quickly develop interactive and reproducible clinical data dashboards using Teal and PharmaverseAdam." # <---- please write a description
+date: "2024-07-12"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Technical, Community]
+# feel free to change the image
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2024-07-12_teal_app_development_pharmaverseadam"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+Every developer must solve two difficult problems when creating a Shiny application (in fact, any application) from the ground up: software architecture and data design. In the world of clinical data analysis, however, much development has been aimed at providing a jump-start approach to creating R/Shiny applications that would take away most of the pain caused by these two problems.
+
+This blog should help you get an idea of how easy it is to get started with the [pharmaverse](https://pharmaverse.org/) ecosystem. We will create an interactive clinical data dashboard using `{teal}` and will use `{pharmaverseadam}` as the data source.
+
+First, you would need to install the two packages. It is recommended to use `{pak}` to take advantage of parallel downloads and builds (ote that you can use it together with `{renv}` for locking dependencies).
+
+``` r
+pak::pkg_install(c("teal", "pharmaverseadam"))
+```
+
+## **Building a Simple Teal App**
+
+Next, we would create a simple app - basically following [the official teal guide](https://insightsengineering.github.io/teal/latest-tag/articles/getting-started-with-teal.html), but we will use datasets from the {pharmaverseadam} package.
+
+``` r
+# Step 1: import packages
+library(teal)
+library(pharmaverseadam)
+
+# Step 2: create teal data object
+data <- cdisc_data(
+  ADAE = pharmaverseadam::adae,
+  ADSL = pharmaverseadam::adsl
+)
+
+# Step 3: initialize teal app
+app <- init(
+  data = data,
+  modules = example_module()
+)
+
+# Step 4: run shiny app
+shinyApp(app$ui, app$server)
+```
+
+### **Let’s Take a Closer Look at Each Step:**
+
+-   **At step 1** we import libraries to use functions and datasets exported by those.
+
+-   **In step 2** we create a teal data object that can be used in a teal app. There are a couple of subtle details here: instead of the default teal_data() function we use a special wrapper around it designed specifically for clinical trial data - cdisc_data(). Its advantage is that it will automatically generate join_keys() for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking datanames and join_keys slots:
+
+``` r
+r$> data@datanames
+[1] "ADAE" "ADSL"
+
+r$> data@join_keys
+A join_keys object containing foreign keys between 2 datasets:
+ADSL: [STUDYID, USUBJID]
+  <-- ADAE: [STUDYID, USUBJID]
+ADAE: [STUDYID, USUBJID, ASTDTM, AETERM, AESEQ]
+  --> ADSL: [STUDYID, USUBJID]
+```
+
+-   **In step 3** we initialize the teal app itself by passing a data object to it, and adding an example module - it’s not much, but will let us verify that the app works. The output app object is just a list with ui and server functions.
+
+-   **Finally step 4** should be familiar to all Shiny users - we need to pass the ui and server function from the app object generated at step 3.
+
+When we run the app, this is what we will see in the web browser:
+
+![](images/Asset 1.gif)
+
+As you can see with just a few lines of code we were able to create a working app with some interesting capabilities. We have two datasets that we can switch between. For each dataset we have keys defined (marked with a special key icon in variable dropdown). And when we filter one dataset, the other one gets filtered as well - because they are connected with a key.
+
+This is truly impressive, but there is just one problem… If we click the “Show R code” button, we will notice that the data used in the app is not “reproducible”. It simply means that the app currently does not have the information of where the data comes from, so it cannot instruct the users on how to obtain the same data.
+
+![](images/Asset 2.gif)
+
+Let’s fix this. We will have to make the code slightly more verbose:
+
+``` r
+data <- within(teal_data(), {
+  ADAE <- pharmaverseadam::adae
+  ADSL <- pharmaverseadam::adsl
+})
+datanames(data) <- c("ADAE", "ADSL")
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+```
+
+Generating the data using within function - is the recommended way. However, this way we need to manually provide datanames using a helper function. We also need to provide join_keys ourselves, but given that the datanames are standard ADaM names, we can take advantage of a special default_cdisc_join_keys object.
+
+It is also worth noting that {teal} has its own implementation of within generic, 
+
+This is what we will see now when running the application:
+
+![](images/Asset 3.gif)
+
+Now we have reproducible data. But what about the app itself? Surely `{teal}` features don’t end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:
+
+``` r
+pak::pkg_install(
+  c("sparkline", "teal.modules.general", "teal.modules.clinical")
+)
+```
+
+First, I suggest exploring the “general” modules that are applicable to any kind of data. The only (!) thing we need to do, is to add two more modules to the app initializer:
+
+``` r
+app <- init(
+  data = data,
+  modules = modules(
+    example_module(),
+    tm_data_table("Table View"),
+    tm_variable_browser("Variables")
+  )
+)
+```
+
+This is possible thanks to the magic that teal is doing under the hood - passing the data object to each module. And now we will have access to a nice tabular view of the data, and a tool to explore each variable in greater detail.
+
+![](images/Asset 4.gif)\
+This is great on its own, but as a bonus, we even get the ability to build a report based on some of the modules that we have. For example, we can generate some plots in the variable browser, add them to the report and preview it. Some modules would also add a block of R code showing how to get the exact same data that was used to generate a report card.
+
+Finally, let’s add a simple barchart module that comes from the clinical modules package. We will use an example from the {teal.modules.clinical} documentation:
+
+``` r
+barchart_module <- tm_g_barchart_simple(
+  label = "ADAE Analysis",
+  x = data_extract_spec(
+    dataname = "ADAE",
+    select = select_spec(
+      choices = variable_choices(
+        pharmaverseadam::adae,
+        c("ARM", "ACTARM", "SEX")
+      ),
+      selected = "ACTARM",
+      multiple = FALSE
+    )
+  )
+)
+```
+
+![](images/Asset 5.gif)
+
+Best part about this module is that when a card is added to the report, it has R code that will reproduce exactly the same output that we see in the app.
+
+Here is the entire code for the application. In just 40 lines of code we were able to create a feature-rich application with the ability to interact with ADaM data, create visualizations and generate reproducible reports.
+
+``` r
+library(sparkline)
+library(teal)
+library(teal.data)
+library(teal.modules.clinical)
+library(teal.modules.general)
+
+data <- within(teal_data(), {
+  ADAE <- pharmaverseadam::adae
+  ADSL <- pharmaverseadam::adsl
+  # nolint end
+})
+datanames(data) <- c("ADAE", "ADSL")
+join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+
+barchart_module <- tm_g_barchart_simple(
+  label = "ADAE Analysis",
+  x = data_extract_spec(
+    dataname = "ADAE",
+    select = select_spec(
+      choices = variable_choices(
+        pharmaverseadam::adae,
+        c("ARM", "ACTARM", "SEX")
+      ),
+      selected = "ACTARM",
+      multiple = FALSE
+    )
+  )
+)
+
+app <- init(
+  data = data,
+  modules = modules(
+    example_module(),
+    tm_data_table("Table View"),
+    tm_variable_browser("Variables"),
+    barchart_module
+  )
+)
+
+shinyApp(app$ui, app$server)
+```
+
+## **Conclusion** 
+
+In conclusion, Teal and PharmaverseAdam make it much easier to create interactive and reproducible clinical data dashboards. By following this guide, you can quickly build a Shiny app that not only visualizes your data but also maintains reproducibility and customization options. \
+
+Get the latest updates from the Pharmaverse delivered to your inbox. [Subscribe to our newsletter today.](https://forms.office.com/e/AJu4xWEGJx)
