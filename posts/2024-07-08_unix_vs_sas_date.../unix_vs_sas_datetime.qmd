@@ -8,7 +8,7 @@ date: "2024-07-08"
 # You can find the default categories in the repository README.md
 categories: [Technical]
 # feel free to change the image
-image: "pharmaverse.PNG"
+image: "clock_DALL-E_2.jpeg"
 ---
 
 <!--------------- typical setup ----------------->
@@ -20,8 +20,8 @@ long_slug <- "2024-07-08_unix_vs_sas_date..."
 
 <!--------------- post begins here ----------------->
 
-Recent discussions within the R Consortium Submission Working Group have highlighted challenges in handling dates between SAS and Unix systems.
-In addition, during the CDISC Pilot Data update at the Phuse Test Data Factory, using R's Unix time format resulted in dates being mistakenly advanced by +10 years.
+Recent discussions within the [R Consortium Submission Working Group](https://rconsortium.github.io/submissions-wg/minutes/2024-06-07/) have highlighted challenges in handling dates between SAS and Unix systems.
+In addition, during the CDISC Pilot Data update at the Phuse Test Data Factory, using R's Unix time format resulted in dates (TRTSDT, TRTEDT, and ADT in [adlbc.xpt](https://github.com/phuse-org/TestDataFactory/tree/main/Updated/TDF_ADaM)) being mistakenly advanced by +10 years.
 
 This blog post explores the differences in date handling between SAS and R, focusing on epoch discrepancies and data types.
 It also discusses key considerations for conversion tools to ensure accurate date conversions and maintain data integrity.
@@ -36,6 +36,8 @@ In SAS, the epoch is defined as midnight on January 1, 1960.
 (01JAN1960:00:00:00).
 
 R uses the Unix epoch which begins epoch begins at midnight on January 1, 1970 (01JAN1970:00:00:00)
+
+For example, a date with a value of 19725 corresponds to 03JAN20**14** in SAS and 03JAN20**24** in R.
 
 ## Date Differences Between R and SAS
 
