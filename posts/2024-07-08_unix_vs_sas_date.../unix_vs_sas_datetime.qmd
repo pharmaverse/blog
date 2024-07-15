@@ -43,11 +43,11 @@ For example, a date with a value of 19725 corresponds to 03JAN20**14** in SAS an
 
 Another important aspect to consider is the difference in data types for numeric dates in R and SAS.
 
--   **SAS:** SAS only supports numeric and character data types.
-    Therefore, numeric dates in SAS need a format applied to be human-readable.
+-   **SAS:** SAS only supports *numeric* and *character data types*.
+    Therefore, numeric dates in SAS need a *format* applied to be human-readable.
 
--   **R:** In contrast, R has specific data types for dates, which allow numeric dates to be rendered with a date format directly in data frames.
-    The data types in R are: "Date" for dates, "hms" or "difftime" for time, and "POSIXct" or "POSIXt" for datetime.
+-   **R:** In contrast, R has specific *data types for dates*, which allow numeric dates to be rendered with a date format directly in data frames.
+    The data types in R are: "Date" for *dates*, "hms" or "difftime" for *time*, and "POSIXct" or "POSIXt" for *datetime*.
 
 These differences can lead to discrepancies if not properly accounted for during data conversion, potentially resulting in a date shift of 10 years when transferring data between SAS and R.
 
@@ -58,7 +58,7 @@ This package facilitates the conversion of data between SAS and R.
 
 -   **From SAS to R:** Numeric variables with dates formats are identified as dates and converted to POSIX date(time) formats.
 
-    **Detection of date, time, datetime variable from SAS by haven package**
+    [Detection of date, time, datetime variable from SAS by haven package](https://github.com/tidyverse/haven/blob/main/src/haven_types.cpp)
 
     ![](haven_sas_to_R.png)
 
@@ -66,7 +66,7 @@ This package facilitates the conversion of data between SAS and R.
     By default, a format is added to these dates to make them human-readable.
     This format can be customized by changing the attribute or by using the [`xportr`](https://atorus-research.github.io/xportr/) package to pull the format from metadata and apply it to the corresponding variable.
 
-    **Detection of date, time, datetime variable from R by haven package**
+    [Detection of date, time, datetime variable from R by haven package](https://github.com/tidyverse/haven/blob/main/src/DfReader.cpp)
 
     ![](haven_R_to_SAS.PNG)
 
@@ -82,6 +82,8 @@ It has the potential to replace XPT as the default format for clinical and devic
 To address the interoperability issue across programming languages, Dataset-JSON stores numeric date variables as strings in ISO 8601 format.
 Additionally, a `targetdatatype` attribute is included to differentiate between character and numeric dates within the dataset.
 This approach ensures that conversion tools receive sufficient information to handle dates correctly.
+
+To ensure the correct handling of dates in Dataset-JSON, you can use the [datasetjson](https://atorus-research.github.io/datasetjson/) R package, which is built to read and write CDISC Dataset JSON formatted datasets.
 
 ## Conclusion
 
