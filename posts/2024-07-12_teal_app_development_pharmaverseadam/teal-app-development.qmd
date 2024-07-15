@@ -58,7 +58,7 @@ shinyApp(app$ui, app$server)
 
 ### **Let’s Take a Closer Look at Each Step:**
 
--   **At step 1**, we import libraries to use functions and datasets exported by those.
+-   **In step 1**, we import libraries to use functions and datasets exported by those.
 
 -   **In step 2**, we create a teal data object that can be used in a teal app. There are a couple of subtle details here: instead of the default teal_data() function, we use a special wrapper around it, designed specifically for clinical trial data - cdisc_data(). Its advantage is that it will automatically generate join_keys() for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking data names and join_keys slots:
 
