@@ -6,12 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Joel Laxamana">
-<meta name="author" content="Stefan Thoma">
-<meta name="dcterms.date" content="2024-07-03">
-<meta name="description" content="“Releasing our second (hands-on) Coursera course, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.”">
+<meta name="author" content="Céline Piraux">
+<meta name="dcterms.date" content="2024-07-08">
+<meta name="description" content="This blog explores SAS and R date handling differences, focusing on epoch discrepancies and data types, and provides key tips for accurate date conversions to prevent a 10-year date shift.">
 
-<title>Introducing a new Coursera course for hands-on clinical data science using R. – pharmaverse blog</title>
+<title>Unix versus SAS Time – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -77,19 +76,13 @@ ul.task-list li input[type="checkbox"] {
         background: #eeeeee;
       }
 </style>
-<script src="../../site_libs/bslib-component-js-0.7.0/components.min.js"></script>
-<script src="../../site_libs/bslib-component-js-0.7.0/web-components.min.js" type="module"></script>
-<link href="../../site_libs/bslib-component-css-0.7.0/components.css" rel="stylesheet">
-<script src="../../site_libs/bslib-tag-require-0.7.0/tag-require.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Introducing a new Coursera course for hands-on clinical data science using R. – pharmaverse blog">
-<meta property="og:description" content="“Releasing our second (hands-on) Coursera course, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.”">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../pharmaverse.png">
+<meta property="og:title" content="Unix versus SAS Time – pharmaverse blog">
+<meta property="og:description" content="This blog explores SAS and R date handling differences, focusing on epoch discrepancies and data types, and provides key tips for accurate date conversions to prevent a 10-year date shift.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-07-08_unix_vs_sas_date.../clock_DALL-E_2.jpeg">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="284">
-<meta property="og:image:width" content="320">
 </head>
 
 <body class="floating nav-fixed">
@@ -129,14 +122,14 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Introducing a <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">new Coursera course</a> for hands-on clinical data science using R.</h1>
+      <h1 class="title">Unix versus SAS Time</h1>
                   <div>
         <div class="description">
-          <p>“Releasing <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">our second (hands-on) Coursera course</a>, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.”</p>
+          This blog explores SAS and R date handling differences, focusing on epoch discrepancies and data types, and provides key tips for accurate date conversions to prevent a 10-year date shift.
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">Community</div>
+                <div class="quarto-category">Technical</div>
               </div>
                   </div>
   </div>
@@ -145,17 +138,16 @@ ul.task-list li input[type="checkbox"] {
   <div class="quarto-title-meta">
 
       <div>
-      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Joel Laxamana </p>
-               <p>Stefan Thoma </p>
+               <p>Céline Piraux </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 3, 2024</p>
+        <p class="date">July 8, 2024</p>
       </div>
     </div>
     
@@ -166,7 +158,17 @@ ul.task-list li input[type="checkbox"] {
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#epoch-in-r-and-sas" id="toc-epoch-in-r-and-sas" class="nav-link active" data-scroll-target="#epoch-in-r-and-sas">Epoch in R and SAS</a></li>
+  <li><a href="#date-differences-between-r-and-sas" id="toc-date-differences-between-r-and-sas" class="nav-link" data-scroll-target="#date-differences-between-r-and-sas">Date Differences Between R and SAS</a></li>
+  <li><a href="#considerations-for-conversion" id="toc-considerations-for-conversion" class="nav-link" data-scroll-target="#considerations-for-conversion">Considerations for Conversion</a></li>
+  <li><a href="#dealing-with-date-interoperability-in-dataset-json" id="toc-dealing-with-date-interoperability-in-dataset-json" class="nav-link" data-scroll-target="#dealing-with-date-interoperability-in-dataset-json">Dealing with Date Interoperability in Dataset-JSON</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -181,33 +183,48 @@ ul.task-list li input[type="checkbox"] {
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<div class="cell">
-<div class="cell-output-display">
-<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
-<template></template>
-
-</bslib-tooltip>
-</div>
-</div>
-<p>Shifting to R in an industry traditionally reliant on SAS is no small feat. It requires not just new tools, but also significant upskilling for programmers. Roche-Genentech is addressing this need by offering three publicly available Coursera courses aimed at enhancing the skills of current data scientists within the pharmaceutical sector and introducing our work to those outside the industry. In this post, we are excited to announce the release of <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">our second Coursera course</a>, and we will discuss how R open-source software is being embraced across the industry and particularly within Roche-Genentech. Additionally, we will provide an overview of the three Coursera courses and explain why such initiatives are essential for a successful transition to open-source tools and a new mindset.</p>
-<p>In recent years, the pharmaceutical industry has witnessed a significant shift towards adopting open-source software and programming languages for various applications. Among them, R has emerged as a game-changer, revolutionizing the way we approach Health Authority electronic submissions and pharmaceutical analysis.</p>
-<p>As the industry embraces new ways of working, R has gained immense popularity due to its flexibility, versatility, and extensive range of open-source packages and tools. Open source tools specifically created for the clinical data scientist are collected under and shared within the <a href="https://pharmaverse.org/">pharmaverse</a>, enabling data scientists and researchers to leverage the power of R for a wide array of applications, including clinical trial studies, data set creation, and analytical reports.</p>
-<p>Within Roche-Genentech, a dedicated working group of Data Scientists recognized the potential of R in a pharmaceutical regulatory setting. Leveraging their expertise and <a href="https://pharmaverse.org/">pharmaverse</a> knowledge, they developed a series of trainings on Coursera. These trainings provide hands-on demonstrations and examples, guiding industry professionals on how to effectively utilize R in running a complete clinical trial study. Specifically, the first training, <a href="https://www.coursera.org/learn/making-data-science-work-for-clinical-reporting">Making Data Science Work for Clinical Reporting</a>, offers a broad introduction to the work as a data scientist within the pharmaceutical industry. This should be of particular interest to aspiring clinical data scientists. The second training – which we are releasing this week – dives deep into the workflow of a clinical data scientist and introduces the tools we use on a daily basis. Looking into the future, there will be a project capstone training course that integrates the concepts from the preceding two courses, culminating in comprehensive learning, providing a strong foundation of knowledge for aspiring data scientists using R in the Pharma industry.</p>
-<p>Here is an outline of what participants will gain from the training we are releasing this week.</p>
-<p><a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r"><strong>Hands-On Clinical Reporting Using R</strong></a></p>
-<ol type="1">
-<li><p>Fundamentals &amp; SDTM; the Study Data Tabulation Model</p></li>
-<li><p>ADaM Transformations (Introductory, using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>)</p></li>
-<li><p>ADaM Transformations (Advanced, using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>)</p></li>
-<li><p>Static Tables, Listings, and Graphs (using NEST including <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>tern</template> <a href="https://insightsengineering.github.io/tern/" class="r-link-pkg" target="_blank">{tern}</a> </bslib-tooltip>, <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>GitHub - insightsengineering/rtables: Reporting tables with R</template> <a href="https://github.com/insightsengineering/rtables" class="r-link-pkg" target="_blank">{rtables}</a> </bslib-tooltip>, and <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>rlistings</template> <a href="https://insightsengineering.github.io/rlistings/" class="r-link-pkg" target="_blank">{rlistings}</a> </bslib-tooltip>)</p></li>
-<li><p>Interactive Data Displays (using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>teal</template> <a href="https://insightsengineering.github.io/teal/" class="r-link-pkg" target="_blank">{teal}</a> </bslib-tooltip>)</p></li>
-</ol>
-<p>In essence, participants will learn how to navigate and manipulate datasets using R, ensuring data integrity and accuracy. Additionally, R’s powerful statistical capabilities enable the creation of insightful Tables, Listings, and Figures/Graphs (TLF/Gs), which are vital components of regulatory submissions. Even further, the Coursera training offered by Roche-Genentech will empower industry professionals to unlock the full potential of R Shiny in their analytical reports. This feature enables researchers to present complex data in a user-friendly and interactive manner, enhancing the understanding and interpretation of results.</p>
-<p><em>A stepping stone towards the future:</em> For those in the industry who are embracing these new ways of working, the Coursera training provided by Roche-Genentech serves as a valuable stepping stone into the world of R open-source software. The training equips participants with the necessary skills to harness the power of R, facilitating efficient and effective pharmaceutical analysis.</p>
-<p>In conclusion, the adoption of R open-source software and programming language is transforming the pharmaceutical industry, enabling professionals to streamline their processes, enhance data analysis, and improve regulatory submissions. Roche-Genentech’s commitment to sharing knowledge and expertise through the Coursera trainings demonstrates their dedication to advancing the <a href="https://pharmaverse.org/">pharmaverse</a> As the industry continues to embrace this new direction, the future of pharmaceutical analysis looks increasingly promising with R at its core.</p>
-<p>Your journey to revolutionizing your pharmaceutical analysis knowledge awaits!</p>
-<p>Huge thanks to <a href="https://www.linkedin.com/in/adrian-c-23420033/">Adrian Chan</a> who led the effort of building <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">this course</a> and the instructors Jana Stoilova, <a href="https://www.linkedin.com/in/jlaxamana/">Joel Laxamana, M.S.</a>, <a href="https://www.linkedin.com/in/leena-khatri-a8a364108/">Leena Khatri</a>, <a href="https://www.linkedin.com/in/tamor/">Tatiana Alonso Amor</a> &amp; <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
+<p>Recent discussions within the <a href="https://rconsortium.github.io/submissions-wg/minutes/2024-06-07/">R Consortium Submission Working Group</a> have highlighted challenges in handling dates between SAS and Unix systems. In addition, during the CDISC Pilot Data update at the Phuse Test Data Factory, using R’s Unix time format resulted in dates (TRTSDT, TRTEDT, and ADT in <a href="https://github.com/phuse-org/TestDataFactory/tree/main/Updated/TDF_ADaM">adlbc.xpt</a>) being mistakenly advanced by +10 years.</p>
+<p>This blog post explores the differences in date handling between SAS and R, focusing on epoch discrepancies and data types. It also discusses key considerations for conversion tools to ensure accurate date conversions and maintain data integrity.</p>
+<section id="epoch-in-r-and-sas" class="level2">
+<h2 class="anchored" data-anchor-id="epoch-in-r-and-sas">Epoch in R and SAS</h2>
+<p>An epoch is a reference point from which time is measured. In computing, it’s often used as the starting point for a system’s time-keeping, allowing for the easy calculation of time intervals. Different systems use different epochs, which can lead to confusion if not properly managed.</p>
+<p>In SAS, the epoch is defined as midnight on January 1, 1960. (01JAN1960:00:00:00).</p>
+<p>R uses the Unix epoch which begins epoch begins at midnight on January 1, 1970 (01JAN1970:00:00:00)</p>
+<p>For example, a date with a value of 19725 corresponds to 03JAN20<strong>14</strong> in SAS and 03JAN20<strong>24</strong> in R.</p>
+</section>
+<section id="date-differences-between-r-and-sas" class="level2">
+<h2 class="anchored" data-anchor-id="date-differences-between-r-and-sas">Date Differences Between R and SAS</h2>
+<p>Another important aspect to consider is the difference in data types for numeric dates in R and SAS.</p>
+<ul>
+<li><p><strong>SAS:</strong> SAS only supports <em>numeric</em> and <em>character data types</em>. Therefore, numeric dates in SAS need a <em>format</em> applied to be human-readable.</p></li>
+<li><p><strong>R:</strong> In contrast, R has specific <em>data types for dates</em>, which allow numeric dates to be rendered with a date format directly in data frames. The data types in R are: “Date” for <em>dates</em>, “hms” or “difftime” for <em>time</em>, and “POSIXct” or “POSIXt” for <em>datetime</em>.</p></li>
+</ul>
+<p>These differences can lead to discrepancies if not properly accounted for during data conversion, potentially resulting in a date shift of 10 years when transferring data between SAS and R.</p>
+</section>
+<section id="considerations-for-conversion" class="level2">
+<h2 class="anchored" data-anchor-id="considerations-for-conversion">Considerations for Conversion</h2>
+<p>To illustrate how date conversions between SAS and R can be managed, let’s look at the <a href="https://haven.tidyverse.org/"><code>haven</code></a> package in R. This package facilitates the conversion of data between SAS and R.</p>
+<ul>
+<li><p><strong>From SAS to R:</strong> Numeric variables with dates formats are identified as dates and converted to POSIX date(time) formats.</p>
+<p><a href="https://github.com/tidyverse/haven/blob/main/src/haven_types.cpp">Detection of date, time, datetime variable from SAS by haven package</a></p>
+<p><img src="haven_sas_to_R.png" class="img-fluid"></p></li>
+<li><p><strong>From R to SAS:</strong> POSIX date variables are converted to SAS numeric dates. By default, a format is added to these dates to make them human-readable. This format can be customized by changing the attribute or by using the <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> package to pull the format from metadata and apply it to the corresponding variable.</p>
+<p><a href="https://github.com/tidyverse/haven/blob/main/src/DfReader.cpp">Detection of date, time, datetime variable from R by haven package</a></p>
+<p><img src="haven_R_to_SAS.PNG" class="img-fluid"></p></li>
+</ul>
+</section>
+<section id="dealing-with-date-interoperability-in-dataset-json" class="level2">
+<h2 class="anchored" data-anchor-id="dealing-with-date-interoperability-in-dataset-json">Dealing with Date Interoperability in Dataset-JSON</h2>
+<p><a href="https://wiki.cdisc.org/display/DSJSON1DOT1/Specification">Dataset-JSON v1.1</a> could potentially be used in future data exchanges between SAS and R. Given the differing approaches to handling dates across programming languages, the challenge lies in managing dates within a programming language agnostic data exchange format.</p>
+<p><strong>What is Dataset-JSON?</strong> Dataset-JSON is a dataset exchange standard that uses JSON. It is designed to meet regulatory submission requirements and other dataset exchange scenarios. It has the potential to replace XPT as the default format for clinical and device data submissions to regulatory authorities.</p>
+<p>To address interoperability issues across programming languages, options include storing numeric dates as ISO 8601 strings with a <code>targetdatatype</code> attribute to differentiate between character and numeric dates, or associating the epoch with the numeric date values. Refer to the <a href="https://wiki.cdisc.org/display/DSJSON1DOT1/Specification">Dataset-JSON specification</a> for the latest date handling specifications. These approaches ensure that conversion tools receive sufficient information to handle dates correctly.</p>
+<p>To ensure the correct handling of dates in Dataset-JSON, you can use the <a href="https://atorus-research.github.io/datasetjson/">datasetjson</a> R package, which is built to read and write CDISC Dataset JSON formatted datasets.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>The 10-year date shift between R and SAS can be avoided by using appropriate conversion tools such as <a href="https://atorus-research.github.io/xportr/">xportr</a> and <a href="https://haven.tidyverse.org/">haven</a>. To ensure correct date conversions, verify that the datetime variables in SAS and R have the correct data type and a date format for SAS. By paying attention to these details, you can maintain data integrity and avoid significant discrepancies during data conversion processes.</p>
 <!--------------- appendices go here ----------------->
+</section>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -219,24 +236,20 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-07-16 12:26:04.486893</p>
+<p>2024-07-16 12:26:35.140009</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{laxamana2024,
-  author = {Laxamana, Joel and Thoma, Stefan},
-  title = {Introducing a {[}New {Coursera}
-    Course{]}(https://Www.coursera.org/Learn/Hands-on-Clinical-Reporting-Using-r)
-    for Hands-on Clinical Data Science Using {R.}},
-  date = {2024-07-03},
-  url = {https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{piraux2024,
+  author = {Piraux, Céline},
+  title = {Unix Versus {SAS} {Time}},
+  date = {2024-07-08},
+  url = {https://pharmaverse.github.io/blog/posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-laxamana2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Laxamana, Joel, and Stefan Thoma. 2024. <span>“Introducing a [New
-Coursera
-Course](https://Www.coursera.org/Learn/Hands-on-Clinical-Reporting-Using-r)
-for Hands-on Clinical Data Science Using R.”</span> July 3, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html">https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-piraux2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Piraux, Céline. 2024. <span>“Unix Versus SAS Time.”</span> July 8, 2024.
+<a href="https://pharmaverse.github.io/blog/posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html">https://pharmaverse.github.io/blog/posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
