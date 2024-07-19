@@ -1,0 +1,104 @@
+---
+title: "Unix versus SAS Time"
+author:
+  - name: Céline Piraux
+description: "This blog explores SAS and R date handling differences, focusing on epoch discrepancies and data types, and provides key tips for accurate date conversions to prevent a 10-year date shift."
+date: "2024-07-16"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Technical]
+# feel free to change the image
+image: "clock_DALL-E_2.jpeg"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2024-07-08_unix_vs_sas_date..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+Recent discussions within the [R Consortium Submission Working Group](https://rconsortium.github.io/submissions-wg/minutes/2024-06-07/) have highlighted challenges in handling dates between SAS and Unix systems.
+In addition, during the CDISC Pilot Data update at the Phuse Test Data Factory, using R's Unix time format resulted in dates (TRTSDT, TRTEDT, and ADT in [adlbc.xpt](https://github.com/phuse-org/TestDataFactory/tree/main/Updated/TDF_ADaM)) being mistakenly advanced by +10 years.
+
+This blog post explores the differences in date handling between SAS and R, focusing on epoch discrepancies and data types.
+It also discusses key considerations for conversion tools to ensure accurate date conversions and maintain data integrity.
+
+## Epoch in R and SAS
+
+An epoch is a reference point from which time is measured.
+In computing, it's often used as the starting point for a system's time-keeping, allowing for the easy calculation of time intervals.
+Different systems use different epochs, which can lead to confusion if not properly managed.
+
+In SAS, the epoch is defined as midnight on January 1, 1960.
+(01JAN1960:00:00:00).
+
+R uses the Unix epoch which begins epoch begins at midnight on January 1, 1970 (01JAN1970:00:00:00)
+
+For example, a date with a value of 19725 corresponds to 03JAN20**14** in SAS and 03JAN20**24** in R.
+
+## Date Differences Between R and SAS
+
+Another important aspect to consider is the difference in data types for numeric dates in R and SAS.
+
+-   **SAS:** SAS only supports *numeric* and *character data types*.
+    Therefore, numeric dates in SAS need a *format* applied to be human-readable.
+
+-   **R:** In contrast, R has specific *data types for dates*, which allow numeric dates to be rendered with a date format directly in data frames.
+    The data types in R are: "Date" for *dates*, "hms" or "difftime" for *time*, and "POSIXct" or "POSIXt" for *datetime*.
+
+These differences can lead to discrepancies if not properly accounted for during data conversion, potentially resulting in a date shift of 10 years when transferring data between SAS and R.
+
+## Considerations for Conversion
+
+To illustrate how date conversions between SAS and R can be managed, let's look at the [`haven`](https://haven.tidyverse.org/) package in R.
+This package facilitates the conversion of data between SAS and R.
+
+-   **From SAS to R:** Numeric variables with dates formats are identified as dates and converted to POSIX date(time) formats.
+
+    [Detection of date, time, datetime variable from SAS by haven package](https://github.com/tidyverse/haven/blob/main/src/haven_types.cpp)
+
+    ![](haven_sas_to_R.png)
+
+-   **From R to SAS:** POSIX date variables are converted to SAS numeric dates.
+    By default, a format is added to these dates to make them human-readable.
+    This format can be customized by changing the attribute or by using the [`xportr`](https://atorus-research.github.io/xportr/) package to pull the format from metadata and apply it to the corresponding variable.
+
+    [Detection of date, time, datetime variable from R by haven package](https://github.com/tidyverse/haven/blob/main/src/DfReader.cpp)
+
+    ![](haven_R_to_SAS.PNG)
+
+## Dealing with Date Interoperability in Dataset-JSON
+
+[Dataset-JSON v1.1](https://wiki.cdisc.org/display/DSJSON1DOT1/Specification) could potentially be used in future data exchanges between SAS and R.
+Given the differing approaches to handling dates across programming languages, the challenge lies in managing dates within a programming language agnostic data exchange format.
+
+**What is Dataset-JSON?** Dataset-JSON is a dataset exchange standard that uses JSON.
+It is designed to meet regulatory submission requirements and other dataset exchange scenarios.
+It has the potential to replace XPT as the default format for clinical and device data submissions to regulatory authorities.
+
+To address interoperability issues across programming languages, options include storing numeric dates as ISO 8601 strings with a `targetdatatype` attribute to differentiate between character and numeric dates, or associating the epoch with the numeric date values.
+Refer to the [Dataset-JSON specification](https://wiki.cdisc.org/display/DSJSON1DOT1/Specification) for the latest date handling specifications.
+These approaches ensure that conversion tools receive sufficient information to handle dates correctly.
+
+To ensure the correct handling of dates in Dataset-JSON, you can use the [datasetjson](https://atorus-research.github.io/datasetjson/) R package, which is built to read and write CDISC Dataset JSON formatted datasets.
+
+## Conclusion
+
+The 10-year date shift between R and SAS can be avoided by using appropriate conversion tools such as [xportr](https://atorus-research.github.io/xportr/) and [haven](https://haven.tidyverse.org/).
+To ensure correct date conversions, verify that the datetime variables in SAS and R have the correct data type and a date format for SAS.
+By paying attention to these details, you can maintain data integrity and avoid significant discrepancies during data conversion processes.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
