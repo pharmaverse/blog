@@ -32,5 +32,4 @@ jobs:
                   object = spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt")),
                   expected =  spelling::spell_check_files(path = "inst/WORDLIST.txt", ignore = readr::read_lines("inst/WORDLIST.txt"))
                   ))
-  shell: Rscript {0}
-
+        shell: Rscript {0}
