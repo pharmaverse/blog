@@ -21,11 +21,10 @@ jobs:
           testthat::test_that(desc = "Check spelling",
           code = {
             typos <- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt"))
-            typos
+            print(typos)
             testthat::expect_equal(
                   object = typos,
-                  expected =  spelling::spell_check_files(path = "inst/WORDLIST.txt", ignore = readr::read_lines("inst/WORDLIST.txt")),
-                  info = typos
+                  expected =  spelling::spell_check_files(path = "inst/WORDLIST.txt", ignore = readr::read_lines("inst/WORDLIST.txt"))
                   )
             }
           )
