@@ -18,11 +18,14 @@ jobs:
 
       - name: Check spelling
         run: |
-          testthat::test_that(desc = "Check spelling", code = testthat::expect_equal({
-                  typos <- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt"))
-                  typos
-          }
+          testthat::test_that(desc = "Check spelling",
+          code = {
+            typos <- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt"))
+            typos
+            testthat::expect_equal(
                   object = typos,
                   expected =  spelling::spell_check_files(path = "inst/WORDLIST.txt", ignore = readr::read_lines("inst/WORDLIST.txt"))
-                  ))
+                  )
+            }
+          )
         shell: Rscript {0}
