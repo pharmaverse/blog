@@ -18,9 +18,11 @@ jobs:
 
       - name: Check spelling
         run: |
-          spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt"))
-          testthat::test_that(desc = "No Typo", code = testthat::expect_equal(
-                  object = spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt")),
+          testthat::test_that(desc = "Check spelling", code = testthat::expect_equal({
+                  typos <- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt"))
+                  typos
+          }
+                  object = typos,
                   expected =  spelling::spell_check_files(path = "inst/WORDLIST.txt", ignore = readr::read_lines("inst/WORDLIST.txt"))
                   ))
         shell: Rscript {0}
