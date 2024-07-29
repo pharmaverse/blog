@@ -18,31 +18,14 @@ library(rlang)
 #' @export
 #'
 #' @examples
-#' create_post(post_name = "this is my new example post", author = "Stefan Thoma", cover_image = "admiral", tags = "admiral")
+#' create_post(post_name = "this is my new example post", author = "Stefan Thoma", cover_image = "admiral", tags = "ADaM")
 #'
 create_post <- function(post_name,
                         author = Sys.info()["user"],
                         post_date = format(Sys.time(), "%Y-%m-%d"),
                         description = "",
                         cover_image = available_images,
-                        tags = c(
-                          "metadata",
-                          "submission",
-                          "qc",
-                          "ADaMs",
-                          "SDTMs",
-                          "community",
-                          "conferences",
-                          "admiral",
-                          "roak",
-                          "xportr",
-                          "metatools",
-                          "metacore",
-                          "displays",
-                          "falcon",
-                          "Shiny",
-                          "TLG"
-                        )) {
+                        tags = c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical")) {
   path_to_img <- "media"
   available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
 
