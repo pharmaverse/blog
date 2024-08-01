@@ -121,13 +121,13 @@ Let’s take a look at some features of the package: 
 
 -   The package offers a **flexible and efficient way to generate ADaM datasets** from source data, ensuring compliance with CDISC standards and traceability of the data transformation process.
 
--   **By providing a consistent set of functions and utilities** for ADaM dataset creation, admiral helps to standardize the reporting process across different clinical trials and pharmaceutical companies.
+-   **By providing a consistent set of functions and utilities** for ADaM dataset creation, [{admiral}](https://github.com/pharmaverse/admiral/) helps to standardize the reporting process across different clinical trials and pharmaceutical companies.
 
 -   **Modular design allows for extensions** that focus on specific areas or needs. Three open-source packages are currently extending {admiral}: [{admiralonco}](https://github.com/pharmaverse/admiralonco), [{admiraloptha}](https://github.com/pharmaverse/admiralophtha) and [{admiralvaccine}](https://github.com/pharmaverse/admiralvaccine). All of them were created from the [admiral template](https://github.com/pharmaverse/admiraltemplate). Two more are in the works: [{admiralpeds}](https://github.com/pharmaverse/admiralpeds) and [{admiralmetabolic}](https://github.com/pharmaverse/admiralmetabolic).
 
 ### **Example Code**
 
-Let’s see how to use the admiral package to prepare an ADaM dataset. 
+Let’s see how to use the [{admiral}](https://github.com/pharmaverse/admiral/) package to prepare an ADaM dataset. 
 
 We start by loading the necessary libraries and creating a sample study dataset. We then derive the ADSL (Subject-Level Analysis Dataset) and add additional variables for further analysis.
 
@@ -160,7 +160,7 @@ adsl <- study_data |>
   distinct() |>
   # Convert blanks strings to NA
   convert_blanks_to_na() |>
-  # Admiral does not yet support aggregation function, but dplyr can be used
+  # admiral does not yet support aggregation function, but dplyr can be used
   mutate(
     AGEGR1 = format_agegr1(AGE)
   ) |>
@@ -188,7 +188,7 @@ print(adsl)
 
 ![](images/admiral-example.png)
 
-**More on Admiral:**
+**More on {admiral}:**
 
 -   [{admiral} Cheatsheet](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf)
 
@@ -241,6 +241,8 @@ You can also find the [deployed version of the application](https://genentech.sh
 **Some Resources on {teal}**
 
 -   [GitHub - Teal Gallery (A Gallery of Exploratory Web Apps used for Analyzing Clinical Trial Data)](https://github.com/insightsengineering/teal.gallery)
+
+-   [Simplifying Clinical Data Dashboards with {teal} and {pharmaverseadam}](https://pharmaverse.github.io/blog/posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html)
 
 -   [GitHub - insightsengineering/teal: Exploratory Web Apps for Analyzing Clinical Trial Data](https://github.com/insightsengineering/teal) 
 
