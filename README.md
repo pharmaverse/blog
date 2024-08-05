@@ -107,7 +107,11 @@ install.packages(c("jsonlite",
                    "xportr",
                    "pharmaverseadam",
                    "link",
-                   "sessioninfo"))
+                   "sessioninfo",
+                   "rtables",
+                   "teal",
+                   "riskmetric",
+                   "tidyCDISC"))
 ```
 ## How to Use the `blog` Docker Image for Local Development
 
