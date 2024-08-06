@@ -11,12 +11,7 @@ jobs:
     container:
       image: "rocker/tidyverse:4.2.1"
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Install rmarkdown
-        run: R -e 'install.packages("rmarkdown")'
-        shell: Rscript {0}
-
+      - uses: actions/checkout@v4
       - name: Run check_post_tags
         run: Rscript -e 'source("R/check_post_tags.R")'
         shell: Rscript {0}
