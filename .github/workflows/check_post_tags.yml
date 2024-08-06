@@ -3,7 +3,7 @@ on:
   pull_request: {branches: ['main']}
 
 jobs:
-  Style:
+  Check Post Tags:
     runs-on: ubuntu-latest
     container: {image: "rocker/tidyverse:4.2.1"}
     steps:
@@ -12,8 +12,6 @@ jobs:
       - name: Install rmarkdown
         run: install.packages("rmarkdown")
         shell: Rscript {0}
-      - name: styler version
-        run: packageVersion("styler")
         shell: Rscript {0}
       - name: Run styler
         run: Rscript -e 'source("R/check_post_tags.R")'
