@@ -1,18 +1,18 @@
 name: Check post tags
+
 on:
   pull_request: {branches: ['main']}
-
 jobs:
   Check post tags:
     runs-on: ubuntu-latest
     container: {image: "rocker/tidyverse:4.2.1"}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
       - name: Install rmarkdown
         run: install.packages("rmarkdown")
         shell: Rscript {0}
-        shell: Rscript {0}
-      - name: Run styler
+
+      - name: Run check_post_tags
         run: Rscript -e 'source("R/check_post_tags.R")'
         shell: Rscript {0}
