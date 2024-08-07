@@ -12,7 +12,7 @@ check_post_tags <- function(post, allowed_post_tags = allowed_tags) {
   problematic_tags <- post_tags[!cross_check]
 
   if (!all(cross_check)) {
-    cli::format_message("The tag(s) {.val {problematic_tags}} in the post {.val {post}} are not from the allowable list of tags.")
+    cli::format_message("The tag(s) {.val {problematic_tags}} in the post {.val {post}} are not from the allowed list of tags.")
   }
 }
 
