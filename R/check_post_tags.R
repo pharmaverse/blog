@@ -6,10 +6,9 @@ source("R/allowed_tags.R")
 
 # Function to extract tags from a post and check them against the allowed list ----
 check_post_tags <- function(post, allowed_post_tags = allowed_tags) {
+
   post_tags <- rmarkdown::yaml_front_matter(file.path("posts", post))$categories
-
   cross_check <- post_tags %in% allowed_post_tags
-
   problematic_tags <- post_tags[!cross_check]
 
   if (!all(cross_check)) {
