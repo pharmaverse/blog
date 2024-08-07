@@ -5,10 +5,10 @@ posts <- list.files("posts", recursive = TRUE, pattern = "*.qmd")
 source("R/allowed_tags.R")
 
 # Function to extract tags from a post and check them against the allowed list ----
-check_post_tags <- function(post) {
+check_post_tags <- function(post, allowed_tags = allowed_tags) {
   post_tags <- rmarkdown::yaml_front_matter(file.path("posts", post))$categories
 
-  cross_check <- post_tags %in% allowable_tags
+  cross_check <- post_tags %in% allowed_tags
 
   problematic_tags <- post_tags[!cross_check]
 
