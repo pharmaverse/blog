@@ -2,30 +2,13 @@ name: Spellcheck
 on:
   pull_request: {branches: ['main']}
 jobs:
-  Spelling:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    container: {image: "rocker/tidyverse:4.3.1"}
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install packages
-        run: |
-          if (!require("roxygen2")) install.packages("roxygen2")
-          if (!require("spelling")) install.packages("spelling")
-          if (!require("testthat")) install.packages("testthat")
-        shell: Rscript {0}
-
-      - name: Check spelling
-        run: |
-          testthat::test_that(desc = "Check spelling",
-          code = {
-            typos <- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt"))
-            print(typos)
-            testthat::expect_equal(
-                  object = typos,
-                  expected =  spelling::spell_check_files(path = "inst/WORDLIST.txt", ignore = readr::read_lines("inst/WORDLIST.txt"))
-                  )
-            }
-          )
-        shell: Rscript {0}
+      - name: GitHub Spellcheck
+        uses: igsekor/pyspelling-any@v1.0.4
