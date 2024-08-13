@@ -21,7 +21,8 @@ long_slug <- "2024-08-01_top_five_pharmaverse_packages..."
 
 <!--------------- post begins here ----------------->
 
-The [pharmaverse](https://pharmaverse.org/) is a collaborative project where leading pharmaceutical companies and passionate individuals come together to create helpful tools for [clinical reporting](https://posit.co/blog/pharmaverse-packages-for-clinical-reporting-workflows/). By **using R programming and the open-source community**, the [pharmaverse](https://github.com/pharmaverse/) makes it easier to gain insights and increase transparency in the pharma industry.
+The [pharmaverse](https://pharmaverse.org/) is a collaborative project where leading pharmaceutical companies and passionate individuals come together to create helpful tools for [clinical reporting](https://posit.co/blog/pharmaverse-packages-for-clinical-reporting-workflows/).
+By **using R programming and the open-source community**, the [pharmaverse](https://github.com/pharmaverse/) makes it easier to gain insights and increase transparency in the pharma industry.
 
 In this post, let's explore the **top 5 [pharmaverse](https://pharmaverse.org/) packages** (by GitHub Stars ⭐), their interesting features, and how they can be used in clinical data analysis and reporting.
 
@@ -29,9 +30,11 @@ In this post, let's explore the **top 5 [pharmaverse](https://pharmaverse.org/) 
 
 ![](images/rtables.png){width="263"}
 
-Let’s start our journey with [{rtables}](https://github.com/insightsengineering/rtables), a package contributed by [Roche](https://www.roche.com/), which enables the creation of tables for reporting clinical trials. It offers a flexible and efficient way to generate publication-quality tables, simplifying the reporting process and ensuring consistency across different trials.
+Let’s start our journey with [{rtables}](https://github.com/insightsengineering/rtables), a package contributed by [Roche](https://www.roche.com/), which enables the creation of tables for reporting clinical trials.
+It offers a flexible and efficient way to generate publication-quality tables, simplifying the reporting process and ensuring consistency across different trials.
 
-[{rtables}](https://github.com/insightsengineering/rtables) was primarily designed to address the needs of the pharmaceutical industry for creating regulatory-ready tables for clinical trial reporting. **You can use it to generate tables to summarize patient demographics, adverse events, efficacy endpoints, and other clinical trial data.**
+[{rtables}](https://github.com/insightsengineering/rtables) was primarily designed to address the needs of the pharmaceutical industry for creating regulatory-ready tables for clinical trial reporting.
+**You can use it to generate tables to summarize patient demographics, adverse events, efficacy endpoints, and other clinical trial data.**
 
 ### **Features of {rtables}**
 
@@ -49,11 +52,13 @@ The [{rtables}](https://github.com/insightsengineering/rtables) package offers s
 
 ### **Example Code**
 
-The following example demonstrates how to create a basic table using the [{rtables}](https://github.com/insightsengineering/rtables) package. We start by installing and loading the required libraries. 
+The following example demonstrates how to create a basic table using the [{rtables}](https://github.com/insightsengineering/rtables) package.
+We start by installing and loading the required libraries. 
 
-Next, we create a simulated dataset representing clinical trial data. We then define a function to calculate the mean of a biomarker and use [{rtables}](https://github.com/insightsengineering/rtables) functions to build and print the table.
+Next, we create a simulated dataset representing clinical trial data.
+We then define a function to calculate the mean of a biomarker and use [{rtables}](https://github.com/insightsengineering/rtables) functions to build and print the table.
 
-```{r}
+```         
 # Install rtables if it's not already installed
 if (!requireNamespace("rtables", quietly = TRUE)) {
   install.packages("rtables")
@@ -109,13 +114,16 @@ print(table)
 
 ![](images/admiral.png){width="260"}
 
-Next let’s take a look at the [**{admiral}**](https://pharmaverse.github.io/admiral/) package, developed through a collaboration between [Roche](https://www.roche.com/) and [GSK](https://www.gsk.com/en-gb/). It provides a toolbox of reusable functions and utilities with [**dplyr**](https://dplyr.tidyverse.org/)**-like syntax** to prepare **CDISC ADaM (Analysis Data Model)** **datasets**. It serves as a valuable resource for statistical programmers looking to build ADaMs according to varying analysis needs while ensuring traceability and compliance with **FDA standards**.
+Next let’s take a look at the [**{admiral}**](https://pharmaverse.github.io/admiral/) package, developed through a collaboration between [Roche](https://www.roche.com/) and [GSK](https://www.gsk.com/en-gb/).
+It provides a toolbox of reusable functions and utilities with [**dplyr**](https://dplyr.tidyverse.org/)**-like syntax** to prepare **CDISC ADaM (Analysis Data Model)** **datasets**.
+It serves as a valuable resource for statistical programmers looking to build ADaMs according to varying analysis needs while ensuring traceability and compliance with **FDA standards**.
 
 ### **Features of {admiral}**
 
 Let’s take a look at some features of the package: 
 
--   [{admiral}](https://github.com/pharmaverse/admiral/) offers **modular functions** for adding variables and records to datasets in a step-by-step manner. This makes it easy to adjust code by adding, removing, or modifying derivations.
+-   [{admiral}](https://github.com/pharmaverse/admiral/) offers **modular functions** for adding variables and records to datasets in a step-by-step manner.
+    This makes it easy to adjust code by adding, removing, or modifying derivations.
 
 -   It provides **template R scripts as a starting point for creating different ADaM datasets.** These templates can be generated using the use_ad_template() function.
 
@@ -123,15 +131,17 @@ Let’s take a look at some features of the package: 
 
 -   **By providing a consistent set of functions and utilities** for ADaM dataset creation, admiral helps to standardize the reporting process across different clinical trials and pharmaceutical companies.
 
--   **Modular design allows for extensions** that focus on specific areas or needs, 3 public packages are currently extending {admiral}, such as [{admiralonco}](https://github.com/pharmaverse/admiralonco), [{admiraloptha}](https://github.com/pharmaverse/admiralophtha) and [{admiralvaccine}](https://github.com/pharmaverse/admiralvaccine). All of them were created from the [admiral template](https://github.com/pharmaverse/admiraltemplate).
+-   **Modular design allows for extensions** that focus on specific areas or needs, 3 public packages are currently extending {admiral}, such as [{admiralonco}](https://github.com/pharmaverse/admiralonco), [{admiraloptha}](https://github.com/pharmaverse/admiralophtha) and [{admiralvaccine}](https://github.com/pharmaverse/admiralvaccine).
+    All of them were created from the [admiral template](https://github.com/pharmaverse/admiraltemplate).
 
 ### **Example Code**
 
 Let’s see how to use the admiral package to prepare an ADaM dataset. 
 
-We start by loading the necessary libraries and creating a sample study dataset. We then derive the ADSL (Subject-Level Analysis Dataset) and add additional variables for further analysis.
+We start by loading the necessary libraries and creating a sample study dataset.
+We then derive the ADSL (Subject-Level Analysis Dataset) and add additional variables for further analysis.
 
-```{r}
+```         
 library(admiral)
 library(dplyr)
 library(lubridate)
@@ -206,9 +216,13 @@ print(adsl)
 
 ![](images/teal.png){width="245"}
 
-[**{teal}**](https://github.com/insightsengineering/teal)is an open-source R Shiny framework developed by [Roche](https://www.roche.com/) that enables the creation of interactive data exploration applications for the pharmaceutical industry. [{teal}](https://insightsengineering.github.io/teal/latest-tag/) is particularly well-suited for exploring and analyzing data from clinical trials, enabling researchers and clinicians to quickly identify trends, patterns, and insights.\
+[**{teal}**](https://github.com/insightsengineering/teal)is an open-source R Shiny framework developed by [Roche](https://www.roche.com/) that enables the creation of interactive data exploration applications for the pharmaceutical industry.
+[{teal}](https://insightsengineering.github.io/teal/latest-tag/) is particularly well-suited for exploring and analyzing data from clinical trials, enabling researchers and clinicians to quickly identify trends, patterns, and insights.\
 
-[{teal}](https://insightsengineering.github.io/teal/latest-tag/)'s reporting functionality can be used to generate regulatory-ready tables, figures, and listings. Study teams currently use it to explore data interactively and get the code to reproduce those TLGs. In the future, we hope to use it for submission to governing bodies. It can also be used to **build interactive dashboards for monitoring and analyzing adverse events in clinical trials, supporting pharmacovigilance efforts.** Its modular design allows for the **integration of specialized modules** for the analysis and visualization of high-dimensional biomarker data.
+[{teal}](https://insightsengineering.github.io/teal/latest-tag/)'s reporting functionality can be used to generate regulatory-ready tables, figures, and listings.
+Study teams currently use it to explore data interactively and get the code to reproduce those TLGs.
+In the future, we hope to use it for submission to governing bodies.
+It can also be used to **build interactive dashboards for monitoring and analyzing adverse events in clinical trials, supporting pharmacovigilance efforts.** Its modular design allows for the **integration of specialized modules** for the analysis and visualization of high-dimensional biomarker data.
 
 ### **Features of {teal}**
 
@@ -216,7 +230,8 @@ print(adsl)
 
 -   The **"Show R Code" functionality** enables users to reproduce the visualizations and analyses from the application in a new R session, promoting transparency and reproducibility.
 
--   Its **reporter functionality** allows users to **build custom reports** based on the visualizations filtered and parametrized in the app. Users can generate PDFs or PPT documents that include images and optional code.
+-   Its **reporter functionality** allows users to **build custom reports** based on the visualizations filtered and parametrized in the app.
+    Users can generate PDFs or PPT documents that include images and optional code.
 
 -   The package is built on a **modular architecture**, providing a range of pre-built, customizable modules that can be easily integrated into applications to address specific data analysis and visualization needs.
 
@@ -230,12 +245,11 @@ Here’s the [Patient Profile {teal} application](https://github.com/insightseng
 
 **Here’s how you can run the app yourself:**
 
-```{r}
-source("https://raw.github.com/insightsengineering/teal.gallery/main/_internal/utils/sourceme.R")
+```         
+{source("https://raw.github.com/insightsengineering/teal.gallery/main/_internal/utils/sourceme.R")}
 
 # Run the app
 restore_and_run("patient-profile", package_repo = "https://insightsengineering.r-universe.dev")
-
 ```
 
 You can also find the [deployed version of the application](https://genentech.shinyapps.io/nest_patient-profile_stable/). 
@@ -252,7 +266,9 @@ You can also find the [deployed version of the application](https://genentech.sh
 
 ![](images/riskmetric.png){width="221"}
 
-The [**{riskmetric}**](https://pharmar.github.io/riskmetric/articles/riskmetric.html) package provides a framework to quantify the "risk" of R packages by assessing various metrics. Developed by the [**R Validation Hub**](https://www.pharmar.org/), it helps organizations evaluate the quality and suitability of R packages for validated environments. The resulting risk is parametrized by the organization, which makes the decision on how to weigh the risk from the different metrics.
+The [**{riskmetric}**](https://pharmar.github.io/riskmetric/articles/riskmetric.html) package provides a framework to quantify the "risk" of R packages by assessing various metrics.
+Developed by the [**R Validation Hub**](https://www.pharmar.org/), it helps organizations evaluate the quality and suitability of R packages for validated environments.
+The resulting risk is parametrized by the organization, which makes the decision on how to weigh the risk from the different metrics.
 
 ### **Features of {riskmetric}**
 
@@ -264,9 +280,10 @@ The [**{riskmetric}**](https://pharmar.github.io/riskmetric/articles/riskmetric.
 
 ### **Example Code**
 
-The following example demonstrates how to use the [{riskmetric}](https://pharmar.github.io/riskmetric/articles/riskmetric.html) package to evaluate the risk of selected R packages. We start by loading the necessary libraries and using [{riskmetric}](https://pharmar.github.io/riskmetric/articles/riskmetric.html) functions to assess and score the packages.
+The following example demonstrates how to use the [{riskmetric}](https://pharmar.github.io/riskmetric/articles/riskmetric.html) package to evaluate the risk of selected R packages.
+We start by loading the necessary libraries and using [{riskmetric}](https://pharmar.github.io/riskmetric/articles/riskmetric.html) functions to assess and score the packages.
 
-```{r}
+```         
 # Load necessary libraries
 library(dplyr)
 library(riskmetric)
@@ -282,7 +299,8 @@ pkg_ref(c("riskmetric", "utils", "tools")) %>%
 
 ![](images/riskassessment-example.png)
 
-It is closely related to [**{riskassessment}**](https://github.com/pharmaR/riskassessment) (the app’s main goal is to help those making “package inclusion” requests for validated GxP environments) and [**{riskscore}**](https://github.com/pharmaR/riskscore) (data package for cataloging riskmetric results across public repositories). \
+It is closely related to [**{riskassessment}**](https://github.com/pharmaR/riskassessment) (the app’s main goal is to help those making “package inclusion” requests for validated GxP environments) and [**{riskscore}**](https://github.com/pharmaR/riskscore) (data package for cataloging riskmetric results across public repositories). 
+\
 
 **More on Riskmetric**
 
@@ -296,7 +314,8 @@ It is closely related to [**{riskassessment}**](https://github.com/pharmaR/riska
 
 ![](images/tidyCDISC.png)
 
-[**{tidyCDISC}**](https://github.com/Biogen-Inc/tidyCDISC/)is an open-source R package developed by [Biogen](https://www.biogen.com/) that provides a set of functions for tidying and manipulating [CDISC](https://www.cdisc.org/) (Clinical Data Interchange Standards Consortium) datasets. It aims to simplify the process of working with [CDISC](https://www.cdisc.org/) data by providing an intuitive interface for data transformation tasks and ensuring consistency with the principles of tidy data.
+[**{tidyCDISC}**](https://github.com/Biogen-Inc/tidyCDISC/)is an open-source R package developed by [Biogen](https://www.biogen.com/) that provides a set of functions for tidying and manipulating [CDISC](https://www.cdisc.org/) (Clinical Data Interchange Standards Consortium) datasets.
+It aims to simplify the process of working with [CDISC](https://www.cdisc.org/) data by providing an intuitive interface for data transformation tasks and ensuring consistency with the principles of tidy data.
 
 ### **Features of TidyCDISC**
 
@@ -330,11 +349,13 @@ In the [documentation](https://biogen-inc.github.io/tidyCDISC/articles/tidyCDISC
 
 ![](images/xportr.png){width="184"}
 
-Finally, let's look at [{xportr}](https://github.com/atorus-research/xportr), an open-source R package developed by [GSK](https://www.gsk.com/en-gb/), [Atorus](https://www.atorusresearch.com/), and [Appsilon](https://appsilon.com/) that simplifies the process of creating **CDISC-compliant XPT files** directly from R. It serves as a valuable tool for clinical programmers working with ADaM or SDTM datasets. 
+Finally, let's look at [{xportr}](https://github.com/atorus-research/xportr), an open-source R package developed by [GSK](https://www.gsk.com/en-gb/), [Atorus](https://www.atorusresearch.com/), and [Appsilon](https://appsilon.com/) that simplifies the process of creating **CDISC-compliant XPT files** directly from R.
+It serves as a valuable tool for clinical programmers working with ADaM or SDTM datasets. 
 
 This package ensures compatibility with regulatory submission requirements, providing a seamless bridge between R and traditional SAS-based workflows. 
 
-[{xportr}](https://github.com/atorus-research/xportr) is designed to handle the intricacies of the XPORT format, making it easier to share data across different platforms and with regulatory authorities. This capability is crucial for teams working in environments where both R and SAS are used, facilitating smooth and compliant data exchanges.
+[{xportr}](https://github.com/atorus-research/xportr) is designed to handle the intricacies of the XPORT format, making it easier to share data across different platforms and with regulatory authorities.
+This capability is crucial for teams working in environments where both R and SAS are used, facilitating smooth and compliant data exchanges.
 
 **Features of {xportr}**
 
@@ -356,18 +377,8 @@ In summary, [{xportr}](https://github.com/atorus-research/xportr) is a valuable 
 
 ## **Conclusion**
 
-The [pharmaverse](https://pharmaverse.org/) offers a rich ecosystem of tools designed to streamline clinical research workflows, ensuring high-quality data management and reporting. By leveraging packages like [{rtables}](https://github.com/insightsengineering/rtables), [{admiral}](https://github.com/pharmaverse/admiral/tree/main?tab=readme-ov-file), [{teal}](https://github.com/insightsengineering/teal), [{riskmetric}](https://github.com/pharmaR/riskmetric), [{tidyCDISC}](https://github.com/Biogen-Inc/tidyCDISC/), and [{xportr}](https://github.com/atorus-research/xportr/), pharmaceutical companies can enhance their data analysis capabilities, ensure regulatory compliance, and drive innovation in clinical research. **Remember to give the packages a star on GitHub. ⭐**
+The [pharmaverse](https://pharmaverse.org/) offers a rich ecosystem of tools designed to streamline clinical research workflows, ensuring high-quality data management and reporting.
+By leveraging packages like [{rtables}](https://github.com/insightsengineering/rtables), [{admiral}](https://github.com/pharmaverse/admiral/tree/main?tab=readme-ov-file), [{teal}](https://github.com/insightsengineering/teal), [{riskmetric}](https://github.com/pharmaR/riskmetric), [{tidyCDISC}](https://github.com/Biogen-Inc/tidyCDISC/), and [{xportr}](https://github.com/atorus-research/xportr/), pharmaceutical companies can enhance their data analysis capabilities, ensure regulatory compliance, and drive innovation in clinical research.
+**Remember to give the packages a star on GitHub. ⭐**
 
 > To receive the latest updates on what’s new in the pharmaverse, [subscribe to the periodic newsletter!](https://forms.office.com/e/AJu4xWEGJx)
-
-<!--------------- appendices go here ----------------->
-
-```{r, echo=FALSE}
-source("appendix.R")
-insert_appendix(
-  repo_spec = "pharmaverse/blog",
-  name = long_slug,
-  # file_name should be the name of your file
-  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
-)
-```
