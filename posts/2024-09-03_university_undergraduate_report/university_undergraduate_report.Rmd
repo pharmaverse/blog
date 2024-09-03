@@ -1,0 +1,49 @@
+---
+title: "Undergraduate University Statistics Report using pharamverse data"
+author:
+  - name: "Syon Parashar"
+description: |
+  A short journal highlighting how I was able to understand and apply the pharamverse package to R
+date: "2024-09-02"
+categories: 
+image: 
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2024-09-02_university_undergraduate_report"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+```{r, echo = FALSE}
+link::auto()
+```
+
+As part of my placement year as a Data Sciences Industrial Placement student in Biostatistics at Roche Products, Welwyn, I was required to write produce a "Business Project" and present my project to the entire Product and Drug Development (PDD) department. From February, I started brainstorming ideas for my project, and decided to pursue designing training for new Biostatisticians in R Studio. For maximum efficiency, I tied my business project with a quantitative project report, due August 2024, for my undergraduate degree in Mathematics, Operational Research and Statistics at Cardiff University. 
+
+The quantitative project report investigates statistical analyses on preliminary clinical trial data using the R Studio software as instructed by the trainStats program I have authored to help ease new Biostatisticians in the industry. The software was built considering the needs of people who are keen to pursue a career in Biostatistics, and was inspired from some exploratory analyses I had done during my placement year with the Ophthalmology Precision Medicine (OPM) group. It entails both hard abilities such as programming, data visualisation and modelling alongside soft skills like logic, reasoning and communication.
+
+I had a smooth experience with pharmaverse all throughout my business and university project. I was introduced to the package by Ross Farrugia in the "Synthetic Data CoP" google space. The package was very easy to read and use, with excellent documentation on the pharamverseadam website. As I was planning to share aggregated outputs (such as tables, listings and graphs) from clinical datasets externally to the university, even using historical clinical data was not allowed since external use of confidential data did not align with Roche's FAIR Data principles.
+
+Throughout the trainStats documentation, I have primarily used the "adoe_ophtha" dataset to allow for a variety of exploratory statistical analyses ranging from producing boxplots of the spread of data by visit day, computing standard deviation and confidence intervals for endpoints, as well as programming linear regression models and patient profiles. As the "adoe_ophtha" ADaM dataset contains visit day, active arm and endpoint data, it was ideal to use for training purposes. In addition, I did use the "adsl" dataset too, to encourage trainStats users to join and merge datasets, taking into account patient demographics such as Age. 
+
+The objective of the trainStats was not solely about investigating the data in detail and learning statistical theory, but instead  highlighting the application of fundamental mathematical theory to the pharmaceutical sector as a whole, and help users familiarise themseleves with ADaM datasets. My favourite element of the package was that the format of both synthetic ADaM datasets were incredibly similar to that of a true clinical trial ADaM for a study in Ophthalmology. 
+
+To further develop and improve the pharamverse package, I believe including more endpoints in the "adoe_ophtha" dataset would be invaluable for future application and statistical analyses. Often adoe datasets have several endpoints but the "adoe_ophtha" dataset only included 2 clinical parameters namely "Central Subfield Thickness" and "Diabetic Retinopathy Severity Scale". In addition, since the data is synthetic and randomly generated, the outputs had no significant correlations or trends from a statistical perspective in terms of disease progression or measures of central tendencies. Although, in this case, the emphasis was on understanding logic and reasoning whilst programming the statistical outputs, I experienced difficulties analysing the data quantitatively in my university report due to the high variation in data. Going forward, if there is a method to simulate the data less randomly, then that may be more useful for future analyses on pharamverse data. 
+
+Overall, my experience of using the pharamverse and pharmaverseadam package for the first time was excellent. The package was convenient to use in R Studio, and clearly formatted for multi-purpose use. I would definitely recommend using pharamverse to all users in the industry, who are required to produce a piece of project work or any analyses/summary for external use, or even those keen to publicly publish articles and papers in their areas within pharma to the wider community, in a safe and responsible manner regarding external use of data. I would like to thank Ross Farrugia for introducing me to the package, and especially Edoardo Mancini for talking me through the package and supporting me throughout the business project and university report.  
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
