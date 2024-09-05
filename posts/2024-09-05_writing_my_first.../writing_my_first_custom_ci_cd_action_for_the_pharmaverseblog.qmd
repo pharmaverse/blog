@@ -42,13 +42,13 @@ CICD stands for __Continuous Integration, Continuous Deployment__ and is a catch
 
 Often, when working in R projects hosted on GitHub, one encounters CICD in the form of checks that are triggered when making a pull request to the `main` branch (see image below for an example). These can check all sorts of aspects, ranging from correct spelling in your documentation all the way to executing your function unit tests and checking they all pass.
 
-![](cicd_pipeline.png){fig-align="center" width="500"}
+![](cicd_pipeline.png){fig-align="center" width="600"}
 
 :::
 
 The pharmaverseblog already had three active CICD pipelines, which run for spelling, style and links. We did not write the code for these checks ourselves, rather we just activated open-source checks for our code repository. But what if we could write our own, **custom CICD pipeline** to check that new blog posts use tags from our selected list?
 
-# A (CICD) Solution
+# A (CICD) solution
 
 ::: {.callout-caution collapse="true"}
 ## TLDR
@@ -122,7 +122,7 @@ Please select from the following tags: "Metadata", "SDTM", "ADaM", "TLG", "Shiny
 
 ## Creating a pipeline for the check
 
-When it came to creating a pipeline for the check, if you had asked me to do this a few months ago, I wouldn't have known my left from my right. Luckily I had recently attended a great CICD workshop at useR 2024 in Salzburg, led by Daphne Grasselly, Franciszek Walkowiak and Pawel Rucki. You can find the repository from their workshop https://github.com/user-workshop-cicd/r.package.example - it was invaluable to orient me in the right direction. Through a (very naive) google search, I also found [this video](https://www.youtube.com/watch?v=u-TcADhWosA), which shows how to execute an R script automatically whenever a pull request is made to the `main` branch of a repo.
+When it came to creating a pipeline for the check, if you had asked me to do this a few months ago, I wouldn't have known my left from my right. Luckily I had recently attended a great CICD workshop at useR 2024 in Salzburg, led by Daphne Grasselly, Franciszek Walkowiak and Pawel Rucki. You can find the repository from their workshop [here](https://github.com/user-workshop-cicd/r.package.example) - it was invaluable to orient me in the right direction. With a (very naive) google search, I also found [this video](https://www.youtube.com/watch?v=u-TcADhWosA), which shows how to execute an R script automatically whenever a pull request is made to the `main` branch of a repo.
 
 Through some trial and error, I was able to coalesce the above resources into quite a short `yaml` file that set up my CICD pipeline. Within the pharmaverseblog repository, the CICD pipelines live under `.github/workflows`. There, I added the following new workflow, in the form of a `yaml` file, called `check_post_tags.yml`:
 
@@ -148,20 +148,21 @@ jobs:
 
 It's deceptively simple to read:
 
-1. We execute the workflow upon any pull request to main
+1. We execute the workflow upon any pull request to main.
 2. When there is a pull request to main, we can use the `rocker/tidyverse:4.2.1` to install all the `{tidyverse}` packages.
 3. Then we need to checkout the pharmaverseblog repo and run the `check_post_tags.R` script.
 
 That's it! If there are any problematic posts, the script will throw an error and the check will fail like so: 
 
-![](failed_check.png){fig-align="center" width="500"}
+![](failed_check.png){fig-align="center" width="750"}
 
 Clicking on the "Details" option will return the error message I constructed previously.
 
-![](failed_check_details.png){fig-align="center" width="500"}
+![](failed_check_details.png){fig-align="center" width="750"}
 
 Otherwise, no error will be thrown, the check will pass, and the post is good to go (provided the other checks pass)!
 
+![](passed_check.png){fig-align="center" width="750"}
 
 # Conclusion
 
