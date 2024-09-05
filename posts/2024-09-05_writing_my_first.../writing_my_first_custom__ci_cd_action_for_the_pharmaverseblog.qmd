@@ -115,7 +115,7 @@ The script works as follows:
 
 The final error message looks something like the below:
 
-```{r, eval = FALSE}
+```
 ✖ The tag(s) "ADaMs" in the post
   "2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.qmd"
   are not from the allowed list of tags.
@@ -125,7 +125,7 @@ Please select from the following tags: "Metadata", "SDTM", "ADaM", "TLG", "Shiny
 
 ## Creating a pipeline for the check
 
-When it came to creating a pipeline for the check, if you had asked me to do this a few months ago, I wouldn't have known my left from my right. Luckily I had recently attended a great CICD workshop at useR 2024 in Salzburg, led by Daphne Grassely, Francisek Wolowiak and Pawel Rucki. You can find the repository from their workshop https://github.com/user-workshop-cicd/r.package.example - it was invaluable to orient me in the right direction. Through a (very naive) google search, I also found [this video](https://www.youtube.com/watch?v=u-TcADhWosA), which shows how to execute an R script automatically whenever a pull request is made to the `main` branch of a repo.
+When it came to creating a pipeline for the check, if you had asked me to do this a few months ago, I wouldn't have known my left from my right. Luckily I had recently attended a great CICD workshop at useR 2024 in Salzburg, led by Daphne Grasselly, Franciszek Walkowiak and Pawel Rucki. You can find the repository from their workshop https://github.com/user-workshop-cicd/r.package.example - it was invaluable to orient me in the right direction. Through a (very naive) google search, I also found [this video](https://www.youtube.com/watch?v=u-TcADhWosA), which shows how to execute an R script automatically whenever a pull request is made to the `main` branch of a repo.
 
 Through some trial and error, I was able to coalesce the above resources into quite a short `yaml` file that set up my CICD pipeline. Within the pharmaverseblog repository, the CICD pipelines live under `.github/workflows`. There, I added the following new workflow, in the form of a `yaml` file, called `check_post_tags.yml`:
 
@@ -153,15 +153,26 @@ It's deceptively simple to read:
 
 1. We execute the workflow upon any pull request to main
 2. When there is a pull request to main, we can use the `rocker/tidyverse:4.2.1` to install all the `{tidyverse}` packages.
-3. Then we need to checkout the phamraverseblog repo and run the `check_post_tags.R` script.
+3. Then we need to checkout the pharmaverseblog repo and run the `check_post_tags.R` script.
 
-That's it! If there are any problematic posts, the script will throw an error and the check will fail and return the error message I constructed. Otherwise, no error will be thrown and the check will pass.
+That's it! If there are any problematic posts, the script will throw an error and the check will fail like so: 
+
+![](failed_check.png){fig-align="center" width="500"}
+
+Clicking on the "Details" option will return the error message I constructed previously.
+
+![](failed_check_details.png){fig-align="center" width="500"}
+
+Otherwise, no error will be thrown, the check will pass, and the post is good to go (provided the other checks pass)!
+
 
 # Conclusion
 
-The hardest aspect of the whole process was surpassing the mental barrier of getting started. CICD can be an overwhelming and mysterious topic, but it's only as complicated as you make it. Of course, I'm still an absolute novice, and maybe my implementation above is not perfect, but I was still able to write code that solved my problem.
+![](cicd_meme.png){fig-align="center" width="400"}
 
-If you'd like to read more about CICD wihtin the pharmaverseblog, I'd highly recommend this [detailed post](https://stefanthoma.github.io/quarto-blog/posts/2023-01-09_CICD-spelling/) by Stefan Thoma on his own blog, where he discusses implementations on the spelling check.
+The hardest aspect of the whole process was surpassing the mental barrier of getting started. CICD can be an overwhelming and mysterious topic, but it's only as complicated as you make it. Of course, I'm still an absolute novice, and maybe my implementation above is not perfect, and there are definitely more complex applications of CICD, but I was still able to write code that solved my specific problem.
+
+If you'd like to read more about CICD within the pharmaverseblog, I'd highly recommend this [detailed post](https://stefanthoma.github.io/quarto-blog/posts/2023-01-09_CICD-spelling/) by Stefan Thoma on his own blog, where he discusses implementations on the spelling check.
 
 Do you have any use cases for CICD within the pharmaverseblog or any of your own projects? Please reach out - I'd love to hear from you!
 
