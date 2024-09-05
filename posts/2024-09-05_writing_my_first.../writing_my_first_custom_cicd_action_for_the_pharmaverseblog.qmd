@@ -68,7 +68,6 @@ I decided that my strategy would be to write the main body of my CICD check as a
 After some playing around, I settled with the following 30-line script:
 
 ```{r, eval = FALSE}
-
 # Get list of blog posts ----
 posts <- list.files("posts", recursive = TRUE, pattern = "*.qmd")
 
@@ -99,7 +98,6 @@ if (length(error_messages) > 0) {
 
   cli::cli_abort(concatenated_error_messages)
 }
-
 ```
 
 The script works as follows:
