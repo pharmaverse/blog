@@ -46,17 +46,17 @@ Often, when working in R projects hosted on GitHub, one encounters CICD in the f
 
 :::
 
-The pharmaverseblog already had three active CICD pipelines, which run for spelling, style and links. We did not write the code for these checks ourselves, rather we just activated open-source checks for our code repository. But what if we could write our own, **custom CICD pipeline** to check that new blog posts use tags from our selected list?
+The pharmaverseblog already had three active CICD pipelines, which run for spelling, style and links. For style and links, we did not write the code for these checks ourselves, rather we just activated open-source checks for our code repository. For spelling, this is a custom pipeline. So, what if we could write another **custom CICD pipeline** to check that new blog posts use tags from our selected list?
 
 # A (CICD) solution
 
 ::: {.callout-caution collapse="true"}
 ## TLDR
 
-* I wrote a function, `check_post_tags()` which scans the `.qmd` file containing a blog post, extracts the tag(s), and checks it against the allowed list.
-* I then set up a script which loops `check_post_tags()` over all our blog posts and identifies offending posts.
-* Then, I used the `{cli}` package to format a nice error message for all the offending posts and their tags.
-* In `.github/workflows`, I created a new CICD workflow named `check_post_tags.yml` which simply executes my script upon every pull request to `main`.
+* I wrote a function, `check_post_tags()` which scans the `.qmd` file containing a blog post, extracts the tag(s), and checks them against the allowed list.
+* Then, I set up a script which loops `check_post_tags()` over all our blog posts and identifies offending posts.
+* Following that, I used the `{cli}` package to format a nice error message for all the offending posts and their tags.
+* Finally, in `.github/workflows`, I created a new CICD workflow named `check_post_tags.yml` which simply executes my script upon every pull request to `main`.
 
 :::
 
@@ -149,7 +149,7 @@ jobs:
 It's deceptively simple to read:
 
 1. We execute the workflow upon any pull request to main.
-2. When there is a pull request to main, we can use the `rocker/tidyverse:4.2.1` to install all the `{tidyverse}` packages.
+2. When there is a pull request to main, we can load the `rocker/tidyverse:4.2.1` docker image which has all the `{tidyverse}` packages pre-installed.
 3. Then we need to checkout the pharmaverseblog repo and run the `check_post_tags.R` script.
 
 That's it! If there are any problematic posts, the script will throw an error and the check will fail like so: 
