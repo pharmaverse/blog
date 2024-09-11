@@ -71,4 +71,3 @@ insert_appendix <- function(repo_spec, name, collection = "posts", file_name) {
   )
   knitr::asis_output(appendices)
 }
-
