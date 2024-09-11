@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Ben Straub">
-<meta name="dcterms.date" content="2023-07-10">
-<meta name="description" content="Reading SAS datasets into R. The data is not always as it seems!">
+<meta name="author" content="Edoardo Mancini">
+<meta name="dcterms.date" content="2024-09-05">
+<meta name="description" content="I recently wrote my first custom CICD pipeline for the pharmaverseblog, in an effort to police the use of post tags within the blog. These are my learnings and experiences!">
 
-<title>Blanks and NAs – pharmaverse blog</title>
+<title>Writing my first custom CICD action for the pharmaverseblog – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -142,12 +142,10 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Blanks and NAs – pharmaverse blog">
-<meta property="og:description" content="Reading SAS datasets into R. The data is not always as it seems!">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/admiral.png">
+<meta property="og:title" content="Writing my first custom CICD action for the pharmaverseblog – pharmaverse blog">
+<meta property="og:description" content="I recently wrote my first custom CICD pipeline for the pharmaverseblog, in an effort to police the use of post tags within the blog. These are my learnings and experiences!">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-09-05_writing_my_first.../why-cicd.jpg">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="276">
-<meta property="og:image:width" content="369">
 </head>
 
 <body class="floating nav-fixed">
@@ -187,14 +185,13 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Blanks and NAs</h1>
+      <h1 class="title">Writing my first custom CICD action for the pharmaverseblog</h1>
                   <div>
         <div class="description">
-          Reading SAS datasets into R. The data is not always as it seems!
+          I recently wrote my first custom CICD pipeline for the pharmaverseblog, in an effort to police the use of post tags within the blog. These are my learnings and experiences!
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">ADaM</div>
                 <div class="quarto-category">Technical</div>
               </div>
                   </div>
@@ -206,14 +203,14 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Ben Straub </p>
+               <p>Edoardo Mancini </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 10, 2023</p>
+        <p class="date">September 5, 2024</p>
       </div>
     </div>
     
@@ -228,9 +225,13 @@ cookieconsent.run({
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#loading-packages-and-making-dummy-data" id="toc-loading-packages-and-making-dummy-data" class="nav-link active" data-scroll-target="#loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</a></li>
-  <li><a href="#a-simple-conversion" id="toc-a-simple-conversion" class="nav-link" data-scroll-target="#a-simple-conversion">A simple conversion</a></li>
-  <li><a href="#thats-it" id="toc-thats-it" class="nav-link" data-scroll-target="#thats-it">That’s it!</a></li>
+  <li><a href="#the-problem" id="toc-the-problem" class="nav-link active" data-scroll-target="#the-problem">The problem</a></li>
+  <li><a href="#a-cicd-solution" id="toc-a-cicd-solution" class="nav-link" data-scroll-target="#a-cicd-solution">A (CICD) solution</a>
+  <ul class="collapse">
+  <li><a href="#constructing-the-check" id="toc-constructing-the-check" class="nav-link" data-scroll-target="#constructing-the-check">Constructing the check</a></li>
+  <li><a href="#creating-a-pipeline-for-the-check" id="toc-creating-a-pipeline-for-the-check" class="nav-link" data-scroll-target="#creating-a-pipeline-for-the-check">Creating a pipeline for the check</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
 </nav>
@@ -247,92 +248,177 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>Reading in SAS-based datasets (<code>.sas7bdat</code> or <code>xpt</code>) into R has users calling the R package <a href="https://haven.tidyverse.org/">haven</a>. A typical call might invoke <code>read_sas()</code> or <code>read_xpt()</code> to bring in your source data to construct your ADaMs or SDTMs.</p>
-<p>Unfortunately, while using <a href="https://haven.tidyverse.org/">haven</a> the character blanks (missing data) found in a typical SAS-based dataset are left as blanks. These blanks will typically prove problematic while using functions like <code>is.na</code> in combination with <code>dplyr::filter()</code> to subset data. Check out <a href="https://bayer-group.github.io/sas2r/r-and-sas-syntax.html#handling-of-missing-values">Bayer’s SAS2R catalog: handling-of-missing-values</a> for more discussion on missing values and <code>NAs</code>.</p>
-<p>In the <a href="https://pharmaverse.github.io/admiral/">admiral</a> package, we have built a simple function called <code>convert_blanks_to_na()</code> to help us quickly remedy this problem. You can supply an entire dataframe to this function and it will convert any character blanks to <code>NA_character_</code></p>
-<section id="loading-packages-and-making-dummy-data" class="level2">
-<h2 class="anchored" data-anchor-id="loading-packages-and-making-dummy-data">Loading Packages and Making Dummy Data</h2>
+<section id="the-problem" class="level1">
+<h1>The problem</h1>
+<p>Each pharmaverseblog post is tagged with one or more categories that describe the topics discussed within it. For instance, this post is tagged <strong>Technical</strong>. When making a new blog post, users are invited to select the tags from a curated list designed to split the posts according to categories that balance specificity and generality. Here is the list we currently use:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID, <span class="sc">~</span>RFICDTC,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"01"</span>, <span class="st">"2000-01-01"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"02"</span>, <span class="st">"2001-01-01"</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"03"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"04"</span>, <span class="st">"2001-01--"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">"2001---01"</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"05"</span>, <span class="st">""</span>, <span class="co"># Here we have a character blank</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  USUBJID RFICDTC     
-  &lt;chr&gt;   &lt;chr&gt;       
-1 01      "2000-01-01"
-2 02      "2001-01-01"
-3 03      ""          
-4 04      "2001-01--" 
-5 05      "2001---01" 
-6 05      ""          </code></pre>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">"Metadata"</span>, <span class="st">"SDTM"</span>, <span class="st">"ADaM"</span>, <span class="st">"TLG"</span>, <span class="st">"Shiny"</span>, <span class="st">"Community"</span>, <span class="st">"Conferences"</span>, <span class="st">"Submissions"</span>, <span class="st">"Technical"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Users <strong>can</strong> add to this list, however we have observed that more often than not, if users do diverge, it is due to a typo. This has unfortunate effects within our pharmaverseblog, chiefly that our front page glossary of posts is now split:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mismatched_categories.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="140"></p>
+</figure>
+</div>
+<p>Within the pharmaverseblog editor team, we wondered whether there was a simple way to police these tags a bit more, perhaps in an automated manner. Enter CICD checks!</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What is CICD?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>CICD stands for <strong>Continuous Integration, Continuous Deployment</strong> and is a catch-all term for automated code pipelines that ensure that new code added to an existing codebase seamlessly assimilates with the rest of the codebase without introducing unexpected behavior.</p>
+<p>Often, when working in R projects hosted on GitHub, one encounters CICD in the form of checks that are triggered when making a pull request to the <code>main</code> branch (see image below for an example). These can check all sorts of aspects, ranging from correct spelling in your documentation all the way to executing your function unit tests and checking they all pass.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="cicd_pipeline.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="600"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The pharmaverseblog already had three active CICD pipelines, which run for spelling, style and links. For style and links, we did not write the code for these checks ourselves, rather we just activated open-source checks for our code repository. For spelling, this is a custom pipeline written by one of our blog editors, Stefan Thoma. So, what if we could write another <strong>custom CICD pipeline</strong> to check that new blog posts use tags from our selected list?</p>
+</section>
+<section id="a-cicd-solution" class="level1">
+<h1>A (CICD) solution</h1>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+TLDR
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>I wrote a function, <code>check_post_tags()</code> which scans the <code>.qmd</code> file containing a blog post, extracts the tag(s), and checks them against the allowed list.</li>
+<li>Then, I set up a script which loops <code>check_post_tags()</code> over all our blog posts and identifies offending posts.</li>
+<li>Following that, I used the <code>{cli}</code> package to format a nice error message for all the offending posts and their tags.</li>
+<li>Finally, in <code>.github/workflows</code>, I created a new CICD workflow named <code>check_post_tags.yml</code> which simply executes my script upon every pull request to <code>main</code>.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="constructing-the-check" class="level2">
+<h2 class="anchored" data-anchor-id="constructing-the-check">Constructing the check</h2>
+<p>I decided that my strategy would be to write the main body of my CICD check as an R script. As I am relatively confident in R, the main challenge for me would be to then figure out how to automatically execute that script in a CICD pipeline.</p>
+<p>After some playing around, I settled with the following 30-line script:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get list of blog posts ----</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>posts <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"posts"</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">pattern =</span> <span class="st">"*.qmd"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get vector of allowed tags ----</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/allowed_tags.R"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to extract tags from a post and check them against the allowed list ----</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>check_post_tags <span class="ot">&lt;-</span> <span class="cf">function</span>(post, <span class="at">allowed_post_tags =</span> allowed_tags) {</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  post_tags <span class="ot">&lt;-</span> rmarkdown<span class="sc">::</span><span class="fu">yaml_front_matter</span>(<span class="fu">file.path</span>(<span class="st">"posts"</span>, post))<span class="sc">$</span>categories</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  cross_check <span class="ot">&lt;-</span> post_tags <span class="sc">%in%</span> allowed_post_tags</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  problematic_tags <span class="ot">&lt;-</span> post_tags[<span class="sc">!</span>cross_check]</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(cross_check)) {</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    cli<span class="sc">::</span><span class="fu">format_message</span>(<span class="st">"The tag(s) {.val {problematic_tags}} in the post {.val {post}} are not from the allowed list of tags."</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply check_post_tags to all blog posts and find problem posts ----</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>check_results <span class="ot">&lt;-</span> <span class="fu">lapply</span>(posts, check_post_tags)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>error_messages <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">Filter</span>(<span class="fu">Negate</span>(is.null), check_results))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct error message if one or more posts have problematic tags ----</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(error_messages) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  error_messages <span class="ot">&lt;-</span> <span class="fu">c</span>(error_messages, <span class="st">"Please select from the following tags: {.val {allowed_tags}}, or contact one of the maintainers."</span>)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(error_messages) <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">"x"</span>, <span class="fu">length</span>(error_messages) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  concatenated_error_messages <span class="ot">&lt;-</span> cli<span class="sc">::</span><span class="fu">cli_bullets</span>(error_messages)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  cli<span class="sc">::</span><span class="fu">cli_abort</span>(concatenated_error_messages)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The script works as follows:</p>
+<ol type="1">
+<li>Get a full list of blog posts. These are all the <code>.qmd</code> files within the <code>posts</code> folder of the pharmaverseblog repo.</li>
+<li>Specify a vector of “allowed tags” in the <code>allowed_tags.R</code> script.</li>
+<li>Specify a function that, given a post:
+<ol type="a">
+<li>Extracts categories from the <code>yaml</code> header of the <code>.qmd</code> file.</li>
+<li>Cross-checks the tags with the allowed ones.</li>
+<li>For problematic tags, uses the <code>{cli}</code> package to construct a nicely-formatted error message.</li>
+</ol></li>
+<li>Loop <code>check_post_tags()</code> over all blog posts using a simple <code>lapply()</code> call and extract all error messages.</li>
+<li>If there are any error messages, use <code>{cli}</code> again to construct a concatenated error message.</li>
+</ol>
+<p>The final error message looks something like the below:</p>
+<pre><code>✖ The tag(s) "ADaMs" in the post
+  "2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.qmd"
+  are not from the allowed list of tags.
+Please select from the following tags: "Metadata", "SDTM", "ADaM", "TLG", "Shiny",
+"Community", "Conferences", "Submissions", and "Technical", or contact one of the maintainers.</code></pre>
+</section>
+<section id="creating-a-pipeline-for-the-check" class="level2">
+<h2 class="anchored" data-anchor-id="creating-a-pipeline-for-the-check">Creating a pipeline for the check</h2>
+<p>When it came to creating a pipeline for the check, if you had asked me to do this a few months ago, I wouldn’t have known my left from my right. Luckily I had recently attended a great CICD workshop at useR 2024 in Salzburg, led by Daphne Grasselly, Franciszek Walkowiak and Pawel Rucki. You can find the repository from their workshop <a href="https://github.com/user-workshop-cicd/r.package.example">here</a> - it was invaluable to orient me in the right direction. With a (very naive) google search, I also found <a href="https://www.youtube.com/watch?v=u-TcADhWosA">this video</a>, which shows how to execute an R script automatically whenever a pull request is made to the <code>main</code> branch of a repo.</p>
+<p>Through some trial and error, I was able to coalesce the above resources into quite a short <code>yaml</code> file that set up my CICD pipeline. Within the pharmaverseblog repository, the CICD pipelines live under <code>.github/workflows</code>. There, I added the following new workflow, in the form of a <code>yaml</code> file, called <code>check_post_tags.yml</code>:</p>
+<pre><code>name: Check post tags
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  Check-post-tags:
+    runs-on: ubuntu-latest
+    container:
+      image: "rocker/tidyverse:4.2.1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run check_post_tags
+        run: source("R/check_post_tags.R")
+        shell: Rscript {0}</code></pre>
+<p>It’s deceptively simple to read:</p>
+<ol type="1">
+<li>We execute the workflow upon any pull request to main.</li>
+<li>When there is a pull request to main, we can load the <code>rocker/tidyverse:4.2.1</code> docker image which has all the <code>{tidyverse}</code> packages pre-installed.</li>
+<li>Then we need to checkout the pharmaverseblog repo and run the <code>check_post_tags.R</code> script.</li>
+</ol>
+<p>That’s it! If there are any problematic posts, the script will throw an error and the check will fail like so:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="failed_check.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="750"></p>
+</figure>
+</div>
+<p>Clicking on the “Details” option will return the error message I constructed previously.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="failed_check_details.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="750"></p>
+</figure>
+</div>
+<p>Otherwise, no error will be thrown, the check will pass, and the post is good to go (provided the other checks pass)!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="passed_check.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="750"></p>
+</figure>
 </div>
 </section>
-<section id="a-simple-conversion" class="level2">
-<h2 class="anchored" data-anchor-id="a-simple-conversion">A simple conversion</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(df)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_na</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 2
-  USUBJID RFICDTC   
-  &lt;chr&gt;   &lt;chr&gt;     
-1 01      2000-01-01
-2 02      2001-01-01
-3 03      &lt;NA&gt;      
-4 04      2001-01-- 
-5 05      2001---01 
-6 05      &lt;NA&gt;      </code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_na <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(RFICDTC))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 2
-  USUBJID RFICDTC
-  &lt;chr&gt;   &lt;chr&gt;  
-1 03      &lt;NA&gt;   
-2 05      &lt;NA&gt;   </code></pre>
-</div>
-</div>
 </section>
-<section id="thats-it" class="level2">
-<h2 class="anchored" data-anchor-id="thats-it">That’s it!</h2>
-<p>A simple call to this function can make your derivation life so much easier while working in R if working with SAS-based datasets. In <a href="https://pharmaverse.github.io/admiral/">admiral</a>, we make use of this function at the start of all ADaM templates for common ADaM datasets. You can use the function <code>use_ad_template()</code> to get the full R script for the below ADaMs.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list_all_templates</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Existing ADaM templates in package 'admiral':
-• ADAE
-• ADCM
-• ADEG
-• ADEX
-• ADLB
-• ADLBHY
-• ADMH
-• ADPC
-• ADPP
-• ADPPK
-• ADSL
-• ADVS</code></pre>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="cicd_meme.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="400"></p>
+</figure>
 </div>
-</div>
+<p>The hardest aspect of the whole process was surpassing the mental barrier of getting started. CICD can be an overwhelming and mysterious topic, but it’s only as complicated as you make it. Of course, I’m still an absolute novice, and maybe my implementation above is not perfect, and there are definitely more complex applications of CICD, but I was still able to write code that solved my specific problem.</p>
+<p>If you’d like to read more about CICD within the pharmaverseblog, I’d highly recommend this <a href="https://stefanthoma.github.io/quarto-blog/posts/2023-01-09_CICD-spelling/">detailed post</a> by Stefan Thoma on his own blog, where he discusses implementations on the spelling check.</p>
+<p>Do you have any use cases for CICD within the pharmaverseblog or any of your own projects? Please reach out - I’d love to hear from you!</p>
 <!--------------- appendices go here ----------------->
-</section>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -341,22 +427,25 @@ cookieconsent.run({
 </div>
 
 
+</section>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-09-11 14:34:46.806248</p>
+<p>2024-09-11 14:34:16.951226</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-10_blanks_and_nas/blanks_and_nas.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
-  author = {Straub, Ben},
-  title = {Blanks and {NAs}},
-  date = {2023-07-10},
-  url = {https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-09-05_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mancini2024,
+  author = {Mancini, Edoardo},
+  title = {Writing My First Custom {CICD} Action for the
+    Pharmaverseblog},
+  date = {2024-09-05},
+  url = {https://pharmaverse.github.io/blog/posts/2024-09-05_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Straub, Ben. 2023. <span>“Blanks and NAs.”</span> July 10, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html">https://pharmaverse.github.io/blog/posts/2023-07-10_blanks_and_nas/blanks_and_nas.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-mancini2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Mancini, Edoardo. 2024. <span>“Writing My First Custom CICD Action for
+the Pharmaverseblog.”</span> September 5, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-09-05_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html">https://pharmaverse.github.io/blog/posts/2024-09-05_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
