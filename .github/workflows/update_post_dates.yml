@@ -10,20 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: "rocker/tidyverse:4.2.1"
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: cicd_testing2  # replace with the branch you want to checkout
-      - name: Run update_post_dates
-        run: source("R/update_post_dates.R")
-        shell: Rscript {0}
-      - name: Commit results
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: cicd_testing2  # replace with the branch you want to checkout
+    - name: Run update_post_dates
+      run: source("R/update_post_dates.R")
+      shell: Rscript {0}
+    - name: Commit results
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
         git commit -m "Run R script and commit results"
-        git push origin your-branch-name  # replace with the branch you want to push to
+        git push origin cicd_testing2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
