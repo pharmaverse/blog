@@ -10,4 +10,4 @@ Some of these files help in creating/developing blog-posts, others are used by o
 - `help_create_blogpost.R`: script containing the function(s) used by `create_blogpost.R`
 - `switch.R`: Used by CICD spellcheck workflow. 
 - `check_post_tags.R`: Used by Check-Post-Tags CICD workflow
-- `update_post_dates.R`: Used by Update-Post_Dates CICD workflow
+- `update_post_dates.R`: Used by Update-Post-Dates CICD workflow
