@@ -4,8 +4,7 @@ post_folders <- list.files("posts", recursive = FALSE, pattern = "zzz_DO_NOT_EDI
 # Prepare date to replace in a blog post and folder ----
 formatted_date <- format(Sys.Date(), "%Y-%m-%d")
 
-for (folder in post_folders){
-
+for (folder in post_folders) {
   # Update date in quarto document ----
 
   ##  Find qmd file with blog post ----
@@ -38,9 +37,9 @@ for (folder in post_folders){
 
   ## Reassemble the RMarkdown file with the new YAML front matter ----
   new_lines <- c(
-    lines[1 : yaml_start],
+    lines[1:yaml_start],
     strsplit(new_yaml_content, "\n")[[1]],
-    lines[yaml_end : length(lines)]
+    lines[yaml_end:length(lines)]
   )
 
   ## Write the modified RMarkdown file back to disk ----
@@ -48,8 +47,7 @@ for (folder in post_folders){
 
   # Update date in folder ----
   new_folder_name <- stringr::str_replace(folder, "zzz_DO_NOT_EDIT", formatted_date)
-  file.rename(file.path("posts", folder),file.path("posts", new_folder_name))
+  file.rename(file.path("posts", folder), file.path("posts", new_folder_name))
 
   cli::cli_inform(paste("Folder renamed for post:", yaml_list$title))
-
 }
