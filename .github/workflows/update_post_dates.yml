@@ -1,0 +1,17 @@
+name: Update post dates
+
+on:
+  pull_request:
+    branches:
+      - 'cicd_testing'
+
+jobs:
+  Check-post-tags:
+    runs-on: ubuntu-latest
+    container:
+      image: "rocker/tidyverse:4.2.1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update post dates
+        run: source("R/update_post_dates.R")
+        shell: Rscript {0}

@@ -1,0 +1,42 @@
+---
+title: My Blog
+author:
+- name: My Name
+description: ''
+date: 'zzz'
+categories:
+- Metadata
+- SDTM
+- ADaM
+- TLG
+- Shiny
+- Community
+- Conferences
+- Submissions
+- Technical
+image: pharmaverse.png
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "fill_in_date_my__blog"
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
