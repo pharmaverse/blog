@@ -1,5 +1,5 @@
 # Get list of post folders where date has to be edited ----
-post_folders <- list.files("posts", recursive = FALSE, pattern = "new_post")
+post_folders <- list.files("posts", recursive = FALSE, pattern = "zzz_DO_NOT_EDIT")
 
 # Prepare date to replace in a blog post and folder ----
 formatted_date <- format(Sys.Date(), "%Y-%m-%d")
@@ -47,7 +47,7 @@ for (folder in post_folders){
   writeLines(new_lines, blog_post_path)
 
   # Update date in folder ----
-  new_folder_name <- stringr::str_replace(folder, "new_post", formatted_date)
+  new_folder_name <- stringr::str_replace(folder, "zzz_DO_NOT_EDIT", formatted_date)
   file.rename(file.path("posts", folder),file.path("posts", new_folder_name))
 
   cli::cli_inform(paste("Folder renamed for post:", yaml_list$title))
