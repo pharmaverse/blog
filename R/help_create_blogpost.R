@@ -45,7 +45,7 @@ create_post <- function(post_name,
 
   # Prepare values
   snake_name <- gsub(" ", "_", tolower(gsub("(.)([A-Z])", "\\1 \\2", post_name)))
-  short_name <- paste(post_date, snake_name, sep = "_")
+  short_name <- paste("zzz_DO_NOT_EDIT", snake_name, sep = "_")
 
   if (short_name != short_name %>% stringr::str_trunc(30)) {
     message("For the folder creation:")
