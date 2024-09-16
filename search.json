@@ -11,7 +11,7 @@
     "href": "posts/2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.html#last-updated",
     "title": "New {admiral} extension packages: {admiralpeds} & more coming soon!",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:55.528857"
+    "text": "Last updated\n\n2024-09-16 16:30:25.488953"
   },
   {
     "objectID": "posts/2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.html#details",
@@ -32,7 +32,7 @@
     "href": "posts/2024-04-29_appsilon_and__sa.../appsilon_and__sanofi_joins_the_pharmaverse_council!.html#last-updated",
     "title": "Appsilon and Sanofi join the pharmaverse council!",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:52.329563"
+    "text": "Last updated\n\n2024-09-16 16:30:22.203375"
   },
   {
     "objectID": "posts/2024-04-29_appsilon_and__sa.../appsilon_and__sanofi_joins_the_pharmaverse_council!.html#details",
@@ -102,7 +102,7 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:47.356027"
+    "text": "Last updated\n\n2024-09-16 16:30:17.260128"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
@@ -116,14 +116,14 @@
     "href": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html",
     "title": "Undergraduate University Statistics Report using pharmaverseadam data",
     "section": "",
-    "text": "As part of my placement year as a Data Sciences Industrial Placement student in Biostatistics at Roche in the UK, I was required to produce a “Business Project” and present it to the entire Data Sciences department. I decided to use pharmaverseadam to design a brand-new R training, “trainStats”, for junior Biostatisticians, since the package includes realistic ADaM datasets that are ideal for statistical analyses. For maximum efficiency, I tied my business project with a quantitative project report, due August 2024, for my undergraduate degree in Mathematics, Operational Research and Statistics at Cardiff University.\nThe quantitative project report investigates statistical analyses on preliminary clinical trial data using the R Studio software as instructed by the trainStats program I have authored, to help ease new Biostatisticians in the industry. The software was built considering the needs of people who are new to the industry and are keen to pursue a career in Biostatistics.\nI had a smooth experience with the   {pharmaverseadam}  package all throughout my business and university project. I was introduced to the package by Ross Farrugia while looking for open-source data to analyze for my project. The package was very easy to read and use, with excellent documentation on the pharmaverseadam website. As I was planning to share aggregated outputs (such as tables, listings and graphs) from clinical datasets externally to the university, even using historical clinical data was not allowed since external use of confidential data did not align with Roche’s data privacy principles.\nThroughout the trainStats documentation, I have primarily used the adoe_ophtha ADaM dataset (containing ophthalmology safety data) from   {pharmaverseadam}  to allow for a variety of exploratory statistical analyses ranging from producing boxplots of the spread of data by visit day, computing standard deviation and confidence intervals for endpoints, as well as programming linear regression models and patient profiles. As adoe_ophtha contains visit day, active arm and endpoint data, it was ideal to use for training purposes. In addition, I did use the adsl dataset too, to encourage trainStats users to join and merge datasets, taking into account patient demographics such as age. Here is a snippet of the code I wrote to generate bar charts by active arm for the “Central Subfield Thickness” endpoint:\n# For Central Subfield Thickness\nadoe_CST$ARM &lt;- factor(adoe_CST$ARM, levels = c(\"Placebo\", \"Xanomeline Low Dose\", \"Xanomeline High Dose\"))\n\nggplot(data = subset(adoe_CST, ARM != \"Screen Failure\"), aes(x = ARM, y = AVAL)) +\n  geom_bar(stat = \"identity\") +\n  xlab(\"Active Arm\") +\n  ylab(\"Central Subfield Thickness / um\") +\n  ylim(0, max(adoe_CST$AVAL))\nBelow, is another example of the code I wrote to produce a boxplot displaying the analysis value of Central Subfield Thickness by patient visit days:\nadoe_CST &lt;- adoe_ophtha %&gt;%\n  filter(PARAMCD == \"SCSUBTH\")\n\nadoe_DR &lt;- adoe_ophtha %&gt;%\n  filter(PARAMCD == \"SDRSSR\")\n\n# Boxplots for each visit day\nboxplot(AVAL ~ AVISITN,\n  data = adoe_CST,\n  main = \"Different boxplots for each visit day\",\n  xlab = \"Visit Number\",\n  ylab = \"Central Subfield Thickness/ um\",\n  col = \"orange\",\n  border = \"brown\"\n)\nAs you can see above, both of these code snapshots display the importance of clear logic and reasoning whilst coding by implementing strong data visualization techniques such as commenting. The code is simple and I personally found that using the   {pharmaverseadam}  package to produce various plots was very straightforward. The objective of trainStats was to help users familiarise themselves with ADaM datasets and my favorite element of the package was that the format of both synthetic ADaM datasets were incredibly similar to that of a true clinical trial ADaM for a study in Ophthalmology.\nTo further develop and improve the   {pharmaverseadam}  package, I believe including more endpoints in the adoe_ophtha dataset would be invaluable for future application and statistical analyses. Often ADOE datasets have several endpoints but the adoe_ophtha dataset only included 2 clinical parameters, namely “Central Subfield Thickness” and “Diabetic Retinopathy Severity Scale”. In addition, since the data is synthetic and randomly generated, the outputs had no significant correlations or trends from a statistical perspective in terms of disease progression or measures of central tendencies. Although, in this case, the emphasis was on understanding logic and reasoning whilst programming the statistical outputs, I experienced difficulties analysing the data quantitatively in my university report due to the high variation in data. Going forward, if there is a method to simulate the data less randomly, then that may be more useful for future dummy analyses on   {pharmaverseadam}  data.\nOverall, my experience of using the   {pharmaverseadam}  package for the first time was excellent. The package was convenient to use in R Studio, and clearly formatted for multi-purpose use. I would definitely recommend using   {pharmaverseadam}  to all users in the industry, who are required to produce a piece of project work or any analyses/summary for external use, or even those keen to publicly publish articles and papers in their areas within pharma to the wider community, in a safe and responsible manner regarding external use of data. I would like to thank Ross Farrugia for introducing me to the package, and especially Edoardo Mancini for talking me through the package and supporting me throughout the business project and university report.\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union"
+    "text": "As part of my placement year as a Data Sciences Industrial Placement student in Biostatistics at Roche in the UK, I was required to produce a “Business Project” and present it to the entire Data Sciences department. I decided to use pharmaverseadam to design a brand-new R training, “trainStats”, for junior Biostatisticians, since the package includes realistic ADaM datasets that are ideal for statistical analyses. For maximum efficiency, I tied my business project with a quantitative project report, due August 2024, for my undergraduate degree in Mathematics, Operational Research and Statistics at Cardiff University.\nThe quantitative project report investigates statistical analyses on preliminary clinical trial data using the R Studio software as instructed by the trainStats program I have authored, to help ease new Biostatisticians in the industry. The software was built considering the needs of people who are new to the industry and are keen to pursue a career in Biostatistics.\nI had a smooth experience with the   {pharmaverseadam}  package all throughout my business and university project. I was introduced to the package by Ross Farrugia while looking for open-source data to analyze for my project. The package was very easy to read and use, with excellent documentation on the pharmaverseadam website. As I was planning to share aggregated outputs (such as tables, listings and graphs) from clinical datasets externally to the university, even using historical clinical data was not allowed since external use of confidential data did not align with Roche’s data privacy principles.\nThroughout the trainStats documentation, I have primarily used the adoe_ophtha ADaM dataset (containing ophthalmology safety data) from   {pharmaverseadam}  to allow for a variety of exploratory statistical analyses ranging from producing boxplots of the spread of data by visit day, computing standard deviation and confidence intervals for endpoints, as well as programming linear regression models and patient profiles. As adoe_ophtha contains visit day, active arm and endpoint data, it was ideal to use for training purposes. In addition, I did use the adsl dataset too, to encourage trainStats users to join and merge datasets, taking into account patient demographics such as age. Here is a snippet of the code I wrote to generate bar charts by active arm for the “Central Subfield Thickness” endpoint:\n# For Central Subfield Thickness\nadoe_CST$ARM &lt;- factor(adoe_CST$ARM, levels = c(\"Placebo\", \"Xanomeline Low Dose\", \"Xanomeline High Dose\"))\n\nggplot(data = subset(adoe_CST, ARM != \"Screen Failure\"), aes(x = ARM, y = AVAL)) +\n  geom_bar(stat = \"identity\") +\n  xlab(\"Active Arm\") +\n  ylab(\"Central Subfield Thickness / um\") +\n  ylim(0, max(adoe_CST$AVAL))\nBelow, is another example of the code I wrote to produce a boxplot displaying the analysis value of Central Subfield Thickness by patient visit days:\nadoe_CST &lt;- adoe_ophtha %&gt;%\n  filter(PARAMCD == \"SCSUBTH\")\n\nadoe_DR &lt;- adoe_ophtha %&gt;%\n  filter(PARAMCD == \"SDRSSR\")\n\n# Boxplots for each visit day\nboxplot(AVAL ~ AVISITN,\n  data = adoe_CST,\n  main = \"Different boxplots for each visit day\",\n  xlab = \"Visit Number\",\n  ylab = \"Central Subfield Thickness/ um\",\n  col = \"orange\",\n  border = \"brown\"\n)\nAs you can see above, both of these code snapshots display the importance of clear logic and reasoning whilst coding by implementing strong data visualization techniques such as commenting. The code is simple and I personally found that using the   {pharmaverseadam}  package to produce various plots was very straightforward. The objective of trainStats was to help users familiarise themselves with ADaM datasets and my favorite element of the package was that the format of both synthetic ADaM datasets were incredibly similar to that of a true clinical trial ADaM for a study in Ophthalmology.\nTo further develop and improve the   {pharmaverseadam}  package, I believe including more endpoints in the adoe_ophtha dataset would be invaluable for future application and statistical analyses. Often ADOE datasets have several endpoints but the adoe_ophtha dataset only included 2 clinical parameters, namely “Central Subfield Thickness” and “Diabetic Retinopathy Severity Scale”. In addition, since the data is synthetic and randomly generated, the outputs had no significant correlations or trends from a statistical perspective in terms of disease progression or measures of central tendencies. Although, in this case, the emphasis was on understanding logic and reasoning whilst programming the statistical outputs, I experienced difficulties analysing the data quantitatively in my university report due to the high variation in data. Going forward, if there is a method to simulate the data less randomly, then that may be more useful for future dummy analyses on   {pharmaverseadam}  data.\nOverall, my experience of using the   {pharmaverseadam}  package for the first time was excellent. The package was convenient to use in R Studio, and clearly formatted for multi-purpose use. I would definitely recommend using   {pharmaverseadam}  to all users in the industry, who are required to produce a piece of project work or any analyses/summary for external use, or even those keen to publicly publish articles and papers in their areas within pharma to the wider community, in a safe and responsible manner regarding external use of data. I would like to thank Ross Farrugia for introducing me to the package, and especially Edoardo Mancini for talking me through the package and supporting me throughout the business project and university report."
   },
   {
     "objectID": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html#last-updated",
     "href": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html#last-updated",
     "title": "Undergraduate University Statistics Report using pharmaverseadam data",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:43.142783"
+    "text": "Last updated\n\n2024-09-16 16:30:13.244446"
   },
   {
     "objectID": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html#details",
@@ -144,7 +144,7 @@
     "href": "posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html#last-updated",
     "title": "xportr 0.4.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:39.144883"
+    "text": "Last updated\n\n2024-09-16 16:30:09.439939"
   },
   {
     "objectID": "posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html#details",
@@ -193,7 +193,7 @@
     "href": "posts/2023-10-30_floating_point/floating_point.html#last-updated",
     "title": "Floating point",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:35.352533"
+    "text": "Last updated\n\n2024-09-16 16:30:05.755224"
   },
   {
     "objectID": "posts/2023-10-30_floating_point/floating_point.html#details",
@@ -214,7 +214,7 @@
     "href": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#last-updated",
     "title": "Introducing a new Coursera course for hands-on clinical data science using R.",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:29.967125"
+    "text": "Last updated\n\n2024-09-16 16:30:00.17876"
   },
   {
     "objectID": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#details",
@@ -256,7 +256,7 @@
     "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
     "title": "Rounding",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:23.877951"
+    "text": "Last updated\n\n2024-09-16 16:29:54.220065"
   },
   {
     "objectID": "posts/2023-07-24_rounding/rounding.html#details",
@@ -277,7 +277,7 @@
     "href": "posts/2024-07-24_working__groups_.../working__groups__updates.html#last-updated",
     "title": "Working Groups Updates",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:18.458015"
+    "text": "Last updated\n\n2024-09-16 16:29:48.970325"
   },
   {
     "objectID": "posts/2024-07-24_working__groups_.../working__groups__updates.html#details",
@@ -326,7 +326,7 @@
     "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#last-updated",
     "title": "Cross-Industry Open Source Package Development",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:13.688115"
+    "text": "Last updated\n\n2024-09-16 16:29:44.515709"
   },
   {
     "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#details",
@@ -347,7 +347,7 @@
     "href": "posts/2024-02-13_teal_on_cran/teal_on_cran.html#last-updated",
     "title": "teal is now available on CRAN 🎉",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:09.741838"
+    "text": "Last updated\n\n2024-09-16 16:29:40.764377"
   },
   {
     "objectID": "posts/2024-02-13_teal_on_cran/teal_on_cran.html#details",
@@ -396,7 +396,7 @@
     "href": "posts/2024-04-08_tmc_cran/tmc_cran.html#last-updated",
     "title": "teal.modules.clinical v0.9.0 is now on CRAN!",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:06.528835"
+    "text": "Last updated\n\n2024-09-16 16:29:37.685721"
   },
   {
     "objectID": "posts/2024-04-08_tmc_cran/tmc_cran.html#details",
@@ -473,7 +473,7 @@
     "href": "posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html#last-updated",
     "title": "Unix versus SAS Time",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:00.304853"
+    "text": "Last updated\n\n2024-09-16 16:29:31.620898"
   },
   {
     "objectID": "posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html#details",
@@ -494,7 +494,7 @@
     "href": "posts/2024-05-31_diversity_&__inc.../diversity_&__inclusion_in_pharmaverse.html#last-updated",
     "title": "Diversity & Inclusion in pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:57.176391"
+    "text": "Last updated\n\n2024-09-16 16:29:28.593976"
   },
   {
     "objectID": "posts/2024-05-31_diversity_&__inc.../diversity_&__inclusion_in_pharmaverse.html#details",
@@ -536,7 +536,7 @@
     "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
     "title": "How to use Code Sections",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:53.464828"
+    "text": "Last updated\n\n2024-09-16 16:29:24.949866"
   },
   {
     "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
@@ -557,7 +557,7 @@
     "href": "posts/2024-06-07_admiral_1.1_is.../admiral_1.1_is_here.html#last-updated",
     "title": "{admiral} 1.1.1 is here!",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:49.022564"
+    "text": "Last updated\n\n2024-09-16 16:29:20.720392"
   },
   {
     "objectID": "posts/2024-06-07_admiral_1.1_is.../admiral_1.1_is_here.html#details",
@@ -606,7 +606,7 @@
     "href": "posts/2024-03-11_tips_for__first_.../tips_for__first__time__contributors.html#last-updated",
     "title": "Tips for First Time Contributors",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:42.188779"
+    "text": "Last updated\n\n2024-09-16 16:29:14.286021"
   },
   {
     "objectID": "posts/2024-03-11_tips_for__first_.../tips_for__first__time__contributors.html#details",
@@ -655,7 +655,7 @@
     "href": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#last-updated",
     "title": "The pharmaverse (hi)story",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:38.587937"
+    "text": "Last updated\n\n2024-09-16 16:29:10.76446"
   },
   {
     "objectID": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#details",
@@ -732,7 +732,7 @@
     "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#last-updated",
     "title": "admiral 1.0.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:34.963439"
+    "text": "Last updated\n\n2024-09-16 16:29:07.323202"
   },
   {
     "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#details",
@@ -746,7 +746,7 @@
     "href": "posts/2024-08-20_teal_submission_.../teal_submission_for__posit__shiny__contest_2024.html#last-updated",
     "title": "teal and Posit Shiny Contest 2024",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:29.571705"
+    "text": "Last updated\n\n2024-09-16 16:29:02.115366"
   },
   {
     "objectID": "posts/2024-08-20_teal_submission_.../teal_submission_for__posit__shiny__contest_2024.html#details",
@@ -795,7 +795,7 @@
     "href": "posts/2023-12-20_p_k__examples/p_k__examples.html#last-updated",
     "title": "PK Examples",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:26.043249"
+    "text": "Last updated\n\n2024-09-16 16:28:58.728594"
   },
   {
     "objectID": "posts/2023-12-20_p_k__examples/p_k__examples.html#details",
@@ -893,7 +893,7 @@
     "href": "posts/2024-03-04_inside_the__phar.../inside_the__pharmaverse.html#last-updated",
     "title": "Inside the pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:27.849176"
+    "text": "Last updated\n\n2024-09-16 16:29:00.505753"
   },
   {
     "objectID": "posts/2024-03-04_inside_the__phar.../inside_the__pharmaverse.html#details",
@@ -942,7 +942,7 @@
     "href": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#last-updated",
     "title": "Reproducing the R Submissions Pilot 2 Shiny Application using Rhino",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:31.307423"
+    "text": "Last updated\n\n2024-09-16 16:29:03.768852"
   },
   {
     "objectID": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#details",
@@ -991,7 +991,7 @@
     "href": "posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html#last-updated",
     "title": "TLG Catalog 🤝 WebR",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:36.999853"
+    "text": "Last updated\n\n2024-09-16 16:29:09.237255"
   },
   {
     "objectID": "posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html#details",
@@ -1040,7 +1040,7 @@
     "href": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html#last-updated",
     "title": "Testing Containers and WebAssembly in Submissions to the FDA",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:40.336864"
+    "text": "Last updated\n\n2024-09-16 16:29:12.358172"
   },
   {
     "objectID": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html#details",
@@ -1089,7 +1089,7 @@
     "href": "posts/2024-02-14_iscr_conference/iscr_conference.html#last-updated",
     "title": "ISCR 17th Annual Conference 2024",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:43.895096"
+    "text": "Last updated\n\n2024-09-16 16:29:15.868217"
   },
   {
     "objectID": "posts/2024-02-14_iscr_conference/iscr_conference.html#details",
@@ -1124,7 +1124,7 @@
     "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
     "title": "Derive a new parameter computed from the value of other parameters",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:51.523038"
+    "text": "Last updated\n\n2024-09-16 16:29:23.078162"
   },
   {
     "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
@@ -1145,7 +1145,7 @@
     "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
     "title": "It’s all relative? - Calculating Relative Days using admiral",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:55.642886"
+    "text": "Last updated\n\n2024-09-16 16:29:27.09606"
   },
   {
     "objectID": "posts/2023-08-08_study_day/study_day.html#details",
@@ -1194,7 +1194,7 @@
     "href": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#last-updated",
     "title": "End of Year Update from the pharmaverse Council",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:03:58.735026"
+    "text": "Last updated\n\n2024-09-16 16:29:30.10196"
   },
   {
     "objectID": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#details",
@@ -1243,7 +1243,7 @@
     "href": "posts/2023-07-09_falcon/falcon.html#last-updated",
     "title": "falcon",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:01.970829"
+    "text": "Last updated\n\n2024-09-16 16:29:33.183589"
   },
   {
     "objectID": "posts/2023-07-09_falcon/falcon.html#details",
@@ -1313,7 +1313,7 @@
     "href": "posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html#last-updated",
     "title": "De-Mystifying R Programming in Clinical Trials",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:04.927768"
+    "text": "Last updated\n\n2024-09-16 16:29:36.071052"
   },
   {
     "objectID": "posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html#details",
@@ -1362,7 +1362,7 @@
     "href": "posts/2023-06-28_welcome/index.html#last-updated",
     "title": "Hello pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:08.100503"
+    "text": "Last updated\n\n2024-09-16 16:29:39.208297"
   },
   {
     "objectID": "posts/2023-06-28_welcome/index.html#details",
@@ -1397,7 +1397,7 @@
     "href": "posts/2024-09-11_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html#last-updated",
     "title": "Writing my first custom CICD action for the pharmaverseblog",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:11.734377"
+    "text": "Last updated\n\n2024-09-16 16:29:42.654345"
   },
   {
     "objectID": "posts/2024-09-11_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html#details",
@@ -1425,7 +1425,7 @@
     "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#last-updated",
     "title": "Filter out the noise!",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:16.527828"
+    "text": "Last updated\n\n2024-09-16 16:29:47.151194"
   },
   {
     "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#details",
@@ -1453,7 +1453,7 @@
     "href": "posts/2023-11-27_higher_order/higher_order.html#last-updated",
     "title": "Believe in a higher order!",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:21.651929"
+    "text": "Last updated\n\n2024-09-16 16:29:52.081431"
   },
   {
     "objectID": "posts/2023-11-27_higher_order/higher_order.html#details",
@@ -1509,7 +1509,7 @@
     "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#last-updated",
     "title": "Rhino: A Step Forward in Validating Shiny Apps",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:25.760545"
+    "text": "Last updated\n\n2024-09-16 16:29:56.02092"
   },
   {
     "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#details",
@@ -1551,7 +1551,7 @@
     "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
     "title": "Admiral Hackathon 2023 Revisited",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:33.306626"
+    "text": "Last updated\n\n2024-09-16 16:30:03.745657"
   },
   {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
@@ -1628,7 +1628,7 @@
     "href": "posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html#last-updated",
     "title": "Our experience as new admiral developers, coming from a CRO",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:41.019502"
+    "text": "Last updated\n\n2024-09-16 16:30:11.272199"
   },
   {
     "objectID": "posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html#details",
@@ -1670,7 +1670,7 @@
     "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
     "title": "Blanks and NAs",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:45.367566"
+    "text": "Last updated\n\n2024-09-16 16:30:15.352382"
   },
   {
     "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
@@ -1754,7 +1754,7 @@
     "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#last-updated",
     "title": "Date/Time Functions and Imputation in {admiral}",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:50.293417"
+    "text": "Last updated\n\n2024-09-16 16:30:20.194896"
   },
   {
     "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#details",
@@ -1775,7 +1775,7 @@
     "href": "posts/2024-09-03_meet_our__divers.../meet_our__diversity__champion_–__laura__needleman.html#last-updated",
     "title": "Meet our Diversity Champion – Laura Needleman",
     "section": "Last updated",
-    "text": "Last updated\n\n2024-09-16 16:04:53.909545"
+    "text": "Last updated\n\n2024-09-16 16:30:23.802685"
   },
   {
     "objectID": "posts/2024-09-03_meet_our__divers.../meet_our__diversity__champion_–__laura__needleman.html#details",
