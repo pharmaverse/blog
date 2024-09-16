@@ -22,10 +22,22 @@ jobs:
       - name: Configure Git safe directory
         run: git config --global --add safe.directory /__w/blog/blog
 
-      - name: Commit results
+      - name: Check for changes
+        id: check_changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          if [[ `git status --porcelain` ]]; then
+            echo "changes detected"
+            echo "changes=true" >> $GITHUB_ENV
+          else
+            echo "no changes"
+            echo "changes=false" >> $GITHUB_ENV
+          fi
+
+      - name: Commit results
+        if: env.changes == 'true'
+        run: |
           git add .
           git commit -m "Auto-update blog post date"
           git push origin main
