@@ -4,10 +4,15 @@ on:
     branches: [main]
 
 name: Quarto Publish
+on:
+  workflow_run:
+    workflows: ["Update-post-dates"]
+    branches: [main]
+    types:
+      - completed
 
 jobs:
   build-deploy:
-    needs: Update-post-dates
     runs-on: ubuntu-latest
     permissions:
       contents: write
