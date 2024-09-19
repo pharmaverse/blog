@@ -1,0 +1,155 @@
+---
+title: "The Tension of High-Performance Computing: Reproducibility vs. Parallelization"
+author:
+  - name: Alexandros Kouretsis
+description: ""
+# Note that the date below will be auto-updated when the post is merged.
+date: "2024-12-01"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Submissions, Technical]
+# Feel free to change the image
+image: "pharmaverse.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_the__tensio..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+## Harnessing HPC for Drug Development
+
+In the world of pharmaceutical research, high-performance computing (HPC) plays a pivotal role in driving advancements in drug discovery and development. From analyzing vast genomic datasets to simulating drug interactions across diverse populations, HPC enables researchers to tackle complex computational tasks at 
+high speeds. As pharmaceutical research becomes increasingly data-driven, the need for powerful computational tools has grown, allowing for more accurate predictions, faster testing, and more efficient processes. However, with the growing complexity and scale of these simulations, ensuring reproducibility of results becomes a significant challenge.
+
+In this blog post, we will explore common reproducibility challenges in drug development and simulations, focusing on how the `{mirai}` package can be used as a backend solution to effectively manage parallelization.
+
+## The Problem: Reproducibility in Parallel Simulations
+
+Imagine a research team at the forefront of developing a new drug. They use sophisticated simulations to predict how the drug will perform across different patient cohorts. To manage the large computational workload, the team employs parallel processing, distributing the simulation tasks across multiple processors. This approach significantly speeds up the process, allowing them to handle vast datasets efficiently.
+
+However, the team soon encounters a problem. Each time they rerun the simulations, the results differ slightly, even though they use the same input parameters. This inconsistency raises a red flag: *their results are not reproducible.* In the pharmaceutical industry, where accuracy and reliability are paramount, this is a serious issue. Reproducibility is not just a scientific ideal; it's a regulatory requirement.
+
+Upon investigation, the team discovers that the variability in their results is due to the way tasks are parallelized across processors. The order in which operations are executed can differ slightly between runs, leading to small but significant variations in the outcomes. These differences are particularly problematic when they accumulate over thousands of iterations, making it difficult to ensure that the simulation results can be consistently reproduced by others.
+
+### Tracking Operations in Parallel Computing
+
+Let’s explore a simple scenario where parallelization creates confusion in tracking operations due to the asynchronous nature of task execution and logging.
+
+```{r, message=FALSE, eval=FALSE}
+library("mirai")
+library("dplyr", warn.conflicts = FALSE)
+
+# start parallel workers
+daemons(4)
+
+# load libraries on each worker and set up logging to a file
+everywhere({
+  library("dplyr")
+  library("tidyr")
+  library("mirai")
+  library("tidylog", warn.conflicts = FALSE)
+  
+  # Define function to log messages to the log file
+  log_to_file <- \(txt) cat(txt, file = log_file, sep = "\n", append = TRUE)
+  options("tidylog.display" = list(message, log_to_file))
+}, log_file = "log.txt")
+
+m <- mirai_map(letters[1:3], \(x) {
+  mutate(tibble(.rows = 1), "{x}" := "foo")
+})
+
+result <- m[] |> dplyr::bind_cols()
+
+daemons(0)
+
+return(result)
+```
+
+In the above code chunk, we set up a parallel processing environment using the `{mirai}` package. The function `mirai_map()` is used to apply a mutating function in parallel to a tibble for each element of `letters[1:3]`, logging the operations to a file using the `{tidylog}` package. However, while we can log each operation as it happens, due to the parallel nature of `{mirai}`, the logging does not occur in a controlled or sequential order. 
+*Each daemon executes its task independently, and the order of logging in the file will depend on the completion times of these parallel processes rather than the intended flow of operations.*
+
+> Parallel computations can obscure the traceability of operations
+
+This lack of control can lead to a situation where the log entries do not reflect the actual sequence in which the `{dplyr}` commands were expected to be processed. Although the operations themselves are carried out correctly, the asynchronous logging may create challenges in *tracing* and *debugging* the process, as entries in the log file could appear out of order, giving an incomplete or misleading representation of the task flow.
+
+```{r}
+readLines("log.txt")
+```
+
+In the above code, when we read the contents of the log file, you will notice that the logs are not in the same order as the commands were dispatched. This demonstrates the inherent difficulty in managing the order of logging in parallel tasks, especially when there is no guarantee on how quickly each process will complete and record its operations. 
+
+### Task Dispatching and RNG Management
+
+By default, `{mirai}` uses an advanced dispatcher to manage task distribution efficiently, scheduling tasks in a First-In-First-Out manner and leveraging `{nanonext}` primitives for zero-latency, resource-free task management. However, its asynchronous execution can hinder reproducibility, especially with random number generation (RNG) or tasks needing strict order.
+
+To enhance reproducibility, `{mirai}` allows disabling the dispatcher, directly connecting the host to daemons in a round-robin fashion. While less efficient, this approach gives more control over task execution and is better suited for ensuring consistent RNG and reproducible results.
+
+```{r}
+library(mirai)
+library(dplyr, warn.conflicts = FALSE)
+
+# Parameters for the simulation
+cohorts <- tribble(
+  ~patient_count, ~mean_effect, ~sd_effect,
+  1000,           0.7,          0.1,
+  1000,           0.65,         0.15,
+  1000,           0.75,         0.05
+)
+
+# Start daemons with consistent RNG streams
+x <- daemons(4, dispatcher = FALSE, seed = 123)
+
+# Parallel simulation for each row of the cohorts table
+m <- mirai_map(cohorts, \(patient_count, mean_effect, sd_effect) {
+  dplyr::tibble(
+    patient_id = 1:patient_count,
+    efficacy = rnorm(patient_count, mean = mean_effect, sd = sd_effect)
+  )
+})
+
+results <- m[] |> dplyr::bind_rows()
+
+x <- daemons(0, dispatcher = FALSE)
+
+results %>%
+  group_by(patient_id) %>%
+  summarise(
+    mean_efficacy = mean(efficacy),
+    sd_efficacy = sd(efficacy)
+  )
+```
+
+In this example, we use `tribble` to define the simulation parameters and initialize 4 daemons with dispatcher = FALSE and a fixed seed to ensure consistent random number generation across tasks. The `mirai_map()` function parallelizes the drug efficacy simulation, and the results are combined using `bind_rows()` for further analysis. Disabling the dispatcher gives more control over task execution, ensuring reproducibility. If you repeat the
+computation you will notice that it generates consistent results.
+
+However, this approach comes at a cost. Disabling the dispatcher may lead to inefficient resource utilization when tasks are unevenly distributed, as some daemons may remain idle. While reproducibility is prioritized, we sacrifice some performance, especially when handling tasks with varying workloads.
+
+> "In prioritizing reproducibility, we inevitably sacrifice some performance, especially when tasks with unequal workloads are distributed across daemons."
+
+Reproducibility becomes more complex when using parallelization frameworks like `{parallelMap}`, `{doFuture}`, and `{future}`, as each handles random number generation (RNG) differently. While `set.seed()` is sufficient for sequential tasks, parallel computations require managing RNG streams carefully, often using types like "L'Ecuyer-CMRG" or functions such as `clusterSetRNGStream()` for synchronization. Each framework requires specific adjustments to ensure consistent results, emphasizing the importance of understanding how each backend manages RNG in parallel environments.
+
+## Closing Thoughts 
+
+While we've explored the basics of reproducibility in parallel computing with simple examples, the challenges extend beyond random number generation. Issues such as process synchronization, using tools like lock files, become critical in multi-process environments. Floating-point arithmetic adds complexity, particularly when distributed across heterogeneous systems with varying architectures and precision. Managing dependencies also becomes more intricate as tasks grow in complexity, and ensuring error recovery in a controlled manner is vital to avoid crashes or inconsistent results in large-scale operations.
+
+Powerful tools like `{targets}` and `{crew}` can help tackle these advanced challenges. `{targets}` is a workflow orchestration tool that manages dependencies, automates reproducible pipelines, and ensures consistent results across runs. Meanwhile, `{crew}` extends this by efficiently managing distributed computing tasks, allowing for seamless scaling, load balancing, and error handling across local processes or cloud environments. Together, these tools simplify the execution of complex high-performance computing (HPC) workflows, providing flexibility and robustness for scaling computations while trying for maintaining control and reproducibility.
+
+This blog post has hopefully increased your intuition about the challenges that may arise when incorporating HPC into your work. By understanding these complexities, you’ll be better positioned to make informed decisions about the trade-offs—such as balancing performance and reproducibility — that are most relevant to your specific case. As your computations scale, finding the right balance between efficiency, accuracy, and reproducibility will be crucial for the success of your projects.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
