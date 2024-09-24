@@ -80,16 +80,19 @@ library("dplyr", warn.conflicts = FALSE)
 daemons(4)
 
 # load libraries on each worker and set up logging to a file
-everywhere({
-  library("dplyr")
-  library("tidyr")
-  library("mirai")
-  library("tidylog", warn.conflicts = FALSE)
-  
-  # Define function to log messages to the log file
-  log_to_file <- \(txt) cat(txt, file = log_file, sep = "\n", append = TRUE)
-  options("tidylog.display" = list(message, log_to_file))
-}, log_file = "log.txt")
+everywhere(
+  {
+    library("dplyr")
+    library("tidyr")
+    library("mirai")
+    library("tidylog", warn.conflicts = FALSE)
+
+    # Define function to log messages to the log file
+    log_to_file <- \(txt) cat(txt, file = log_file, sep = "\n", append = TRUE)
+    options("tidylog.display" = list(message, log_to_file))
+  },
+  log_file = "log.txt"
+)
 
 # perform computations in parallel
 m <- mirai_map(letters[1:3], \(x) {
