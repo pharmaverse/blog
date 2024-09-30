@@ -1,0 +1,64 @@
+---
+title: "How I Rebuilt a Lost ECG Data Script in R"
+author:
+  - name: Vladyslav Shuliar
+description: "A Data Science placement student shares their experience of rewriting a lost R script to regenerate an essential ECG dataset for the open-source *pharmaversesdtm* project. The post covers their approach to data exploration, identifying key parameters, and overcoming challenges in recreating the dataset from scratch."
+# Note that the date below will be auto-updated when the post is merged.
+date: "2024-09-30"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [SDTM, Community, Technical]
+# Feel free to change the image
+image: "pharmaverse.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_how__i__reb..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+# Rebuilding a Lost Script: My Journey into Open-Source Data Science
+
+As a new Data Science placement student, I was given an exciting opportunity to sharpen my R programming skills while contributing to the open-source community. Under the guidance of my manager, Edoardo Mancini, I took on a unique and challenging task for *pharmaversesdtm*, which tested both my technical know-how and problem-solving abilities.
+
+## The Challenge: Rewriting a Lost Script
+
+One of the open-source datasets from CDISC, specifically the Electrocardiogram (ECG) data, had been created by a script that had unfortunately been lost and couldn’t be recovered. This was a major issue because the program used to retrieve and process the ECG data was essential for future work. My task was to write a new R script from scratch to regenerate the ECG dataset—one that closely matched the original in both structure and content.
+
+## My Approach: Reverse-Engineering the Data
+
+The existing ECG dataset contained over 25,000 entries, and without the original code, I had to manually explore and make sense of the data to understand how it had been generated. Here's how I approached it:
+
+### 1. Data Exploration and Analysis
+I started by thoroughly analysing the available ECG dataset. My goal was to identify patterns, structures, and key variables that were likely involved in creating the original dataset. By digging deep into the data, I could understand how it was organised and what factors were critical to replicate.
+
+### 2. Identifying the Parameters
+As I explored the dataset, I focused on identifying which features were crucial for recreating the lost data. By paying close attention to trends and relationships between different variables, I could form a rough idea of how the original script might have worked.
+
+### 3. Writing the New R Script
+Armed with insights from my analysis, I set about writing a new R script to replicate the lost one. This involved a lot of trial and error, as I kept refining the code to ensure it generated a dataset that closely resembled the original ECG data in both structure and content.
+
+## Challenges and Solutions
+
+Working with a dataset of over 25,000 entries brought its own challenges. Making sure the script was efficient and scalable while still producing accurate, high-quality data was a key focus. I used a range of R techniques to streamline the process and make sure the dataset followed the original patterns.
+
+## The Result: A Recreated ECG Dataset
+
+After days of analysis, coding, and refinement, I successfully wrote an R script that could regenerate the lost ECG dataset. This project not only helped me improve my R programming skills but also gave me valuable experience in reverse-engineering data, exploring large healthcare datasets, and solving practical problems in the open-source world.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
