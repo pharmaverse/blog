@@ -51,6 +51,116 @@ Working with a dataset of over 25,000 entries brought its own challenges. Making
 
 After days of analysis, coding, and refinement, I successfully wrote an R script that could regenerate the lost ECG dataset. This project not only helped me improve my R programming skills but also gave me valuable experience in reverse-engineering data, exploring large healthcare datasets, and solving practical problems in the open-source world.
 
+
+## Main Parts of the Code
+
+In this section, I’ll walk through the most important pieces of the R script I wrote to recreate the ECG dataset. The code involved generating a set of dummy patient data, complete with visit information and random test results, based on existing patterns from the original dataset.
+
+### 1. Loading Libraries and Data
+
+To begin, I load the necessary libraries and read in the vital signs (`vs`) dataset. The seed is set to ensure that the random data generation is reproducible.
+
+```r
+library(dplyr)
+library(metatools)
+
+data("vs")
+set.seed(123)
+```
+
+### 2. Extracting Unique Date/Time of Measurements
+
+Next, I extract the unique combination of subject IDs, visit names, and visit dates from the `vs` dataset. This data will be used later to match the generated ECG data to the correct visit and time points.
+
+```r
+egdtc <- vs %>%
+  select(USUBJID, VISIT, VSDTC) %>%
+  distinct() %>%
+  rename(EGDTC = VSDTC)
+```
+
+### 3. Generating a Grid of Patient Data
+
+Here, I create a grid of all possible combinations of subject IDs, test codes (e.g., `QT`, `HR`, `RR`, `ECGINT`), time points (e.g., after lying down, after standing), and visits. These combinations represent different test results across multiple visits.
+
+```r
+eg <- expand.grid(
+  USUBJID = unique(vs$USUBJID),
+  EGTESTCD = c("QT", "HR", "RR", "ECGINT"),
+  EGTPT = c("AFTER LYING DOWN FOR 5 MINUTES", "AFTER STANDING FOR 1 MINUTE", "AFTER STANDING FOR 3 MINUTES"),
+  VISIT = c(
+    "SCREENING 1",
+    "SCREENING 2",
+    "BASELINE",
+    "AMBUL ECG PLACEMENT",
+    "WEEK 2",
+    "WEEK 4",
+    "AMBUL ECG REMOVAL",
+    "WEEK 6",
+    "WEEK 8",
+    "WEEK 12",
+    "WEEK 16",
+    "WEEK 20",
+    "WEEK 24",
+    "WEEK 26",
+    "RETRIEVAL"
+  ), stringsAsFactors = FALSE
+)
+```
+
+### 4. Generating Random Test Results
+
+For each combination in the grid, I generate random test results using a normal distribution to simulate realistic values for each test code.
+
+```r
+EGSTRESN = case_when(
+      EGTESTCD == "RR" & EGELTM == "PT5M" ~ floor(rnorm(n(), 543.9985, 80)),
+      EGTESTCD == "RR" & EGELTM == "PT3M" ~ floor(rnorm(n(), 536.0161, 80)),
+      EGTESTCD == "RR" & EGELTM == "PT1M" ~ floor(rnorm(n(), 532.3233, 80)),
+      EGTESTCD == "HR" & EGELTM == "PT5M" ~ floor(rnorm(n(), 70.04389, 8)),
+      EGTESTCD == "HR" & EGELTM == "PT3M" ~ floor(rnorm(n(), 74.27798, 8)),
+      EGTESTCD == "HR" & EGELTM == "PT1M" ~ floor(rnorm(n(), 74.77461, 8)),
+      EGTESTCD == "QT" & EGELTM == "PT5M" ~ floor(rnorm(n(), 450.9781, 60)),
+      EGTESTCD == "QT" & EGELTM == "PT3M" ~ floor(rnorm(n(), 457.7265, 60)),
+      EGTESTCD == "QT" & EGELTM == "PT1M" ~ floor(rnorm(n(), 455.3394, 60))
+    )
+```
+
+### 5. Finalizing the Dataset
+
+Finally, I'm adding labels to the dataframe for easier analysis and future use.
+
+```r
+add_labels(
+    STUDYID = "Study Identifier",
+    DOMAIN = "Domain Abbreviation",
+    USUBJID = "Unique Subject Identifier",
+    EGSEQ = "Sequence Number",
+    EGTESTCD = "ECG Test Short Name",
+    EGTEST = "ECG Test Name",
+    EGORRES = "Result or Finding in Original Units",
+    EGORRESU = "Original Units",
+    EGELTM = "Elapsed Time",
+    EGSTRESC = "Character Result/Finding in Std Format",
+    EGSTRESN = "Numeric Result/Finding in Standard Units",
+    EGSTRESU = "Standard Units",
+    EGSTAT = "Completion Status",
+    EGLOC = "Location of Vital Signs Measurement",
+    EGBLFL = "Baseline Flag",
+    VISITNUM = "Visit Number",
+    VISIT = "Visit Name",
+    VISITDY = "Planned Study Day of Visit",
+    EGDTC = "Date/Time of Measurements",
+    EGDY = "Study Day of Vital Signs",
+    EGTPT = "Planned Time Point Number",
+    EGTPTNUM = "Time Point Number",
+    EGELTM = "Planned Elapsed Time from Time Point Ref",
+    EGTPTREF = "Time Point Reference"
+  )
+```
+
+This structured approach allowed me to successfully recreate the lost ECG dataset, providing a solid foundation for future analysis and research.
+
 <!--------------- appendices go here ----------------->
 
 ```{r, echo=FALSE}
