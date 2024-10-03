@@ -24,7 +24,7 @@ long_slug <- "zzz_DO_NOT_EDIT_roxy.shinyl..."
 
 ![](roxy.shinylive.gif)
 
-Continuing my exploration of WebR, I'm happy to introduce a new tool for Shiny package developers - [`roxy.shinylive`](https://insightsengineering.github.io/roxy.shinylive/). The package is designed for enyone building their Shiny applications or modules as a R package. With just a few lines of code, you can easily embed an iframe to a Shinylive application based on the code from the "Examples" section of your documentation.
+Continuing my exploration of WebR, I'm happy to introduce a new tool for Shiny package developers - [`roxy.shinylive`](https://insightsengineering.github.io/roxy.shinylive/). The package is designed for anyone building their Shiny applications or modules as a R package. With just a few lines of code, you can easily embed an `iframe` to a Shinylive application based on the code from the "Examples" section of your documentation.
 
 Typically, you might have something like this:
 ```{r}
@@ -55,11 +55,11 @@ Now, let's use `@examplesShinyLive` tag and make small adjustments to the exampl
 
 Voilà! Now your documentation includes Shinylive app! As a result, the end-users are able to see your application in action without needing to install anything. This makes your package more accessible and more closer to the end-users.
 
-In addition, the package exports `create_shinylive_url()` function, which creates an URL based on the application code as a string. This opens up more possibilities, such as embedding application(s) in README files, vignettes or even outside of package documentation. Combined with `knitr::knit_code$get("<chunk id>")` and `knitr::include_url()`, you can reuse other chunk(s) code to embed iframes in RMarkdown or Quarto documents.
+In addition, the package exports `create_shinylive_url()` function, which creates an URL based on the application code as a string. This opens up more possibilities, such as embedding application(s) in README files, vignettes or even outside of package documentation. Combined with `knitr::knit_code$get("<chunk id>")` and `knitr::include_url()`, you can reuse other chunk(s) code to embed `iframe`s in RMarkdown or Quarto documents.
 
 For practical example of implementation, please see the documentation of [`teal.modules.general`](https://insightsengineering.github.io/teal.modules.general/main/) or [`teal.modules.clinical`](https://insightsengineering.github.io/teal.modules.clinical/main/) packages with more to come.
 
-Special thanks to Sam Parmar from Pfizer - the author [`lzstring`](https://parmsam.github.io/lzstring-r/) package, which makes encoding / deconding possible. Yet another example of cross-pharma collaboration!
+Special thanks to Sam Parmar from Pfizer - the author [`lzstring`](https://parmsam.github.io/lzstring-r/) package, which makes encoding / decoding possible. Yet another example of cross-pharma collaboration!
 
 PS. Yes - it's coming to CRAN soon.
 
