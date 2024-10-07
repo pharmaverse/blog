@@ -82,16 +82,18 @@ workflow script for parallel execution.
 ```{r, message=FALSE, eval=TRUE}
 mirai_workflow <- substitute({
   library("mirai")
-  library("dplyr", warn.conflicts = FALSE)
+  library("dplyr")
+  
   log_file <- tempfile()
+  
   # start parallel workers
   mirai::daemons(4)
   
   # load libraries on each worker and set up logging to a file
   mirai::everywhere(
     {
-      library("dplyr", warn.conflicts = FALSE)
-      library("tidylog", warn.conflicts = FALSE)
+      library("dplyr")
+      library("tidylog")
   
       # Define function to log messages to the log file
       log_to_file <- \(txt) cat(txt, file = log_file, sep = "\n", append = TRUE)
@@ -102,11 +104,11 @@ mirai_workflow <- substitute({
   
   # perform computations in parallel
   m <- mirai_map(letters[1:5], \(x) {
-    mutate(tidyr::tibble(.rows = 1), "{x}" := "foo")
+    mutate(tibble(.rows = 1), "{x}" := "foo")
   })
   
   # collect results
-  result <- m[] |> dplyr::bind_cols()
+  result <- m[] |> bind_cols()
   
   mirai::daemons(0)
   
@@ -209,19 +211,19 @@ cohorts <- tribble(
 )
 
 # Start daemons with consistent RNG streams
-x <- daemons(4, dispatcher = FALSE, seed = 123)
+x <- mirai::daemons(4, dispatcher = FALSE, seed = 123)
 
 # Parallel simulation for each row of the cohorts table
-m <- mirai_map(cohorts, \(patient_count, mean_effect, sd_effect) {
+m <- mirai::mirai_map(cohorts, \(patient_count, mean_effect, sd_effect) {
   dplyr::tibble(
     patient_id = 1:patient_count,
     efficacy = rnorm(patient_count, mean = mean_effect, sd = sd_effect)
   )
 })
 
-results <- m[] |> dplyr::bind_rows()
+results <- m[] |> bind_rows()
 
-x <- daemons(0, dispatcher = FALSE)
+x <- mirai::daemons(0, dispatcher = FALSE)
 
 results %>%
   group_by(patient_id) %>%
@@ -244,9 +246,6 @@ inefficient resource utilization when tasks are unevenly distributed, as some
 daemons may remain idle. While reproducibility is prioritized, we sacrifice
 some performance, especially when handling tasks with varying workloads.
 
-> "In prioritizing reproducibility, we inevitably sacrifice some performance, 
-especially when tasks with unequal workloads are distributed across daemons."
-
 Reproducibility becomes more complex when using parallelization frameworks
 like `{parallelMap}`, `{doFuture}`, and `{future}`, as each handles random 
 number generation (RNG) differently. While `set.seed()` is sufficient for 
@@ -256,6 +255,15 @@ often using types like "L'Ecuyer-CMRG" or functions such as
 specific adjustments to ensure consistent results, emphasizing the
 importance of understanding how each backend manages RNG in parallel
 environments.
+
+Even without random numbers, seemingly simple tasks—like summing over 
+floating-point numbers—can yield different results in parallel processing. This 
+is because floating-point numbers are not represented exactly in the system, 
+and the final result depends on the order of operations. In a parallel 
+environment, where tasks are executed asynchronously, the order in which 
+operations occur may differ, leading to slight variations in the final output. 
+These differences become more pronounced in large-scale computations,
+complicating the reproducibility of results.
 
 ## Closing Thoughts 
 
