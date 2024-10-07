@@ -74,10 +74,11 @@ logging. For this, we will also use the
 `{dplyr}` operations, providing insight into how the computations are executed
 across multiple workers. 
 
-Our workflow will be constructed in a script and executed using the `{logrx}`
-package from Pharmaverse. We will craft the workflow as an expression using the
-`base::substitute()` function, which will later be used to generate the complete
-workflow script for parallel execution.
+We'll create our workflow in a script and run it using the `{logrx}` package 
+from Pharmaverse. The workflow will be written as an expression using 
+`base::substitute()`, which will help generate the complete script. In our 
+example, we'll start four daemons. A daemon is a background process that runs in
+the background continuously and handles specific computing tasks.
 
 ```{r, message=FALSE, eval=TRUE}
 mirai_workflow <- substitute({
@@ -126,7 +127,7 @@ In the above code chunk, we set up a parallel processing environment using the
 function in parallel to a tibble for each element of `letters`, logging the
 operations to a file using the `{tidylog}` package. However, while we can log
 each operation as it happens, due to the parallel nature of `{mirai}`, the 
-logging does not occur in a controlled or sequential order. *Each daemon 
+logging does not occur in a controlled or sequential order. *Each daemon
 executes its task independently, and the order of logging in the file will
 depend on the completion times of these parallel processes rather than the
 intended flow of operations.*
