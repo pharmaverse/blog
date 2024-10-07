@@ -11,9 +11,9 @@
         options(tidylog.display = list(message, log_to_file))
     }, log_file = log_file)
     m <- mirai_map(letters[1:5], function(x) {
-        mutate(tibble(.rows = 1), `:=`("{x}", "foo"))
+        mutate(tibble(.rows = 1), `:=`("{x}", sample(1:100, 1)))
     })
-    result <- dplyr::bind_cols(m[])
+    result <- bind_cols(m[])
     mirai::daemons(0)
     print(list(logs = readLines(log_file), result = result))
 }

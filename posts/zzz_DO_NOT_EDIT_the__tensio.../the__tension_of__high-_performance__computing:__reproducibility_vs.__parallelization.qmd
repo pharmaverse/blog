@@ -104,7 +104,7 @@ mirai_workflow <- substitute({
   
   # perform computations in parallel
   m <- mirai_map(letters[1:5], \(x) {
-    mutate(tibble(.rows = 1), "{x}" := "foo")
+    mutate(tibble(.rows = 1), "{x}" := sample(1:100, 1))
   })
   
   # collect results
@@ -151,7 +151,7 @@ mirai_workflow |>
 
 Next, we execute the script using `logrx::axecute()`, which not only runs the
 workflow but also logs key metadata and outputs for enhanced traceability and
-reproducibility, as outlined in the `{logrx}` vignettes:
+reproducibility:
 
 ```{r, eval=FALSE}
 logrx::axecute("mirai_workflow.R", to_report = "result")
@@ -192,10 +192,12 @@ resource-free task management. However, its asynchronous execution can hinder
 reproducibility, especially with random number generation (RNG) or tasks needing
 strict order.
 
-To enhance reproducibility, `{mirai}` allows disabling the dispatcher, directly
-connecting the host to daemons in a round-robin fashion. While less efficient, 
-this approach provides greater control over task execution and is better suited
-for ensuring reproducibility by initializing 
+To enhance reproducibility, `{mirai}` allows disabling the dispatcher which 
+usually decides the order in which tasks are run. Instead, it connects directly
+to the workers one by one in a simple order
+(see [round-robin](https://en.wikipedia.org/wiki/Round-robin_scheduling)). While 
+less efficient, this approach provides greater control over task execution and 
+is better suited for ensuring reproducibility by initializing 
 [L'Ecuyer-CMRG RNG streams](https://pubsonline.informs.org/doi/10.1287/opre.47.1.159).
 
 ```{r}
