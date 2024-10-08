@@ -201,6 +201,11 @@ less efficient, this approach provides greater control over task execution and
 is better suited for ensuring reproducibility by initializing 
 [L'Ecuyer-CMRG RNG streams](https://pubsonline.informs.org/doi/10.1287/opre.47.1.159).
 
+In the following example, we simulate drug efficacy across different patient
+cohorts using parallel processing with the `{mirai}` package. We define three
+cohorts, each with a different mean drug effect and standard deviation, and 
+initialize four daemons to handle the computations. 
+
 ```{r}
 library(mirai)
 library(dplyr, warn.conflicts = FALSE)
@@ -236,37 +241,34 @@ results %>%
   )
 ```
 
-In this example, we use `tribble()` to define the simulation parameters and 
+We used `tribble()` to define the simulation parameters and 
 initialize 4 daemons with `dispatcher = FALSE` and a fixed seed to ensure 
 consistent random number generation across tasks. The `mirai_map()` function
 parallelizes the drug efficacy simulation, and the results are combined using 
-`bind_rows()` for further analysis. Disabling the dispatcher gives more control
-over task execution, ensuring reproducibility. If you repeat the computation you
-will notice that it generates consistent results.
+`bind_rows()` for further analysis. 
 
-However, this approach comes at a cost. Disabling the dispatcher may lead to
-inefficient resource utilization when tasks are unevenly distributed, as some 
-daemons may remain idle. While reproducibility is prioritized, we sacrifice
-some performance, especially when handling tasks with varying workloads.
+Disabling the dispatcher gives more control over task execution, ensuring 
+reproducibility. If you repeat the computation you
+will notice that it generates consistent results. However, this approach comes 
+at a cost. Disabling the dispatcher may lead to inefficient resource utilization
+when tasks are unevenly distributed, as some daemons may remain idle. While 
+reproducibility is prioritized, we sacrifice some performance, especially 
+when handling tasks with varying workloads.
 
-Reproducibility becomes more complex when using parallelization frameworks
-like `{parallelMap}`, `{doFuture}`, and `{future}`, as each handles random 
-number generation (RNG) differently. While `set.seed()` is sufficient for 
-sequential tasks, parallel computations require managing RNG streams carefully, 
-often using types like "L'Ecuyer-CMRG" or functions such as 
-`clusterSetRNGStream()` for synchronization. Each framework requires 
-specific adjustments to ensure consistent results, emphasizing the
-importance of understanding how each backend manages RNG in parallel
-environments.
+Reproducibility becomes trickier when using parallelization frameworks like 
+`{parallelMap}`, `{doFuture}`, and `{future}`, as each handles random number 
+generation (RNG) differently. While `set.seed()` works for sequential tasks, 
+parallel tasks need careful management of RNG streams, often using specific 
+methods like "L’Ecuyer-CMRG" or functions like `clusterSetRNGStream()` to keep 
+results consistent. Each framework has its own approach, so it's important to 
+understand how each one manages RNG to ensure reproducibility.
 
-Even without random numbers, seemingly simple tasks—like summing over 
-floating-point numbers—can yield different results in parallel processing. This 
-is because floating-point numbers are not represented exactly in the system, 
-and the final result depends on the order of operations. In a parallel 
-environment, where tasks are executed asynchronously, the order in which 
-operations occur may differ, leading to slight variations in the final output. 
-These differences become more pronounced in large-scale computations,
-complicating the reproducibility of results.
+Even without random numbers, simple tasks—like adding floating-point numbers—can
+give different results in parallel processing. This happens because 
+floating-point numbers aren’t exactly represented, and the order of operations 
+can affect the outcome. In parallel environments, where tasks finish in 
+different orders, these small differences can add up, making it harder to 
+reproduce results in large computations.
 
 ## Closing Thoughts 
 
