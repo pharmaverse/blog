@@ -1,0 +1,80 @@
+---
+title: "roxy.shinylive - shinylive applications in roxygen documentation"
+author:
+  - name: Pawel Rucki
+description: "Introducing a `roxy.shinylive` - a new tool for Shiny package developers"
+# Note that the date below will be auto-updated when the post is merged.
+date: "2024-10-07"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Shiny, Technical]
+# Feel free to change the image
+image: "roxy.shinylive.gif"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_roxy.shinyl..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+![](roxy.shinylive.gif)
+
+Continuing my exploration of WebR (see my previous post [here](https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html)), I'm happy to introduce a new tool for Shiny package developers - [{roxy.shinylive}](https://insightsengineering.github.io/roxy.shinylive/). The package is designed for anyone building their Shiny applications or modules as an R package. With just a few lines of code, you can easily embed an `iframe` to a Shinylive application based on the code from the "Examples" section of your documentation.
+
+Typically, you might have something like this:
+```{r}
+#| eval: false
+#' This is a super app constructor.
+#' @param ... something
+#' @return shiny app object
+#' @examples
+#' if (interactive()) {
+#'   my_super_app()
+#' }
+my_super_app <- function(...) {
+  ...
+  shiny::shinyApp(...)
+}
+```
+
+Now, let's use `@examplesShinyLive` tag and make small adjustments to the example code to make it work in Shinylive:
+```{r}
+#| eval: false
+#' @examplesShinyLive
+#' library(mypackage)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examples
+#' (...)
+```
+
+Voilà! Now your documentation includes Shinylive app! As a result, the end-users are able to see your application in action without needing to install anything. This makes your package more accessible and closer to the end-users.
+
+In addition, the package exports `create_shinylive_url()` function, which creates an URL based on the application code as a string. This opens up more possibilities, such as embedding application(s) in README files, vignettes or even outside of package documentation. Combined with `knitr::knit_code$get("<chunk id>")` and `knitr::include_url()`, you can reuse other chunk(s) code to embed `iframe`s in RMarkdown or Quarto documents.
+
+For a practical example of implementation, please see the documentation of [`teal.modules.general`](https://insightsengineering.github.io/teal.modules.general/main/) or [`teal.modules.clinical`](https://insightsengineering.github.io/teal.modules.clinical/main/): a [function documentation](https://insightsengineering.github.io/teal.modules.general/main/reference/tm_data_table.html#examples-in-shinylive) or a [vignette](https://insightsengineering.github.io/teal.modules.general/main/articles/using-data-table.html#try-it-out-in-shinylive). (Please note that it might take a while for WebR to download and install all the packages)
+
+Special thanks to Sam Parmar from Pfizer - the author of the [{lzstring}](https://parmsam.github.io/lzstring-r/) package, which makes encoding / decoding possible. Yet another example of cross-pharma collaboration!
+
+PS. Yes - it's coming to CRAN soon.
+
+PS2. I've been also thinking about a similar solution for non-Shiny R codes. See [this](https://github.com/r-lib/pkgdown/issues/2348) and [this](https://github.com/r-wasm/webr/issues/356) issues for more updates.
+
+I’d love for you to try out {roxy.shinylive} and see how it can enhance your Shiny package development workflow. Whether you have feedback, suggestions, or feature requests, please feel free to file an issue on the https://github.com/insightsengineering/roxy.shinylive, or join our [`pharmaverse` Slack channel](https://pharmaverse.slack.com/) to stay up to date and be part of the discussion.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
