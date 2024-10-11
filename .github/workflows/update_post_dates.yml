@@ -19,11 +19,8 @@ jobs:
       - name: Run update_post_dates
         run: Rscript R/update_post_dates.R  # running the R script with Rscript
 
-      - name: Print working directory
-        run: pwd
-
       - name: Configure Git safe directory
-        run: git config --global --add safe.directory /home/runner/work/blog/blog
+        run: git config --global --add safe.directory /__w/blog/blog
 
       - name: Check for changes
         id: check_changes
