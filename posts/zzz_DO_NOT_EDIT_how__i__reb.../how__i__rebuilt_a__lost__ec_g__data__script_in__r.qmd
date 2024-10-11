@@ -77,6 +77,19 @@ egdtc <- vs %>%
   rename(EGDTC = VSDTC)
 ```
 
+The output:
+
+```
+USUBJID     VISIT               EGDTC     
+  <chr>       <chr>               <chr>     
+1 01-701-1015 SCREENING 1         2013-12-26
+2 01-701-1015 SCREENING 2         2013-12-31
+3 01-701-1015 BASELINE            2014-01-02
+4 01-701-1015 AMBUL ECG PLACEMENT 2014-01-14
+5 01-701-1015 WEEK 2              2014-01-16
+6 01-701-1015 WEEK 4              2014-01-30
+```
+
 ### 3. Generating a Grid of Patient Data
 
 Here, I create a grid of all possible combinations of subject IDs, test codes (e.g., `QT`, `HR`, `RR`, `ECGINT`), time points (e.g., after lying down, after standing), and visits. These combinations represent different test results collected across multiple visits.
@@ -112,6 +125,18 @@ eg <- expand.grid(
     "RETRIEVAL"
   ), stringsAsFactors = FALSE
 )
+```
+
+The output:
+
+```
+      USUBJID EGTESTCD                          EGTPT       VISIT
+1 01-701-1015       QT AFTER LYING DOWN FOR 5 MINUTES SCREENING 1
+2 01-701-1015       HR AFTER LYING DOWN FOR 5 MINUTES SCREENING 1
+3 01-701-1015       RR AFTER LYING DOWN FOR 5 MINUTES SCREENING 1
+4 01-701-1015   ECGINT AFTER LYING DOWN FOR 5 MINUTES SCREENING 1
+5 01-701-1015       QT    AFTER STANDING FOR 1 MINUTE SCREENING 1
+6 01-701-1015       HR    AFTER STANDING FOR 1 MINUTE SCREENING 1
 ```
 
 ### 4. Generating Random Test Results
