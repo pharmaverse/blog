@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Kangjie Zhang">
-<meta name="dcterms.date" content="2023-06-27">
-<meta name="description" content="Use admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones">
+<meta name="author" content="Pawel Rucki">
+<meta name="dcterms.date" content="2024-10-07">
+<meta name="description" content="Introducing a roxy.shinylive - a new tool for Shiny package developers">
 
-<title>Derive a new parameter computed from the value of other parameters – pharmaverse blog</title>
+<title>roxy.shinylive - shinylive applications in roxygen documentation – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -60,25 +60,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../../">
-<link href="../../../media/pharmaverseblog.png" rel="icon" type="image/png">
-<script src="../../../site_libs/cookie-consent/cookie-consent.js"></script>
-<link href="../../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
-<script src="../../../site_libs/quarto-html/quarto.js"></script>
-<script src="../../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../media/pharmaverseblog.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -140,40 +140,11 @@ cookieconsent.run({
       }
 </style>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="../../../styles.css">
-<meta property="og:title" content="Derive a new parameter computed from the value of other parameters – pharmaverse blog">
-<meta property="og:description" content="Use admiral::derive_param_computed() like a calculator to derive new parameters/rows based on existing ones">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.jpg">
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="roxy.shinylive - shinylive applications in roxygen documentation – pharmaverse blog">
+<meta property="og:description" content="Introducing a roxy.shinylive - a new tool for Shiny package developers">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_roxy.shinyl.../roxy.shinylive.gif">
 <meta property="og:site_name" content="pharmaverse blog">
 </head>
 
@@ -184,7 +155,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../../../index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">pharmaverse blog</span>
     </a>
   </div>
@@ -200,7 +171,7 @@ window.Quarto = {
 <span class="menu-text"></span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../../session_info.html"> 
+    <a class="nav-link" href="../../session_info.html"> 
 <span class="menu-text">Session Info</span></a>
   </li>  
 </ul>
@@ -214,14 +185,15 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Derive a new parameter computed from the value of other parameters</h1>
+      <h1 class="title">roxy.shinylive - shinylive applications in roxygen documentation</h1>
                   <div>
         <div class="description">
-          Use <code>admiral::derive_param_computed()</code> like a calculator to derive new parameters/rows based on existing ones
+          Introducing a <code>roxy.shinylive</code> - a new tool for Shiny package developers
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">ADaM</div>
+                <div class="quarto-category">Shiny</div>
+                <div class="quarto-category">Technical</div>
               </div>
                   </div>
   </div>
@@ -232,14 +204,14 @@ window.Quarto = {
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Kangjie Zhang </p>
+               <p>Pawel Rucki </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 27, 2023</p>
+        <p class="date">October 7, 2024</p>
       </div>
     </div>
     
@@ -250,20 +222,7 @@ window.Quarto = {
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a>
-  <ul class="collapse">
-  <li><a href="#derivation" id="toc-derivation" class="nav-link" data-scroll-target="#derivation">Derivation</a></li>
-  <li><a href="#loading-packages-and-creating-example-data" id="toc-loading-packages-and-creating-example-data" class="nav-link" data-scroll-target="#loading-packages-and-creating-example-data">Loading Packages and Creating Example Data</a></li>
-  <li><a href="#derive-new-parameter" id="toc-derive-new-parameter" class="nav-link" data-scroll-target="#derive-new-parameter">Derive New Parameter</a></li>
-  <li><a href="#compare" id="toc-compare" class="nav-link" data-scroll-target="#compare">Compare</a></li>
-  </ul></li>
-  </ul>
-</nav>
+    
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -276,85 +235,41 @@ window.Quarto = {
 
 
 
-<!--------------- my typical setup ----------------->
+<!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>When creating ADaM Basic Data Structure (BDS) datasets, we often encounter deriving a new parameter based on the analysis values (e.g., AVAL) of other parameters.</p>
-<p>The <a href="https://pharmaverse.github.io/admiral/"><code>admiral</code></a> function <a href="https://pharmaverse.github.io/admiral/reference/derive_param_computed.html"><code>derive_param_computed()</code></a> adds a parameter computed from the analysis value of other parameters.</p>
-<p>It works like a calculator to derive new records without worrying about merging and combining datasets, all you need is a derivation formula, which also improves the readability of the code.</p>
-</section>
-<section id="example" class="level2">
-<h2 class="anchored" data-anchor-id="example">Example</h2>
-<p>A value level validation use case, where <code>derive_param_computed()</code> is used to validate a derived parameter - <code>PARAMCD = ADPCYMG</code> (Actual Dose per Cycle) in ADEX dataset.</p>
-<section id="derivation" class="level3">
-<h3 class="anchored" data-anchor-id="derivation">Derivation</h3>
-<p>Actual Dose per Cycle is derived from the Total Amount of Dose (<code>PARAMCD = TOTDOSE</code>) / Number of Cycles (<code>PARAMCD = NUMCYC</code>)</p>
-<p>In this example, <code>ADEX.AVAL when ADEX.PARAMCD = ADPCYMG</code> can be derived as:</p>
-<p><span class="math display">\[
-AVAL (PARAMCD = ADPCYMG) = \frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCYC)}
-\]</span></p>
-</section>
-<section id="loading-packages-and-creating-example-data" class="level3">
-<h3 class="anchored" data-anchor-id="loading-packages-and-creating-example-data">Loading Packages and Creating Example Data</h3>
+<p><img src="roxy.shinylive.gif" class="img-fluid"></p>
+<p>Continuing my exploration of WebR (see my previous post <a href="https://pharmaverse.github.io/blog/posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html">here</a>), I’m happy to introduce a new tool for Shiny package developers - <a href="https://insightsengineering.github.io/roxy.shinylive/">{roxy.shinylive}</a>. The package is designed for anyone building their Shiny applications or modules as an R package. With just a few lines of code, you can easily embed an <code>iframe</code> to a Shinylive application based on the code from the “Examples” section of your documentation.</p>
+<p>Typically, you might have something like this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(diffdf)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>adex <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID,  <span class="sc">~</span>PARAMCD,  <span class="sc">~</span>PARAM,                       <span class="sc">~</span>AVAL,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"101"</span>,     <span class="st">"TOTDOSE"</span>, <span class="st">"Total Amount of Dose (mg)"</span>,  <span class="dv">180</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"101"</span>,     <span class="st">"NUMCYC"</span>,  <span class="st">"Number of Cycles"</span>,           <span class="dv">3</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' This is a super app constructor.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' @param ... something</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' @return shiny app object</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#' @examples</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#' if (interactive()) {</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#'   my_super_app()</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#' }</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>my_super_app <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  shiny<span class="sc">::</span><span class="fu">shinyApp</span>(...)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="derive-new-parameter" class="level3">
-<h3 class="anchored" data-anchor-id="derive-new-parameter">Derive New Parameter</h3>
+<p>Now, let’s use <code>@examplesShinyLive</code> tag and make small adjustments to the example code to make it work in Shinylive:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>adex_admiral <span class="ot">&lt;-</span> <span class="fu">derive_param_computed</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  adex,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameters =</span> <span class="fu">c</span>(<span class="st">"TOTDOSE"</span>, <span class="st">"NUMCYC"</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">set_values_to =</span> <span class="fu">exprs</span>(</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">PARAMCD =</span> <span class="st">"ADPCYMG"</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">PARAM =</span> <span class="st">"Actual Dose per Cycle (mg)"</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">AVAL =</span> AVAL.TOTDOSE <span class="sc">/</span> AVAL.NUMCYC</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#' @examplesShinyLive</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#' library(mypackage)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#' interactive &lt;- function() TRUE</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#' {{ next_example }}</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#' @examples</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#' (...)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 4
-  USUBJID PARAMCD PARAM                       AVAL
-  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                      &lt;dbl&gt;
-1 101     TOTDOSE Total Amount of Dose (mg)    180
-2 101     NUMCYC  Number of Cycles               3
-3 101     ADPCYMG Actual Dose per Cycle (mg)    60</code></pre>
-</div>
-</div>
-</section>
-<section id="compare" class="level3">
-<h3 class="anchored" data-anchor-id="compare">Compare</h3>
-<p>For validation purpose, the <a href="https://gowerc.github.io/diffdf/reference/diffdf.html">diffdf</a> package is used below to mimic SAS <code>proc compare</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adex_expected <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  adex,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tribble</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>USUBJID,  <span class="sc">~</span>PARAMCD,  <span class="sc">~</span>PARAM,                       <span class="sc">~</span>AVAL,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"101"</span>,     <span class="st">"ADPCYMG"</span>, <span class="st">"Actual Dose per Cycle (mg)"</span>, <span class="dv">60</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">diffdf</span>(adex_expected, adex_admiral, <span class="at">keys =</span> <span class="fu">c</span>(<span class="st">"USUBJID"</span>, <span class="st">"PARAMCD"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>No issues were found!</code></pre>
-</div>
-</div>
+<p>Voilà! Now your documentation includes Shinylive app! As a result, the end-users are able to see your application in action without needing to install anything. This makes your package more accessible and closer to the end-users.</p>
+<p>In addition, the package exports <code>create_shinylive_url()</code> function, which creates an URL based on the application code as a string. This opens up more possibilities, such as embedding application(s) in README files, vignettes or even outside of package documentation. Combined with <code>knitr::knit_code$get("&lt;chunk id&gt;")</code> and <code>knitr::include_url()</code>, you can reuse other chunk(s) code to embed <code>iframe</code>s in RMarkdown or Quarto documents.</p>
+<p>For a practical example of implementation, please see the documentation of <a href="https://insightsengineering.github.io/teal.modules.general/main/"><code>teal.modules.general</code></a> or <a href="https://insightsengineering.github.io/teal.modules.clinical/main/"><code>teal.modules.clinical</code></a>: a <a href="https://insightsengineering.github.io/teal.modules.general/main/reference/tm_data_table.html#examples-in-shinylive">function documentation</a> or a <a href="https://insightsengineering.github.io/teal.modules.general/main/articles/using-data-table.html#try-it-out-in-shinylive">vignette</a>. (Please note that it might take a while for WebR to download and install all the packages)</p>
+<p>Special thanks to Sam Parmar from Pfizer - the author of the <a href="https://parmsam.github.io/lzstring-r/">{lzstring}</a> package, which makes encoding / decoding possible. Yet another example of cross-pharma collaboration!</p>
+<p>PS. Yes - it’s coming to CRAN soon.</p>
+<p>PS2. I’ve been also thinking about a similar solution for non-Shiny R codes. See <a href="https://github.com/r-lib/pkgdown/issues/2348">this</a> and <a href="https://github.com/r-wasm/webr/issues/356">this</a> issues for more updates.</p>
+<p>I’d love for you to try out {roxy.shinylive} and see how it can enhance your Shiny package development workflow. Whether you have feedback, suggestions, or feature requests, please feel free to file an issue on the https://github.com/insightsengineering/roxy.shinylive, or join our <a href="https://pharmaverse.slack.com/"><code>pharmaverse</code> Slack channel</a> to stay up to date and be part of the discussion.</p>
 <!--------------- appendices go here ----------------->
-</section>
-</section>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -366,21 +281,21 @@ AVAL (PARAMCD = ADPCYMG) = \frac{AVAL (PARAMCD = TOTDOSE)}{AVAL (PARAMCD = NUMCY
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-10-11 12:45:25.499703</p>
+<p>2024-10-11 12:44:41.464725</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-27_admiral/valuelevel/derive_param_computed.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2023,
-  author = {Zhang, Kangjie},
-  title = {Derive a New Parameter Computed from the Value of Other
-    Parameters},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{rucki2024,
+  author = {Rucki, Pawel},
+  title = {Roxy.shinylive - Shinylive Applications in Roxygen
+    Documentation},
+  date = {2024-10-07},
+  url = {https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Zhang, Kangjie. 2023. <span>“Derive a New Parameter Computed from the
-Value of Other Parameters.”</span> June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html">https://pharmaverse.github.io/blog/posts/2023-06-27_admiral/valuelevel/derive_param_computed.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-rucki2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Rucki, Pawel. 2024. <span>“Roxy.shinylive - Shinylive Applications in
+Roxygen Documentation.”</span> October 7, 2024. <a href="https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.html">https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
