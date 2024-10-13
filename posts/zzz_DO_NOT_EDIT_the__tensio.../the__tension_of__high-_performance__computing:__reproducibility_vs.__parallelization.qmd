@@ -84,35 +84,35 @@ the background continuously and handles specific computing tasks.
 mirai_workflow <- substitute({
   library("mirai")
   library("dplyr")
-  
+
   log_file <- tempfile()
-  
+
   # start parallel workers
   mirai::daemons(4)
-  
+
   # load libraries on each worker and set up logging to a file
   mirai::everywhere(
     {
       library("dplyr")
       library("tidylog")
-  
+
       # Define function to log messages to the log file
       log_to_file <- \(txt) cat(txt, file = log_file, sep = "\n", append = TRUE)
       options("tidylog.display" = list(message, log_to_file))
     },
     log_file = log_file
   )
-  
+
   # perform computations in parallel
   m <- mirai_map(letters[1:5], \(x) {
     mutate(tibble(.rows = 1), "{x}" := sample(1:100, 1))
   })
-  
+
   # collect results
   result <- m[] |> bind_cols()
-  
+
   mirai::daemons(0)
-  
+
   print(
     list(
       logs = readLines(log_file),
@@ -159,7 +159,7 @@ logrx::axecute("mirai_workflow.R", to_report = "result")
 ```
 
 ```{r cache_exec, eval=FALSE, echo=FALSE}
-#run this to refresh cache and get a non ordered log file
+# run this to refresh cache and get a non ordered log file
 res_to_cache <- source("mirai_workflow.R")
 saveRDS(res_to_cache$value, "cache_execution.rds")
 ```
@@ -235,7 +235,7 @@ m <- mirai::mirai_map(cohorts, \(patient_count, mean_effect, sd_effect) {
 
 results <- m[] |> bind_rows()
 
-x <- mirai::daemons(0, dispatcher = "none") 
+x <- mirai::daemons(0, dispatcher = "none")
 
 results %>%
   group_by(patient_id) %>%
