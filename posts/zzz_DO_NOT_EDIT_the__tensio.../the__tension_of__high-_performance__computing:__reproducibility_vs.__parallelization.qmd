@@ -180,8 +180,8 @@ This is because the daemons run as independent R processes, and the logging
 messages are not propagated back to the parent process in a straightforward
 manner. As described in `{mirai}`'s documentation, daemons are responsible for
 handling tasks asynchronously, and messages logged within these processes do not
-automatically integrate into the parent session. Therefore, the only way to
-access `{tidylog}` messages is indirectly, by reading the dedicated log file
+automatically integrate into the parent session. Therefore, we access 
+`{tidylog}` messages indirectly, by reading the dedicated log file
 (`log_file`) that each worker writes to during execution.
 
 ### Task Dispatching and RNG Management
@@ -219,7 +219,11 @@ cohorts <- tribble(
 )
 
 # Start daemons with consistent RNG streams
-x <- mirai::daemons(4, dispatcher = FALSE, seed = 123)
+x <- mirai::daemons(
+  n = 4,
+  dispatcher = "none", # For mirai versions below 1.3.0, use dispatcher = FALSE
+  seed = 123
+)
 
 # Parallel simulation for each row of the cohorts table
 m <- mirai::mirai_map(cohorts, \(patient_count, mean_effect, sd_effect) {
@@ -231,7 +235,7 @@ m <- mirai::mirai_map(cohorts, \(patient_count, mean_effect, sd_effect) {
 
 results <- m[] |> bind_rows()
 
-x <- mirai::daemons(0, dispatcher = FALSE)
+x <- mirai::daemons(0, dispatcher = "none") 
 
 results %>%
   group_by(patient_id) %>%
@@ -242,7 +246,7 @@ results %>%
 ```
 
 We used `tribble()` to define the simulation parameters and 
-initialize 4 daemons with `dispatcher = FALSE` and a fixed seed to ensure 
+initialize 4 daemons with `dispatcher = "none"` and a fixed seed to ensure 
 consistent random number generation across tasks. The `mirai_map()` function
 parallelizes the drug efficacy simulation, and the results are combined using 
 `bind_rows()` for further analysis. 
