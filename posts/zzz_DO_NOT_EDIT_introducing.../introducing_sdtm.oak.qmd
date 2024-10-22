@@ -1,0 +1,252 @@
+---
+title: "Introducing sdtm.oak"
+author:
+  - name: Rammprasad Ganapathy
+description: "An EDC & Data Standards agnostic solution that enables the pharmaceutical programming community to develop SDTM datasets in R"
+# Note that the date below will be auto-updated when the post is merged.
+date: "2024-10-19"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [SDTM]
+# Feel free to change the image
+image: "logo.svg"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_introducing..."
+# renv::use(lockfile = "renv.lock")
+```
+
+<!--------------- post begins here ----------------->
+
+{sdtm.oak} v0.1 is now available on [CRAN](https://cran.r-project.org/web/packages/sdtm.oak/index.html).
+In this blog post, we will introduce the package, key concepts, and examples. {sdtm.oak} is developed in collaboration with volunteers from several companies, including Roche, Pfizer, GSK, Transition Technologies Science, and Atorus Research. {sdtm.oak} is also sponsored by CDISC COSA with a vision of being part of CDISC 360 to address end-to-end standards development and implementation.
+
+# Filling the Gap
+
+{sdtm.oak} package addresses a critical gap in the Pharmaverse suite by enabling study programmers to create SDTM datasets in R, complementing the existing capabilities for ADaM and TLGs.
+
+Let's explore the challenges with SDTM programming.
+Although SDTM is simpler with less complex derivations compared to ADaM, it presents unique challenges.
+Unlike ADaM, which uses SDTM datasets as its source with a well-defined structure, SDTM relies on raw datasets as input.
+These raw datasets can vary widely in structure, depending on the data collection and EDC system used.
+Even the same eCRF, when designed in different EDC systems, can produce raw datasets with different structures.
+
+Another challenge is the variability in data collection standards.
+Although CDISC has established CDASH data collection standards, many pharmaceutical companies have their own standards, which can differ significantly from CDASH.
+Additionally, since CDASH is not mandated by the FDA, sponsors can choose the data collection standards that best fit their needs.
+
+There are hundreds of EDC systems available in the marketplace, and the data collection standards vary significantly.
+Creating a single open-source package to work with all sorts of raw data formats and data collection standards seemed impossible.
+But here's the good news: not anymore!
+The {sdtm.oak} team has a solution to address this challenge.
+
+{sdtm.oak} is designed to be highly versatile, accommodating varying raw data structures from different EDC systems and external vendors.
+Moreover, {sdtm.oak} is data standards agnostic, meaning it supports both CDISC-defined data collection standards (CDASH) and various proprietary data collection standards defined by pharmaceutical companies.
+The reusable algorithms concept in {sdtm.oak} provides a framework for modular programming, making it a valuable addition to the Pharmaverse ecosystem.
+
+# EDC & Data standards agnostic
+
+We adopted the following innovative approach to make {sdtm.oak} adaptable to various EDC systems and data collection standards:
+
+-   SDTM mappings are categorized as algorithms and developed as R functions.
+-   Used datasets and variables as parameters to function calls.
+
+# Algorithms
+
+The SDTM mappings that transform the collected source data (eCRF, eDT) into the target SDTM data model are grouped into algorithms.
+These mapping algorithms form the backbone of {sdtm.oak}.
+
+Key Points: - Algorithms can be re-used across multiple SDTM domains.
+- Programming language agnostic: This concept does not rely on a specific programming language for implementation.
+The {sdtm.oak} package includes R functions to handle these algorithms.
+
+Some of the basic algorithms are below, also explaining how these Algorithms can be used across multiple domains.
+
+```{r echo = FALSE, results = "asis"}
+library(knitr)
+algorithms <- data.frame(
+  `Algorithm Name` = c(
+    "assign_no_ct",
+    "assign_ct",
+    "assign_datetime",
+    "hardcode_ct",
+    "hardcode_no_ct",
+    "condition_add"
+  ),
+  `Description` = c(
+    paste(
+      "One-to-one mapping between the raw source and a target",
+      "SDTM variable that has no controlled terminology restrictions.",
+      "Just a simple assignment",
+      "statement."
+    ),
+    paste(
+      "One-to-one mapping between the raw source and a target ",
+      "SDTM variable that is subject to controlled terminology restrictions.",
+      "A simple assign statement and applying controlled terminology.",
+      "This will be used only if the SDTM variable has an associated",
+      "controlled terminology."
+    ),
+    paste(
+      "One-to-one mapping between the raw source and a target that involves ",
+      "mapping a Date or time or datetime component. This mapping algorithm",
+      "also takes care of handling unknown dates and converting them into.",
+      "ISO8601 format."
+    ),
+    paste(
+      "Mapping a hardcoded value to a target SDTM variable that is subject to terminology restrictions.",
+      "This will be used only if the SDTM variable has an associated",
+      "controlled terminology."
+    ),
+    paste(
+      "Mapping a hardcoded value to a target SDTM variable that has no terminology restrictions."
+    ),
+    paste(
+      "Algorithm that is used to filter the source data and/or target domain",
+      "based on a condition. The mapping will be applied only if the condition is met.",
+      "The filter can be applied either at the source dataset or at target dataset or both.",
+      " This algorithm has to be used in conjunction with other algorithms, that is if the",
+      " condition is met perform the mapping using algorithms like assign_ct,",
+      "assign_no_ct, hardcode_ct, hardcode_no_ct, assign_datetime."
+    )
+  ),
+  `Example` = c(
+    paste(
+      "MH.MHTERM<br>",
+      "AE.AETERM"
+    ),
+    paste("VS.VSPOS<br>", "VS.VSLAT"),
+    paste("MH.MHSTDTC<br>", "AE.AEENDTC"),
+    paste(
+      "MH.MHPRESP = 'Y'<br>",
+      "<br>VS.VSTEST = 'Systolic Blood Pressure'<br>",
+      "<br>VS.VSORRESU = 'mmHg'<br>"
+    ),
+    paste(
+      "FA.FASCAT = 'COVID-19 PROBABLE CASE'<br>",
+      "<br>CM.CMTRT = 'FLUIDS'"
+    ),
+    paste(
+      "If If MDPRIOR == 1 then CM.CMSTRTPT = 'BEFORE'.<br>",
+      "<br>VS.VSMETHOD when VSTESTCD = 'TEMP'<br>",
+      "<br>If collected value in raw variable DOS is numeric then CM.CMDOSE<br>",
+      "<br>If collected value in raw variable MOD is different to CMTRT then map to CM.CMMODIFY"
+    )
+  ), stringsAsFactors = TRUE
+)
+knitr::kable(algorithms)
+```
+
+# Functions and Parameters
+
+All the aforementioned algorithms are implemented as R functions, each accepting the raw dataset, raw variable, target SDTM dataset, and target SDTM variable as parameters.
+
+```{r}
+library(sdtm.oak)
+library(dplyr)
+
+cm_raw <- tibble::tribble(
+  ~oak_id, ~raw_source, ~patient_number, ~MDRAW, ~DOSU, ~MDPRIOR,
+  1L, "cm_raw", 375L, "BABY ASPIRIN", "mg", 1L,
+  2L, "cm_raw", 375L, "CORTISPORIN", "Gram", 0L,
+  3L, "cm_raw", 376L, "ASPIRIN", NA, 0L
+)
+
+study_ct <- tibble::tribble(
+  ~codelist_code, ~term_code, ~term_value, ~collected_value, ~term_preferred_term, ~term_synonyms,
+  "C71620", "C25613", "%", "%", "Percentage", "Percentage",
+  "C71620", "C28253", "mg", "mg", "Milligram", "Milligram",
+  "C71620", "C48155", "g", "g", "Gram", "Gram"
+)
+
+cm <-
+  # Derive topic variable
+  # SDTM Mapping - Map the collected value to CM. CMTRT
+  assign_no_ct(
+    raw_dat = cm_raw,
+    raw_var = "MDRAW",
+    tgt_var = "CMTRT"
+  ) %>%
+  # Derive qualifier CMDOSU
+  # SDTM Mapping - Map the collected value to CM. CMDOSU
+  assign_ct(
+    raw_dat = cm_raw,
+    raw_var = "DOSU",
+    tgt_var = "CMDOSU",
+    ct_spec = study_ct,
+    ct_clst = "C71620",
+    id_vars = oak_id_vars()
+  ) %>%
+  # Derive qualifier CMSTTPT
+  # SDTM mapping - If MDPRIOR == 1 then CM.CMSTTPT = 'SCREENING'
+  hardcode_no_ct(
+    raw_dat = condition_add(cm_raw, MDPRIOR == "1"),
+    raw_var = "MDPRIOR",
+    tgt_var = "CMSTTPT",
+    tgt_val = "SCREENING",
+    id_vars = oak_id_vars()
+  )
+```
+
+As you can see in this function call, the raw dataset and variable names are passed as parameters.
+As long as the raw dataset and variable are present in the global environment, the function will execute the algorithm's logic and create the target SDTM variable.
+
+{sdtm.oak} is designed to handle any type of input raw format.
+It is not tied to any specific data collection standards, making it both EDC and data standards agnostic.
+
+# Why not use dplyr?
+
+As you can see from the definition of the algorithms, all of them are a form of mutate statement.
+However, these functions provide a way to pass dataset and variable names as parameters and the ability to merge with the previous step by id variables.
+This enables users to build the code in a modular and simplistic fashion, mapping one SDTM variable at a time, connected by pipes.
+
+The SDTM mappings can also be used together in a single step, such as applying a filter condition, executing an mapping, and merging the outcome with the previous step.
+When there is a need to apply controlled terminology, the algorithms perform additional checks, such as verifying the presence of the value in the study's controlled terminology specification, which is passed as an object to the function call.
+If the collected value is present, it applies the standard submission value.
+
+While all these functionalities can be achieved with dplyr, {sdtm.oak} functions make it simpler to use, resulting in modular way to build SDTM datasets.
+
+# oak_id_vars
+
+The oak_id_vars is a crucial link between the raw datasets and the mapped SDTM domain.
+As the user derives each SDTM variable, it is merged with the corresponding topic variable using oak_id_vars.
+In {sdtm.oak}, the variables oak_id, raw_source, and patient_number are considered as oak_id_vars.
+These three variables must be added to all raw datasets.
+Users can also extend this with any additional id vars.
+
+oak_id:- Type: numeric- Value: equal to the raw dataframe row number.
+
+raw_source:- Type: Character- Value: equal to the raw dataset (eCRF) name or eDT dataset name.
+
+patient_number:- Type: numeric- Value: equal to the subject number in CRF or NonCRF data source.
+
+# In this Release
+
+The v0.1.0 release of ‘sdtm.oak’ users can create the majority of the SDTM domains.
+Domains that are NOT in scope for the V0.1.0 release are DM (Demographics), Trial Design Domains, SV (Subject Visits), SE (Subject Elements), RELREC (Related Records), Associated Person domains, creation of SUPP domain, and EPOCH Variable across all domains.
+
+# Roadmap
+
+We are planning to develop the below features in the subsequent releases.
+
+- Functions required to derive reference date variables in the DM domain.\
+- Metadata driven automation based on the standardized SDTM specification.\
+- Functions required to program the EPOCH Variable.\
+- Functions to derive standard units and results based on metadata.\
+- Functions required to create SUPP domains.\
+- Making the Algorithms part of the standard CDISC eCRF portal enabling automation of CDISC standard eCRFs.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
