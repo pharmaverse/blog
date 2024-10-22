@@ -26,7 +26,7 @@ In this blog post, we will introduce the package, key concepts, and examples. {s
 
 # Filling the Gap
 
-{sdtm.oak} package addresses a critical gap in the Pharmaverse suite by enabling study programmers to create SDTM datasets in R, complementing the existing capabilities for ADaM and TLGs.
+{sdtm.oak} package addresses a critical gap in the pharmaverse suite by enabling study programmers to create SDTM datasets in R, complementing the existing capabilities for ADaM, TLGs, eSubmission, etc.
 
 Let's explore the challenges with SDTM programming.
 Although SDTM is simpler with less complex derivations compared to ADaM, it presents unique challenges.
@@ -59,7 +59,8 @@ We adopted the following innovative approach to make {sdtm.oak} adaptable to var
 The SDTM mappings that transform the collected source data (eCRF, eDT) into the target SDTM data model are grouped into algorithms.
 These mapping algorithms form the backbone of {sdtm.oak}.
 
-Key Points: - Algorithms can be re-used across multiple SDTM domains.
+Key Points:
+- Algorithms can be re-used across multiple SDTM domains.
 - Programming language agnostic: This concept does not rely on a specific programming language for implementation.
 The {sdtm.oak} package includes R functions to handle these algorithms.
 
@@ -191,13 +192,13 @@ cm <-
   )
 ```
 
-As you can see in this function call, the raw dataset and variable names are passed as parameters.
+As you can see in this function call, the raw dataset and variable names are passed as arguments.
 As long as the raw dataset and variable are present in the global environment, the function will execute the algorithm's logic and create the target SDTM variable.
 
 {sdtm.oak} is designed to handle any type of input raw format.
 It is not tied to any specific data collection standards, making it both EDC and data standards agnostic.
 
-# Why not use dplyr?
+# Why not use {dplyr}?
 
 As you can see from the definition of the algorithms, all of them are a form of mutate statement.
 However, these functions provide a way to pass dataset and variable names as parameters and the ability to merge with the previous step by id variables.
@@ -207,11 +208,11 @@ The SDTM mappings can also be used together in a single step, such as applying a
 When there is a need to apply controlled terminology, the algorithms perform additional checks, such as verifying the presence of the value in the study's controlled terminology specification, which is passed as an object to the function call.
 If the collected value is present, it applies the standard submission value.
 
-While all these functionalities can be achieved with dplyr, {sdtm.oak} functions make it simpler to use, resulting in modular way to build SDTM datasets.
+While all these functionalities can be achieved with dplyr, {sdtm.oak} functions make it simpler to use, resulting in a modular way to build SDTM datasets.
 
 # oak_id_vars
 
-The oak_id_vars is a crucial link between the raw datasets and the mapped SDTM domain.
+The `oak_id_vars` is a crucial link between the raw datasets and the mapped SDTM domain.
 As the user derives each SDTM variable, it is merged with the corresponding topic variable using oak_id_vars.
 In {sdtm.oak}, the variables oak_id, raw_source, and patient_number are considered as oak_id_vars.
 These three variables must be added to all raw datasets.
@@ -226,7 +227,7 @@ patient_number:- Type: numeric- Value: equal to the subject number in CRF or Non
 # In this Release
 
 The v0.1.0 release of ‘sdtm.oak’ users can create the majority of the SDTM domains.
-Domains that are NOT in scope for the V0.1.0 release are DM (Demographics), Trial Design Domains, SV (Subject Visits), SE (Subject Elements), RELREC (Related Records), Associated Person domains, creation of SUPP domain, and EPOCH Variable across all domains.
+Domains that are NOT in scope for the v0.1.0 release are DM (Demographics), Trial Design Domains, SV (Subject Visits), SE (Subject Elements), RELREC (Related Records), Associated Person domains, creation of SUPP domain, and EPOCH Variable across all domains.
 
 # Roadmap
 
