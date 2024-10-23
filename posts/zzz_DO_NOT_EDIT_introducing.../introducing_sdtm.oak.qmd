@@ -15,14 +15,16 @@ image: "logo.svg"
 <!--------------- typical setup ----------------->
 
 ```{r setup, include=FALSE}
+library(link)
 long_slug <- "zzz_DO_NOT_EDIT_introducing..."
 # renv::use(lockfile = "renv.lock")
+link::auto(keep_pkg_prefix = FALSE)
 ```
 
 <!--------------- post begins here ----------------->
 
 {sdtm.oak} v0.1 is now available on [CRAN](https://cran.r-project.org/web/packages/sdtm.oak/index.html).
-In this blog post, we will introduce the package, key concepts, and examples. {sdtm.oak} is developed in collaboration with volunteers from several companies, including Roche, Pfizer, GSK, Pattern Institute, Transition Technologies Science, and Atorus Research. {sdtm.oak} is also sponsored by CDISC COSA with a vision of being part of CDISC 360 to address end-to-end standards development and implementation.
+In this blog post, we will introduce the package, key concepts, and examples. {sdtm.oak} is developed in collaboration with volunteers from several companies, including Roche, Pfizer, GSK, Pattern Institute, Transition Technologies Science, and Atorus Research. {sdtm.oak} is also sponsored by [CDISC COSA](https://www.cdisc.org/cosa) with a vision of being part of [CDISC 360](https://www.cdisc.org/cdisc-360) to address end-to-end standards development and implementation.
 
 # Filling the Gap
 
@@ -46,12 +48,13 @@ We adopted the following innovative approach to make {sdtm.oak} adaptable to var
 
 # Algorithms
 
-The SDTM mappings that transform the collected source data (eCRF: Electronic Case Report Form, eDT: External Data Transfer) into the target SDTM data model are grouped into algorithms.
+The SDTM mappings that transform the collected source data (eDT: External Data Transfer) into the target SDTM data model are grouped into algorithms.
 These mapping algorithms form the backbone of {sdtm.oak}.
 
 Key Points:
-- Algorithms can be re-used across multiple SDTM domains.
-- Programming language agnostic: This concept does not rely on a specific programming language for implementation.
+*  Algorithms can be re-used across multiple SDTM domains.
+*  Programming language agnostic: This concept does not rely on a specific programming language for implementation.
+
 The {sdtm.oak} package includes R functions to handle these algorithms.
 
 Some of the basic algorithms are below, also explaining how these algorithms can be used across multiple domains.
@@ -131,7 +134,7 @@ knitr::kable(algorithms)
 ```
 
 Here is an example of reusing an algorithm across multiple domains,
-variables, and also to a non-standard
+variables, and also to a non-standard mapping
 
 ![](reusable_algorithms.jpg){width="600"}
 
@@ -200,21 +203,39 @@ The SDTM mappings can also be used together in a single step, such as applying a
 When there is a need to apply controlled terminology, the algorithms perform additional checks, such as verifying the presence of the value in the study's controlled terminology specification, which is passed as an argument to the function call.
 If the collected value is present, it applies the standard submission value.
 
-While all these functionalities can be achieved with dplyr, {sdtm.oak} functions make it simpler to use, resulting in a modular way to build SDTM datasets.
+While all these functionalities can be achieved with {dplyr}, the functions provided by {sdtm.oak} simplify the process and enhance efficiency. By leveraging metadata and controlled terminology, we further minimize errors and offer a modular approach to building SDTM datasets.
 
 # `oak_id_vars`
 
 The `oak_id_vars` is a crucial link between the raw datasets and the mapped SDTM domain.
 As the user derives each SDTM variable, it is merged with the corresponding topic variable using `oak_id_vars`.
 In {sdtm.oak}, the variables `oak_id`, `raw_source`, and `patient_number` are considered `oak_id_vars`.
-These three variables must be added to all raw datasets.
-Users can also extend this with any additional id vars.
+These three variables must be added to all raw datasets. Users can also extend this with any additional id vars.`oak_id_vars` can be added to the raw datasets using the function {sdtm.oak::generate_oak_id_vars()}.
 
-oak_id:- Type: numeric- Value: equal to the raw dataframe row number.
 
-raw_source:- Type: Character- Value: equal to the raw dataset (eCRF) name or eDT dataset name.
-
-patient_number:- Type: numeric- Value: equal to the subject number in CRF or NonCRF data source.
+```{r echo = FALSE, results = "asis"}
+library(knitr)
+oak_id_vars <- data.frame(
+  `Varialble_Name` = c(
+    "oak_id",
+    "raw_source",
+    "patient_number"
+  ),
+  `Type` = c(
+    "Numeric",
+    "Character",
+    "Numeric"
+  ),
+  `Description` = c(
+    paste(
+      "The row number of the raw dataframe"
+    ),
+    paste("The raw dataset (eCRF) name or eDT dataset name"),
+    paste("Subject number in eCRF or eDT data source")
+  ), stringsAsFactors = TRUE
+)
+knitr::kable(oak_id_vars)
+```
 
 # In this Release
 
@@ -235,9 +256,9 @@ We are planning to develop the below features in the subsequent releases.
 # Get Involved
 Please try the package and provide us with your feedback, or get involved in the development of new features. We can be reached through any of the following means:
 
-Slack: oakgarden.slack.com\
-GitHub: https://github.com/pharmaverse/sdtm.oak\
-CDISC Wiki: https://wiki.cdisc.org/display/oakgarden
+Slack: [oakgarden.slack.com](oakgarden.slack.com)\
+GitHub: [https://github.com/pharmaverse/sdtm.oak](https://github.com/pharmaverse/sdtm.oak)\
+CDISC Wiki: [https://wiki.cdisc.org/display/oakgarden](https://wiki.cdisc.org/display/oakgarden)
 
 
 <!--------------- appendices go here ----------------->
