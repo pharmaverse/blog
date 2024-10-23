@@ -29,20 +29,20 @@ In this blog post, we will introduce the package, key concepts, and examples. {s
 {sdtm.oak} package addresses a critical gap in the pharmaverse suite by enabling study programmers to create SDTM datasets in R, complementing the existing capabilities for ADaM, TLGs, eSubmission, etc.
 
 Let's explore the challenges with SDTM programming. Although SDTM is simpler with less complex derivations compared to ADaM, it presents unique challenges. Unlike ADaM, which uses SDTM datasets as its source with a well-defined structure, SDTM relies on raw datasets as input.
-These raw datasets can vary widely in structure, depending on the data collection and EDC system used. Even the same eCRF (electronic Case Report Form), when designed in different EDC (Electronic Data Capture) systems, can produce raw datasets with different structures.
+These raw datasets can vary widely in structure, depending on the data collection and EDC (Electronic Data Capture) system used. Even the same eCRF (electronic Case Report Form), when designed in different EDC systems, can produce raw datasets with different structures.
 
 Another challenge is the variability in data collection standards. Although CDISC has established CDASH data collection standards, many pharmaceutical companies have their own standards, which can differ significantly from CDASH. Additionally, since CDASH is not mandated by the FDA, sponsors can choose the data collection standards that best fit their needs.
 
 There are hundreds of EDC systems available in the marketplace, and the data collection standards vary significantly. Creating a single open-source package to work with all sorts of raw data formats and data collection standards seemed impossible. But here's the good news: not anymore! The {sdtm.oak} team has a solution to address this challenge.
 
-{sdtm.oak} is designed to be highly versatile, accommodating varying raw data structures from different EDC systems and external vendors. Moreover, {sdtm.oak} is data standards agnostic, meaning it supports both CDISC-defined data collection standards (CDASH) and various proprietary data collection standards defined by pharmaceutical companies. The reusable algorithms concept in {sdtm.oak} provides a framework for modular programming, making it a valuable addition to the Pharmaverse ecosystem.
+{sdtm.oak} is designed to be highly versatile, accommodating varying raw data structures from different EDC systems and external vendors. Moreover, {sdtm.oak} is data standards agnostic, meaning it supports both CDISC-defined data collection standards (CDASH) and various proprietary data collection standards defined by pharmaceutical companies. The reusable algorithms concept in {sdtm.oak} provides a framework for modular programming, making it a valuable addition to the pharmaverse ecosystem.
 
 # EDC & Data standards agnostic
 
 We adopted the following innovative approach to make {sdtm.oak} adaptable to various EDC systems and data collection standards:
 
 -   SDTM mappings are categorized as algorithms and developed as R functions.
--   Used datasets and variables as parameters to function calls.
+-   Used datasets and variables are specified as arguments to function calls.
 
 # Algorithms
 
@@ -54,7 +54,7 @@ Key Points:
 - Programming language agnostic: This concept does not rely on a specific programming language for implementation.
 The {sdtm.oak} package includes R functions to handle these algorithms.
 
-Some of the basic algorithms are below, also explaining how these Algorithms can be used across multiple domains.
+Some of the basic algorithms are below, also explaining how these algorithms can be used across multiple domains.
 
 ```{r echo = FALSE, results = "asis"}
 library(knitr)
@@ -98,7 +98,6 @@ algorithms <- data.frame(
     paste(
       "Algorithm that is used to filter the source data and/or target domain",
       "based on a condition. The mapping will be applied only if the condition is met.",
-      "The filter can be applied either at the source dataset or at target dataset or both.",
       " This algorithm has to be used in conjunction with other algorithms, that is if the",
       " condition is met perform the mapping using algorithms like assign_ct,",
       "assign_no_ct, hardcode_ct, hardcode_no_ct, assign_datetime."
@@ -136,11 +135,11 @@ variables, and also to a non-standard
 
 ![](reusable_algorithms.jpg){width="600"}
 
-# Functions and Parameters
+# Functions and Arguments
 
 All the aforementioned algorithms are implemented as R functions, each accepting the raw dataset, raw variable, target SDTM dataset, and target SDTM variable as parameters.
 
-```{r}
+```{r, message = FALSE}
 library(sdtm.oak)
 library(dplyr)
 
@@ -193,21 +192,21 @@ As you can see in this function call, the raw dataset and variable names are pas
 
 # Why not use {dplyr}?
 
-As you can see from the definition of the algorithms, all of them are a form of mutate statement.
-However, these functions provide a way to pass dataset and variable names as parameters and the ability to merge with the previous step by id variables.
+As you can see from the definition of the algorithms, all of them are a form of {dplyr::mutate()} statement.
+However, these functions provide a way to pass dataset and variable names as arguments and the ability to merge with the previous step by id variables.
 This enables users to build the code in a modular and simplistic fashion, mapping one SDTM variable at a time, connected by pipes.
 
-The SDTM mappings can also be used together in a single step, such as applying a filter condition, executing an mapping, and merging the outcome with the previous step.
-When there is a need to apply controlled terminology, the algorithms perform additional checks, such as verifying the presence of the value in the study's controlled terminology specification, which is passed as an object to the function call.
+The SDTM mappings can also be used together in a single step, such as applying a filter condition, executing a mapping, and merging the outcome with the previous step.
+When there is a need to apply controlled terminology, the algorithms perform additional checks, such as verifying the presence of the value in the study's controlled terminology specification, which is passed as an argument to the function call.
 If the collected value is present, it applies the standard submission value.
 
 While all these functionalities can be achieved with dplyr, {sdtm.oak} functions make it simpler to use, resulting in a modular way to build SDTM datasets.
 
-# oak_id_vars
+# `oak_id_vars`
 
 The `oak_id_vars` is a crucial link between the raw datasets and the mapped SDTM domain.
-As the user derives each SDTM variable, it is merged with the corresponding topic variable using oak_id_vars.
-In {sdtm.oak}, the variables oak_id, raw_source, and patient_number are considered as oak_id_vars.
+As the user derives each SDTM variable, it is merged with the corresponding topic variable using `oak_id_vars`.
+In {sdtm.oak}, the variables `oak_id`, `raw_source`, and `patient_number` are considered `oak_id_vars`.
 These three variables must be added to all raw datasets.
 Users can also extend this with any additional id vars.
 
@@ -220,7 +219,7 @@ patient_number:- Type: numeric- Value: equal to the subject number in CRF or Non
 # In this Release
 
 The v0.1.0 release of {sdtm.oak} users can create the majority of the SDTM domains.
-Domains that are NOT in scope for the v0.1.0 release are DM (Demographics), Trial Design Domains, SV (Subject Visits), SE (Subject Elements), RELREC (Related Records), Associated Person domains, creation of SUPP domain, and EPOCH Variable across all domains.
+Domains that are NOT in scope for the v0.1.0 release are DM (Demographics), Trial Design Domains, SV (Subject Visits), SE (Subject Elements), RELREC (Related Records), Associated Person domains, creation of SUPP domain, and EPOCH variable across all domains.
 
 # Roadmap
 
@@ -228,10 +227,10 @@ We are planning to develop the below features in the subsequent releases.
 
 - Functions required to derive reference date variables in the DM domain.\
 - Metadata driven automation based on the standardized SDTM specification.\
-- Functions required to program the EPOCH Variable.\
+- Functions required to program the EPOCH variable.\
 - Functions to derive standard units and results based on metadata.\
 - Functions required to create SUPP domains.\
-- Making the Algorithms part of the standard CDISC eCRF portal enabling automation of CDISC standard eCRFs.
+- Making the algorithms part of the standard CDISC eCRF portal enabling automation of CDISC standard eCRFs.
 
 # Get Involved
 Please try the package and provide us with your feedback, or get involved in the development of new features. We can be reached through any of the following means:
