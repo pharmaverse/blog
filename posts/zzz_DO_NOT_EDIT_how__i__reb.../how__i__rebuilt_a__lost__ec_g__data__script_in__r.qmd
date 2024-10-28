@@ -21,15 +21,13 @@ long_slug <- "zzz_DO_NOT_EDIT_how__i__reb..."
 
 <!--------------- post begins here ----------------->
 
-# Rebuilding a Lost Script: My Journey into Open-Source Data Science
-
 As a Data Science placement student at Roche UK, I was given an exciting opportunity to enhance my R programming skills while contributing to the open-source community. Under the guidance of my manager, Edoardo Mancini, I undertook a unique and challenging task within the {pharmaversesdtm} project that tested both my technical expertise and problem-solving abilities.
 
-The project involved recreating the `eg` domain (Electrocardiogram data) from the SDTM datasets used within {pharmaversesdtm}. The original dataset had been sourced from the CDISC pilot project, but since that source was no longer available, we had no direct reference. Fortunately, a saved copy of the dataset still existed, allowing me to analyze it and attempt to reproduce it as closely as possible.
+The project involved recreating the `eg` domain (Electrocardiogram data) from the SDTM datasets used within {pharmaversesdtm}. The original dataset had been sourced from the <a href="https://github.com/cdisc-org/sdtm-adam-pilot-project" target="_blank">CDISC pilot project</a>, but since that source was no longer available, we had no direct reference. Fortunately, a saved copy of the dataset still existed, allowing me to analyze it and attempt to reproduce it as closely as possible.
 
 ## How I Solved the Problem
 
-### 1. Explored and Analyzed the Data
+### Explored and Analyzed the Data
 
 The first step was to thoroughly explore the existing ECG dataset of over 25,000 entries. I needed to understand the structure and key variables that defined the dataset, such as the "one row for each patient's test during each visit" format. By analyzing these elements, I was able to gain a clear picture of how the dataset was organized. I also examined the range of values, variance, and other characteristics of the tests to ensure that my recreated version would align with the original dataset's structure and statistical properties.
 
@@ -40,19 +38,19 @@ library(dplyr)
 library(pharmaversesdtm)
 
 eg %>%
-  select(USUBJID, EGTEST, VISIT, EGDTC, EGTPT, EGSTRESC) %>%
+  select(USUBJID, EGTEST, VISIT, EGDTC, EGTPT, EGSTRESN, EGSTRESC) %>%
   filter(USUBJID == "01-701-1015" & VISIT == "WEEK 2")
 ```
 
-In this example, the `EGTPT` column indicates the timing of the test, while `EGTEST` specifies the type of test conducted. The numeric results are recorded in `EGSTRESN`, with the corresponding categorical values in `EGSTRESC`.
+In this example, `USUBJID` identifies the subject, while `EGTEST` specifies the type of ECG test performed. `VISIT` refers to the visit during which the test occurred, and `EGDTC` records the date of the test. `EGTPT` indicates the condition under which the ECG test was conducted. `EGSTRESN` provides the numeric result, and `EGSTRESC` gives the corresponding categorical result.
 
-### 2. Wrote the New R Script
+### Wrote the New R Script
 
 Armed with insights from my analysis, I set about writing a new R script to replicate the lost one. This involved a lot of trial and error, as I kept refining the code to ensure it generated a dataset that closely resembled the original ECG data in both structure and content. In order to give you, my reader, better understanding of the solution, I'll walk you through the main parts of the script.
 
 #### Loading Libraries and Data
 
-To begin, I loaded the necessary libraries and read in the vital signs (`vs`) dataset, which was essential for providing key clinical information about the participants. This data complemented the ECG measurements and allowed for a more comprehensive analysis of each subject's health status during the study. By setting a seed for the random data generation, I ensured that the process was reproducible, allowing others to verify my results and maintain consistency in future analyses. Additionally, the metatools package was loaded to facilitate adding labels to the variables later, which enhanced the readability of the dataset.
+To begin, I loaded the necessary libraries and read in the vital signs (`vs`) dataset, This dataset is functional to my cause because it has the same structure and schedule as the `eg` data, so I can recreate the `eg` visit schedule for each patient from it. . By setting a seed for the random data generation, I ensured that the process was reproducible, allowing others to verify my results and maintain consistency in future analyses. Additionally, the metatools package was loaded to facilitate adding labels to the variables later, which enhanced the readability of the dataset.
 
 ```{r, eval = T, message = F}
 library(dplyr)
@@ -73,14 +71,14 @@ egdtc <- vs %>%
   distinct() %>%
   rename(EGDTC = VSDTC)
 
-head(egdtc)
+egdtc
 ```
 
 This data was used later to match the generated ECG data to the correct visit and time points.
 
 #### Generating a Grid of Patient Data
 
-Here, I created a grid of all possible combinations of subject IDs, test codes (e.g., `QT`, `HR`, `RR`, `ECGINT`), time points (e.g., after lying down, after standing), and visits. These combinations represented different test results collected across multiple visits.
+Subsequently, I created a grid of all possible combinations of subject IDs, test codes (e.g., `QT`, `HR`, `RR`, `ECGINT`), time points (e.g., after lying down, after standing), and visits. These combinations represented different test results collected across multiple visits.
 
 ```{r, eval = T}
 eg <- expand.grid(
@@ -110,16 +108,21 @@ eg <- expand.grid(
   ), stringsAsFactors = FALSE
 )
 
-head(eg)
+# Filter the dataset for one subject and one visit
+filtered_eg <- eg %>%
+  filter(USUBJID == "01-701-1015" & VISIT == "WEEK 2")
+
+# Display the result
+filtered_eg
 ```
 
-Each of these test codes corresponds to specific ECG measurements: `QT` refers to the QT interval, `HR` represents heart rate, `RR` is the interval between R waves, `ECGINT` refers to the ECG interpretation.
+In order to demonstrate the data more clearly, I have displayed the combinations for only one subject and one visit for you to see, as the full table is very large. Each of these test codes corresponds to specific ECG measurements: `QT` refers to the QT interval, `HR` represents heart rate, `RR` is the interval between R waves, and `ECGINT` refers to the ECG interpretation.
 
 As I analyzed the original ECG dataset, I learned more about these test codes and their relevance to the clinical data.
 
 #### Generating Random Test Results
 
-For each combination in the grid, I generated random test results using a normal distribution to simulate realistic values for each test code. To determine the means and standard deviations, I had used the original EG dataset as a reference. By analyzing the range and distribution of values in the original dataset, I was able to extract realistic means and standard deviations for each numerical ECG test (`QT`, `HR`, `RR`).
+For each combination in the grid, I generated random test results using a normal distribution to simulate realistic values for each test code. To determine the means and standard deviations, I used the original EG dataset as a reference. By analyzing the range and distribution of values in the original dataset, I was able to extract realistic means and standard deviations for each numerical ECG test (`QT`, `HR`, `RR`). 
 
 ``` r
 EGSTRESN = case_when(
@@ -139,7 +142,7 @@ This approach allowed me to ensure that the synthetic data aligned closely with 
 
 #### Finalizing the Dataset
 
-Finally, I added labels to the dataframe for easier analysis and future use by utilizing the `add_labels` function from the `metatools` package.
+Finally, I added labels to the dataframe for easier analysis and future use by utilizing the `metatools::add_labels()`.
 
 ``` r
 add_labels(
@@ -154,6 +157,27 @@ EGSTRESN = "Numeric Result/Finding in Standard Units",
 ```
 
 This provided descriptive names for each column in the dataset, making it more intuitive to understand the data during analysis and ensuring clarity in its subsequent use.
+
+#### Limitations
+
+However, this approach has certain limitations. One key issue is that the simulations do not account for the time structure, as each observation is generated independently (i.i.d.), which may not fully reflect real-world dynamics. Additionally, sampling from a normal distribution can sometimes yield unrealistic results, such as negative heart rate (HR) values. To mitigate this, I manually reviewed the generated data to ensure that only plausible values were included. Below are the valid ranges I established for this purpose:
+
+```{r, eval = T}
+# Filter the data for the relevant test codes (QT, RR, HR)
+eg_filtered <- pharmaversesdtm::eg %>%
+  filter(EGTESTCD %in% c("QT", "HR", "RR"))
+
+# Display the minimum and maximum values for each test code
+value_ranges <- eg_filtered %>%
+  group_by(EGTESTCD) %>%
+  summarize(
+    min_value = min(EGSTRESN, na.rm = TRUE),
+    max_value = max(EGSTRESN, na.rm = TRUE)
+  )
+
+# Show the result
+value_ranges
+```
 
 ### Conclusion
 
