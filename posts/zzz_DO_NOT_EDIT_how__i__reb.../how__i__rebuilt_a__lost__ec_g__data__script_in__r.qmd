@@ -17,13 +17,14 @@ image: "pharmaverse.PNG"
 ```{r setup, include=FALSE}
 long_slug <- "zzz_DO_NOT_EDIT_how__i__reb..."
 # renv::use(lockfile = "renv.lock")
+library("link")
 ```
 
 <!--------------- post begins here ----------------->
 
 As a Data Science placement student at Roche UK, I was given an exciting opportunity to enhance my R programming skills while contributing to the open-source community. Under the guidance of my manager, Edoardo Mancini, I undertook a unique and challenging task within the {pharmaversesdtm} project that tested both my technical expertise and problem-solving abilities.
 
-The project involved recreating the `eg` domain (Electrocardiogram data) from the SDTM datasets used within {pharmaversesdtm}. The original dataset had been sourced from the <a href="https://github.com/cdisc-org/sdtm-adam-pilot-project" target="_blank">CDISC pilot project</a>, but since that source was no longer available, we had no direct reference. Fortunately, a saved copy of the dataset still existed, allowing me to analyze it and attempt to reproduce it as closely as possible.
+The project involved recreating the `eg` domain (Electrocardiogram data) from the SDTM datasets used within {pharmaversesdtm}. The original dataset had been sourced from the [CDISC pilot project](https://github.com/cdisc-org/sdtm-adam-pilot-project), but since that source was no longer available, we had no direct reference. Fortunately, a saved copy of the dataset still existed, allowing me to analyze it and attempt to reproduce it as closely as possible.
 
 ## How I Solved the Problem
 
@@ -50,7 +51,7 @@ Armed with insights from my analysis, I set about writing a new R script to repl
 
 #### Loading Libraries and Data
 
-To begin, I loaded the necessary libraries and read in the vital signs (`vs`) dataset, This dataset is functional to my cause because it has the same structure and schedule as the `eg` data, so I can recreate the `eg` visit schedule for each patient from it. . By setting a seed for the random data generation, I ensured that the process was reproducible, allowing others to verify my results and maintain consistency in future analyses. Additionally, the metatools package was loaded to facilitate adding labels to the variables later, which enhanced the readability of the dataset.
+To begin, I loaded the necessary libraries and read in the vital signs (`vs`) dataset, This dataset is functional to my cause because it has the same structure and schedule as the `eg` data, so I can recreate the `eg` visit schedule for each patient from it. By setting a seed for the random data generation, I ensured that the process was reproducible, allowing others to verify my results and maintain consistency in future analyses. Additionally, the metatools package was loaded to facilitate adding labels to the variables later, which enhanced the readability of the dataset.
 
 ```{r, eval = T, message = F}
 library(dplyr)
@@ -116,7 +117,7 @@ filtered_eg <- eg %>%
 filtered_eg
 ```
 
-In order to demonstrate the data more clearly, I have displayed the combinations for only one subject and one visit for you to see, as the full table is very large. Each of these test codes corresponds to specific ECG measurements: `QT` refers to the QT interval, `HR` represents heart rate, `RR` is the interval between R waves, and `ECGINT` refers to the ECG interpretation.
+In order to demonstrate the data more clearly, I have displayed the combinations for only one subject and one visit for you to see, as the full table is very large. Each of these test codes corresponds to specific ECG measurements: `QT` refers to the QT interval (a measurement made on an electrocardiogram used to assess some of the electrical properties of the heart), `HR` represents heart rate, `RR` is the interval between R waves, and `ECGINT` refers to the ECG interpretation.
 
 As I analyzed the original ECG dataset, I learned more about these test codes and their relevance to the clinical data.
 
@@ -138,11 +139,11 @@ EGTESTCD == "QT" & EGELTM == "PT1M" ~ floor(rnorm(n(), 455.3394, 60))
 )
 ```
 
-This approach allowed me to ensure that the synthetic data aligned closely with the patterns and variability observed in the original clinical data.
+This approach ensured that the synthetic data aligned closely with the patterns and variability observed in the original clinical data.
 
 #### Finalizing the Dataset
 
-Finally, I added labels to the dataframe for easier analysis and future use by utilizing the `metatools::add_labels()`.
+Finally, I added labels to the dataframe for easier analysis and future use by utilizing the `metatools::add_labels()` function.
 
 ``` r
 add_labels(
@@ -160,7 +161,7 @@ This provided descriptive names for each column in the dataset, making it more i
 
 #### Limitations
 
-However, this approach has certain limitations. One key issue is that the simulations do not account for the time structure, as each observation is generated independently (i.i.d.), which may not fully reflect real-world dynamics. Additionally, sampling from a normal distribution can sometimes yield unrealistic results, such as negative heart rate (HR) values. To mitigate this, I manually reviewed the generated data to ensure that only plausible values were included. Below are the valid ranges I established for this purpose:
+However, this approach has certain limitations. One key issue is that the simulations do not account for the time structure, as each observation is generated independently (i.i.d.), which does not reflect real-world dynamics. Additionally, sampling from a normal distribution may not always be appropriate and can sometimes yield unrealistic results, such as negative heart rate (HR) values. To mitigate this, I manually reviewed the generated data to ensure that only plausible values were included. Below are the valid ranges I established for this purpose:
 
 ```{r, eval = T}
 # Filter the data for the relevant test codes (QT, RR, HR)
