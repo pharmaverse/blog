@@ -2,7 +2,7 @@
 title: "1.2 admiral release"
 author:
   - name: Ben Straub, Edoardo Mancini
-description: ""
+description: "A short sneak peak of what to expect from the upcoming 1.2 release of {admiral}."
 # Note that the date below will be auto-updated when the post is merged.
 date: "2024-12-01"
 # Please do not use any non-default categories.
@@ -27,24 +27,38 @@ link::auto()
 
 <!--------------- post begins here ----------------->
 
+# Introduction
+
+As crazy as it may sound, the {admiral} package is nearing its third CRAN birthday: our first release dates all the way back to the 17th February 2022! Time really does fly when you're programming ADaMs, and our codebase has grown *massively* since then. For some context, if you'd only allowed yourself to write twenty lines of code a day, starting from the 17th February 2022, by now you would have compiled the whole of the {admiral} codebase (excluding documentation and unit tests - who needs those anyway?). And so, what better early birthday present for {admiral} than the new and exciting 1.2 release? Read through this blog post to find out more about the exciting contents of this release, as well some of our plans for 2025.
+
 # New Features for {admiral} 1.2
 
-* Be sure to check out additional updates...
-* Ben minor update
+As always, we have listed the full set of 1.2 updates in our [changelog](https://pharmaverse.github.io/admiral/news/index.html), and have picked out only a select few to discuss within this post.
 
-3 New Functions
-
-## admiral::derive_vars_cat()
+## New function: admiral::derive_vars_cat()
 
 * Ben
 
-## admiral::derive_vars_crit_flag()
+## New function: admiral::derive_vars_crit_flag()
 
 * Ben
 
-## admiral::transform_scale()
+## New function: admiral::transform_scale()
 
-* Edoardo
+The final new function we are adding is `admiral::transform_scale()`. Coming directly from a user request, with this function we now have functionality to linearly transform a vector of values with a certain associated range into values from another range.
+
+```{r, eval = T}
+library(admiral)
+
+transform_range(
+  source = c(1, 4, 3, 6, 5),
+  source_range = c(1, 5),
+  target_range = c(0, 100)
+)
+
+```
+
+Within ADaM programming, this is a common task, arising for instance when transforming questionnaire values into a standardized scale (e.g. 1-100). As such, we see this function being employed principally within calls to `admiral::derive_param_computed()` during the creation of datasets such as ADQS. You can read more about this topic within our [Questionnaire ADaMs vignette](https://pharmaverse.github.io/admiral/articles/questionnaires.html#transformed-items).
 
 ### Deprecation Strategy
 
@@ -52,7 +66,7 @@ link::auto()
 
 ### Recent Conferences
 
-* Edoardo
+Edo
 
 ### Reminders on admiraldiscovery, cheatsheet, Find My Function, Working Groups
 
