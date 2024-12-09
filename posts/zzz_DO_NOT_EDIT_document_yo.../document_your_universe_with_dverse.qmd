@@ -41,7 +41,7 @@ package on CRAN today (2024-12-07), with a website, and a name starting with
 You need:
 
 * the {dverse} package, 
-* each package in the toy 'admiralverse',
+* each package in the toy 'admiralverse,
 * {dplyr} to manipulate the output of {dverse}, and 
 * {DT} to create a searchable table.
 
@@ -120,6 +120,17 @@ vignettes |>
   distinct(topic, title, package) |>
   datatable(escape = FALSE)
 ```
+
+#### Don't you see what you expect?
+
+* This works with vignettes but not articles, so usethis::use_vignette() not
+usethis::use_article().
+
+* When you install the packages in your universe ensure to install the vignettes.
+Vignettes install by default when you install your packages from CRAN with
+`install.packages()` or pak::pak(). But if you install them from source with
+devtools::install() or remotes::install_github(), then you need `build_vignettes
+= TRUE`.
 
 ### Datasets
 
