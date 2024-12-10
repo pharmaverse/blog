@@ -22,14 +22,14 @@ long_slug <- "zzz_DO_NOT_EDIT_1.2_admiral..."
 # Link a function from a package like: dplyr::filter().
 # For more information check out {link}.
 library(link)
-link::auto()
+link::auto(keep_pkg_prefix = FALSE)
 ```
 
 <!--------------- post begins here ----------------->
 
 # Introduction
 
-As crazy as it may sound, the {admiral} package is nearing its third CRAN birthday: our first release dates all the way back to the 17th February 2022! Time really does fly when you're programming ADaMs, and our codebase has grown *massively* since then. For some context, if you'd only allowed yourself to write twenty lines of code a day, starting from the 17th February 2022, by now you would have compiled the whole of the {admiral} codebase (excluding documentation and unit tests - who needs those anyway?). And so, what better early birthday present for {admiral} than the new and exciting 1.2 release? Read through this blog post to find out more about the exciting contents of this release, as well some of our plans for 2025.
+As crazy as it may sound, the {admiral} package is nearing its third CRAN birthday: our first release dates all the way back to the 17th February 2022! Time really does fly when you're programming ADaMs, and our codebase has grown __massively__ since then. For some context, if you'd only allowed yourself to write twenty lines of code a day, starting from the 17th February 2022, by now you would have compiled the whole of the {admiral} codebase (excluding documentation and unit tests - who needs those anyway?). And so, what better early birthday present for {admiral} than the new and exciting 1.2 release? Read through this blog post to find out more about the exciting contents of this release, as well some of our plans for 2025.
 
 # New Features for {admiral} 1.2
 
@@ -45,9 +45,9 @@ As always, we have listed the full set of 1.2 updates in our [changelog](https:/
 
 ## New function: admiral::transform_scale()
 
-The final new function we are adding is `admiral::transform_scale()`. Coming directly from a user request, with this function we now have functionality to linearly transform a vector of values with a certain associated range into values from another range.
+The final new function we are adding is admiral::transform_scale(). Coming directly from a user request, with this function we now have functionality to linearly transform a vector of values with a certain associated range into values from another range.
 
-```{r, eval = T}
+``` {r, eval = TRUE}
 library(admiral)
 
 transform_range(
@@ -58,7 +58,7 @@ transform_range(
 
 ```
 
-Within ADaM programming, this is a common task, arising for instance when transforming questionnaire values into a standardized scale (e.g. 1-100). As such, we see this function being employed principally within calls to `admiral::derive_param_computed()` during the creation of datasets such as ADQS. You can read more about this topic within our [Questionnaire ADaMs vignette](https://pharmaverse.github.io/admiral/articles/questionnaires.html#transformed-items).
+Within ADaM programming, this is a common task, arising for instance when transforming questionnaire values into a standardized scale (e.g. 1-100). As such, we see this function being employed principally within calls to admiral::derive_param_computed() during the creation of datasets such as ADQS. You can read more about this topic within our [Questionnaire ADaMs vignette](https://pharmaverse.github.io/admiral/articles/questionnaires.html#transformed-items).
 
 ### Deprecation Strategy
 
@@ -67,35 +67,36 @@ Within ADaM programming, this is a common task, arising for instance when transf
 
 ### Reminders on admiraldiscovery, cheatsheet, Find My Function, Working Groups
 
-Work on `{admiral}` releases isn't just limited to new functions and deprecation. Indeed, for this release we have also updated the [cheatsheet](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf) so that it is in line with the additions and changes for the new release. Additionally, we have made the [admiraldiscovery](https://pharmaverse.github.io/admiraldiscovery/articles/reactable.html) (aka "Find my function") link more prominent on our website's navigation bar to increase the user traffic to our site
+Work on {admiral} releases isn't just limited to new functions and deprecation. Indeed, for this release we have also updated the [cheatsheet](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf) so that it is in line with the additions and changes for the new release. Additionally, we have made the [admiraldiscovery](https://pharmaverse.github.io/admiraldiscovery/articles/reactable.html) (aka "Find my function") link more prominent on our website's navigation bar to increase the user traffic to our site.
 
-<img src="admiraldiscovery.png" align="center" style="float:right" width="25%"/>
+<img src="admiraldiscovery.png" align="center" style="float:right" width="100%"/>
 
 Also, from June up until now, we've had two working groups operating:
 
-* The ADaM Implementation Guide working group, which has been diligently consulting the ADaM IG to identify any gaps within `{admiral}` functionality and/or documentation and creating issues to close the gaps.
+* The ADaM Implementation Guide working group, which has been diligently consulting the ADaM IG to identify any gaps within {admiral} functionality and/or documentation and creating issues to close the gaps.
 
-* The Environments working group, which is currently reading select chapters from [Advanced R](https://adv-r.hadley.nz/) in order to refresh their understanding of environments before  potentially re-hashing the way these are treated in `{admiral}`.
+* The Environments working group, which is currently reading select chapters from [Advanced R](https://adv-r.hadley.nz/) in order to refresh their understanding of environments before  potentially re-hashing the way these are treated in {admiral}.
 
-If you have any ideas for new working groups of which you'd like to be a part, reach out to us - let's co-create `{admrial}` together!
+If you have any ideas for new working groups of which you'd like to be a part, reach out to us - let's co-create {admiral} together!
 
 ### Recent Conferences
 
-This post is also a great opportunity to showcase an publicize some of the fantastic outreach that members of the `{admiral}` community have done since our 1.1 release back in June. A couple of highlights include:
+This post is also a great opportunity to showcase an publicize some of the fantastic outreach that members of the {admiral} community have done since our 1.1 release back in June. A couple of highlights include:
 
 * At useR 2024 in Salzburg:
-  * Edoardo Mancini and Stefan Thoma gave a presentation titled: __"{admiral} - the {dplyr} of the pharmaceutical industry?"__- [slides here](https://stefanthoma.github.io/useR_2024_admiral). 
+  * Edoardo Mancini and Stefan Thoma gave a presentation titled: *"{admiral} - the {dplyr} of the pharmaceutical industry?"* - [slides here](https://stefanthoma.github.io/useR_2024_admiral). 
 
-* At R/Pharma 2024, Ben Strab and Fanny Gautier led an __"ADaM Workshop"__ - [slides here](https://pharmaverse.github.io/rpharma-2024-ADaM-workshop/#/title-slide), [repo here](https://github.com/pharmaverse/rpharma-2024-ADaM-workshop).
+* At R/Pharma 2024:
+  * Ben Strab and Fanny Gautier led an *"ADaM Workshop"* - [slides here](https://pharmaverse.github.io/rpharma-2024-ADaM-workshop/#/title-slide), [repo here](https://github.com/pharmaverse/rpharma-2024-ADaM-workshop).
 
 * At PHUSE EU Connect 2024 in Strasbourg:
-  * Yirong Cao and Yi Yan gave a talk titled: __"Insights of Using {admiralonco} at BMS: Facilitating Oncology Efficacy ADaM Datasets"__ - [slides here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PRE_SM05.pdf), [paper here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PAP_SM05.pdf). 
-  * Edoardo Mancini spoke about __"Two hats, one noggin: Perspectives on working as a developer and as a user of the admiral R package for creating ADaMs"__ - [slides here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PRE_OS07.pdf), [paper here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PAP_OS07.pdf)).
-  * Federico Baratin gave his take on __"admiralvaccine Project JouRney"__ - [slides here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PRE_OS08.pdf), [paper here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PAP_OS08.pdf)).
+  * Yirong Cao and Yi Yan gave a talk titled: *Insights of Using {admiralonco} at BMS: Facilitating Oncology Efficacy ADaM Datasets* - [slides here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PRE_SM05.pdf), [paper here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PAP_SM05.pdf). 
+  * Edoardo Mancini spoke about *Two hats, one noggin: Perspectives on working as a developer and as a user of the admiral R package for creating ADaMs* - [slides here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PRE_OS07.pdf), [paper here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PAP_OS07.pdf)).
+  * Federico Baratin gave his take on *admiralvaccine Project JouRney* - [slides here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PRE_OS08.pdf), [paper here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PAP_OS08.pdf)).
 
-As you can see, `{admiral}` is spreading like wildfire in the pharma industry, and we encourage anyone within our community to spread the word and continue making these super presentations.
+As you can see, {admiral} is spreading like wildfire in the pharma industry, and we encourage anyone within our community to spread the word and continue making these super presentations.
 
-For the full archive of `{admiral}`-related presentations, please visit our [Presentation Archive](https://pharmaverse.github.io/admiraldiscovery/articles/presentation_archive.html).
+For the full archive of {admiral}-related presentations, please visit our [Presentation Archive](https://pharmaverse.github.io/admiraldiscovery/articles/presentation_archive.html).
 
 ### What's we might be doing...for admiral 1.2 to 2.0 (title tbd)
 
