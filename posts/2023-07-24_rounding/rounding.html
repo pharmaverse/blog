@@ -256,7 +256,7 @@ cookieconsent.run({
 <h2 class="anchored" data-anchor-id="rounding-methods">Rounding methods</h2>
 <p>Both SAS and base R have the function <code>round()</code>, which rounds the input to the specified number of decimal places. However, they use different approaches when rounding off a 5:</p>
 <ul>
-<li><p>SAS <code>round()</code> <a href="https://en.wikipedia.org/wiki/Rounding#Rounding_half_up">rounds half up</a>. This is the most common method of rounding.</p></li>
+<li><p>SAS <code>round()</code> <a href="https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lefunctionsref/p0tj6cmga7p8qln1ejh6ebevm0c9.htm#p0zr4tmk27unjwn1izg4801h5l46">rounds away from zero</a>. So, <code>0.5</code> would be rounded to 1 whereas <code>-1.5</code> to <code>-2</code>.</p></li>
 <li><p>base R <code>round()</code> <a href="https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest">rounds to the nearest even</a>. Therefore <code>round(0.5)</code> is <code>0</code> and <code>round(-1.5)</code> is <code>-2</code>. Note from the base R round documentation:</p>
 <ul>
 <li><div>
@@ -266,8 +266,12 @@ cookieconsent.run({
 </div></li>
 </ul></li>
 </ul>
-<p>Although base R does not have the option for “round half up”, there are functions available in other R packages (e.g., <code>janitor</code>, <code>tidytlg</code>).</p>
-<p>In general, there are many often used rounding methods. In the table below, you can find examples of them applied to the number 1.45.</p>
+<p>Other common methods include:</p>
+<ul>
+<li><p><em>Rounding half up</em>, where, as the name suggests, a 5 always gets rounded up. In base R, there are no functions that implement this method natively, however there are functions available in other R packages (e.g., <code>janitor</code>, <code>tidytlg</code>).</p></li>
+<li><p><em>Rounding towards zero</em>, which is the opposite of rounding away from zero.</p></li>
+</ul>
+<p>As the list above shows, there are many options to choose from when looking to round a number. In the table below, you can find examples of some of these applied to the number 1.45.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 13%">
@@ -509,7 +513,7 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-12-03 15:06:17.167995</p>
+<p>2024-12-11 14:35:16.013389</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-07-24_rounding/rounding.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
