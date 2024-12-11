@@ -25,7 +25,7 @@ long_slug <- "2023-07-24_rounding"
 Both SAS and base R have the function `round()`, which rounds the input to the specified number of decimal places.
 However, they use different approaches when rounding off a 5:
 
--   SAS `round()` [rounds away from zero](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lefunctionsref/p0tj6cmga7p8qln1ejh6ebevm0c9.htm#p0zr4tmk27unjwn1izg4801h5l46). So, `1.5` would be rounded to 2 whereas `-1.5` to `-2`.
+-   SAS `round()` [rounds away from zero](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lefunctionsref/p0tj6cmga7p8qln1ejh6ebevm0c9.htm#p0zr4tmk27unjwn1izg4801h5l46). So, `0.5` would be rounded to 1 whereas `-1.5` to `-2`.
 
 -   base R `round()` [rounds to the nearest even](https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest). Therefore `round(0.5)` is `0` and `round(-1.5)` is `-2`. Note from the base R round documentation: 
 
