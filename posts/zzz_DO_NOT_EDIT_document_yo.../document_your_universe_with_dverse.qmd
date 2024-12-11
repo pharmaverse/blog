@@ -40,7 +40,7 @@ package on CRAN today (2024-12-07), with a website, and a name starting with
 
 You need:
 
-* the package {dverse} to **d**ocument your **u**niverse, 
+* the package {dverse} to <u>d</u>ocument your <u>u</u>niverse, 
 * each package in the toy 'admiralverse' to access the documentation metadata,
 * {dplyr} to manipulate the output of {dverse}, and 
 * {DT} to create a searchable table.
@@ -109,10 +109,20 @@ Consider the different kinds of documentation in your universe.
 online |> count(type, keyword)
 ```
 
-Here it makes sense to place vignettes, datasets, and public functions in
-separate tables.
+You may organize the documentation however you like. For inspiration see the
+[pactaverse](https://rmi-pacta.github.io/pactaverse/articles/global-search.html),
+the toy
+['admiralverse'](https://maurolepore.github.io/admiralverse/articles/reference.html),
+[fgeo](https://forestgeo.github.io/fgeo/articles/siteonly/reference.html) and
+[tidymodels](https://www.tidymodels.org/find/).
+
+Here it makes sense to place vignettes, datasets, and public functions
+in separate tables.
 
 ### Vignettes
+
+Here are all the vignettes available across packages in the 'admiralverse'.
+Click on each topic to read its corresponding vignette.
 
 ```{r vignettes}
 vignettes <- online |> filter(type == "vignette")
@@ -135,6 +145,8 @@ devtools::install() or remotes::install_github(), then you need `build_vignettes
 
 ### Datasets
 
+Here are all the datasets. Click on each topic to read about it.
+
 ```{r datasets}
 datasets <- online |> filter(keyword == "datasets")
 
@@ -144,6 +156,8 @@ datasets |>
 ```
 
 ### Functions
+
+Here are all the functions. Click on each topic to read about it.
 
 ```{r public}
 internal <- online |> filter(keyword == "internal")
