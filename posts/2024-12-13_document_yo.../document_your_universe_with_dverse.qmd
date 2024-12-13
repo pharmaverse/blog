@@ -62,6 +62,9 @@ You need:
 
 local_library <- tempfile()
 dir.create(local_library)
+# https://adv-r.hadley.nz/functions.html#on-exit
+on.exit(unlink(local_library), add = TRUE, after = FALSE)
+
 .libPaths(c(.libPaths(), local_library))
 
 if (!requireNamespace("pak", quietly = TRUE)) {
@@ -218,10 +221,4 @@ insert_appendix(
 )
 ```
 
-```{r cleanup}
-#| echo: false
-if (dir.exists(local_library)) {
-  unlink(local_library)
-}
-```
 
