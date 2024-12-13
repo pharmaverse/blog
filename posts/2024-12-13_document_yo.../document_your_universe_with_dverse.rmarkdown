@@ -9,7 +9,11 @@ categories: Technical
 image: dverse.png
 ---
 
+
+
 <!--------------- typical setup ----------------->
+
+
 
 ```{r setup, include=FALSE}
 long_slug <- "zzz_DO_NOT_EDIT_document_yo..."
@@ -21,6 +25,8 @@ knitr::opts_chunk$set(
   collapse = TRUE
 )
 ```
+
+
 
 <!--------------- post begins here ----------------->
 
@@ -34,6 +40,8 @@ The example here uses the 'admiralverse' -- a toy universe defined as every
 package on CRAN today (2024-12-07), with a website, and a name starting with
 'admiral'.
 
+
+
 ```{r admiralverse}
 admiralverse <- c(
   "admiral",
@@ -45,12 +53,16 @@ admiralverse <- c(
 )
 ```
 
+
+
 You need:
 
 * the package {dverse} to <u>d</u>ocument your uni<u>verse</u>, 
 * each package in the toy 'admiralverse' to access the documentation metadata,
 * {dplyr} to manipulate the output of {dverse}, and 
 * {DT} to create a searchable table.
+
+
 
 ```{r dependencies}
 #| echo: false
@@ -69,6 +81,7 @@ if (!requireNamespace("pak", quietly = TRUE)) {
 }
 # The cache is smart. It won't re-install what's already available
 pak::pak(c("dverse", admiralverse, "dplyr", "DT"), lib = local_library)
+
 ```
 
 ```{r packages}
@@ -83,7 +96,11 @@ library(dplyr)
 library(DT)
 ```
 
+
+
 <details><summary>Versions</summary>
+
+
 
 ```{r versions}
 packageVersion("dverse")
@@ -97,11 +114,15 @@ packageVersion("dplyr")
 packageVersion("DT")
 ```
 
+
+
 </details>
 
 dverse::document_universe() takes the names of the packages in the
 'admiralverse', and a template pointing to each help file (topic) in each
 package.
+
+
 
 ```{r docs}
 # For example: https://pharmaverse.github.io/admiral/reference/queries.html
@@ -111,9 +132,13 @@ docs <- dverse::document_universe(admiralverse, template)
 docs
 ```
 
+
+
 You may need to exclude some topics, such as reexported objects from other
 packages. Because topics outside your universe yield broken links, you can
 exclude them with dverse::is_online().
+
+
 
 ```{r online}
 docs |> filter(!dverse::is_online(topic))
@@ -121,11 +146,17 @@ docs |> filter(!dverse::is_online(topic))
 online <- docs |> filter(dverse::is_online(topic))
 ```
 
+
+
 Consider the different kinds of documentation in your universe.
+
+
 
 ```{r kinds}
 online |> count(type, keyword)
 ```
+
+
 
 You may organize the documentation however you like. For inspiration see the
 [pactaverse](https://rmi-pacta.github.io/pactaverse/articles/global-search.html),
@@ -142,6 +173,8 @@ in separate tables.
 Here are all the vignettes available across packages in the 'admiralverse'.
 Click on each topic to read its corresponding vignette.
 
+
+
 ```{r vignettes}
 vignettes <- online |> filter(type == "vignette")
 
@@ -149,6 +182,8 @@ vignettes |>
   distinct(topic, title, package) |>
   datatable(escape = FALSE)
 ```
+
+
 
 #### You don't see what you expect?
 
@@ -165,6 +200,8 @@ devtools::install() or remotes::install_github(), then you need `build_vignettes
 
 Here are all the datasets. Click on each topic to read about it.
 
+
+
 ```{r datasets}
 datasets <- online |> filter(keyword == "datasets")
 
@@ -173,9 +210,13 @@ datasets |>
   datatable(escape = FALSE)
 ```
 
+
+
 ### Functions
 
 Here are all the functions. Click on each topic to read about it.
+
+
 
 ```{r public}
 internal <- online |> filter(keyword == "internal")
@@ -189,6 +230,8 @@ public |>
   distinct(topic, title, package) |>
   datatable(escape = FALSE)
 ```
+
+
 
 ### Learn More
 
@@ -207,6 +250,8 @@ features?](https://github.com/maurolepore/dverse/issues).
 [Let's connect](https://www.linkedin.com/in/mauro-lepore/).
 
 <!--------------- appendices go here ----------------->
+
+
 
 ```{r, echo=FALSE}
 source("appendix.R")
