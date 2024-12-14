@@ -9,7 +9,7 @@ date: "2024-12-30"
 # You can find the default categories in the repository README.md
 categories: [SDTM, ADaM, Community, Technical]
 # Feel free to change the image
-image: "pharmaverse.png"
+image: "data.jpg"
 
 ---
 
@@ -17,18 +17,43 @@ image: "pharmaverse.png"
 
 ```{r setup, include=FALSE}
 long_slug <- "zzz_DO_NOT_EDIT_data__packages"
-
+library(link)
+link::auto(keep_pkg_prefix = FALSE)
 ```
 
 <!--------------- post begins here ----------------->
 
+The purpose of this blog is to maintain an ongoing list of CDISC-specific data packages or packages with CDISC data that could be useful for Clinical Reporting. The packages could have a comprehensive set of data or just small toy examples for specific functions or vignettes. 
+
+Feel free to get in touch with me for additions or clarifications.  
+
 ## pharmaversesdtm
+
+A set of Study Data Tabulation Model (SDTM) datasets from the Clinical Data Interchange Standards Consortium (CDISC) pilot project used for testing and developing Analysis Data Model (ADaM) datasets inside the pharmaverse family of packages. A CDISC Pilot was conducted somewhere between 2008 and 2010. This is that Pilot data but slowly brought up to current CDISC standards.
+
+Most common SDTM datasets can be found as well as some specific disease area SDTMs.
+
+Available on CRAN and package is actively maintained on [GitHub](https://github.com/pharmaverse/pharmaversesdtm)
 
 ## pharmaverseadam
 
-## meddatasets
+A set of Analysis Data Model (ADaM) datasets constructed using the Study Data Tabulation Model (SDTM) datasets contained in the 'pharmaversesdtm' package and the template scripts from the {admiral} family of packages. 
 
-https://www.linkedin.com/posts/alexander-krannich_meddatasets-ugcPost-7257309409335296000-NHri?utm_source=share&utm_medium=member_ios
+Available on CRAN and package is actively maintained on [GitHub](https://github.com/pharmaverse/pharmaversesdtm)
+
+## admiral
+
+A toolbox for programming Clinical Data Interchange Standards Consortium (CDISC) compliant Analysis Data Model (ADaM) datasets in R. ADaM datasets are a mandatory part of any New Drug or Biologics License Application submitted to the United States Food and Drug Administration (FDA). Analysis derivations are implemented in accordance with the "Analysis Data Model Implementation Guide.
+
+Limited datasets like `ADSL`, `ADLB` but the template scripts availabe in this package are used to create the ADaM data in {pharmaverseadam}
+
+Available on CRAN and package is actively maintained on [GitHub](https://github.com/pharmaverse/admiral)
+
+## random.cdisc.data
+
+A set of functions to create random Analysis Data Model (ADaM) datasets and cached dataset. ADaM dataset specifications are described by the Clinical Data Interchange Standards Consortium (CDISC) Analysis Data Model Team.
+
+Available on CRAN and package is actively maintained on [GitHub](https://github.com/insightsengineering/random.cdisc.data)
 
 
 <!--------------- appendices go here ----------------->
