@@ -1,0 +1,197 @@
+---
+title: Creating a better universe with dverse
+author:
+- name: Mauro Lepore
+description: 'How to create a global search across an entire collection of R packages:
+  A use case for the toy ''admiralverse'''
+date: '2024-12-13'
+categories: Technical
+image: dverse.png
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_document_yo..."
+library(link)
+link::auto()
+
+knitr::opts_chunk$set(
+  message = FALSE,
+  collapse = TRUE
+)
+```
+
+<!--------------- post begins here ----------------->
+
+This article shows how to create a global search for any collection of R
+packages, i.e. a universe. Your universe may be on CRAN, large, and popular like
+the [tidyverse](https://tidyverse.org/) or
+[pharmaverse](https://pharmaverse.org/). But it may also be not on CRAN, small,
+company-specific or personal.
+
+The example here uses the 'admiralverse' -- a toy universe defined as every
+package on CRAN today (2024-12-07), with a website, and a name starting with
+'admiral'.
+
+You need:
+
+* the package {dverse} to <u>d</u>ocument your uni<u>verse</u>, 
+* each package in the toy 'admiralverse' to access the documentation metadata,
+* {dplyr} to manipulate the output of {dverse}, and 
+* {DT} to create a searchable table.
+
+```{r packages}
+library(dverse)
+library(admiral)
+library(admiraldev)
+library(admiralonco)
+library(admiralophtha)
+library(admiralpeds)
+library(admiralvaccine)
+library(dplyr)
+library(DT)
+```
+
+<details><summary>Versions</summary>
+
+```{r versions}
+packageVersion("dverse")
+packageVersion("admiral")
+packageVersion("admiraldev")
+packageVersion("admiralonco")
+packageVersion("admiralophtha")
+packageVersion("admiralpeds")
+packageVersion("admiralvaccine")
+packageVersion("dplyr")
+packageVersion("DT")
+```
+
+</details>
+
+dverse::document_universe() takes the names of the packages in the
+'admiralverse', and a template pointing to each help file (topic) in each
+package.
+
+```{r docs}
+admiralverse <- c(
+  "admiral",
+  "admiraldev",
+  "admiralonco",
+  "admiralophtha",
+  "admiralpeds",
+  "admiralvaccine"
+)
+# For example: https://pharmaverse.github.io/admiral/reference/queries.html
+template <- "https://pharmaverse.github.io/{package}/reference/{topic}.html"
+
+docs <- dverse::document_universe(admiralverse, template)
+docs
+```
+
+You may need to exclude some topics, such as reexported objects from other
+packages. Because topics outside your universe yield broken links, you can
+exclude them with dverse::is_online().
+
+```{r online}
+docs |> filter(!dverse::is_online(topic))
+
+online <- docs |> filter(dverse::is_online(topic))
+```
+
+Consider the different kinds of documentation in your universe.
+
+```{r kinds}
+online |> count(type, keyword)
+```
+
+You may organize the documentation however you like. For inspiration see the
+[pactaverse](https://rmi-pacta.github.io/pactaverse/articles/global-search.html),
+the toy
+['admiralverse'](https://maurolepore.github.io/admiralverse/articles/reference.html),
+[fgeo](https://forestgeo.github.io/fgeo/articles/siteonly/reference.html) and
+[tidymodels](https://www.tidymodels.org/find/).
+
+Here it makes sense to place vignettes, datasets, and public functions
+in separate tables.
+
+### Vignettes
+
+Here are all the vignettes available across packages in the 'admiralverse'.
+Click on each topic to read its corresponding vignette.
+
+```{r vignettes}
+vignettes <- online |> filter(type == "vignette")
+
+vignettes |>
+  distinct(topic, title, package) |>
+  datatable(escape = FALSE)
+```
+
+#### You don't see what you expect?
+
+* This works with vignettes but not articles, so usethis::use_vignette() not
+usethis::use_article().
+
+* When you install the packages in your universe ensure to install the vignettes.
+Vignettes install by default when you install your packages from CRAN with
+`install.packages()` or pak::pak(). But if you install them from source with
+devtools::install() or remotes::install_github(), then you need `build_vignettes
+= TRUE`.
+
+### Datasets
+
+Here are all the datasets. Click on each topic to read about it.
+
+```{r datasets}
+datasets <- online |> filter(keyword == "datasets")
+
+datasets |>
+  distinct(topic, title, package) |>
+  datatable(escape = FALSE)
+```
+
+### Functions
+
+Here are all the functions. Click on each topic to read about it.
+
+```{r public}
+internal <- online |> filter(keyword == "internal")
+
+public <- online |>
+  anti_join(vignettes) |>
+  anti_join(datasets) |>
+  anti_join(internal)
+
+public |>
+  distinct(topic, title, package) |>
+  datatable(escape = FALSE)
+```
+
+### Learn More
+
+To learn more see the toy 'admiralverse'
+[meta-package](https://maurolepore.github.io/admiralverse) -- which models the
+main use case of {dverse}.
+
+You may also enjoy these videos:
+
+* Creating a meta-package for the toy 'admiralverse' ([5'](https://youtu.be/ezVpsadSF7A)).
+* Creating a website for the toy 'admiralverse' ([9'](https://youtu.be/VhmnADBDXv0)).
+
+Was this useful? Do you want to [report bugs, propose changes or request
+features?](https://github.com/maurolepore/dverse/issues).
+
+[Let's connect](https://www.linkedin.com/in/mauro-lepore/).
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```

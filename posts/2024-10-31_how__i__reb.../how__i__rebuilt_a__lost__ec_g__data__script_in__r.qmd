@@ -1,0 +1,200 @@
+---
+title: How I Rebuilt a Lost ECG Data Script in R
+author:
+- name: Vladyslav Shuliar
+description: During my Data Science placement, I faced the challenge of recreating
+  an ECG dataset for the {pharmaversesdtm} project after the original R script was
+  lost. I explored the existing data, identified key parameters, and experimented
+  with R packages to replicate the dataset structure and ensure SDTM compliance. Despite
+  challenges with ensuring accurate ECG measurements, I eventually regenerated the
+  dataset, learning valuable lessons in problem-solving and resilience.
+date: '2024-10-31'
+categories:
+- SDTM
+- Technical
+image: pharmaversesdtm.png
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_how__i__reb..."
+# renv::use(lockfile = "renv.lock")
+library("link")
+```
+
+<!--------------- post begins here ----------------->
+
+As a Data Science placement student at Roche UK, I was given an exciting opportunity to enhance my R programming skills while contributing to the open-source community. Under the guidance of my manager, Edoardo Mancini, I undertook a unique and challenging task within the {pharmaversesdtm} project that tested both my technical expertise and problem-solving abilities.
+
+The project involved recreating the `eg` domain (Electrocardiogram data) from the SDTM datasets used within {pharmaversesdtm}. The original dataset had been sourced from the [CDISC pilot project](https://github.com/cdisc-org/sdtm-adam-pilot-project), but since that source was no longer available, we had no direct reference. Fortunately, a saved copy of the dataset still existed, allowing me to analyze it and attempt to reproduce it as closely as possible.
+
+## How I Solved the Problem
+
+### Explored and Analyzed the Data
+
+The first step was to thoroughly explore the existing ECG dataset of over 25,000 entries. I needed to understand the structure and key variables that defined the dataset, such as the "one row for each patient's test during each visit" format. By analyzing these elements, I was able to gain a clear picture of how the dataset was organized. I also examined the range of values, variance, and other characteristics of the tests to ensure that my recreated version would align with the original dataset's structure and statistical properties.
+
+To provide a clearer understanding of how the data is structured, let’s take a quick look at the information collected during a patient’s visit. Below is an example of data for patient `01-701-1015` during their `WEEK 2` visit:
+
+```{r, eval = T, message = F, echo = F}         
+library(dplyr)
+library(pharmaversesdtm)
+
+eg %>%
+  select(USUBJID, EGTEST, VISIT, EGDTC, EGTPT, EGSTRESN, EGSTRESC) %>%
+  filter(USUBJID == "01-701-1015" & VISIT == "WEEK 2")
+```
+
+In this example, `USUBJID` identifies the subject, while `EGTEST` specifies the type of ECG test performed. `VISIT` refers to the visit during which the test occurred, and `EGDTC` records the date of the test. `EGTPT` indicates the condition under which the ECG test was conducted. `EGSTRESN` provides the numeric result, and `EGSTRESC` gives the corresponding categorical result.
+
+### Wrote the New R Script
+
+Armed with insights from my analysis, I set about writing a new R script to replicate the lost one. This involved a lot of trial and error, as I kept refining the code to ensure it generated a dataset that closely resembled the original ECG data in both structure and content. In order to give you, my reader, better understanding of the solution, I'll walk you through the main parts of the script.
+
+#### Loading Libraries and Data
+
+To begin, I loaded the necessary libraries and read in the vital signs (`vs`) dataset, This dataset is functional to my cause because it has the same structure and schedule as the `eg` data, so I can recreate the `eg` visit schedule for each patient from it. By setting a seed for the random data generation, I ensured that the process was reproducible, allowing others to verify my results and maintain consistency in future analyses. Additionally, the metatools package was loaded to facilitate adding labels to the variables later, which enhanced the readability of the dataset.
+
+```{r, eval = T, message = F}
+library(dplyr)
+library(metatools)
+library(pharmaversesdtm)
+
+data("vs")
+set.seed(123)
+```
+
+#### Extracting Unique Date/Time of Measurements
+
+Next, I extracted the unique combination of subject IDs, visit names, and visit dates from the `vs` dataset.
+
+```{r, eval = T}
+egdtc <- vs %>%
+  select(USUBJID, VISIT, VSDTC) %>%
+  distinct() %>%
+  rename(EGDTC = VSDTC)
+
+egdtc
+```
+
+This data was used later to match the generated ECG data to the correct visit and time points.
+
+#### Generating a Grid of Patient Data
+
+Subsequently, I created a grid of all possible combinations of subject IDs, test codes (e.g., `QT`, `HR`, `RR`, `ECGINT`), time points (e.g., after lying down, after standing), and visits. These combinations represented different test results collected across multiple visits.
+
+```{r, eval = T}
+eg <- expand.grid(
+  USUBJID = unique(vs$USUBJID),
+  EGTESTCD = c("QT", "HR", "RR", "ECGINT"),
+  EGTPT = c(
+    "AFTER LYING DOWN FOR 5 MINUTES",
+    "AFTER STANDING FOR 1 MINUTE",
+    "AFTER STANDING FOR 3 MINUTES"
+  ),
+  VISIT = c(
+    "SCREENING 1",
+    "SCREENING 2",
+    "BASELINE",
+    "AMBUL ECG PLACEMENT",
+    "WEEK 2",
+    "WEEK 4",
+    "AMBUL ECG REMOVAL",
+    "WEEK 6",
+    "WEEK 8",
+    "WEEK 12",
+    "WEEK 16",
+    "WEEK 20",
+    "WEEK 24",
+    "WEEK 26",
+    "RETRIEVAL"
+  ), stringsAsFactors = FALSE
+)
+
+# Filter the dataset for one subject and one visit
+filtered_eg <- eg %>%
+  filter(USUBJID == "01-701-1015" & VISIT == "WEEK 2")
+
+# Display the result
+filtered_eg
+```
+
+In order to demonstrate the data more clearly, I have displayed the combinations for only one subject and one visit for you to see, as the full table is very large. Each of these test codes corresponds to specific ECG measurements: `QT` refers to the QT interval (a measurement made on an electrocardiogram used to assess some of the electrical properties of the heart), `HR` represents heart rate, `RR` is the interval between R waves, and `ECGINT` refers to the ECG interpretation.
+
+As I analyzed the original ECG dataset, I learned more about these test codes and their relevance to the clinical data.
+
+#### Generating Random Test Results
+
+For each combination in the grid, I generated random test results using a normal distribution to simulate realistic values for each test code. To determine the means and standard deviations, I used the original EG dataset as a reference. By analyzing the range and distribution of values in the original dataset, I was able to extract realistic means and standard deviations for each numerical ECG test (`QT`, `HR`, `RR`). 
+
+``` r
+EGSTRESN = case_when(
+EGTESTCD == "RR" & EGELTM == "PT5M" ~ floor(rnorm(n(), 543.9985, 80)),
+EGTESTCD == "RR" & EGELTM == "PT3M" ~ floor(rnorm(n(), 536.0161, 80)),
+EGTESTCD == "RR" & EGELTM == "PT1M" ~ floor(rnorm(n(), 532.3233, 80)),
+EGTESTCD == "HR" & EGELTM == "PT5M" ~ floor(rnorm(n(), 70.04389, 8)),
+EGTESTCD == "HR" & EGELTM == "PT3M" ~ floor(rnorm(n(), 74.27798, 8)),
+EGTESTCD == "HR" & EGELTM == "PT1M" ~ floor(rnorm(n(), 74.77461, 8)),
+EGTESTCD == "QT" & EGELTM == "PT5M" ~ floor(rnorm(n(), 450.9781, 60)),
+EGTESTCD == "QT" & EGELTM == "PT3M" ~ floor(rnorm(n(), 457.7265, 60)),
+EGTESTCD == "QT" & EGELTM == "PT1M" ~ floor(rnorm(n(), 455.3394, 60))
+)
+```
+
+This approach ensured that the synthetic data aligned closely with the patterns and variability observed in the original clinical data.
+
+#### Finalizing the Dataset
+
+Finally, I added labels to the dataframe for easier analysis and future use by utilizing the `metatools::add_labels()` function.
+
+``` r
+add_labels(
+STUDYID = "Study Identifier",
+USUBJID = "Unique Subject Identifier",
+EGTEST = "ECG Test Name",
+VISIT = "Visit Name",
+EGSTRESC = "Character Result/Finding in Std Format",
+EGSTRESN = "Numeric Result/Finding in Standard Units",
+<etc>
+)
+```
+
+This provided descriptive names for each column in the dataset, making it more intuitive to understand the data during analysis and ensuring clarity in its subsequent use.
+
+#### Limitations
+
+However, this approach has certain limitations. One key issue is that the simulations do not account for the time structure, as each observation is generated independently (i.i.d.), which does not reflect real-world dynamics. Additionally, sampling from a normal distribution may not always be appropriate and can sometimes yield unrealistic results, such as negative heart rate (HR) values. To mitigate this, I manually reviewed the generated data to ensure that only plausible values were included. Below are the valid ranges I established for this purpose:
+
+```{r, eval = T}
+# Filter the data for the relevant test codes (QT, RR, HR)
+eg_filtered <- pharmaversesdtm::eg %>%
+  filter(EGTESTCD %in% c("QT", "HR", "RR"))
+
+# Display the minimum and maximum values for each test code
+value_ranges <- eg_filtered %>%
+  group_by(EGTESTCD) %>%
+  summarize(
+    min_value = min(EGSTRESN, na.rm = TRUE),
+    max_value = max(EGSTRESN, na.rm = TRUE)
+  )
+
+# Show the result
+value_ranges
+```
+
+### Conclusion
+
+This project not only sharpened my R programming skills but also provided invaluable experience in reverse-engineering data, analyzing large healthcare datasets, and tackling real-world challenges in the open-source domain. By following a structured approach, I was able to successfully recreate the `EG` dataset synthetically, ensuring it mirrors realistic clinical data. This achievement not only enhances my technical capabilities but also contributes to the broader open-source community, as the synthetic dataset will be featured in the next release of {pharmaversesdtm}, offering a valuable resource for future research and development.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```

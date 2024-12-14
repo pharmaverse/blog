@@ -4,14 +4,37 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-  workflow_run:
-    workflows: ["Update-post-dates"]
-    branches: [main]
-    types:
-      - completed
 
 jobs:
+  Update-post-dates:
+    runs-on: ubuntu-latest
+    container:
+      image: "rocker/tidyverse:4.2.1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.PHARMAVERSE_BOT }}
+
+      - name: Run update_post_dates
+        run: Rscript R/update_post_dates.R  # running the R script with Rscript
+
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory /__w/blog/blog
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "[skip actions] Auto-update blog post date"
+          file_pattern: "."
+          commit_user_name: github-actions
+          commit_user_email: >-
+            41898282+github-actions[bot]@users.noreply.github.com
+        continue-on-error: true
+
   build-deploy:
+    needs: Update-post-dates
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -37,6 +60,10 @@ jobs:
             janitor
             diffdf
             admiral
+            admiralonco
+            admiralophtha
+            admiralpeds
+            admiralvaccine
             patchwork
             here
             reactable
@@ -53,6 +80,7 @@ jobs:
             tidyCDISC
             mirai
             sdtm.oak
+            dverse
 
       - name: Install tinytex
         run: quarto install tool tinytex
