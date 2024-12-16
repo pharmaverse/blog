@@ -2,9 +2,9 @@
 title: "1.2 admiral release"
 author:
   - name: Ben Straub, Edoardo Mancini
-description: "A short sneak peak of what to expect from the upcoming 1.2 release of {admiral}."
+description: "What to expect from the 1.2 release of {admiral}."
 # Note that the date below will be auto-updated when the post is merged.
-date: "2024-12-01"
+date: "2024-12-16"
 # Please do not use any non-default categories.
 # You can find the default categories in the repository README.md
 categories: [ADaM, Community, Technical]
@@ -31,23 +31,138 @@ link::auto(keep_pkg_prefix = FALSE)
 
 As crazy as it may sound, the {admiral} package is nearing its third CRAN birthday: our first release dates all the way back to the 17th February 2022! Time really does fly when you're programming ADaMs, and our codebase has grown __massively__ since then. For some context, if you'd only allowed yourself to write twenty lines of code a day, starting from the 17th February 2022, by now you would have compiled the whole of the {admiral} codebase (excluding documentation and unit tests - who needs those anyway?). And so, what better early birthday present for {admiral} than the new and exciting 1.2 release? Read through this blog post to find out more about the exciting contents of this release, as well some of our plans for 2025.
 
-# New Features for {admiral} 1.2
+# New Features for 1.2
 
 As always, we have listed the full set of 1.2 updates in our [changelog](https://pharmaverse.github.io/admiral/news/index.html), and have picked out only a select few to discuss within this post.
 
+The two new functions available in this release are:
+
+* admiral::derive_vars_cat(): Derive Categorization Variables Like AVALCATy and AVALCAyN
+* admiral::derive_vars_crit_flag():  Derives ADaM compliant criterion flags, e.g., to facilitate subgroup analyses.
+* admiral::transform_scale(): blah blah
+
 ## New function: admiral::derive_vars_cat()
 
-* Ben
+::: {.callout-tip collapse="true" title="Expand for Full Code Walkthrough"}
+```{r, eval = FALSE}
+library(dplyr)
+library(tibble)
+
+advs <- tibble::tribble(
+  ~USUBJID,       ~VSTEST,  ~AVAL,
+  "01-701-1015", "Height", 147.32,
+  "01-701-1015", "Weight",  53.98,
+  "01-701-1023", "Height", 162.56,
+  "01-701-1023", "Weight",     NA,
+  "01-701-1028", "Height",     NA,
+  "01-701-1028", "Weight",     NA,
+  "01-701-1033", "Height", 175.26,
+  "01-701-1033", "Weight",  88.45
+)
+
+definition <- exprs(
+  ~condition,                        ~AVALCAT1, ~AVALCA1N,  ~NEWCOL,
+  VSTEST == "Height" & AVAL > 160,   ">160 cm",         1, "extra1",
+  VSTEST == "Height" & AVAL <= 160, "<=160 cm",         2, "extra2"
+)
+derive_vars_cat(
+  dataset = advs,
+  definition = definition
+)
+
+# Using by_vars:
+definition2 <- exprs(
+  ~VSTEST,   ~condition,  ~AVALCAT1, ~AVALCA1N,
+  "Height",  AVAL > 160,  ">160 cm",         1,
+  "Height", AVAL <= 160, "<=160 cm",         2,
+  "Weight",   AVAL > 70,   ">70 kg",         1,
+  "Weight",  AVAL <= 70,  "<=70 kg",         2
+)
+
+derive_vars_cat(
+  dataset = advs,
+  definition = definition2,
+  by_vars = exprs(VSTEST)
+)
+
+# With three conditions:
+definition3 <- exprs(
+  ~VSTEST,                ~condition,  ~AVALCAT1, ~AVALCA1N,
+  "Height",               AVAL > 170,  ">170 cm",         1,
+  "Height", AVAL <= 170 & AVAL > 160, "<=170 cm",         2,
+  "Height",              AVAL <= 160, "<=160 cm",         3
+)
+
+derive_vars_cat(
+  dataset = advs,
+  definition = definition3,
+  by_vars = exprs(VSTEST)
+)
+
+# Let's derive both the MCRITyML and the MCRITyMN variables
+adlb <- tibble::tribble(
+  ~USUBJID,     ~PARAM, ~AVAL, ~AVALU,  ~ANRHI,
+  "01-701-1015", "ALT",   150,  "U/L",      40,
+  "01-701-1023", "ALT",    70,  "U/L",      40,
+  "01-701-1036", "ALT",   130,  "U/L",      40,
+  "01-701-1048", "ALT",    30,  "U/L",      40,
+  "01-701-1015", "AST",    50,  "U/L",      35
+)
+
+definition_mcrit <- exprs(
+  ~PARAM,                      ~condition,    ~MCRIT1ML, ~MCRIT1MN,
+  "ALT",                    AVAL <= ANRHI,    "<=ANRHI",         1,
+  "ALT", ANRHI < AVAL & AVAL <= 3 * ANRHI, ">1-3*ANRHI",         2,
+  "ALT",                 3 * ANRHI < AVAL,   ">3*ANRHI",         3
+)
+
+adlb %>%
+  derive_vars_cat(
+    definition = definition_mcrit,
+    by_vars = exprs(PARAM)
+  )
+```
+:::
 
 ## New function: admiral::derive_vars_crit_flag()
 
-* Ben
+::: {.callout-tip collapse="true" title="Expand for Full Code Walkthrough"}
+```{r, eval = FALSE}
+library(tibble)
+adbds <- tribble(
+  ~PARAMCD, ~AVAL,
+  "AST",    42,
+  "AST",    52,
+  "AST",    NA_real_,
+  "ALT",    33,
+  "ALT",    51
+)
+
+# Create a criterion flag with values "Y" and NA
+derive_vars_crit_flag(
+  adbds,
+  condition = AVAL > 50,
+  description = "Absolute value > 50"
+)
+
+# Create criterion flag with values "Y", "N", and NA and parameter dependent
+# criterion description
+derive_vars_crit_flag(
+  adbds,
+  crit_nr = 2,
+  condition = AVAL > 50,
+  description = paste(PARAMCD, "> 50"),
+  values_yn = TRUE,
+  create_numeric_flag = TRUE
+)
+```
+:::
 
 ## New function: admiral::transform_scale()
 
 The final new function we are adding is admiral::transform_scale(). Coming directly from a user request, with this function we now have functionality to linearly transform a vector of values with a certain associated range into values from another range.
 
-``` {r, eval = TRUE}
+``` {r, eval = FALSE}
 library(admiral)
 
 transform_range(
@@ -62,8 +177,12 @@ Within ADaM programming, this is a common task, arising for instance when transf
 
 ### Deprecation Strategy
 
-* Ben to write this one
+::: {.callout-important}
+We would like all users to be aware that a new deprecation strategy is being adopted by
+the admiral team.  You can find the details linked here in our [Programming Strategy Guide](TBL)
+:::
 
+Previously, the team were going to keep "superseded" functions around indefinitely, i.e., a function that was replaced with a better function would be kept in admiral and maintained until universe-death.  Unfortunately, that places an enormous tech-debt on future maintainers.  It was decided that these "superseded" functions should in fact be deprecated and slowly removed from the code base.  Please check out our [Programming Strategy Guide](TBL) if you would like to better understand this process.
 
 ### Reminders on admiraldiscovery, cheatsheet, Find My Function, Working Groups
 
