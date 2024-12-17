@@ -2,7 +2,7 @@
 title: "1.2 admiral release"
 author:
   - name: Ben Straub, Edoardo Mancini
-description: "What to expect from the 1.2 release of {admiral}."
+description: "What to expect from the 1.2 release of {admiral}? New functions, crisper documentation, upcoming plans and more!"
 # Note that the date below will be auto-updated when the post is merged.
 date: "2024-12-16"
 # Please do not use any non-default categories.
@@ -35,13 +35,17 @@ As crazy as it may sound, the {admiral} package is nearing its third CRAN birthd
 
 As always, we have listed the full set of 1.2 updates in our [changelog](https://pharmaverse.github.io/admiral/news/index.html), and have picked out only a select few to discuss within this post.
 
-The two new functions available in this release are:
+The three new functions available in this release are:
 
-* admiral::derive_vars_cat(): Derive Categorization Variables Like AVALCATy and AVALCAyN
+* admiral::derive_vars_cat(): Derive Categorization Variables Like `AVALCATy` and `AVALCAyN`
 * admiral::derive_vars_crit_flag():  Derives ADaM compliant criterion flags, e.g., to facilitate subgroup analyses.
-* admiral::transform_scale(): blah blah
+* admiral::transform_scale(): Transforming questionnaire values into a standardized scale
 
 ## New function: admiral::derive_vars_cat()
+
+We wanted a function that could take in user-defined inputs for category-like variables, e.g. `AVALCATy` and `AVALCAyN`.  While this is typically defined in the metadata for an ADaM, we thought having a dedicated function in {admiral} could help either with double programming or smaller projects that don't have metadata fully developed.  Let us know what you think!
+
+Below you can expand to get a full walk through of new function with dummy data.  
 
 ::: {.callout-tip collapse="true" title="Expand for Full Code Walkthrough"}
 ```{r, eval = FALSE}
