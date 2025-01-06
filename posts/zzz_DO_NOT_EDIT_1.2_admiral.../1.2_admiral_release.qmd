@@ -1,11 +1,11 @@
 ---
-title: "1.2 admiral release"
+title: "{admiral} 1.2 is here!"
 author:
   - name: Ben Straub
   - name: Edoardo Mancini
 description: "What to expect from the 1.2 release of {admiral}? New functions, crisper documentation, upcoming plans and more!"
 # Note that the date below will be auto-updated when the post is merged.
-date: "2024-12-16"
+date: "2025-01-20"
 # Please do not use any non-default categories.
 # You can find the default categories in the repository README.md
 categories: [ADaM, Community, Technical]
@@ -30,29 +30,33 @@ link::auto(keep_pkg_prefix = FALSE)
 
 # Introduction
 
-As crazy as it may sound, the {admiral} package is nearing its third CRAN birthday: our first release dates all the way back to the 17th February 2022! Time really does fly when you're programming ADaMs, and our codebase has grown __massively__ since then. For some context, if you'd only allowed yourself to write twenty lines of code a day, starting from the 17th February 2022, by now you would have compiled the whole of the {admiral} codebase (excluding documentation and unit tests - who needs those anyway?). And so, what better early birthday present for {admiral} than the new and exciting 1.2 release? Read through this blog post to find out more about the exciting contents of this release, as well some of our plans for 2025.
+As crazy as it may sound, the {admiral} package is nearing its third CRAN birthday: our first release dates all the way back to __17th February 2022__! Time really does fly when you're programming ADaMs in R. The codebase has grown quite a lot! For some context, if you'd only allowed yourself to write twenty lines of code a day, starting from the 17th February 2022, by now you would have compiled the whole of the {admiral} codebase (excluding documentation and unit tests). And so, what better early birthday present for {admiral} than the new and exciting 1.2 release! 
+
+Read through this blog post to find out more about the exciting contents of the 1.2 release, as well some of our plans for 2025.
 
 # New Features for 1.2
 
-As always, we have listed the full set of 1.2 updates in our [changelog](https://pharmaverse.github.io/admiral/news/index.html), and have picked out only a select few to discuss within this post.
+As always, we have listed the full set of 1.2 updates in our [changelog](https://pharmaverse.github.io/admiral/news/index.html), and have picked out only a select few new functions to discuss.
 
 The three new functions available in this release are:
 
 * admiral::derive_vars_cat(): Derive Categorization Variables Like `AVALCATy` and `AVALCAyN`
-* admiral::derive_vars_crit_flag():  Derives ADaM compliant criterion flags, e.g., to facilitate subgroup analyses.
+* admiral::derive_vars_crit_flag():  Derives ADaM compliant criterion flags to facilitate subgroup analyses like `CRITy`, `CRITyFL`, and `CRITyFN`.
 * admiral::transform_scale(): Transforming questionnaire values into a standardized scale
 
 ## New function: admiral::derive_vars_cat()
 
 We wanted a function that could take in user-defined inputs for category-like variables, e.g. `AVALCATy` and `AVALCAyN`.  While this is typically defined in the metadata for an ADaM, we thought having a dedicated function in {admiral} could help either with double programming or smaller projects that don't have metadata fully developed.  Let us know what you think!
 
-Below you can expand to get a full walk through of new function with dummy data.  Check it out!!
+Below you can expand to get a few simple examples of this new function with dummy data in action.  Be sure to check out the function's documentation on the admiral website for full understanding of admiral::derive_vars_cat().
 
 ::: {.callout-tip collapse="true" title="Expand for Full Code Walkthrough"}
 ```{r, eval = FALSE}
 library(dplyr)
+library(admiral)
 library(tibble)
 
+# Example 1
 advs <- tibble::tribble(
   ~USUBJID,       ~VSTEST,  ~AVAL,
   "01-701-1015", "Height", 147.32,
@@ -65,17 +69,9 @@ advs <- tibble::tribble(
   "01-701-1033", "Weight",  88.45
 )
 
-definition <- exprs(
-  ~condition,                        ~AVALCAT1, ~AVALCA1N,  ~NEWCOL,
-  VSTEST == "Height" & AVAL > 160,   ">160 cm",         1, "extra1",
-  VSTEST == "Height" & AVAL <= 160, "<=160 cm",         2, "extra2"
-)
-derive_vars_cat(
-  dataset = advs,
-  definition = definition
-)
 
-# Using by_vars:
+# Example 1
+# A simple defintion with multiple conditions
 definition2 <- exprs(
   ~VSTEST,   ~condition,  ~AVALCAT1, ~AVALCA1N,
   "Height",  AVAL > 160,  ">160 cm",         1,
@@ -90,7 +86,8 @@ derive_vars_cat(
   by_vars = exprs(VSTEST)
 )
 
-# With three conditions:
+# Example 2
+# A simple defintion with slightly more complex conditions
 definition3 <- exprs(
   ~VSTEST,                ~condition,  ~AVALCAT1, ~AVALCA1N,
   "Height",               AVAL > 170,  ">170 cm",         1,
@@ -104,7 +101,8 @@ derive_vars_cat(
   by_vars = exprs(VSTEST)
 )
 
-# Let's derive both the MCRITyML and the MCRITyMN variables
+# Example 3
+# Now using for MCRITyML and the MCRITyMN variables
 adlb <- tibble::tribble(
   ~USUBJID,     ~PARAM, ~AVAL, ~AVALU,  ~ANRHI,
   "01-701-1015", "ALT",   150,  "U/L",      40,
@@ -131,8 +129,21 @@ adlb %>%
 
 ## New function: admiral::derive_vars_crit_flag()
 
+The function derives ADaM compliant criterion flags, e.g., to facilitate subgroup analyses.
+
+If a criterion flag can't be derived with this function, the derivation is not ADaM compliant. It helps to ensure that
+
+* the condition of the criterion depends only on variables of the same row,
+
+* the CRITyFL is populated with valid values, i.e, either "Y" and NA or "Y", "N", and NA,
+
+* the CRITy variable is populated correctly
+
+Below you can expand to get a few simple example of this new function with dummy data in action.  Be sure to check out the function's documentation on the admiral website for full understanding of admiral::derive_vars_crit_flag().
+
 ::: {.callout-tip collapse="true" title="Expand for Full Code Walkthrough"}
 ```{r, eval = FALSE}
+library(admiral)
 library(tibble)
 adbds <- tribble(
   ~PARAMCD, ~AVAL,
@@ -180,20 +191,36 @@ transform_range(
 
 Within ADaM programming, this is a common task, arising for instance when transforming questionnaire values into a standardized scale (e.g. 1-100). As such, we see this function being employed principally within calls to admiral::derive_param_computed() during the creation of datasets such as ADQS. You can read more about this topic within our [Questionnaire ADaMs vignette](https://pharmaverse.github.io/admiral/articles/questionnaires.html#transformed-items).
 
-### Deprecation Strategy
+# Deprecation Strategy
 
 ::: {.callout-important}
 We would like all users to be aware that a new deprecation strategy is being adopted by
 the admiral team.  You can find the details linked here in our [Programming Strategy Guide](TBL)
 :::
 
-Previously, the team were going to keep "superseded" functions around indefinitely, i.e., a function that was replaced with a better function would be kept in admiral and maintained until universe-death.  Unfortunately, that places an enormous tech-debt on future maintainers.  It was decided that these "superseded" functions should in fact be deprecated and slowly removed from the code base.  Please check out our [Programming Strategy Guide](TBL) if you would like to better understand this process.
+Previously, the team were going to keep "superseded" functions around indefinitely, i.e., a function that was replaced with a better function would be kept in {admiral} and maintained until universe-death.  Unfortunately, that places an enormous tech-debt on future maintainers. It was decided that these "superseded" functions should in fact be deprecated and slowly removed from the code base. Please check out our [Programming Strategy Guide](TBL) if you would like to better understand this process of removing functions from {admiral}.
 
-### Reminders on admiraldiscovery, cheatsheet, Find My Function, Working Groups
+# Resources for admiral: admiraldiscovery, cheatsheet, Find My Function, Working Groups
 
-Work on {admiral} releases isn't just limited to new functions and deprecation. Indeed, for this release we have also updated the [cheatsheet](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf) so that it is in line with the additions and changes for the new release. Additionally, we have made the [admiraldiscovery](https://pharmaverse.github.io/admiraldiscovery/articles/reactable.html) (aka "Find my function") link more prominent on our website's navigation bar to increase the user traffic to our site.
+Work on {admiral} releases isn't just limited to new functions and deprecation. The admiral team seeks to provide a wealth of resources and ways to get involved to keep admiral current and up to date. 
+
+For this release we have updated the [cheatsheet](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf) so that it is in line with the additions and changes for the new release. 
+
+<img src="admiralcheat.png" align="center" style="float:right" width="100%"/>
+
+&nbsp;
+
+[admiraldiscovery](https://pharmaverse.github.io/admiraldiscovery/articles/reactable.html) is a standalone website has a nice interative table to help identify common ADaM variables and the {admiral} functions that derive them.
+
+<img src="admiraldisc.png" align="center" style="float:right" width="100%"/>
+
+&nbsp;
+
+Additionally, we have made the [admiraldiscovery](https://pharmaverse.github.io/admiraldiscovery/articles/reactable.html) (aka "Find my function") link more prominent on the admiral package website's navigation bar to increase the user traffic to the admiraldiscovery site.
 
 <img src="admiraldiscovery.png" align="center" style="float:right" width="100%"/>
+
+&nbsp;
 
 Also, from June up until now, we've had two working groups operating:
 
@@ -203,7 +230,7 @@ Also, from June up until now, we've had two working groups operating:
 
 If you have any ideas for new working groups of which you'd like to be a part, reach out to us - let's co-create {admiral} together!
 
-### Recent Conferences
+## admiral at Recent Conferences
 
 This post is also a great opportunity to showcase an publicize some of the fantastic outreach that members of the {admiral} community have done since our 1.1 release back in June. A couple of highlights include:
 
@@ -211,24 +238,31 @@ This post is also a great opportunity to showcase an publicize some of the fanta
   * Edoardo Mancini and Stefan Thoma gave a presentation titled: *"{admiral} - the {dplyr} of the pharmaceutical industry?"* - [slides here](https://stefanthoma.github.io/useR_2024_admiral). 
 
 * At R/Pharma 2024:
-  * Ben Straub and Fanny Gautier led an *"ADaM Workshop"* - [slides here](https://pharmaverse.github.io/rpharma-2024-ADaM-workshop/#/title-slide), [repo here](https://github.com/pharmaverse/rpharma-2024-ADaM-workshop).
+  * Ben Straub and Fanny Gautier led an *"ADaM Workshop"* using admiral, metacore/metatools and xportr to derive `ADSL` and `ADVS` - [slides here](https://pharmaverse.github.io/rpharma-2024-ADaM-workshop/#/title-slide), [repo here](https://github.com/pharmaverse/rpharma-2024-ADaM-workshop).
 
 * At PHUSE EU Connect 2024 in Strasbourg:
   * Yirong Cao and Yi Yan gave a talk titled: *Insights of Using {admiralonco} at BMS: Facilitating Oncology Efficacy ADaM Datasets* - [slides here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PRE_SM05.pdf), [paper here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PAP_SM05.pdf). 
   * Edoardo Mancini spoke about *Two hats, one noggin: Perspectives on working as a developer and as a user of the admiral R package for creating ADaMs* - [slides here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PRE_OS07.pdf), [paper here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PAP_OS07.pdf)).
   * Federico Baratin gave his take on *admiralvaccine Project JouRney* - [slides here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PRE_OS08.pdf), [paper here](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/Connect/EU/Strasbourg/PAP_OS08.pdf)).
 
-As you can see, {admiral} is spreading like wildfire in the pharma industry, and we encourage anyone within our community to spread the word and continue making these super presentations.
+As you can see, {admiral} is spreading like wildfire in the pharma industry, and we encourage anyone within our community to spread the word and continue making these super presentations.  Please let us know if you present on {admiral} we would love to give you a shout out.
 
 For the full archive of {admiral}-related presentations, please visit our [Presentation Archive](https://pharmaverse.github.io/admiraldiscovery/articles/presentation_archive.html).
 
-### What's we might be doing...for admiral 1.2 to 2.0 (title tbd)
+# Plans for 2025
 
-* User input
-* Remove `exprs()` 
-* Speed up admiral for larger datasets
-* json metadata for lab grading and questionnaires
-* 
+{admiral} plans for two releases in 2025 with an early summer release and an end of year release.  We plan on continuing to update admiral based on user feedback.  Please do not hesistate to [create an issue](https://github.com/pharmaverse/admiral/issues) on making documentation clearer, you found a pesky bug, you have an idea for a function or something else!  We love feedback and you can even [implement your idea](https://github.com/pharmaverse/admiral/issues/1839) if the core team gives their approval.    
+
+admiral has a Discssuion thread on potential ideas for our 1.3 release.  You can contribute or follow along in the discussion [here](https://github.com/pharmaverse/admiral/discussions/2191)
+
+A few choice items from the discussion:
+
+* {admiral} uses rlang::exprs() in a lot of it function arguments for users.  We hope in a future version to hide this from users as done in tidyverse packages
+* {admiral} has been found to be slow for merging large datasets together.  In a future release we will have worked out these bottlenecks! 
+* Currently our lab grading is kept in an excel spreadsheet. We hope to move this to a json file as well as any other metadata that might be handy for users.
+* Can {admiral} move from `%>%` to `|>`, we actually have found the base pipe to have a few limitations, but we are discussing.
+
+Thanks for reading and happy programming in 2025!
 
 
 <!--------------- appendices go here ----------------->
