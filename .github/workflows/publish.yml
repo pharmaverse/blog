@@ -34,6 +34,7 @@ jobs:
         continue-on-error: true
 
   build-deploy:
+    needs: Update-post-dates
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -59,6 +60,10 @@ jobs:
             janitor
             diffdf
             admiral
+            admiralonco
+            admiralophtha
+            admiralpeds
+            admiralvaccine
             patchwork
             here
             reactable
@@ -75,6 +80,7 @@ jobs:
             tidyCDISC
             mirai
             sdtm.oak
+            dverse
 
       - name: Install tinytex
         run: quarto install tool tinytex
