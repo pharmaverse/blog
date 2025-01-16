@@ -64,7 +64,7 @@ a significant challenge in data-driven research.
 
 ### Tracking Operations in Parallel Computing
 
-Let’s explore a simple scenario where parallelization creates confusion in 
+Let's explore a simple scenario where parallelization creates confusion in 
 tracking operations due to the asynchronous nature of task execution and
 logging. For this, we will also use the 
 [`{tidylog}`](https://github.com/elbersb/tidylog) package, which tracks and logs
@@ -260,13 +260,13 @@ Reproducibility becomes trickier when using parallelization frameworks like
 `{parallelMap}`, `{doFuture}`, and `{future}`, as each handles random number 
 generation (RNG) differently. While `set.seed()` works for sequential tasks, 
 parallel tasks need careful management of RNG streams, often using specific 
-methods like "L’Ecuyer-CMRG" or functions like `clusterSetRNGStream()` to keep 
+methods like "L'Ecuyer-CMRG" or functions like `clusterSetRNGStream()` to keep 
 results consistent. Each framework has its own approach, so it's important to 
 understand how each one manages RNG to ensure reproducibility.
 
 Even without random numbers, simple tasks—like adding floating-point numbers—can
 give different results in parallel processing. This happens because 
-floating-point numbers aren’t exactly represented, and the order of operations 
+floating-point numbers aren't exactly represented, and the order of operations 
 can affect the outcome. In parallel environments, where tasks finish in 
 different orders, these small differences can add up, making it harder to 
 reproduce results in large computations.
@@ -297,7 +297,7 @@ trying for maintaining control and reproducibility.
 
 This blog post has hopefully increased your intuition about the challenges that 
 may arise when incorporating HPC into your work. By understanding these 
-complexities, you’ll be better positioned to make informed decisions about the 
+complexities, you'll be better positioned to make informed decisions about the 
 trade-offs—such as balancing performance and reproducibility—that are most
 relevant to your specific case. As your computations scale, finding the right
 balance between efficiency, accuracy, and reproducibility will be crucial for 
