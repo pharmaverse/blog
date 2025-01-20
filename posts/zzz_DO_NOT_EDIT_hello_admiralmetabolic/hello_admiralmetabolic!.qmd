@@ -80,7 +80,7 @@ Note that this function has built-in support to:
 * Calculate the ratio in cases where units differ across the numerator and denominator by converting on the fly (allowed units: m, mm, ft, in);
 * Work in cases such as pediatric studies where both waist circumference and height are measured at multiple visits, by modifying the argument `constant_by_vars`. Please visit the function's reference page for more details.
 
-admiralmetabolic::derive_param_waisthip() is very similar: it is also a wrapper to admiral::derive_param_computed(), but this time enables users to add derived waist to hit ratio parameters to a vital signs ADVS ADaM using waist circumference and hip records. This function does not have the `constant_by_vars` parameter as the ratio is taken from two parameters that are measured at every visit, unlike for admiral::derive_param_waisthgt() where height could conceivably only be measured at screening for non pediatric trials. However, it boasts the same unit-flexibility as admiralmetabolic::derive_param_waisthght() - let's looks at that in action:
+admiralmetabolic::derive_param_waisthip() is very similar: it is also a wrapper to admiral::derive_param_computed(), but this time enables users to add derived waist to hit ratio parameters to a vital signs ADVS ADaM using waist circumference and hip records. This function does not have the `constant_by_vars` parameter as the ratio is taken from two parameters that are measured at every visit, unlike for admiral::derive_param_waisthgt() where height could conceivably only be measured at screening for non pediatric trials. However, it boasts the same unit-flexibility as admiralmetabolic::derive_param_waisthgt() - let's looks at that in action:
 
 ```{r, eval = TRUE}
 advs2 <- tribble(
