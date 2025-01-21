@@ -1,5 +1,5 @@
 ---
-title: "Hello admiralmetabolic!"
+title: "Hello {admiralmetabolic}!"
 author:
   - name: Anders Askeland
   - name: Edoardo Mancini
@@ -45,20 +45,21 @@ The first function, admiralmetabolic::derive_param_waisthgt(), is a wrapper to a
 
 ```{r, eval = TRUE}
 library(tibble)
+library(admiral)
 library(admiralmetabolic)
 
 # Example 1: Derive Waist to Height Ratio where Height is measured only once
 
 advs <- tribble(
-  ~USUBJID, ~PARAMCD, ~PARAM, ~AVAL, ~AVALU, ~VISIT,
-  "01-101-1001", "HEIGHT", "Height (cm)", 147, "cm", "SCREENING",
-  "01-101-1001", "WSTCIR", "Waist Circumference (cm)", 110, "cm", "SCREENING",
-  "01-101-1001", "WSTCIR", "Waist Circumference (cm)", 108, "cm", "WEEK 2",
-  "01-101-1001", "WSTCIR", "Waist Circumference (cm)", 107, "cm", "WEEK 3",
-  "01-101-1002", "HEIGHT", "Height (cm)", 163, "cm", "SCREENING",
-  "01-101-1002", "WSTCIR", "Waist Circumference (cm)", 120, "cm", "SCREENING",
-  "01-101-1002", "WSTCIR", "Waist Circumference (cm)", 118, "cm", "WEEK 2",
-  "01-101-1002", "WSTCIR", "Waist Circumference (cm)", 117, "cm", "WEEK 3",
+  ~USUBJID,      ~PARAMCD, ~PARAM,                     ~AVAL, ~AVALU, ~VISIT,
+  "01-101-1001", "HEIGHT", "Height (cm)",              147,   "cm",   "SCREENING",
+  "01-101-1001", "WSTCIR", "Waist Circumference (cm)", 110,   "cm",   "SCREENING",
+  "01-101-1001", "WSTCIR", "Waist Circumference (cm)", 108,   "cm",   "WEEK 2",
+  "01-101-1001", "WSTCIR", "Waist Circumference (cm)", 107,   "cm",   "WEEK 3",
+  "01-101-1002", "HEIGHT", "Height (cm)",              163,   "cm",   "SCREENING",
+  "01-101-1002", "WSTCIR", "Waist Circumference (cm)", 120,   "cm",   "SCREENING",
+  "01-101-1002", "WSTCIR", "Waist Circumference (cm)", 118,   "cm",   "WEEK 2",
+  "01-101-1002", "WSTCIR", "Waist Circumference (cm)", 117,   "cm",   "WEEK 3",
 )
 
 derive_param_waisthgt(
@@ -84,15 +85,15 @@ admiralmetabolic::derive_param_waisthip() is very similar: it is also a wrapper 
 
 ```{r, eval = TRUE}
 advs2 <- tribble(
-  ~USUBJID, ~PARAMCD, ~PARAM, ~AVAL, ~AVALU, ~VISIT,
-  "01-101-1001", "HIPCIR", "Hip Circumference (cm)", 125, "cm", "SCREENING",
-  "01-101-1001", "HIPCIR", "Hip Circumference (cm)", 124, "cm", "WEEK 2",
-  "01-101-1001", "WSTCIR", "Waist Circumference (in)", 43.31, "in", "SCREENING",
-  "01-101-1001", "WSTCIR", "Waist Circumference (in)", 42.52, "in", "WEEK 2",
-  "01-101-1002", "HIPCIR", "Hip Circumference (cm)", 135, "cm", "SCREENING",
-  "01-101-1002", "HIPCIR", "Hip Circumference (cm)", 133, "cm", "WEEK 2",
-  "01-101-1002", "WSTCIR", "Waist Circumference (in)", 47.24, "in", "SCREENING",
-  "01-101-1002", "WSTCIR", "Waist Circumference (in)", 46.46, "in", "WEEK 2"
+  ~USUBJID,      ~PARAMCD, ~PARAM,                     ~AVAL, ~AVALU, ~VISIT,
+  "01-101-1001", "HIPCIR", "Hip Circumference (cm)",   125,   "cm",   "SCREENING",
+  "01-101-1001", "HIPCIR", "Hip Circumference (cm)",   124,   "cm",   "WEEK 2",
+  "01-101-1001", "WSTCIR", "Waist Circumference (in)", 43.31, "in",   "SCREENING",
+  "01-101-1001", "WSTCIR", "Waist Circumference (in)", 42.52, "in",   "WEEK 2",
+  "01-101-1002", "HIPCIR", "Hip Circumference (cm)",   135,   "cm",   "SCREENING",
+  "01-101-1002", "HIPCIR", "Hip Circumference (cm)",   133,   "cm",   "WEEK 2",
+  "01-101-1002", "WSTCIR", "Waist Circumference (in)", 47.24, "in",   "SCREENING",
+  "01-101-1002", "WSTCIR", "Waist Circumference (in)", 46.46, "in",   "WEEK 2"
 )
 
 derive_param_waisthip(
