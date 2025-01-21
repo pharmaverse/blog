@@ -28,13 +28,13 @@ link::auto()
 
 # Introduction
 
-The {admiral} team is excited to celebrate the newest addition to the our extension package family with the release {admiralmetabolic} 0.1! This new package focuses on the therapeutic areas of obesity and cardiovascular metabolism, and was borne out of a collaboration between Novo Nordisk and Roche, as well as a number of independent contributors. {admiralmetabolic} addresses a key unmet need in this area given the ever-increasing interest in obesity and cardiovascular metabolism across the industry.
+The {admiral} team is celebrating the newest addition to the extension package family with the release of {admiralmetabolic} 0.1! This new package focuses on the therapeutic areas of obesity and cardiovascular metabolism, and was born out of a collaboration between Novo Nordisk and Roche, as well as a number of independent contributors. {admiralmetabolic} addresses a key unmet need in this area given the ever-increasing interest in obesity and cardiovascular metabolism across the industry.
 
 # Package Contents
 
 For this first 0.1 release, {admiralmetabolic} focuses primarily on the obesity indication. The package offers:
 
-* SDTM obesity-specific test data (to be moved to {pharmaversesdtm} at the next release of the package);
+* Obesity-specific SDTM test data (to be moved to {pharmaversesdtm} at the next release of the package);
 * Two brand-new functions: admiralmetabolic::derive_param_waisthgt() and admiralmetabolic::derive_param_waisthip();
 * Two vignettes for an [obesity vital signs ADaM ADVS](https://pharmaverse.github.io/admiralmetabolic/articles/advs.html) and a [Control of Eating Questionnaire ADaM ADCOEQ](https://pharmaverse.github.io/admiralmetabolic/articles/adcoeq.html);
 * Two template programs for [ADVS](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_advs.R) and [ADCOEQ](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_adcoeq.R) matching the corresponding vignettes.
@@ -80,7 +80,7 @@ Note that this function has built-in support to:
 * Calculate the ratio in cases where units differ across the numerator and denominator by converting on the fly (allowed units: m, mm, ft, in);
 * Work in cases such as pediatric studies where both waist circumference and height are measured at multiple visits, by modifying the argument `constant_by_vars`. Please visit the function's reference page for more details.
 
-admiralmetabolic::derive_param_waisthip() is very similar: it is also a wrapper to admiral::derive_param_computed(), but this time enables users to add derived waist to hit ratio parameters to a vital signs ADVS ADaM using waist circumference and hip records. This function does not have the `constant_by_vars` parameter as the ratio is taken from two parameters that are measured at every visit, unlike for admiral::derive_param_waisthgt() where height could conceivably only be measured at screening for non pediatric trials. However, it boasts the same unit-flexibility as admiralmetabolic::derive_param_waisthgt() - let's looks at that in action:
+`admiralmetabolic::derive_param_waisthip()` is very similar: it is also a wrapper to `admiral::derive_param_computed()`, but this time enables users to add derived waist to hit ratio parameters using waist- and hip circumference. It boasts the same unit-flexibility as `admiralmetabolic::derive_param_waisthgt()` - let's looks at that in action:
 
 ```{r, eval = TRUE}
 advs2 <- tribble(
@@ -118,7 +118,7 @@ Of course, this vignette is coupled with the [obesity ADVS template program](htt
 admiral::use_ad_template("ADVS", package = "admiralmetabolic")
 ```
 
-The [Control of Eating Questionnaire](https://licensing.leeds.ac.uk/product/control-of-eating-questionnaire-coeq) (COEQ) is used in many obesity trials as an endpoint. As such, {admiralmetabolic} also contains a second vignette geared towards the creation of an ADaM dataset ADCOEQ for the COEQ. Due to the flexibility of the parent {admiral} package, we saw no reason nor need to implement specific new functions for ADCOEQ. Indeed, functions such as admiral::derive_summary_records() can easily be employed to create ADCOEQ. Users are invited to visit the [vignette](https://pharmaverse.github.io/admiralmetabolic/articles/adcoeq.html) for more details and a full walkthrough. 
+The [Control of Eating Questionnaire](https://licensing.leeds.ac.uk/product/control-of-eating-questionnaire-coeq) (COEQ) is used in many obesity trials as an endpoint. As such, {admiralmetabolic} also contains a vignette geared towards the creation of an ADaM dataset ADCOEQ for the COEQ. Due to the flexibility of the parent {admiral} package, functions such as admiral::derive_summary_records() can be employed to create ADCOEQ. Users are invited to visit the [vignette](https://pharmaverse.github.io/admiralmetabolic/articles/adcoeq.html) for more details and a full walkthrough. 
 
 Once again, this vignette comes hand-in-hand with the [ADCOEQ program](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_advs.R), which can be accessed through the link above or directly from the R console by running:
 
@@ -128,9 +128,10 @@ admiral::use_ad_template("ADCOEQ", package = "admiralmetabolic")
 
 # Conclusion
 
-We love growing the {admiral} family, and hope you are just as excited about {admiralmetabolic} as we are, and welcome any community feedback about the package, its contents and development directions for future releases. The development team will be meeting in the next month for a retrospective and a plan for the next release, so please reach out! 
+We love growing the {admiral} family, and hope you are just as excited about {admiralmetabolic} as we are.
+We welcome community feedback about the package, its content and development directions for future releases. The development team will be meeting next month for a retrospective and a plan for the next release, so please reach out! 
 
-Finally, if you have any suggestion new extension packages, or indeed would like to drive one yourself, please reach out to any member of the {admiral} team and we'd be happy to discuss next steps with you.
+Finally, if you have any suggestion new extension packages, or would like to drive one yourself, please reach out to any member of the {admiral} team and we'd be happy to discuss next steps with you.
 
 <!--------------- appendices go here ----------------->
 
