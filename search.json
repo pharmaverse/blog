@@ -32,7 +32,7 @@
     "href": "posts/2024-10-16_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.html#the-problem-reproducibility-in-parallel-processing",
     "title": "The Tension of High-Performance Computing: Reproducibility vs. Parallelization",
     "section": "The Problem: Reproducibility in Parallel Processing",
-    "text": "The Problem: Reproducibility in Parallel Processing\nImagine a research team working on a cutting-edge drug development project. To process and analyze vast amounts of data efficiently, they leverage parallel processing, distributing tasks across multiple processors. This approach significantly accelerates their work, enabling them to handle large datasets and complex computations in a fraction of the time.\nHowever, the team soon encounters an issue. Each time they rerun the same processing tasks with identical input parameters, the results differ slightly. This raises a major concern: the results are not reproducible. In industries like pharmaceuticals, where accuracy and consistency are critical, reproducibility is not just important—it’s a regulatory requirement.\nFor example, in large-scale Monte Carlo simulations, small differences can arise not only from changes in execution order across processors but also from inconsistencies between workers or difficulties in maintaining synchronized random number generation (RNG) streams. Furthermore, the more complex the environment—with multiple components such as distributed workers, different hardware, or varying system configurations—the harder it becomes to reprovision the exact same environment and repeat the computations exactly. As these variations accumulate, ensuring consistent and reproducible results becomes a significant challenge in data-driven research.\n\nTracking Operations in Parallel Computing\nLet’s explore a simple scenario where parallelization creates confusion in tracking operations due to the asynchronous nature of task execution and logging. For this, we will also use the {tidylog} package, which tracks and logs {dplyr} operations, providing insight into how the computations are executed across multiple workers.\nWe’ll create our workflow in a script and run it using the {logrx} package from Pharmaverse. The workflow will be written as an expression using base::substitute(), which will help generate the complete script. In our example, we’ll start four daemons. A daemon is a background process that runs in the background continuously and handles specific computing tasks.\n\nmirai_workflow &lt;- substitute({\n  library(\"mirai\")\n  library(\"dplyr\")\n\n  log_file &lt;- tempfile()\n\n  # start parallel workers\n  mirai::daemons(4)\n\n  # load libraries on each worker and set up logging to a file\n  mirai::everywhere(\n    {\n      library(\"dplyr\")\n      library(\"tidylog\")\n\n      # Define function to log messages to the log file\n      log_to_file &lt;- \\(txt) cat(txt, file = log_file, sep = \"\\n\", append = TRUE)\n      options(\"tidylog.display\" = list(message, log_to_file))\n    },\n    log_file = log_file\n  )\n\n  # perform computations in parallel\n  m &lt;- mirai_map(letters[1:5], \\(x) {\n    mutate(tibble(.rows = 1), \"{x}\" := sample(1:100, 1))\n  })\n\n  # collect results\n  result &lt;- m[] |&gt; bind_cols()\n\n  mirai::daemons(0)\n\n  print(\n    list(\n      logs = readLines(log_file),\n      result = result\n    )\n  )\n})\n\nIn the above code chunk, we set up a parallel processing environment using the {mirai} package. The function mirai_map() is used to apply a mutating function in parallel to a tibble for each element of letters, logging the operations to a file using the {tidylog} package. However, while we can log each operation as it happens, due to the parallel nature of {mirai}, the logging does not occur in a controlled or sequential order. Each daemon executes its task independently, and the order of logging in the file will depend on the completion times of these parallel processes rather than the intended flow of operations.\n\nParallel computations can obscure the traceability of operations\n\nThis lack of control can lead to a situation where the log entries do not reflect the actual sequence in which the {dplyr} commands were expected to be processed. Although the operations themselves are carried out correctly, the asynchronous logging may create challenges in tracing and debugging the process, as entries in the log file could appear out of order, giving an incomplete or misleading representation of the task flow.\nLet’s first save the code to an R script called mirai_workflow.R. This step helps ensure that the execution can be properly tracked and documented:\n\nmirai_workflow |&gt;\n  deparse() |&gt;\n  writeLines(\"mirai_workflow.R\")\n\nNext, we execute the script using logrx::axecute(), which not only runs the workflow but also logs key metadata and outputs for enhanced traceability and reproducibility:\n\nlogrx::axecute(\"mirai_workflow.R\", to_report = \"result\")\n\n\n\n$logs\n[1] \"mutate: new variable 'a' (integer) with one unique value and 0% NA\"\n[2] \"mutate: new variable 'c' (integer) with one unique value and 0% NA\"\n[3] \"mutate: new variable 'b' (integer) with one unique value and 0% NA\"\n[4] \"mutate: new variable 'e' (integer) with one unique value and 0% NA\"\n[5] \"mutate: new variable 'd' (integer) with one unique value and 0% NA\"\n\n$result\n  a  b  c  d  e\n1 8 25 86 43 46\n\n\nUpon examining the log file generated, you’ll notice that the entries are not in the same order as the commands were dispatched. This illustrates the inherent difficulty in maintaining a consistent logging sequence for parallel tasks, especially since the timing of each process completion and log recording is unpredictable.\nAdditionally, it is worth noting that logrx does not capture the logging performed by {tidylog} during the execution of tasks on {mirai} daemons. This is because the daemons run as independent R processes, and the logging messages are not propagated back to the parent process in a straightforward manner. As described in {mirai}’s documentation, daemons are responsible for handling tasks asynchronously, and messages logged within these processes do not automatically integrate into the parent session. Therefore, we access {tidylog} messages indirectly, by reading the dedicated log file (log_file) that each worker writes to during execution.\n\n\nTask Dispatching and RNG Management\nBy default, {mirai} uses an advanced dispatcher to manage task distribution efficiently, scheduling tasks in a First-In-First-Out manner and leveraging {nanonext} primitives for zero-latency, resource-free task management. However, its asynchronous execution can hinder reproducibility, especially with random number generation (RNG) or tasks needing strict order.\nTo enhance reproducibility, {mirai} allows disabling the dispatcher which usually decides the order in which tasks are run. Instead, it connects directly to the workers one by one in a simple order (see round-robin). While less efficient, this approach provides greater control over task execution and is better suited for ensuring reproducibility by initializing L’Ecuyer-CMRG RNG streams.\nIn the following example, we simulate drug efficacy across different patient cohorts using parallel processing with the {mirai} package. We define three cohorts, each with a different mean drug effect and standard deviation, and initialize four daemons to handle the computations.\n\nlibrary(mirai)\nlibrary(dplyr, warn.conflicts = FALSE)\n\n# Parameters for the simulation\ncohorts &lt;- tribble(\n  ~patient_count, ~mean_effect, ~sd_effect,\n  1000,           0.7,          0.1,\n  1000,           0.65,         0.15,\n  1000,           0.75,         0.05\n)\n\n# Start daemons with consistent RNG streams\nx &lt;- mirai::daemons(\n  n = 4,\n  dispatcher = \"none\", # For mirai versions below 1.3.0, use dispatcher = FALSE\n  seed = 123\n)\n\n# Parallel simulation for each row of the cohorts table\nm &lt;- mirai::mirai_map(cohorts, \\(patient_count, mean_effect, sd_effect) {\n  dplyr::tibble(\n    patient_id = 1:patient_count,\n    efficacy = rnorm(patient_count, mean = mean_effect, sd = sd_effect)\n  )\n})\n\nresults &lt;- m[] |&gt; bind_rows()\n\nx &lt;- mirai::daemons(0, dispatcher = \"none\")\n\nresults %&gt;%\n  group_by(patient_id) %&gt;%\n  summarise(\n    mean_efficacy = mean(efficacy),\n    sd_efficacy = sd(efficacy)\n  )\n\n# A tibble: 1,000 × 3\n   patient_id mean_efficacy sd_efficacy\n        &lt;int&gt;         &lt;dbl&gt;       &lt;dbl&gt;\n 1          1         0.647      0.0566\n 2          2         0.771      0.0238\n 3          3         0.680      0.153 \n 4          4         0.748      0.109 \n 5          5         0.710      0.165 \n 6          6         0.634      0.0528\n 7          7         0.790      0.214 \n 8          8         0.553      0.0956\n 9          9         0.696      0.139 \n10         10         0.710      0.0377\n# ℹ 990 more rows\n\n\nWe used tribble() to define the simulation parameters and initialize 4 daemons with dispatcher = \"none\" and a fixed seed to ensure consistent random number generation across tasks. The mirai_map() function parallelizes the drug efficacy simulation, and the results are combined using bind_rows() for further analysis.\nDisabling the dispatcher gives more control over task execution, ensuring reproducibility. If you repeat the computation you will notice that it generates consistent results. However, this approach comes at a cost. Disabling the dispatcher may lead to inefficient resource utilization when tasks are unevenly distributed, as some daemons may remain idle. While reproducibility is prioritized, we sacrifice some performance, especially when handling tasks with varying workloads.\nReproducibility becomes trickier when using parallelization frameworks like {parallelMap}, {doFuture}, and {future}, as each handles random number generation (RNG) differently. While set.seed() works for sequential tasks, parallel tasks need careful management of RNG streams, often using specific methods like “L’Ecuyer-CMRG” or functions like clusterSetRNGStream() to keep results consistent. Each framework has its own approach, so it’s important to understand how each one manages RNG to ensure reproducibility.\nEven without random numbers, simple tasks—like adding floating-point numbers—can give different results in parallel processing. This happens because floating-point numbers aren’t exactly represented, and the order of operations can affect the outcome. In parallel environments, where tasks finish in different orders, these small differences can add up, making it harder to reproduce results in large computations."
+    "text": "The Problem: Reproducibility in Parallel Processing\nImagine a research team working on a cutting-edge drug development project. To process and analyze vast amounts of data efficiently, they leverage parallel processing, distributing tasks across multiple processors. This approach significantly accelerates their work, enabling them to handle large datasets and complex computations in a fraction of the time.\nHowever, the team soon encounters an issue. Each time they rerun the same processing tasks with identical input parameters, the results differ slightly. This raises a major concern: the results are not reproducible. In industries like pharmaceuticals, where accuracy and consistency are critical, reproducibility is not just important—it’s a regulatory requirement.\nFor example, in large-scale Monte Carlo simulations, small differences can arise not only from changes in execution order across processors but also from inconsistencies between workers or difficulties in maintaining synchronized random number generation (RNG) streams. Furthermore, the more complex the environment—with multiple components such as distributed workers, different hardware, or varying system configurations—the harder it becomes to reprovision the exact same environment and repeat the computations exactly. As these variations accumulate, ensuring consistent and reproducible results becomes a significant challenge in data-driven research.\n\nTracking Operations in Parallel Computing\nLet’s explore a simple scenario where parallelization creates confusion in tracking operations due to the asynchronous nature of task execution and logging. For this, we will also use the {tidylog} package, which tracks and logs {dplyr} operations, providing insight into how the computations are executed across multiple workers.\nWe’ll create our workflow in a script and run it using the {logrx} package from Pharmaverse. The workflow will be written as an expression using base::substitute(), which will help generate the complete script. In our example, we’ll start four daemons. A daemon is a background process that runs in the background continuously and handles specific computing tasks.\n\nmirai_workflow &lt;- substitute({\n  library(\"mirai\")\n  library(\"dplyr\")\n\n  log_file &lt;- tempfile()\n\n  # start parallel workers\n  mirai::daemons(4)\n\n  # load libraries on each worker and set up logging to a file\n  mirai::everywhere(\n    {\n      library(\"dplyr\")\n      library(\"tidylog\")\n\n      # Define function to log messages to the log file\n      log_to_file &lt;- \\(txt) cat(txt, file = log_file, sep = \"\\n\", append = TRUE)\n      options(\"tidylog.display\" = list(message, log_to_file))\n    },\n    log_file = log_file\n  )\n\n  # perform computations in parallel\n  m &lt;- mirai_map(letters[1:5], \\(x) {\n    mutate(tibble(.rows = 1), \"{x}\" := sample(1:100, 1))\n  })\n\n  # collect results\n  result &lt;- m[] |&gt; bind_cols()\n\n  mirai::daemons(0)\n\n  print(\n    list(\n      logs = readLines(log_file),\n      result = result\n    )\n  )\n})\n\nIn the above code chunk, we set up a parallel processing environment using the {mirai} package. The function mirai_map() is used to apply a mutating function in parallel to a tibble for each element of letters, logging the operations to a file using the {tidylog} package. However, while we can log each operation as it happens, due to the parallel nature of {mirai}, the logging does not occur in a controlled or sequential order. Each daemon executes its task independently, and the order of logging in the file will depend on the completion times of these parallel processes rather than the intended flow of operations.\n\nParallel computations can obscure the traceability of operations\n\nThis lack of control can lead to a situation where the log entries do not reflect the actual sequence in which the {dplyr} commands were expected to be processed. Although the operations themselves are carried out correctly, the asynchronous logging may create challenges in tracing and debugging the process, as entries in the log file could appear out of order, giving an incomplete or misleading representation of the task flow.\nLet’s first save the code to an R script called mirai_workflow.R. This step helps ensure that the execution can be properly tracked and documented:\n\nmirai_workflow |&gt;\n  deparse() |&gt;\n  writeLines(\"mirai_workflow.R\")\n\nNext, we execute the script using logrx::axecute(), which not only runs the workflow but also logs key metadata and outputs for enhanced traceability and reproducibility:\n\nlogrx::axecute(\"mirai_workflow.R\", to_report = \"result\")\n\n\n\n$logs\n[1] \"mutate: new variable 'a' (integer) with one unique value and 0% NA\"\n[2] \"mutate: new variable 'c' (integer) with one unique value and 0% NA\"\n[3] \"mutate: new variable 'b' (integer) with one unique value and 0% NA\"\n[4] \"mutate: new variable 'e' (integer) with one unique value and 0% NA\"\n[5] \"mutate: new variable 'd' (integer) with one unique value and 0% NA\"\n\n$result\n  a  b  c  d  e\n1 8 25 86 43 46\n\n\nUpon examining the log file generated, you’ll notice that the entries are not in the same order as the commands were dispatched. This illustrates the inherent difficulty in maintaining a consistent logging sequence for parallel tasks, especially since the timing of each process completion and log recording is unpredictable.\nAdditionally, it is worth noting that logrx does not capture the logging performed by {tidylog} during the execution of tasks on {mirai} daemons. This is because the daemons run as independent R processes, and the logging messages are not propagated back to the parent process in a straightforward manner. As described in {mirai}’s documentation, daemons are responsible for handling tasks asynchronously, and messages logged within these processes do not automatically integrate into the parent session. Therefore, we access {tidylog} messages indirectly, by reading the dedicated log file (log_file) that each worker writes to during execution.\n\n\nTask Dispatching and RNG Management\nBy default, {mirai} uses an advanced dispatcher to manage task distribution efficiently, scheduling tasks in a First-In-First-Out manner and leveraging {nanonext} primitives for zero-latency, resource-free task management. However, its asynchronous execution can hinder reproducibility, especially with random number generation (RNG) or tasks needing strict order.\nTo enhance reproducibility, {mirai} allows disabling the dispatcher which usually decides the order in which tasks are run. Instead, it connects directly to the workers one by one in a simple order (see round-robin). While less efficient, this approach provides greater control over task execution and is better suited for ensuring reproducibility by initializing L’Ecuyer-CMRG RNG streams.\nIn the following example, we simulate drug efficacy across different patient cohorts using parallel processing with the {mirai} package. We define three cohorts, each with a different mean drug effect and standard deviation, and initialize four daemons to handle the computations.\n\nlibrary(mirai)\nlibrary(dplyr, warn.conflicts = FALSE)\n\n# Parameters for the simulation\ncohorts &lt;- tribble(\n  ~patient_count, ~mean_effect, ~sd_effect,\n  1000,           0.7,          0.1,\n  1000,           0.65,         0.15,\n  1000,           0.75,         0.05\n)\n\n# Start daemons with consistent RNG streams\nx &lt;- mirai::daemons(\n  n = 4,\n  dispatcher = \"none\", # For mirai versions below 1.3.0, use dispatcher = FALSE\n  seed = 123\n)\n\n# Parallel simulation for each row of the cohorts table\nm &lt;- mirai::mirai_map(cohorts, \\(patient_count, mean_effect, sd_effect) {\n  dplyr::tibble(\n    patient_id = 1:patient_count,\n    efficacy = rnorm(patient_count, mean = mean_effect, sd = sd_effect)\n  )\n})\n\nresults &lt;- m[] |&gt; bind_rows()\n\nx &lt;- mirai::daemons(0, dispatcher = \"none\")\n\nresults %&gt;%\n  group_by(patient_id) %&gt;%\n  summarise(\n    mean_efficacy = mean(efficacy),\n    sd_efficacy = sd(efficacy)\n  )\n\n# A tibble: 1,000 × 3\n   patient_id mean_efficacy sd_efficacy\n        &lt;int&gt;         &lt;dbl&gt;       &lt;dbl&gt;\n 1          1         0.639     0.0752 \n 2          2         0.775     0.00724\n 3          3         0.706     0.168  \n 4          4         0.715     0.179  \n 5          5         0.745     0.0895 \n 6          6         0.633     0.0567 \n 7          7         0.810     0.180  \n 8          8         0.542     0.119  \n 9          9         0.669     0.132  \n10         10         0.709     0.0393 \n# ℹ 990 more rows\n\n\nWe used tribble() to define the simulation parameters and initialize 4 daemons with dispatcher = \"none\" and a fixed seed to ensure consistent random number generation across tasks. The mirai_map() function parallelizes the drug efficacy simulation, and the results are combined using bind_rows() for further analysis.\nDisabling the dispatcher gives more control over task execution, ensuring reproducibility. If you repeat the computation you will notice that it generates consistent results. However, this approach comes at a cost. Disabling the dispatcher may lead to inefficient resource utilization when tasks are unevenly distributed, as some daemons may remain idle. While reproducibility is prioritized, we sacrifice some performance, especially when handling tasks with varying workloads.\nReproducibility becomes trickier when using parallelization frameworks like {parallelMap}, {doFuture}, and {future}, as each handles random number generation (RNG) differently. While set.seed() works for sequential tasks, parallel tasks need careful management of RNG streams, often using specific methods like “L’Ecuyer-CMRG” or functions like clusterSetRNGStream() to keep results consistent. Each framework has its own approach, so it’s important to understand how each one manages RNG to ensure reproducibility.\nEven without random numbers, simple tasks—like adding floating-point numbers—can give different results in parallel processing. This happens because floating-point numbers aren’t exactly represented, and the order of operations can affect the outcome. In parallel environments, where tasks finish in different orders, these small differences can add up, making it harder to reproduce results in large computations."
   },
   {
     "objectID": "posts/2024-10-16_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.html#closing-thoughts",
@@ -46,7 +46,7 @@
     "href": "posts/2024-10-16_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.html#last-updated",
     "title": "The Tension of High-Performance Computing: Reproducibility vs. Parallelization",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:02:23.608271"
+    "text": "Last updated\n\n2025-01-21 14:40:30.916121"
   },
   {
     "objectID": "posts/2024-10-16_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.html#details",
@@ -88,7 +88,7 @@
     "href": "posts/2024-06-07_admiral_1.1_is.../admiral_1.1_is_here.html#last-updated",
     "title": "{admiral} 1.1.1 is here!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:02:13.987087"
+    "text": "Last updated\n\n2025-01-21 14:40:21.011233"
   },
   {
     "objectID": "posts/2024-06-07_admiral_1.1_is.../admiral_1.1_is_here.html#details",
@@ -137,7 +137,7 @@
     "href": "posts/2023-10-30_floating_point/floating_point.html#last-updated",
     "title": "Floating point",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:02:06.679972"
+    "text": "Last updated\n\n2025-01-21 14:40:13.346702"
   },
   {
     "objectID": "posts/2023-10-30_floating_point/floating_point.html#details",
@@ -151,7 +151,7 @@
     "href": "posts/2024-08-20_teal_submission_.../teal_submission_for__posit__shiny__contest_2024.html#last-updated",
     "title": "teal and Posit Shiny Contest 2024",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:02:02.575751"
+    "text": "Last updated\n\n2025-01-21 14:40:09.079127"
   },
   {
     "objectID": "posts/2024-08-20_teal_submission_.../teal_submission_for__posit__shiny__contest_2024.html#details",
@@ -193,7 +193,7 @@
     "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
     "title": "How to use Code Sections",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:58.692114"
+    "text": "Last updated\n\n2025-01-21 14:40:04.942688"
   },
   {
     "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
@@ -214,7 +214,7 @@
     "href": "posts/2024-07-24_working__groups_.../working__groups__updates.html#last-updated",
     "title": "Working Groups Updates",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:55.30014"
+    "text": "Last updated\n\n2025-01-21 14:40:01.42676"
   },
   {
     "objectID": "posts/2024-07-24_working__groups_.../working__groups__updates.html#details",
@@ -263,7 +263,7 @@
     "href": "posts/2025-01-17_1.2_admiral.../1.2_admiral_release.html#last-updated",
     "title": "{admiral} 1.2 is here!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:51.59703"
+    "text": "Last updated\n\n2025-01-21 14:39:57.582231"
   },
   {
     "objectID": "posts/2025-01-17_1.2_admiral.../1.2_admiral_release.html#details",
@@ -312,7 +312,7 @@
     "href": "posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html#last-updated",
     "title": "TLG Catalog 🤝 WebR",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:47.087941"
+    "text": "Last updated\n\n2025-01-21 14:39:52.892575"
   },
   {
     "objectID": "posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html#details",
@@ -382,7 +382,7 @@
     "href": "posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html#last-updated",
     "title": "A collaborative triumph: Re-using test data between the NEST and admiral teams",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:43.817761"
+    "text": "Last updated\n\n2025-01-21 14:39:49.444538"
   },
   {
     "objectID": "posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html#details",
@@ -403,7 +403,7 @@
     "href": "posts/2024-05-31_diversity_&__inc.../diversity_&__inclusion_in_pharmaverse.html#last-updated",
     "title": "Diversity & Inclusion in pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:38.632294"
+    "text": "Last updated\n\n2025-01-21 14:39:43.81373"
   },
   {
     "objectID": "posts/2024-05-31_diversity_&__inc.../diversity_&__inclusion_in_pharmaverse.html#details",
@@ -424,7 +424,7 @@
     "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
     "title": "It’s all relative? - Calculating Relative Days using admiral",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:35.424141"
+    "text": "Last updated\n\n2025-01-21 14:39:40.428359"
   },
   {
     "objectID": "posts/2023-08-08_study_day/study_day.html#details",
@@ -452,7 +452,7 @@
     "href": "posts/2024-10-31_how__i__reb.../how__i__rebuilt_a__lost__ec_g__data__script_in__r.html#last-updated",
     "title": "How I Rebuilt a Lost ECG Data Script in R",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:31.181312"
+    "text": "Last updated\n\n2025-01-21 14:39:35.919743"
   },
   {
     "objectID": "posts/2024-10-31_how__i__reb.../how__i__rebuilt_a__lost__ec_g__data__script_in__r.html#details",
@@ -473,7 +473,7 @@
     "href": "posts/2024-12-13_document_yo.../document_your_universe_with_dverse.html#last-updated",
     "title": "Creating a better universe with dverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:24.770852"
+    "text": "Last updated\n\n2025-01-21 14:39:29.180649"
   },
   {
     "objectID": "posts/2024-12-13_document_yo.../document_your_universe_with_dverse.html#details",
@@ -494,7 +494,7 @@
     "href": "posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html#last-updated",
     "title": "xportr 0.4.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:04.84293"
+    "text": "Last updated\n\n2025-01-21 14:39:08.859041"
   },
   {
     "objectID": "posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html#details",
@@ -564,7 +564,7 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:00.528051"
+    "text": "Last updated\n\n2025-01-21 14:39:04.454763"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
@@ -634,7 +634,7 @@
     "href": "posts/2024-03-04_inside_the__phar.../inside_the__pharmaverse.html#last-updated",
     "title": "Inside the pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:57.131587"
+    "text": "Last updated\n\n2025-01-21 14:39:00.848096"
   },
   {
     "objectID": "posts/2024-03-04_inside_the__phar.../inside_the__pharmaverse.html#details",
@@ -690,7 +690,7 @@
     "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#last-updated",
     "title": "Rhino: A Step Forward in Validating Shiny Apps",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:53.906395"
+    "text": "Last updated\n\n2025-01-21 14:38:57.39256"
   },
   {
     "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#details",
@@ -739,7 +739,7 @@
     "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#last-updated",
     "title": "Cross-Industry Open Source Package Development",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:50.249547"
+    "text": "Last updated\n\n2025-01-21 14:38:53.482659"
   },
   {
     "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#details",
@@ -760,7 +760,7 @@
     "href": "posts/2024-10-24_introducing.../introducing_sdtm.oak.html#last-updated",
     "title": "Introducing sdtm.oak",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:46.648342"
+    "text": "Last updated\n\n2025-01-21 14:38:49.677716"
   },
   {
     "objectID": "posts/2024-10-24_introducing.../introducing_sdtm.oak.html#details",
@@ -809,7 +809,7 @@
     "href": "posts/2024-03-11_tips_for__first_.../tips_for__first__time__contributors.html#last-updated",
     "title": "Tips for First Time Contributors",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:40.096261"
+    "text": "Last updated\n\n2025-01-21 14:38:42.844845"
   },
   {
     "objectID": "posts/2024-03-11_tips_for__first_.../tips_for__first__time__contributors.html#details",
@@ -844,7 +844,7 @@
     "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
     "title": "Derive a new parameter computed from the value of other parameters",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:36.746766"
+    "text": "Last updated\n\n2025-01-21 14:38:39.34919"
   },
   {
     "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
@@ -858,7 +858,7 @@
     "href": "posts/2025-01-21_hello_admiralmetabolic/hello_admiralmetabolic.html#new-functions",
     "title": "Hello admiralmetabolic!",
     "section": "New Functions",
-    "text": "New Functions\nThe first function,   admiralmetabolic::derive_param_waisthgt() , is a wrapper to   admiral::derive_param_computed()  and enables users to add derived waist to height ratio parameters to a vital signs ADVS ADaM using waist circumference and height records. Here is an example of the function in action:\n\nlibrary(tibble)\nlibrary(admiral)\nlibrary(admiralmetabolic)\n\n# Derive Waist to Height Ratio. In this example height is measured only once per subject.\n\nadvs &lt;- tribble(\n  ~USUBJID,      ~PARAMCD, ~PARAM,                     ~AVAL, ~AVALU, ~VISIT,\n  \"01-101-1001\", \"HEIGHT\", \"Height (cm)\",              147,   \"cm\",   \"SCREENING\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (cm)\", 110,   \"cm\",   \"SCREENING\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (cm)\", 108,   \"cm\",   \"WEEK 2\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (cm)\", 107,   \"cm\",   \"WEEK 3\",\n  \"01-101-1002\", \"HEIGHT\", \"Height (cm)\",              163,   \"cm\",   \"SCREENING\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (cm)\", 120,   \"cm\",   \"SCREENING\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (cm)\", 118,   \"cm\",   \"WEEK 2\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (cm)\", 117,   \"cm\",   \"WEEK 3\",\n)\n\nderive_param_waisthgt(\n  advs,\n  by_vars = exprs(USUBJID, VISIT),\n  wstcir_code = \"WSTCIR\",\n  height_code = \"HEIGHT\",\n  set_values_to = exprs(\n    PARAMCD = \"WAISTHGT\",\n    PARAM = \"Waist to Height Ratio\"\n  ),\n  constant_by_vars = exprs(USUBJID),\n  get_unit_expr = admiral::extract_unit(PARAM)\n)\n\n# A tibble: 14 × 6\n   USUBJID     PARAMCD  PARAM                       AVAL AVALU VISIT    \n   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    \n 1 01-101-1001 HEIGHT   Height (cm)              147     cm    SCREENING\n 2 01-101-1001 WSTCIR   Waist Circumference (cm) 110     cm    SCREENING\n 3 01-101-1001 WSTCIR   Waist Circumference (cm) 108     cm    WEEK 2   \n 4 01-101-1001 WSTCIR   Waist Circumference (cm) 107     cm    WEEK 3   \n 5 01-101-1002 HEIGHT   Height (cm)              163     cm    SCREENING\n 6 01-101-1002 WSTCIR   Waist Circumference (cm) 120     cm    SCREENING\n 7 01-101-1002 WSTCIR   Waist Circumference (cm) 118     cm    WEEK 2   \n 8 01-101-1002 WSTCIR   Waist Circumference (cm) 117     cm    WEEK 3   \n 9 01-101-1001 WAISTHGT Waist to Height Ratio      0.748 &lt;NA&gt;  SCREENING\n10 01-101-1001 WAISTHGT Waist to Height Ratio      0.735 &lt;NA&gt;  WEEK 2   \n11 01-101-1001 WAISTHGT Waist to Height Ratio      0.728 &lt;NA&gt;  WEEK 3   \n12 01-101-1002 WAISTHGT Waist to Height Ratio      0.736 &lt;NA&gt;  SCREENING\n13 01-101-1002 WAISTHGT Waist to Height Ratio      0.724 &lt;NA&gt;  WEEK 2   \n14 01-101-1002 WAISTHGT Waist to Height Ratio      0.718 &lt;NA&gt;  WEEK 3   \n\n\nNote that this function has built-in support for:\n\nUnit conversion in cases where units differ across the numerator and denominator (allowed units: m, mm, ft, in);\nSingle or multiple height measurement by modifying the argument constant_by_vars. Please visit the function’s reference page for more details.\n\n&lt;bslib-tooltip placement=\"auto\" bsOptions=\"[]\" data-require-bs-version=\"5\" data-require-bs-caller=\"tooltip()\"&gt;   &lt;template&gt;Adds a Parameter for Waist to Hip Ratio — derive_param_waisthip • admiralmetabolic&lt;/template&gt;   &lt;a href=\"https://pharmaverse.github.io/admiralmetabolic/reference/derive_param_waisthip.html\" class=\"r-link-call\" target=\"_blank\"&gt;admiralmetabolic::derive_param_waisthip()&lt;/a&gt; &lt;/bslib-tooltip&gt; is very similar: it is also a wrapper to &lt;bslib-tooltip placement=\"auto\" bsOptions=\"[]\" data-require-bs-version=\"5\" data-require-bs-caller=\"tooltip()\"&gt;   &lt;template&gt;Adds a Parameter Computed from the Analysis Value of Other Parameters — derive_param_computed • admiral&lt;/template&gt;   &lt;a href=\"https://pharmaverse.github.io/admiral/reference/derive_param_computed.html\" class=\"r-link-call\" target=\"_blank\"&gt;admiral::derive_param_computed()&lt;/a&gt; &lt;/bslib-tooltip&gt;, but this time enables users to add derived waist to hip ratio parameters using waist- and hip circumference. It boasts the same unit-flexibility as &lt;bslib-tooltip placement=\"auto\" bsOptions=\"[]\" data-require-bs-version=\"5\" data-require-bs-caller=\"tooltip()\"&gt;   &lt;template&gt;Adds a Parameter for Waist to Height Ratio — derive_param_waisthgt • admiralmetabolic&lt;/template&gt;   &lt;a href=\"https://pharmaverse.github.io/admiralmetabolic/reference/derive_param_waisthgt.html\" class=\"r-link-call\" target=\"_blank\"&gt;admiralmetabolic::derive_param_waisthgt()&lt;/a&gt; &lt;/bslib-tooltip&gt; - let’s look at that in action:\n\nadvs2 &lt;- tribble(\n  ~USUBJID,      ~PARAMCD, ~PARAM,                     ~AVAL, ~AVALU, ~VISIT,\n  \"01-101-1001\", \"HIPCIR\", \"Hip Circumference (cm)\",   125,   \"cm\",   \"SCREENING\",\n  \"01-101-1001\", \"HIPCIR\", \"Hip Circumference (cm)\",   124,   \"cm\",   \"WEEK 2\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (in)\", 43.31, \"in\",   \"SCREENING\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (in)\", 42.52, \"in\",   \"WEEK 2\",\n  \"01-101-1002\", \"HIPCIR\", \"Hip Circumference (cm)\",   135,   \"cm\",   \"SCREENING\",\n  \"01-101-1002\", \"HIPCIR\", \"Hip Circumference (cm)\",   133,   \"cm\",   \"WEEK 2\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (in)\", 47.24, \"in\",   \"SCREENING\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (in)\", 46.46, \"in\",   \"WEEK 2\"\n)\n\nderive_param_waisthip(\n  advs2,\n  by_vars = exprs(USUBJID, VISIT),\n  wstcir_code = \"WSTCIR\",\n  hipcir_code = \"HIPCIR\",\n  set_values_to = exprs(\n    PARAMCD = \"WAISTHIP\",\n    PARAM = \"Waist to Hip Ratio\"\n  ),\n  get_unit_expr = admiral::extract_unit(PARAM)\n)\n\nℹ Unit conversion performed for \"HIPCIR\". Values converted from \"cm\" to \"in\".\n\n\n# A tibble: 12 × 6\n   USUBJID     PARAMCD  PARAM                       AVAL AVALU VISIT    \n   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    \n 1 01-101-1001 HIPCIR   Hip Circumference (cm)   125     cm    SCREENING\n 2 01-101-1001 HIPCIR   Hip Circumference (cm)   124     cm    WEEK 2   \n 3 01-101-1001 WSTCIR   Waist Circumference (in)  43.3   in    SCREENING\n 4 01-101-1001 WSTCIR   Waist Circumference (in)  42.5   in    WEEK 2   \n 5 01-101-1002 HIPCIR   Hip Circumference (cm)   135     cm    SCREENING\n 6 01-101-1002 HIPCIR   Hip Circumference (cm)   133     cm    WEEK 2   \n 7 01-101-1002 WSTCIR   Waist Circumference (in)  47.2   in    SCREENING\n 8 01-101-1002 WSTCIR   Waist Circumference (in)  46.5   in    WEEK 2   \n 9 01-101-1001 WAISTHIP Waist to Hip Ratio         0.880 &lt;NA&gt;  SCREENING\n10 01-101-1001 WAISTHIP Waist to Hip Ratio         0.871 &lt;NA&gt;  WEEK 2   \n11 01-101-1002 WAISTHIP Waist to Hip Ratio         0.889 &lt;NA&gt;  SCREENING\n12 01-101-1002 WAISTHIP Waist to Hip Ratio         0.887 &lt;NA&gt;  WEEK 2"
+    "text": "New Functions\nThe first function,   admiralmetabolic::derive_param_waisthgt() , is a wrapper to   admiral::derive_param_computed()  and enables users to add derived waist to height ratio parameters to a vital signs ADVS ADaM using waist circumference and height records. Here is an example of the function in action:\n\nlibrary(tibble)\nlibrary(admiral)\nlibrary(admiralmetabolic)\n\n# Derive Waist to Height Ratio. In this example height is measured only once per subject.\n\nadvs &lt;- tribble(\n  ~USUBJID,      ~PARAMCD, ~PARAM,                     ~AVAL, ~AVALU, ~VISIT,\n  \"01-101-1001\", \"HEIGHT\", \"Height (cm)\",              147,   \"cm\",   \"SCREENING\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (cm)\", 110,   \"cm\",   \"SCREENING\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (cm)\", 108,   \"cm\",   \"WEEK 2\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (cm)\", 107,   \"cm\",   \"WEEK 3\",\n  \"01-101-1002\", \"HEIGHT\", \"Height (cm)\",              163,   \"cm\",   \"SCREENING\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (cm)\", 120,   \"cm\",   \"SCREENING\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (cm)\", 118,   \"cm\",   \"WEEK 2\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (cm)\", 117,   \"cm\",   \"WEEK 3\",\n)\n\nderive_param_waisthgt(\n  advs,\n  by_vars = exprs(USUBJID, VISIT),\n  wstcir_code = \"WSTCIR\",\n  height_code = \"HEIGHT\",\n  set_values_to = exprs(\n    PARAMCD = \"WAISTHGT\",\n    PARAM = \"Waist to Height Ratio\"\n  ),\n  constant_by_vars = exprs(USUBJID),\n  get_unit_expr = admiral::extract_unit(PARAM)\n)\n\n# A tibble: 14 × 6\n   USUBJID     PARAMCD  PARAM                       AVAL AVALU VISIT    \n   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    \n 1 01-101-1001 HEIGHT   Height (cm)              147     cm    SCREENING\n 2 01-101-1001 WSTCIR   Waist Circumference (cm) 110     cm    SCREENING\n 3 01-101-1001 WSTCIR   Waist Circumference (cm) 108     cm    WEEK 2   \n 4 01-101-1001 WSTCIR   Waist Circumference (cm) 107     cm    WEEK 3   \n 5 01-101-1002 HEIGHT   Height (cm)              163     cm    SCREENING\n 6 01-101-1002 WSTCIR   Waist Circumference (cm) 120     cm    SCREENING\n 7 01-101-1002 WSTCIR   Waist Circumference (cm) 118     cm    WEEK 2   \n 8 01-101-1002 WSTCIR   Waist Circumference (cm) 117     cm    WEEK 3   \n 9 01-101-1001 WAISTHGT Waist to Height Ratio      0.748 &lt;NA&gt;  SCREENING\n10 01-101-1001 WAISTHGT Waist to Height Ratio      0.735 &lt;NA&gt;  WEEK 2   \n11 01-101-1001 WAISTHGT Waist to Height Ratio      0.728 &lt;NA&gt;  WEEK 3   \n12 01-101-1002 WAISTHGT Waist to Height Ratio      0.736 &lt;NA&gt;  SCREENING\n13 01-101-1002 WAISTHGT Waist to Height Ratio      0.724 &lt;NA&gt;  WEEK 2   \n14 01-101-1002 WAISTHGT Waist to Height Ratio      0.718 &lt;NA&gt;  WEEK 3   \n\n\nNote that this function has built-in support for:\n\nUnit conversion in cases where units differ across the numerator and denominator (allowed units: m, mm, ft, in);\nSingle or multiple height measurement by modifying the argument constant_by_vars. Please visit the function’s reference page for more details.\n\n  admiralmetabolic::derive_param_waisthip()  is very similar: it is also a wrapper to   admiral::derive_param_computed() , but this time enables users to add derived waist to hip ratio parameters using waist- and hip circumference. It boasts the same unit-flexibility as   admiralmetabolic::derive_param_waisthgt()  - let’s look at that in action:\n\nadvs2 &lt;- tribble(\n  ~USUBJID,      ~PARAMCD, ~PARAM,                     ~AVAL, ~AVALU, ~VISIT,\n  \"01-101-1001\", \"HIPCIR\", \"Hip Circumference (cm)\",   125,   \"cm\",   \"SCREENING\",\n  \"01-101-1001\", \"HIPCIR\", \"Hip Circumference (cm)\",   124,   \"cm\",   \"WEEK 2\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (in)\", 43.31, \"in\",   \"SCREENING\",\n  \"01-101-1001\", \"WSTCIR\", \"Waist Circumference (in)\", 42.52, \"in\",   \"WEEK 2\",\n  \"01-101-1002\", \"HIPCIR\", \"Hip Circumference (cm)\",   135,   \"cm\",   \"SCREENING\",\n  \"01-101-1002\", \"HIPCIR\", \"Hip Circumference (cm)\",   133,   \"cm\",   \"WEEK 2\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (in)\", 47.24, \"in\",   \"SCREENING\",\n  \"01-101-1002\", \"WSTCIR\", \"Waist Circumference (in)\", 46.46, \"in\",   \"WEEK 2\"\n)\n\nderive_param_waisthip(\n  advs2,\n  by_vars = exprs(USUBJID, VISIT),\n  wstcir_code = \"WSTCIR\",\n  hipcir_code = \"HIPCIR\",\n  set_values_to = exprs(\n    PARAMCD = \"WAISTHIP\",\n    PARAM = \"Waist to Hip Ratio\"\n  ),\n  get_unit_expr = admiral::extract_unit(PARAM)\n)\n\nℹ Unit conversion performed for \"HIPCIR\". Values converted from \"cm\" to \"in\".\n\n\n# A tibble: 12 × 6\n   USUBJID     PARAMCD  PARAM                       AVAL AVALU VISIT    \n   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;                      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    \n 1 01-101-1001 HIPCIR   Hip Circumference (cm)   125     cm    SCREENING\n 2 01-101-1001 HIPCIR   Hip Circumference (cm)   124     cm    WEEK 2   \n 3 01-101-1001 WSTCIR   Waist Circumference (in)  43.3   in    SCREENING\n 4 01-101-1001 WSTCIR   Waist Circumference (in)  42.5   in    WEEK 2   \n 5 01-101-1002 HIPCIR   Hip Circumference (cm)   135     cm    SCREENING\n 6 01-101-1002 HIPCIR   Hip Circumference (cm)   133     cm    WEEK 2   \n 7 01-101-1002 WSTCIR   Waist Circumference (in)  47.2   in    SCREENING\n 8 01-101-1002 WSTCIR   Waist Circumference (in)  46.5   in    WEEK 2   \n 9 01-101-1001 WAISTHIP Waist to Hip Ratio         0.880 &lt;NA&gt;  SCREENING\n10 01-101-1001 WAISTHIP Waist to Hip Ratio         0.871 &lt;NA&gt;  WEEK 2   \n11 01-101-1002 WAISTHIP Waist to Hip Ratio         0.889 &lt;NA&gt;  SCREENING\n12 01-101-1002 WAISTHIP Waist to Hip Ratio         0.887 &lt;NA&gt;  WEEK 2"
   },
   {
     "objectID": "posts/2025-01-21_hello_admiralmetabolic/hello_admiralmetabolic.html#vignettes-and-template",
@@ -872,7 +872,7 @@
     "href": "posts/2025-01-21_hello_admiralmetabolic/hello_admiralmetabolic.html#last-updated",
     "title": "Hello admiralmetabolic!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:32.822391"
+    "text": "Last updated\n\n2025-01-21 14:38:35.140162"
   },
   {
     "objectID": "posts/2025-01-21_hello_admiralmetabolic/hello_admiralmetabolic.html#details",
@@ -970,7 +970,7 @@
     "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
     "title": "Blanks and NAs",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:23.957037"
+    "text": "Last updated\n\n2025-01-21 14:38:25.808726"
   },
   {
     "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
@@ -1047,7 +1047,7 @@
     "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#last-updated",
     "title": "admiral 1.0.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:19.588564"
+    "text": "Last updated\n\n2025-01-21 14:38:21.15558"
   },
   {
     "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#details",
@@ -1061,7 +1061,7 @@
     "href": "session_info.html",
     "title": "Session Info",
     "section": "",
-    "text": "session_info()\n\n─ Session info ───────────────────────────────────────────────────────────────\n setting  value\n version  R version 4.4.2 (2024-10-31)\n os       Ubuntu 24.04.1 LTS\n system   x86_64, linux-gnu\n ui       X11\n language (EN)\n collate  C.UTF-8\n ctype    C.UTF-8\n tz       UTC\n date     2025-01-21\n pandoc   3.1.3 @ /usr/bin/ (via rmarkdown)\n\n─ Packages ───────────────────────────────────────────────────────────────────\n package          * version  date (UTC) lib source\n admiral          * 1.2.0    2025-01-15 [1] RSPM\n admiraldev         1.2.0    2025-01-15 [1] RSPM\n admiralmetabolic * 0.1.0    2025-01-20 [1] CRAN (R 4.4.2)\n admiralonco      * 1.1.0    2024-06-19 [1] RSPM\n admiralophtha    * 1.2.0    2025-01-16 [1] RSPM\n admiralpeds      * 0.2.0    2025-01-16 [1] RSPM\n admiralvaccine   * 0.3.0    2024-08-29 [1] RSPM\n assertthat         0.2.1    2019-03-21 [1] RSPM\n attempt            0.3.1    2020-05-03 [1] RSPM\n backports          1.5.0    2024-05-23 [1] RSPM\n BiocManager        1.30.25  2024-08-28 [1] RSPM\n bslib              0.8.0    2024-07-29 [1] RSPM\n cachem             1.1.0    2024-05-16 [1] RSPM\n cellranger         1.1.0    2016-07-27 [1] RSPM\n checkmate          2.3.2    2024-07-29 [1] RSPM\n cicerone           1.0.4    2021-01-10 [1] RSPM\n cli                3.6.3    2024-06-21 [1] RSPM\n colorspace         2.1-1    2024-07-26 [1] RSPM\n config             0.3.2    2023-08-30 [1] RSPM\n covr               3.6.4    2023-11-09 [1] RSPM\n cranlogs           2.1.1    2019-04-29 [1] RSPM\n crayon             1.5.3    2024-06-20 [1] RSPM\n curl               6.1.0    2025-01-06 [1] RSPM\n data.table         1.16.4   2024-12-06 [1] RSPM\n devtools           2.4.5    2022-10-11 [1] RSPM\n diffdf           * 1.1.1    2024-09-24 [1] RSPM\n digest             0.6.37   2024-08-19 [1] RSPM\n dplyr            * 1.1.4    2023-11-17 [1] RSPM\n dverse           * 0.2.0    2024-12-08 [1] RSPM\n ellipsis           0.3.2    2021-04-29 [1] RSPM\n evaluate           1.0.3    2025-01-10 [1] RSPM\n farver             2.1.2    2024-05-13 [1] RSPM\n fastmap            1.2.0    2024-05-15 [1] RSPM\n forcats          * 1.0.0    2023-01-29 [1] RSPM\n formatters       * 0.5.10   2025-01-09 [1] RSPM\n fs                 1.6.5    2024-10-30 [1] RSPM\n generics           0.1.3    2022-07-05 [1] RSPM\n GGally             2.2.1    2024-02-14 [1] RSPM\n ggcorrplot         0.1.4.1  2023-09-05 [1] RSPM\n ggplot2          * 3.5.1    2024-04-23 [1] RSPM\n ggstats            0.8.0    2025-01-07 [1] RSPM\n glue               1.8.0    2024-09-30 [1] RSPM\n golem              0.5.1    2024-08-27 [1] RSPM\n gt                 0.11.1   2024-10-04 [1] RSPM\n gtable             0.3.6    2024-10-25 [1] RSPM\n haven              2.5.4    2023-11-30 [1] RSPM\n here             * 1.0.1    2020-12-13 [1] RSPM\n hms                1.1.3    2023-03-21 [1] RSPM\n htmltools          0.5.8.1  2024-04-04 [1] RSPM\n htmlwidgets        1.6.4    2023-12-06 [1] RSPM\n httpuv             1.6.15   2024-03-26 [1] RSPM\n httr               1.4.7    2023-08-15 [1] RSPM\n IDEAFilter         0.2.0    2024-04-15 [1] RSPM\n insight            1.0.1    2025-01-10 [1] RSPM\n janitor          * 2.2.1    2024-12-22 [1] RSPM\n jquerylib          0.1.4    2021-04-26 [1] RSPM\n jsonlite         * 1.8.9    2024-09-20 [1] RSPM\n knitr              1.49     2024-11-08 [1] RSPM\n later              1.4.1    2024-11-27 [1] RSPM\n lattice            0.22-6   2024-03-20 [3] CRAN (R 4.4.2)\n lazyeval           0.2.2    2019-03-15 [1] RSPM\n lifecycle          1.0.4    2023-11-07 [1] RSPM\n link             * 2024.4.0 2024-03-11 [1] RSPM\n logger             0.4.0    2024-10-22 [1] RSPM\n lubridate        * 1.9.4    2024-12-08 [1] RSPM\n magrittr         * 2.0.3    2022-03-30 [1] RSPM\n Matrix             1.7-1    2024-10-18 [3] CRAN (R 4.4.2)\n memoise            2.0.1    2021-11-26 [1] RSPM\n metacore         * 0.1.3    2024-05-02 [1] RSPM\n metatools        * 0.1.6    2024-07-23 [1] RSPM\n mime               0.12     2021-09-28 [1] RSPM\n miniUI             0.1.1.1  2018-05-18 [1] RSPM\n mirai            * 2.0.1    2025-01-16 [1] RSPM\n munsell            0.5.1    2024-04-01 [1] RSPM\n nanonext           1.4.0    2024-12-02 [1] RSPM\n patchwork        * 1.3.0    2024-09-16 [1] RSPM\n pharmaverseadam  * 1.1.0    2024-10-25 [1] RSPM\n pharmaversesdtm  * 1.1.0    2024-10-25 [1] RSPM\n pillar             1.10.1   2025-01-07 [1] RSPM\n pkgbuild           1.4.6    2025-01-16 [1] RSPM\n pkgconfig          2.0.3    2019-09-22 [1] RSPM\n pkgload            1.4.0    2024-06-28 [1] RSPM\n plotly             4.10.4   2024-01-13 [1] RSPM\n plyr               1.8.9    2023-10-02 [1] RSPM\n profvis            0.4.0    2024-09-20 [1] RSPM\n promises           1.3.2    2024-11-28 [1] RSPM\n purrr            * 1.0.2    2023-08-10 [1] RSPM\n R6                 2.5.1    2021-08-19 [1] RSPM\n RColorBrewer       1.1-3    2022-04-03 [1] RSPM\n Rcpp               1.0.14   2025-01-12 [1] RSPM\n reactable        * 0.4.4    2023-03-12 [1] RSPM\n readr            * 2.1.5    2024-01-10 [1] RSPM\n readxl             1.4.3    2023-07-06 [1] RSPM\n remotes            2.5.0    2024-03-17 [1] RSPM\n rex                1.2.1    2021-11-26 [1] RSPM\n riskmetric       * 0.2.4    2024-01-09 [1] RSPM\n rlang              1.1.5    2025-01-17 [1] RSPM\n rmarkdown          2.29     2024-11-04 [1] RSPM\n rprojroot          2.0.4    2023-11-05 [1] RSPM\n rtables          * 0.6.11   2025-01-10 [1] RSPM\n sass               0.4.9    2024-03-15 [1] RSPM\n scales             1.3.0    2023-11-28 [1] RSPM\n sdtm.oak         * 0.1.1    2024-11-12 [1] RSPM\n sessioninfo      * 1.2.2    2021-12-06 [1] RSPM\n shiny            * 1.10.0   2024-12-14 [1] RSPM\n shinyjs            2.1.0    2021-12-23 [1] RSPM\n shinyTime          1.0.3    2022-08-19 [1] RSPM\n shinyWidgets       0.8.7    2024-09-23 [1] RSPM\n sjlabelled         1.2.0    2022-04-10 [1] RSPM\n snakecase          0.11.1   2023-08-27 [1] RSPM\n spelling         * 2.3.1    2024-10-04 [1] RSPM\n stringi            1.8.4    2024-05-06 [1] RSPM\n stringr          * 1.5.1    2023-11-14 [1] RSPM\n survival           3.7-0    2024-06-05 [3] CRAN (R 4.4.2)\n teal             * 0.15.2   2024-03-07 [1] RSPM\n teal.code        * 0.5.0    2024-01-11 [1] RSPM\n teal.data        * 0.6.0    2024-04-30 [1] RSPM\n teal.logger        0.3.0    2024-10-24 [1] RSPM\n teal.slice       * 0.5.1    2024-04-30 [1] RSPM\n tibble           * 3.2.1    2023-03-20 [1] RSPM\n tidyCDISC        * 0.2.1    2023-03-16 [1] RSPM\n tidyr            * 1.3.1    2024-01-24 [1] RSPM\n tidyselect         1.2.1    2024-03-11 [1] RSPM\n tidyverse        * 2.0.0    2023-02-22 [1] RSPM\n timechange         0.3.0    2024-01-18 [1] RSPM\n timevis            2.1.0    2022-11-03 [1] RSPM\n tippy              0.1.0    2021-01-11 [1] RSPM\n triebeard          0.4.1    2023-03-04 [1] RSPM\n tzdb               0.4.0    2023-05-12 [1] RSPM\n urlchecker         1.0.1    2021-11-30 [1] RSPM\n urltools           1.7.3    2019-04-14 [1] RSPM\n usethis            3.1.0    2024-11-26 [1] RSPM\n vctrs              0.6.5    2023-12-01 [1] RSPM\n viridisLite        0.4.2    2023-05-02 [1] RSPM\n withr              3.0.2    2024-10-28 [1] RSPM\n xfun               0.50     2025-01-07 [1] RSPM\n xml2               1.3.6    2023-12-04 [1] RSPM\n xportr           * 0.4.2    2025-01-07 [1] RSPM\n xtable             1.8-4    2019-04-21 [1] RSPM\n yaml               2.3.10   2024-07-26 [1] RSPM\n zoo                1.8-12   2023-04-13 [1] RSPM\n\n [1] /home/runner/work/_temp/Library\n [2] /opt/R/4.4.2/lib/R/site-library\n [3] /opt/R/4.4.2/lib/R/library\n\n──────────────────────────────────────────────────────────────────────────────"
+    "text": "session_info()\n\n─ Session info ───────────────────────────────────────────────────────────────\n setting  value\n version  R version 4.4.2 (2024-10-31)\n os       Ubuntu 24.04.1 LTS\n system   x86_64, linux-gnu\n ui       X11\n language (EN)\n collate  C.UTF-8\n ctype    C.UTF-8\n tz       UTC\n date     2025-01-21\n pandoc   3.1.3 @ /usr/bin/ (via rmarkdown)\n\n─ Packages ───────────────────────────────────────────────────────────────────\n package          * version  date (UTC) lib source\n admiral          * 1.2.0    2025-01-15 [1] RSPM\n admiraldev         1.2.0    2025-01-15 [1] RSPM\n admiralmetabolic * 0.1.0    2025-01-20 [1] RSPM\n admiralonco      * 1.1.0    2024-06-19 [1] RSPM\n admiralophtha    * 1.2.0    2025-01-16 [1] RSPM\n admiralpeds      * 0.2.0    2025-01-16 [1] RSPM\n admiralvaccine   * 0.3.0    2024-08-29 [1] RSPM\n assertthat         0.2.1    2019-03-21 [1] RSPM\n attempt            0.3.1    2020-05-03 [1] RSPM\n backports          1.5.0    2024-05-23 [1] RSPM\n BiocManager        1.30.25  2024-08-28 [1] RSPM\n bslib              0.8.0    2024-07-29 [1] RSPM\n cachem             1.1.0    2024-05-16 [1] RSPM\n cellranger         1.1.0    2016-07-27 [1] RSPM\n checkmate          2.3.2    2024-07-29 [1] RSPM\n cicerone           1.0.4    2021-01-10 [1] RSPM\n cli                3.6.3    2024-06-21 [1] RSPM\n colorspace         2.1-1    2024-07-26 [1] RSPM\n config             0.3.2    2023-08-30 [1] RSPM\n covr               3.6.4    2023-11-09 [1] RSPM\n cranlogs           2.1.1    2019-04-29 [1] RSPM\n crayon             1.5.3    2024-06-20 [1] RSPM\n curl               6.1.0    2025-01-06 [1] RSPM\n data.table         1.16.4   2024-12-06 [1] RSPM\n devtools           2.4.5    2022-10-11 [1] RSPM\n diffdf           * 1.1.1    2024-09-24 [1] RSPM\n digest             0.6.37   2024-08-19 [1] RSPM\n dplyr            * 1.1.4    2023-11-17 [1] RSPM\n dverse           * 0.2.0    2024-12-08 [1] RSPM\n ellipsis           0.3.2    2021-04-29 [1] RSPM\n evaluate           1.0.3    2025-01-10 [1] RSPM\n farver             2.1.2    2024-05-13 [1] RSPM\n fastmap            1.2.0    2024-05-15 [1] RSPM\n forcats          * 1.0.0    2023-01-29 [1] RSPM\n formatters       * 0.5.10   2025-01-09 [1] RSPM\n fs                 1.6.5    2024-10-30 [1] RSPM\n generics           0.1.3    2022-07-05 [1] RSPM\n GGally             2.2.1    2024-02-14 [1] RSPM\n ggcorrplot         0.1.4.1  2023-09-05 [1] RSPM\n ggplot2          * 3.5.1    2024-04-23 [1] RSPM\n ggstats            0.8.0    2025-01-07 [1] RSPM\n glue               1.8.0    2024-09-30 [1] RSPM\n golem              0.5.1    2024-08-27 [1] RSPM\n gt                 0.11.1   2024-10-04 [1] RSPM\n gtable             0.3.6    2024-10-25 [1] RSPM\n haven              2.5.4    2023-11-30 [1] RSPM\n here             * 1.0.1    2020-12-13 [1] RSPM\n hms                1.1.3    2023-03-21 [1] RSPM\n htmltools          0.5.8.1  2024-04-04 [1] RSPM\n htmlwidgets        1.6.4    2023-12-06 [1] RSPM\n httpuv             1.6.15   2024-03-26 [1] RSPM\n httr               1.4.7    2023-08-15 [1] RSPM\n IDEAFilter         0.2.0    2024-04-15 [1] RSPM\n insight            1.0.1    2025-01-10 [1] RSPM\n janitor          * 2.2.1    2024-12-22 [1] RSPM\n jquerylib          0.1.4    2021-04-26 [1] RSPM\n jsonlite         * 1.8.9    2024-09-20 [1] RSPM\n knitr              1.49     2024-11-08 [1] RSPM\n later              1.4.1    2024-11-27 [1] RSPM\n lattice            0.22-6   2024-03-20 [3] CRAN (R 4.4.2)\n lazyeval           0.2.2    2019-03-15 [1] RSPM\n lifecycle          1.0.4    2023-11-07 [1] RSPM\n link             * 2024.4.0 2024-03-11 [1] RSPM\n logger             0.4.0    2024-10-22 [1] RSPM\n lubridate        * 1.9.4    2024-12-08 [1] RSPM\n magrittr         * 2.0.3    2022-03-30 [1] RSPM\n Matrix             1.7-1    2024-10-18 [3] CRAN (R 4.4.2)\n memoise            2.0.1    2021-11-26 [1] RSPM\n metacore         * 0.1.3    2024-05-02 [1] RSPM\n metatools        * 0.1.6    2024-07-23 [1] RSPM\n mime               0.12     2021-09-28 [1] RSPM\n miniUI             0.1.1.1  2018-05-18 [1] RSPM\n mirai            * 2.0.1    2025-01-16 [1] RSPM\n munsell            0.5.1    2024-04-01 [1] RSPM\n nanonext           1.4.0    2024-12-02 [1] RSPM\n patchwork        * 1.3.0    2024-09-16 [1] RSPM\n pharmaverseadam  * 1.1.0    2024-10-25 [1] RSPM\n pharmaversesdtm  * 1.1.0    2024-10-25 [1] RSPM\n pillar             1.10.1   2025-01-07 [1] RSPM\n pkgbuild           1.4.6    2025-01-16 [1] RSPM\n pkgconfig          2.0.3    2019-09-22 [1] RSPM\n pkgload            1.4.0    2024-06-28 [1] RSPM\n plotly             4.10.4   2024-01-13 [1] RSPM\n plyr               1.8.9    2023-10-02 [1] RSPM\n profvis            0.4.0    2024-09-20 [1] RSPM\n promises           1.3.2    2024-11-28 [1] RSPM\n purrr            * 1.0.2    2023-08-10 [1] RSPM\n R6                 2.5.1    2021-08-19 [1] RSPM\n RColorBrewer       1.1-3    2022-04-03 [1] RSPM\n Rcpp               1.0.14   2025-01-12 [1] RSPM\n reactable        * 0.4.4    2023-03-12 [1] RSPM\n readr            * 2.1.5    2024-01-10 [1] RSPM\n readxl             1.4.3    2023-07-06 [1] RSPM\n remotes            2.5.0    2024-03-17 [1] RSPM\n rex                1.2.1    2021-11-26 [1] RSPM\n riskmetric       * 0.2.4    2024-01-09 [1] RSPM\n rlang              1.1.5    2025-01-17 [1] RSPM\n rmarkdown          2.29     2024-11-04 [1] RSPM\n rprojroot          2.0.4    2023-11-05 [1] RSPM\n rtables          * 0.6.11   2025-01-10 [1] RSPM\n sass               0.4.9    2024-03-15 [1] RSPM\n scales             1.3.0    2023-11-28 [1] RSPM\n sdtm.oak         * 0.1.1    2024-11-12 [1] RSPM\n sessioninfo      * 1.2.2    2021-12-06 [1] RSPM\n shiny            * 1.10.0   2024-12-14 [1] RSPM\n shinyjs            2.1.0    2021-12-23 [1] RSPM\n shinyTime          1.0.3    2022-08-19 [1] RSPM\n shinyWidgets       0.8.7    2024-09-23 [1] RSPM\n sjlabelled         1.2.0    2022-04-10 [1] RSPM\n snakecase          0.11.1   2023-08-27 [1] RSPM\n spelling         * 2.3.1    2024-10-04 [1] RSPM\n stringi            1.8.4    2024-05-06 [1] RSPM\n stringr          * 1.5.1    2023-11-14 [1] RSPM\n survival           3.7-0    2024-06-05 [3] CRAN (R 4.4.2)\n teal             * 0.15.2   2024-03-07 [1] RSPM\n teal.code        * 0.5.0    2024-01-11 [1] RSPM\n teal.data        * 0.6.0    2024-04-30 [1] RSPM\n teal.logger        0.3.0    2024-10-24 [1] RSPM\n teal.slice       * 0.5.1    2024-04-30 [1] RSPM\n tibble           * 3.2.1    2023-03-20 [1] RSPM\n tidyCDISC        * 0.2.1    2023-03-16 [1] RSPM\n tidyr            * 1.3.1    2024-01-24 [1] RSPM\n tidyselect         1.2.1    2024-03-11 [1] RSPM\n tidyverse        * 2.0.0    2023-02-22 [1] RSPM\n timechange         0.3.0    2024-01-18 [1] RSPM\n timevis            2.1.0    2022-11-03 [1] RSPM\n tippy              0.1.0    2021-01-11 [1] RSPM\n triebeard          0.4.1    2023-03-04 [1] RSPM\n tzdb               0.4.0    2023-05-12 [1] RSPM\n urlchecker         1.0.1    2021-11-30 [1] RSPM\n urltools           1.7.3    2019-04-14 [1] RSPM\n usethis            3.1.0    2024-11-26 [1] RSPM\n vctrs              0.6.5    2023-12-01 [1] RSPM\n viridisLite        0.4.2    2023-05-02 [1] RSPM\n withr              3.0.2    2024-10-28 [1] RSPM\n xfun               0.50     2025-01-07 [1] RSPM\n xml2               1.3.6    2023-12-04 [1] RSPM\n xportr           * 0.4.2    2025-01-07 [1] RSPM\n xtable             1.8-4    2019-04-21 [1] RSPM\n yaml               2.3.10   2024-07-26 [1] RSPM\n zoo                1.8-12   2023-04-13 [1] RSPM\n\n [1] /home/runner/work/_temp/Library\n [2] /opt/R/4.4.2/lib/R/site-library\n [3] /opt/R/4.4.2/lib/R/library\n\n──────────────────────────────────────────────────────────────────────────────"
   },
   {
     "objectID": "posts/2023-06-28_welcome/index.html",
@@ -1103,7 +1103,7 @@
     "href": "posts/2023-06-28_welcome/index.html#last-updated",
     "title": "Hello pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:16.41448"
+    "text": "Last updated\n\n2025-01-21 14:38:17.730082"
   },
   {
     "objectID": "posts/2023-06-28_welcome/index.html#details",
@@ -1124,7 +1124,7 @@
     "href": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html#last-updated",
     "title": "Undergraduate University Statistics Report using pharmaverseadam data",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:21.875955"
+    "text": "Last updated\n\n2025-01-21 14:38:23.599074"
   },
   {
     "objectID": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html#details",
@@ -1138,7 +1138,7 @@
     "href": "posts/2024-12-02_a_nca/a_nca.html#last-updated",
     "title": "Introducing the aNCA Package for Automated Non-Compartmental Analysis",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:25.65374"
+    "text": "Last updated\n\n2025-01-21 14:38:27.647275"
   },
   {
     "objectID": "posts/2024-12-02_a_nca/a_nca.html#details",
@@ -1222,7 +1222,7 @@
     "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#last-updated",
     "title": "Date/Time Functions and Imputation in {admiral}",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:29.377902"
+    "text": "Last updated\n\n2025-01-21 14:38:31.641998"
   },
   {
     "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#details",
@@ -1243,7 +1243,7 @@
     "href": "posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html#last-updated",
     "title": "Our experience as new admiral developers, coming from a CRO",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:34.709972"
+    "text": "Last updated\n\n2025-01-21 14:38:37.182825"
   },
   {
     "objectID": "posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html#details",
@@ -1299,7 +1299,7 @@
     "href": "posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html#last-updated",
     "title": "Unix versus SAS Time",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:38.465107"
+    "text": "Last updated\n\n2025-01-21 14:38:41.177558"
   },
   {
     "objectID": "posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html#details",
@@ -1327,7 +1327,7 @@
     "href": "posts/2023-11-27_higher_order/higher_order.html#last-updated",
     "title": "Believe in a higher order!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:43.383171"
+    "text": "Last updated\n\n2025-01-21 14:38:46.333505"
   },
   {
     "objectID": "posts/2023-11-27_higher_order/higher_order.html#details",
@@ -1348,7 +1348,7 @@
     "href": "posts/2024-09-03_meet_our__divers.../meet_our__diversity__champion_–__laura__needleman.html#last-updated",
     "title": "Meet our Diversity Champion – Laura Needleman",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:48.566668"
+    "text": "Last updated\n\n2025-01-21 14:38:51.693068"
   },
   {
     "objectID": "posts/2024-09-03_meet_our__divers.../meet_our__diversity__champion_–__laura__needleman.html#details",
@@ -1369,7 +1369,7 @@
     "href": "posts/2024-02-13_teal_on_cran/teal_on_cran.html#last-updated",
     "title": "teal is now available on CRAN 🎉",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:52.077744"
+    "text": "Last updated\n\n2025-01-21 14:38:55.460234"
   },
   {
     "objectID": "posts/2024-02-13_teal_on_cran/teal_on_cran.html#details",
@@ -1418,7 +1418,7 @@
     "href": "posts/2024-04-08_tmc_cran/tmc_cran.html#last-updated",
     "title": "teal.modules.clinical v0.9.0 is now on CRAN!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:55.570854"
+    "text": "Last updated\n\n2025-01-21 14:38:59.146809"
   },
   {
     "objectID": "posts/2024-04-08_tmc_cran/tmc_cran.html#details",
@@ -1439,7 +1439,7 @@
     "href": "posts/2024-04-29_appsilon_and__sa.../appsilon_and__sanofi_joins_the_pharmaverse_council!.html#last-updated",
     "title": "Appsilon and Sanofi join the pharmaverse council!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:00:58.755353"
+    "text": "Last updated\n\n2025-01-21 14:39:02.629418"
   },
   {
     "objectID": "posts/2024-04-29_appsilon_and__sa.../appsilon_and__sanofi_joins_the_pharmaverse_council!.html#details",
@@ -1460,7 +1460,7 @@
     "href": "posts/2024-10-11_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.html#last-updated",
     "title": "roxy.shinylive - shinylive applications in roxygen documentation",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:02.733074"
+    "text": "Last updated\n\n2025-01-21 14:39:06.69386"
   },
   {
     "objectID": "posts/2024-10-11_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.html#details",
@@ -1488,7 +1488,7 @@
     "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#last-updated",
     "title": "Filter out the noise!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:07.595691"
+    "text": "Last updated\n\n2025-01-21 14:39:11.686736"
   },
   {
     "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#details",
@@ -1509,7 +1509,7 @@
     "href": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#last-updated",
     "title": "Introducing a new Coursera course for hands-on clinical data science using R.",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:29.143231"
+    "text": "Last updated\n\n2025-01-21 14:39:33.819946"
   },
   {
     "objectID": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#details",
@@ -1558,7 +1558,7 @@
     "href": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#last-updated",
     "title": "Reproducing the R Submissions Pilot 2 Shiny Application using Rhino",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:33.173589"
+    "text": "Last updated\n\n2025-01-21 14:39:37.989428"
   },
   {
     "objectID": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#details",
@@ -1628,7 +1628,7 @@
     "href": "posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html#last-updated",
     "title": "De-Mystifying R Programming in Clinical Trials",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:37.166588"
+    "text": "Last updated\n\n2025-01-21 14:39:42.247491"
   },
   {
     "objectID": "posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html#details",
@@ -1649,7 +1649,7 @@
     "href": "posts/2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.html#last-updated",
     "title": "New {admiral} extension packages: {admiralpeds} & more coming soon!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:40.169661"
+    "text": "Last updated\n\n2025-01-21 14:39:45.434076"
   },
   {
     "objectID": "posts/2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.html#details",
@@ -1698,7 +1698,7 @@
     "href": "posts/2023-07-09_cardinal/falcon.html#last-updated",
     "title": "cardinal",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:45.53153"
+    "text": "Last updated\n\n2025-01-21 14:39:51.226125"
   },
   {
     "objectID": "posts/2023-07-09_cardinal/falcon.html#details",
@@ -1747,7 +1747,7 @@
     "href": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#last-updated",
     "title": "The pharmaverse (hi)story",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:48.661087"
+    "text": "Last updated\n\n2025-01-21 14:39:54.511617"
   },
   {
     "objectID": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#details",
@@ -1796,7 +1796,7 @@
     "href": "posts/2024-02-14_iscr_conference/iscr_conference.html#last-updated",
     "title": "ISCR 17th Annual Conference 2024",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:53.644728"
+    "text": "Last updated\n\n2025-01-21 14:39:59.720361"
   },
   {
     "objectID": "posts/2024-02-14_iscr_conference/iscr_conference.html#details",
@@ -1845,7 +1845,7 @@
     "href": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#last-updated",
     "title": "End of Year Update from the pharmaverse Council",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:01:56.890812"
+    "text": "Last updated\n\n2025-01-21 14:40:03.086605"
   },
   {
     "objectID": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#details",
@@ -1887,7 +1887,7 @@
     "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
     "title": "Rounding",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:02:00.658474"
+    "text": "Last updated\n\n2025-01-21 14:40:07.025893"
   },
   {
     "objectID": "posts/2023-07-24_rounding/rounding.html#details",
@@ -1922,7 +1922,7 @@
     "href": "posts/2024-09-11_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html#last-updated",
     "title": "Writing my first custom CICD action for the pharmaverseblog",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:02:04.276478"
+    "text": "Last updated\n\n2025-01-21 14:40:10.832034"
   },
   {
     "objectID": "posts/2024-09-11_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html#details",
@@ -1964,7 +1964,7 @@
     "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
     "title": "Admiral Hackathon 2023 Revisited",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:02:10.538763"
+    "text": "Last updated\n\n2025-01-21 14:40:17.44904"
   },
   {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
@@ -2013,7 +2013,7 @@
     "href": "posts/2023-12-20_p_k__examples/p_k__examples.html#last-updated",
     "title": "PK Examples",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:02:17.549018"
+    "text": "Last updated\n\n2025-01-21 14:40:24.683358"
   },
   {
     "objectID": "posts/2023-12-20_p_k__examples/p_k__examples.html#details",
@@ -2062,7 +2062,7 @@
     "href": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html#last-updated",
     "title": "Testing Containers and WebAssembly in Submissions to the FDA",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-01-21 14:02:20.79069"
+    "text": "Last updated\n\n2025-01-21 14:40:27.999032"
   },
   {
     "objectID": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html#details",
