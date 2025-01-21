@@ -28,7 +28,7 @@ link::auto()
 
 # Introduction
 
-The {admiral} team is celebrating the newest addition to the extension package family with the release of {admiralmetabolic} 0.1! This new package focuses on the therapeutic areas of obesity and cardiovascular metabolism, and was born out of a collaboration between Novo Nordisk and Roche, as well as a number of independent contributors. {admiralmetabolic} addresses a key unmet need in this area given the ever-increasing interest in obesity and cardiovascular metabolism across the industry.
+The {admiral} team is celebrating the newest addition to the extension package family with the release of {admiralmetabolic} 0.1! This new package focuses on the therapeutic areas of obesity and cardiovascular metabolism, and was born out of a collaboration between Novo Nordisk and Roche, as well as a number of independent contributors. {admiralmetabolic} addresses a key unmet need in this area given the ever-increasing interest in obesity, diabetes and cardiovascular metabolism across the industry.
 
 # Package Contents
 
@@ -48,7 +48,7 @@ library(tibble)
 library(admiral)
 library(admiralmetabolic)
 
-# Example 1: Derive Waist to Height Ratio where Height is measured only once
+# Derive Waist to Height Ratio. In this example height is measured only once per subject.
 
 advs <- tribble(
   ~USUBJID,      ~PARAMCD, ~PARAM,                     ~AVAL, ~AVALU, ~VISIT,
@@ -76,10 +76,11 @@ derive_param_waisthgt(
 )
 ```
 
-Note that this function has built-in support to:
+Note that this function has built-in support for:
 
-* Calculate the ratio in cases where units differ across the numerator and denominator by converting on the fly (allowed units: m, mm, ft, in);
-* Work in cases such as pediatric studies where both waist circumference and height are measured at multiple visits, by modifying the argument `constant_by_vars`. Please visit the function's reference page for more details.
+* Unit conversion in cases where units differ across the numerator and denominator (allowed units: m, mm, ft, in);
+* Single or multiple height measurement by modifying the argument `constant_by_vars`. 
+Please visit the function's reference page for more details.
 
 `admiralmetabolic::derive_param_waisthip()` is very similar: it is also a wrapper to `admiral::derive_param_computed()`, but this time enables users to add derived waist to hit ratio parameters using waist- and hip circumference. It boasts the same unit-flexibility as `admiralmetabolic::derive_param_waisthgt()` - let's looks at that in action:
 
@@ -132,7 +133,7 @@ admiral::use_ad_template("ADCOEQ", package = "admiralmetabolic")
 We love growing the {admiral} family, and hope you are just as excited about {admiralmetabolic} as we are.
 We welcome community feedback about the package, its content and development directions for future releases. The development team will be meeting next month for a retrospective and a plan for the next release, so please reach out! 
 
-Finally, if you have any suggestion new extension packages, or would like to drive one yourself, please reach out to any member of the {admiral} team and we'd be happy to discuss next steps with you.
+Finally, if you have any suggestion new extension packages, or would like to drive one yourself, please reach out to the {admiral} Business Lead, Edoardo Mancini and/or the Technical Lead, Ben Straub through the [pharmaverse slack](https://pharmaverse.slack.com/) and we'd be happy to discuss next steps with you.
 
 <!--------------- appendices go here ----------------->
 
