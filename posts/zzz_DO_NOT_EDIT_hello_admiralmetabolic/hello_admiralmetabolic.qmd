@@ -1,0 +1,148 @@
+---
+title: "Hello {admiralmetabolic}!"
+author:
+  - name: Anders Askeland
+  - name: Edoardo Mancini
+description: "We are happy to announce the release of the newest member of the {admiral} family - {admiralmetabolic}!"
+# Note that the date below will be auto-updated when the post is merged.
+date: "2024-12-01"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [ADaM, Community, Technical]
+# Feel free to change the image
+image: "admiralmetabolic.png"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_hello_admiralmetabolic"
+library(link)
+link::auto()
+```
+
+<!--------------- post begins here ----------------->
+
+[![](admiralmetabolic.png){fig-align="center" width="220"}](https://pharmaverse.github.io/admiralmetabolic/index.html)
+
+# Introduction
+
+The {admiral} team is celebrating the newest addition to the extension package family with the release of {admiralmetabolic} 0.1! This new package focuses on the therapeutic areas of obesity and cardiovascular metabolism, and was born out of a collaboration between Novo Nordisk and Roche, as well as a number of independent contributors. {admiralmetabolic} addresses a key unmet need in this area given the ever-increasing interest in obesity, diabetes and cardiovascular metabolism across the industry.
+
+# Package Contents
+
+For this first 0.1 release, {admiralmetabolic} focuses primarily on the obesity indication. The package offers:
+
+* Obesity-specific SDTM test data (to be moved to {pharmaversesdtm} at the next release of the package);
+* Two brand-new functions: admiralmetabolic::derive_param_waisthgt() and admiralmetabolic::derive_param_waisthip();
+* Two vignettes for an [obesity vital signs ADaM ADVS](https://pharmaverse.github.io/admiralmetabolic/articles/advs.html) and a [Control of Eating Questionnaire ADaM ADCOEQ](https://pharmaverse.github.io/admiralmetabolic/articles/adcoeq.html);
+* Two template programs for [ADVS](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_advs.R) and [ADCOEQ](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_adcoeq.R) matching the corresponding vignettes.
+
+## New Functions
+
+The first function, admiralmetabolic::derive_param_waisthgt(), is a wrapper to admiral::derive_param_computed() and enables users to add derived waist to height ratio parameters to a vital signs ADVS ADaM using waist circumference and height records. Here is an example of the function in action:
+
+```{r, eval = TRUE}
+library(tibble)
+library(admiral)
+library(admiralmetabolic)
+
+# Derive Waist to Height Ratio. In this example height is measured only once per subject.
+
+advs <- tribble(
+  ~USUBJID,      ~PARAMCD, ~PARAM,                     ~AVAL, ~AVALU, ~VISIT,
+  "01-101-1001", "HEIGHT", "Height (cm)",              147,   "cm",   "SCREENING",
+  "01-101-1001", "WSTCIR", "Waist Circumference (cm)", 110,   "cm",   "SCREENING",
+  "01-101-1001", "WSTCIR", "Waist Circumference (cm)", 108,   "cm",   "WEEK 2",
+  "01-101-1001", "WSTCIR", "Waist Circumference (cm)", 107,   "cm",   "WEEK 3",
+  "01-101-1002", "HEIGHT", "Height (cm)",              163,   "cm",   "SCREENING",
+  "01-101-1002", "WSTCIR", "Waist Circumference (cm)", 120,   "cm",   "SCREENING",
+  "01-101-1002", "WSTCIR", "Waist Circumference (cm)", 118,   "cm",   "WEEK 2",
+  "01-101-1002", "WSTCIR", "Waist Circumference (cm)", 117,   "cm",   "WEEK 3",
+)
+
+derive_param_waisthgt(
+  advs,
+  by_vars = exprs(USUBJID, VISIT),
+  wstcir_code = "WSTCIR",
+  height_code = "HEIGHT",
+  set_values_to = exprs(
+    PARAMCD = "WAISTHGT",
+    PARAM = "Waist to Height Ratio"
+  ),
+  constant_by_vars = exprs(USUBJID),
+  get_unit_expr = admiral::extract_unit(PARAM)
+)
+```
+
+Note that this function has built-in support for:
+
+* Unit conversion in cases where units differ across the numerator and denominator (allowed units: m, mm, ft, in);
+* Single or multiple height measurement by modifying the argument `constant_by_vars`. 
+Please visit the function's reference page for more details.
+
+`admiralmetabolic::derive_param_waisthip()` is very similar: it is also a wrapper to `admiral::derive_param_computed()`, but this time enables users to add derived waist to hip ratio parameters using waist- and hip circumference. It boasts the same unit-flexibility as `admiralmetabolic::derive_param_waisthgt()` - let's look at that in action:
+
+```{r, eval = TRUE}
+advs2 <- tribble(
+  ~USUBJID,      ~PARAMCD, ~PARAM,                     ~AVAL, ~AVALU, ~VISIT,
+  "01-101-1001", "HIPCIR", "Hip Circumference (cm)",   125,   "cm",   "SCREENING",
+  "01-101-1001", "HIPCIR", "Hip Circumference (cm)",   124,   "cm",   "WEEK 2",
+  "01-101-1001", "WSTCIR", "Waist Circumference (in)", 43.31, "in",   "SCREENING",
+  "01-101-1001", "WSTCIR", "Waist Circumference (in)", 42.52, "in",   "WEEK 2",
+  "01-101-1002", "HIPCIR", "Hip Circumference (cm)",   135,   "cm",   "SCREENING",
+  "01-101-1002", "HIPCIR", "Hip Circumference (cm)",   133,   "cm",   "WEEK 2",
+  "01-101-1002", "WSTCIR", "Waist Circumference (in)", 47.24, "in",   "SCREENING",
+  "01-101-1002", "WSTCIR", "Waist Circumference (in)", 46.46, "in",   "WEEK 2"
+)
+
+derive_param_waisthip(
+  advs2,
+  by_vars = exprs(USUBJID, VISIT),
+  wstcir_code = "WSTCIR",
+  hipcir_code = "HIPCIR",
+  set_values_to = exprs(
+    PARAMCD = "WAISTHIP",
+    PARAM = "Waist to Hip Ratio"
+  ),
+  get_unit_expr = admiral::extract_unit(PARAM)
+)
+```
+
+## Vignettes and Template
+
+On the {admiralmetabolic} package website, users will find the [obesity ADVS vignette](https://pharmaverse.github.io/admiralmetabolic/articles/advs.html). This documentation page will guide users towards creating an obesity ADVS ADaM, touching upon how to use our two new functions admiralmetabolic::derive_param_waisthgt() and admiralmetabolic::derive_param_waisthip() as well as how to apply existing {admiral} tools such as the brand-new (as of [admiral 1.2](https://pharmaverse.github.io/blog/posts/2025-01-17_1.2_admiral.../1.2_admiral_release.html)) admiral::derive_vars_cat() to create weight classes within the AVALCAT variable and admiral::derive_vars_crit_flag() to create criterion flag/variable pairs for endpoints such as a 5% reduction in weight at a certain visit.
+
+Of course, this vignette is coupled with the [obesity ADVS template program](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_advs.R), which users can use as a starting point for their ADaM scripts. The template can also be loaded and saved directly from the R console by running:
+
+```{r, eval = FALSE}
+admiral::use_ad_template("ADVS", package = "admiralmetabolic")
+```
+
+The [Control of Eating Questionnaire](https://licensing.leeds.ac.uk/product/control-of-eating-questionnaire-coeq) (COEQ) is used in many obesity trials as an endpoint. As such, {admiralmetabolic} also contains a vignette geared towards the creation of an ADaM dataset ADCOEQ for the COEQ. 
+Due to the flexibility of the parent {admiral} package, functions such as admiral::derive_summary_records() can be employed to create ADCOEQ. Users are invited to visit the [vignette](https://pharmaverse.github.io/admiralmetabolic/articles/adcoeq.html) for more details and a full walkthrough. 
+
+Once again, this vignette comes hand-in-hand with the [ADCOEQ program](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_advs.R), which can be accessed through the link above or directly from the R console by running:
+
+```{r, eval = FALSE}
+admiral::use_ad_template("ADCOEQ", package = "admiralmetabolic")
+```
+
+# Conclusion
+
+We love growing the {admiral} family, and hope you are just as excited about {admiralmetabolic} as we are.
+We welcome community feedback about the package, its content and development directions for future releases. Please raise your feedback as issues or discussions in our [GitHub repository](https://github.com/pharmaverse/admiralmetabolic) or the [pharmaverse slack](https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A). The development team will be meeting next month for a retrospective and a plan for the next release, so please reach out! 
+
+Finally, if you have any suggestions for new extension packages, or would like to drive one yourself, please reach out to the {admiral} Business Lead, Edoardo Mancini and/or the Technical Lead, Ben Straub through the [pharmaverse slack](https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A) and we'd be happy to discuss next steps with you.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```

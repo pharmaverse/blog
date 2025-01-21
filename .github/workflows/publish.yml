@@ -41,6 +41,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.PHARMAVERSE_BOT }}
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
@@ -64,6 +67,7 @@ jobs:
             admiralophtha
             admiralpeds
             admiralvaccine
+            admiralmetabolic
             patchwork
             here
             reactable
