@@ -56,7 +56,7 @@ app <- init(
 shinyApp(app$ui, app$server)
 ```
 
-### **Let’s Take a Closer Look at Each Step:**
+### **Let's Take a Closer Look at Each Step:**
 
 -   **In step 1**, we import libraries to use functions and datasets exported by those.
 
@@ -74,7 +74,7 @@ ADAE: [STUDYID, USUBJID, ASTDTM, AETERM, AESEQ]
   --> ADSL: [STUDYID, USUBJID]
 ```
 
--   **In step 3**, we initialize the [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) app by passing it a data object and adding an example module—it’s not much, but it will let us verify that the app works. The output app object is just a list with UI and server functions.
+-   **In step 3**, we initialize the [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) app by passing it a data object and adding an example module—it's not much, but it will let us verify that the app works. The output app object is just a list with UI and server functions.
 
 -   **Finally step 4** should be familiar to all [Shiny](https://shiny.posit.co/) users - we need to pass the UI and server function from the app object generated at step 3.
 
@@ -88,7 +88,7 @@ This is truly impressive, but there is just one problem… If we click the “Sh
 
 ![](images/Asset 2.gif)
 
-Let’s fix this. We will have to make the code slightly more verbose:
+Let's fix this. We will have to make the code slightly more verbose:
 
 ``` r
 data <- within(teal_data(), {
@@ -107,7 +107,7 @@ This is what we will see now when running the application:
 
 ![](images/Asset 3.gif)
 
-Now we have reproducible data. But what about the app itself? Surely, [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) features don’t end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:
+Now we have reproducible data. But what about the app itself? Surely, [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) features don't end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:
 
 ``` r
 pak::pkg_install(
@@ -133,7 +133,7 @@ This is possible thanks to the magic that [`{teal}`](https://insightsengineering
 ![](images/Asset 4.gif)\
 This is great on its own, but as a bonus, we even get the ability to build a report based on some of the modules that we have. For example, we can generate some plots in the variable browser, add them to the report and preview it. Some modules would also add a block of R code showing how to get the exact same data that was used to generate a report card.
 
-Finally, let’s add a simple barchart module that comes from the clinical modules package. We will use an example from the [`{teal.modules.clinical}`](https://github.com/insightsengineering/teal.modules.clinical) documentation:
+Finally, let's add a simple barchart module that comes from the clinical modules package. We will use an example from the [`{teal.modules.clinical}`](https://github.com/insightsengineering/teal.modules.clinical) documentation:
 
 ``` r
 barchart_module <- tm_g_barchart_simple(
