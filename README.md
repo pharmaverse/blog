@@ -28,7 +28,7 @@ A bit of cheeky language is also encouraged.
 Every dependency introduced in a post adds some risk to the post longevity.
 As package dependencies change, posts should be built in a way that they can be updated to stay relevant.
 
-**Readable:** The CWG sees this site as more of introductory site rather advanced user site.
+**Readable:** The CWG sees this site as more of introductory site rather than an advanced user site.
 Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity.
 
 ## What types of posts are allowed on this site?
