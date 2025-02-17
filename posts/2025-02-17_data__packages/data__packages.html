@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="pharmaverse council">
-<meta name="dcterms.date" content="2024-07-24">
-<meta name="description" content="An update from pharmaverse council around how packages will get included in pharmaverse in future.">
+<meta name="author" content="Ben Straub">
+<meta name="dcterms.date" content="2025-02-17">
+<meta name="description" content="Where is all the data? An intermittent attempt to continuously compile, collate, consolidate, and curate publicly available CDISC data useful for Clinical Reporting in R">
 
-<title>Working Groups Updates – pharmaverse blog</title>
+<title>Collecting all the data! – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -105,12 +105,16 @@ cookieconsent.run({
         background: #eeeeee;
       }
 </style>
+<script src="../../site_libs/bslib-component-js-0.9.0/components.min.js"></script>
+<script src="../../site_libs/bslib-component-js-0.9.0/web-components.min.js" type="module"></script>
+<link href="../../site_libs/bslib-component-css-0.9.0/components.css" rel="stylesheet">
+<script src="../../site_libs/bslib-tag-require-0.9.0/tag-require.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Working Groups Updates – pharmaverse blog">
-<meta property="og:description" content="An update from pharmaverse council around how packages will get included in pharmaverse in future.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-07-24_working__groups_.../pharmaverse.PNG">
+<meta property="og:title" content="Collecting all the data! – pharmaverse blog">
+<meta property="og:description" content="Where is all the data? An intermittent attempt to continuously compile, collate, consolidate, and curate publicly available CDISC data useful for Clinical Reporting in R">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2025-02-17_data__packages/data.jpg">
 <meta property="og:site_name" content="pharmaverse blog">
 </head>
 
@@ -151,14 +155,17 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Working Groups Updates</h1>
+      <h1 class="title">Collecting all the data!</h1>
                   <div>
         <div class="description">
-          An update from pharmaverse council around how packages will get included in pharmaverse in future.
+          Where is all the data? An intermittent attempt to continuously compile, collate, consolidate, and curate publicly available CDISC data useful for Clinical Reporting in R
         </div>
       </div>
                           <div class="quarto-categories">
+                <div class="quarto-category">SDTM</div>
+                <div class="quarto-category">ADaM</div>
                 <div class="quarto-category">Community</div>
+                <div class="quarto-category">Technical</div>
               </div>
                   </div>
   </div>
@@ -169,14 +176,14 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>pharmaverse council </p>
+               <p>Ben Straub </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 24, 2024</p>
+        <p class="date">February 17, 2025</p>
       </div>
     </div>
     
@@ -187,7 +194,19 @@ cookieconsent.run({
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#pharmaversesdtm-sdtm-test-data-for-the-pharmaverse-family-of-packages" id="toc-pharmaversesdtm-sdtm-test-data-for-the-pharmaverse-family-of-packages" class="nav-link active" data-scroll-target="#pharmaversesdtm-sdtm-test-data-for-the-pharmaverse-family-of-packages">pharmaversesdtm: SDTM Test Data for the Pharmaverse Family of Packages</a></li>
+  <li><a href="#pharmaverseadam-adam-test-data-for-the-pharmaverse-family-of-packages" id="toc-pharmaverseadam-adam-test-data-for-the-pharmaverse-family-of-packages" class="nav-link" data-scroll-target="#pharmaverseadam-adam-test-data-for-the-pharmaverse-family-of-packages">pharmaverseadam: ADaM Test Data for the Pharmaverse Family of Packages</a></li>
+  <li><a href="#admiral-adam-in-r-asset-library" id="toc-admiral-adam-in-r-asset-library" class="nav-link" data-scroll-target="#admiral-adam-in-r-asset-library">admiral: ADaM in R Asset Library</a></li>
+  <li><a href="#random.cdisc.data-create-random-adam-datasets" id="toc-random.cdisc.data-create-random-adam-datasets" class="nav-link" data-scroll-target="#random.cdisc.data-create-random-adam-datasets">random.cdisc.data: Create Random ADaM Datasets</a></li>
+  <li><a href="#safetydata-clinical-trial-data" id="toc-safetydata-clinical-trial-data" class="nav-link" data-scroll-target="#safetydata-clinical-trial-data">safetyData: Clinical Trial Data</a></li>
+  <li><a href="#nest-accelerating-clinical-reporting" id="toc-nest-accelerating-clinical-reporting" class="nav-link" data-scroll-target="#nest-accelerating-clinical-reporting">NEST: Accelerating Clinical Reporting</a></li>
+  <li><a href="#collect-all-the-data" id="toc-collect-all-the-data" class="nav-link" data-scroll-target="#collect-all-the-data">Collect all the data!</a></li>
+  </ul>
+</nav>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -202,19 +221,56 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>Hi community,</p>
-<p>We wanted to share with you an update from council discussions around our pharmaverse working groups. Up until now, these have been the decision-holders of which packages are included/excluded from the pharmaverse. Although open for all to join, they ended up being quite lean and likely not representative of the true depth of this community. So we’ve decided to open up the package decisions to our full community in future via our <a href="https://pharmaverse.slack.com/">Slack workspace</a>, to make for a more inclusive community where everyone has a voice. This is now updated on our website – see the FAQ section on the <a href="https://pharmaverse.org/">homepage</a>.</p>
-<p>We don’t want to be overly prescriptive with how this process will work as it might evolve over time, but we’ll be openly sharing any future package applications to pharmaverse via our Slack and we welcome your input to help make the call on which to accept/decline. Any individual from our community could express support via a thumbs up on the GitHub issue or add a comment with any concerns. If the requestor is unable to resolve any concerns, then ultimately any contentious applications will be raised to the pharmaverse council to adjudicate. The final decision and rationale will then always be documented on the issue.</p>
+<p>The purpose of this blog is to maintain an ongoing list of publicly available data packages, data in packages or data sources that align to CDISC standards. My hope is that this could be a resource for:</p>
+<ul>
+<li>those intrepid individuals looking to showcase new documentation, functions, packages and other tools</li>
+<li>those enterprising individuals wanting to learn more about CDISC standards and exploring open-source tools.</li>
+</ul>
+<p>The data presented below is just a start and is shown in order of how I found them. Feel free to get in touch with me for additions or clarifications. You can find me on pharmaverse slack by joining <a href="https://pharmaverse.slack.com/">here</a>. In fact, I encourage, nay implore you, to get in touch as this can’t be all the data that we have available to us!</p>
+<section id="pharmaversesdtm-sdtm-test-data-for-the-pharmaverse-family-of-packages" class="level2">
+<h2 class="anchored" data-anchor-id="pharmaversesdtm-sdtm-test-data-for-the-pharmaverse-family-of-packages">pharmaversesdtm: SDTM Test Data for the Pharmaverse Family of Packages</h2>
+<p>A set of Study Data Tabulation Model (SDTM) datasets from the Clinical Data Interchange Standards Consortium (CDISC) pilot project used for testing and developing Analysis Data Model (ADaM) datasets inside the pharmaverse family of packages. A CDISC Pilot was conducted somewhere between 2008 and 2010. This is that Pilot data but slowly brought up to current CDISC standards. There are also new datasets in the same style (same <code>STUDYID</code>, <code>USUBJID</code>s, etc.) added by the <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> and the <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> extension package teams that provide test data for new domains or specific TAs (ophthalmology, vaccines, etc.).</p>
+<p>Most common SDTM datasets can be found as well as some specific disease area SDTMs that are not available in the CDISC pilot datasets.</p>
+<p>Available on <a href="https://cloud.r-project.org/web/packages/pharmaversesdtm/index.html">CRAN</a>. This package is actively maintained on <a href="https://github.com/pharmaverse/pharmaversesdtm">GitHub</a></p>
+</section>
+<section id="pharmaverseadam-adam-test-data-for-the-pharmaverse-family-of-packages" class="level2">
+<h2 class="anchored" data-anchor-id="pharmaverseadam-adam-test-data-for-the-pharmaverse-family-of-packages">pharmaverseadam: ADaM Test Data for the Pharmaverse Family of Packages</h2>
+<p>A set of Analysis Data Model (ADaM) datasets constructed using the Study Data Tabulation Model (SDTM) datasets contained in the <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Test Data for the Pharmaverse Family of Packages • pharmaversesdtm</template> <a href="https://pharmaverse.github.io/pharmaversesdtm/" class="r-link-pkg" target="_blank">{pharmaversesdtm}</a> </bslib-tooltip> package and the template scripts from the <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> family of packages.</p>
+<p>Available on <a href="https://cloud.r-project.org/web/packages/pharmaverseadam/index.html">CRAN</a>. This package is actively maintained on <a href="https://github.com/pharmaverse/pharmaversesdtm">GitHub</a></p>
+</section>
+<section id="admiral-adam-in-r-asset-library" class="level2">
+<h2 class="anchored" data-anchor-id="admiral-adam-in-r-asset-library">admiral: ADaM in R Asset Library</h2>
+<p>A toolbox for programming Clinical Data Interchange Standards Consortium (CDISC) compliant Analysis Data Model (ADaM) datasets in R. ADaM datasets are a mandatory part of any New Drug or Biologics License Application submitted to the United States Food and Drug Administration (FDA). Analysis derivations are implemented in accordance with the “Analysis Data Model Implementation Guide.</p>
+<p>Limited datasets like <code>ADSL</code>, <code>ADLB</code> are provided in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>, because the template scripts available in this package are used to create the ADaMs in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM Test Data for the Pharmaverse Family of Packages • pharmaverseadam</template> <a href="https://pharmaverse.github.io/pharmaverseadam/" class="r-link-pkg" target="_blank">{pharmaverseadam}</a> </bslib-tooltip>.</p>
+<p>Available on <a href="https://cran.r-project.org/web/packages/admiral/index.html">CRAN</a>. This package is actively maintained on <a href="https://github.com/pharmaverse/admiral">GitHub</a>.</p>
+</section>
+<section id="random.cdisc.data-create-random-adam-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="random.cdisc.data-create-random-adam-datasets">random.cdisc.data: Create Random ADaM Datasets</h2>
+<p>A set of functions to create <em>random</em> Analysis Data Model (ADaM) datasets and cached datasets. You can find a list of the possible random CDISC datasets generated <a href="https://insightsengineering.github.io/random.cdisc.data/main/index.html">here</a>. ADaM dataset specifications are described by the Clinical Data Interchange Standards Consortium (CDISC) Analysis Data Model Team. These datasets are used to power the <a href="https://insightsengineering.github.io/tlg-catalog/stable/">TLG Catalog</a>, though the NEST team is actively substituting them for <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM Test Data for the Pharmaverse Family of Packages • pharmaverseadam</template> <a href="https://pharmaverse.github.io/pharmaverseadam/" class="r-link-pkg" target="_blank">{pharmaverseadam}</a> </bslib-tooltip> datasets instead - see <a href="https://pharmaverse.github.io/blog/posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html">a recent blog post</a> about this very effort!</p>
+<p>Available on <a href="https://cran.r-project.org/web/packages/random.cdisc.data/index.html">CRAN</a>. The package is actively maintained on <a href="https://github.com/insightsengineering/random.cdisc.data">GitHub</a> by the NEST team.</p>
+</section>
+<section id="safetydata-clinical-trial-data" class="level2">
+<h2 class="anchored" data-anchor-id="safetydata-clinical-trial-data">safetyData: Clinical Trial Data</h2>
+<p>The package re-formats PHUSE’s sample ADaM and SDTM datasets as an R package following R data best practices.</p>
+<p>PHUSE released the data under the permissive MIT license, so reuse with attribution is encouraged. The data are especially useful for prototyping new tables, listings and figures and for writing automated tests.</p>
+<p>Basic documentation for each data file is provided in help files (e.g.&nbsp;?adam_adae). Full data specifications in the form of define.xml files can also be found at the links above (pdf for ADaM and pdf for SDTM).</p>
+<p>Available on <a href="https://cran.r-project.org/web/packages/random.cdisc.data/index.html">CRAN</a>. The package is available on <a href="https://github.com/SafetyGraphics/safetyData">GitHub</a>.</p>
+</section>
+<section id="nest-accelerating-clinical-reporting" class="level2">
+<h2 class="anchored" data-anchor-id="nest-accelerating-clinical-reporting">NEST: Accelerating Clinical Reporting</h2>
+<p><a href="https://insightsengineering.github.io/nest/">NEST</a> is a collection of open-sourced R packages, which enables faster and more efficient insights generation under clinical research settings, for both exploratory and regulatory purposes.</p>
+<p>They have a wealth of data generated for documentation, demonstrations and testing. You can find all the datasets and what packages they live in <a href="https://insightsengineering.r-universe.dev/datasets">here</a>.</p>
+</section>
+<section id="collect-all-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="collect-all-the-data">Collect all the data!</h2>
+<p>As you can see the list is short! Let me know if you have sources (big and small) and we can add to this list.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="hands.PNG" class="img-fluid figure-img"></p>
-<figcaption>pharmaverse belongs to us all!</figcaption>
+<p><img src="data.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" width="220"></p>
 </figure>
 </div>
-<p>Moving forwards, instead of working groups we will maintain some <a href="https://pharmaverse.org/contribute/wg/">sub-communities</a> for particular connected networks such as our package maintainers, or those teams powering pharmaverse-specifics such as our blog and website. Additionally, for any wider open source industry challenges we would recommend any would-be contributors towards <a href="https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26804419/Data+Visualisation+Open+Source+Technology">PHUSE DVOST</a>, given our strong and continued partnership with PHUSE.</p>
-<p>Note that the above does not impact the role of the pharmaverse council - all our accountabilities are still explained <a href="https://pharmaverse.org/contribute/council/">here</a>. Now only we delegate the responsibility for “curation” of pharmaverse packages to our entire community.</p>
-<p>On behalf of the pharmaverse council</p>
 <!--------------- appendices go here ----------------->
+</section>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -226,20 +282,20 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2025-02-17 14:47:19.036974</p>
+<p>2025-02-17 14:45:40.112223</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-07-24_working__groups_.../working__groups__updates.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{council2024,
-  author = {council, pharmaverse},
-  title = {Working {Groups} {Updates}},
-  date = {2024-07-24},
-  url = {https://pharmaverse.github.io/blog/posts/2024-07-24_working__groups_.../working__groups__updates.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_data__packages/data__packages.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2025,
+  author = {Straub, Ben},
+  title = {Collecting All the Data!},
+  date = {2025-02-17},
+  url = {https://pharmaverse.github.io/blog/posts/2025-02-17_data__packages/data__packages.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-council2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-council, pharmaverse. 2024. <span>“Working Groups Updates.”</span> July
-24, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-07-24_working__groups_.../working__groups__updates.html">https://pharmaverse.github.io/blog/posts/2024-07-24_working__groups_.../working__groups__updates.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2025" class="csl-entry quarto-appendix-citeas" role="listitem">
+Straub, Ben. 2025. <span>“Collecting All the Data!”</span> February 17,
+2025. <a href="https://pharmaverse.github.io/blog/posts/2025-02-17_data__packages/data__packages.html">https://pharmaverse.github.io/blog/posts/2025-02-17_data__packages/data__packages.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
