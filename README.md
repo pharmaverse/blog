@@ -112,7 +112,9 @@ install.packages(c("jsonlite",
                    "rtables",
                    "teal",
                    "riskmetric",
-                   "tidyCDISC"))
+                   "tidyCDISC",
+                   "mirai",
+                   "admiralmetabolic"))
 ```
 ## How to Use the `blog` Docker Image for Local Development
 
