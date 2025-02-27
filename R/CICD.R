@@ -33,7 +33,7 @@ all_typos <- bind_rows(spell_check_results)
 
 # Print results
 if (nrow(all_typos) > 0) {
-  print(all_typos %>% select(file, word, line))
+  print(all_typos %>% select(file, word, found))
 } else {
   message("No spelling errors found!")
 }
