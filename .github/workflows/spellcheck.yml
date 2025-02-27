@@ -9,6 +9,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Remove links from .qmd files
+        run: |
+          find . -name "*.qmd" -type f -exec sed -i -E 's#https?://[^\s)"]+##g' {} +
+        shell: bash
+
       - name: Install packages
         run: |
           if (!require("roxygen2")) install.packages("roxygen2")

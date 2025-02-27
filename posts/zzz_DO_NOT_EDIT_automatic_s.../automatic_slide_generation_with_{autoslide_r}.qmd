@@ -1,0 +1,43 @@
+---
+title: "Automatic slide generation with {autoslideR}"
+author:
+  - name: Stefan P. Thoma
+description: ""
+# Note that the date below will be auto-updated when the post is merged.
+date: "2025-03-01"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [TLG]
+# Feel free to change the image
+image: "pharmaverse.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_automatic_s..."
+library(link)
+link::auto()
+```
+
+<!--------------- post begins here ----------------->
+
+Please use the {link} package to automatically link packages and functions.
+To link to a package simply wrap it in curly braces: {dplyr}.
+Link a function from a package like: dplyr::filter().
+For more information check out {link}.
+Let's see if the following [link](https://www.reddit.com/r/comics/comments/1izelxn/owning_the_lib_oc/#lightbox) is still flagged as a spelling error,
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
