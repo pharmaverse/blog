@@ -41,7 +41,7 @@ spell_check_results <- lapply(qmd_files, function(file) {
   words <- spelling::spell_check_text(cleaned_text, ignore = read_lines("inst/WORDLIST.txt"))
 
   if (nrow(words) > 0) {
-    words$file <- file  # Add filename column
+    words$file <- file # Add filename column
   }
 
   return(words)
