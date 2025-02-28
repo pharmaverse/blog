@@ -6,19 +6,38 @@ library(dplyr)
 
 #-------------------------- Spell-check Without Modifying Files --------------------------
 
-# Function to read and clean text (remove URLs in-memory)
-clean_text_for_spellcheck <- function(file) {
+# Function to extract non-code content while keeping comments from code blocks
+extract_text_for_spellcheck <- function(file) {
   text <- read_lines(file)
-  text_clean <- str_replace_all(text, "https?://[^\\s)\"']+", "")  # Remove URLs
-  return(text_clean)
+
+  inside_code_block <- FALSE
+  extracted_lines <- c()
+
+  for (line in text) {
+    # Detect start of a fenced code block (```{r}, ```python, etc.)
+    if (str_detect(line, "^```")) {
+      inside_code_block <- !inside_code_block
+    }
+
+    # Keep lines that are NOT inside a code block OR are comments in code blocks
+    if (!inside_code_block || str_detect(line, "^\\s*#")) {
+      # Remove URLs from retained text
+      clean_line <- str_replace_all(line, "https?://[^\\s)\"']+", "")
+      extracted_lines <- c(extracted_lines, clean_line)
+    }
+  }
+
+  return(extracted_lines)
 }
+
+#-------------------------- Spell-check Without Modifying Files --------------------------
 
 # Get all .qmd files
 qmd_files <- list.files(pattern = ".*\\.qmd$", recursive = TRUE)
 
-# Run spell check per file and store results
+# Run spell check per file while ignoring code chunks
 spell_check_results <- lapply(qmd_files, function(file) {
-  cleaned_text <- clean_text_for_spellcheck(file)
+  cleaned_text <- extract_text_for_spellcheck(file)
   words <- spelling::spell_check_text(cleaned_text, ignore = read_lines("inst/WORDLIST.txt"))
 
   if (nrow(words) > 0) {
@@ -33,7 +52,7 @@ all_typos <- bind_rows(spell_check_results)
 
 # Print results
 if (nrow(all_typos) > 0) {
-  print(all_typos %>% select(file, word, found))
+  print(all_typos %>% select(file, word, line))
 } else {
   message("No spelling errors found!")
 }

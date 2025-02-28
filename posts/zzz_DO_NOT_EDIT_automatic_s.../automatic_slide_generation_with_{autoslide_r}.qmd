@@ -29,6 +29,292 @@ Link a function from a package like: dplyr::filter().
 For more information check out {link}.
 Let's see if the following [link](https://www.reddit.com/r/comics/comments/1izelxn/owning_the_lib_oc/#lightbox) is still flagged as a spelling error,
 
+We are thrilled to announce that the autoslider.core package is now a part of Pharmaverse! This integration enhances the workflows for creating study-specific outputs by providing a structured framework that supports a wide array of outputs with easy customization options. In this blog post, we will guide you through the autoslider.core package and demonstrate how it can be used to streamline your data analysis and output generation.
+
+Requirements
+To follow along with this tutorial, you need to have the autoslider.core package installed. You will also need data available in the correct format, which should be stored in a named list where the names correspond to ADaM datasets.
+
+```{r}
+library(autoslider.core)
+library(dplyr)
+```
+
+```{r, eval = TRUE, include = FALSE}
+
+# hidden setup
+# Install and load the necessary packages
+library(yaml)
+
+# Create the YAML content
+yaml_content <- '
+ITT:
+  title: Intent to Treat Population
+  condition: ITTFL == "Y"
+  target: adsl
+  type: slref
+SAS:
+  title: Secondary Analysis Set
+  condition: SASFL == "Y"
+  target: adsl
+  type: slref
+SE:
+  title: Safety Evaluable Population
+  condition: SAFFL== "Y"
+  target: adsl
+  type: slref
+SER:
+  title: Serious Adverse Events
+  condition: AESER == "Y"
+  target: adae
+  type: anl
+LBCRP:
+  title: CRP Values
+  condition: PARAMCD == "CRP"
+  target: adlb
+  type: slref
+LBNOBAS:
+  title: Only Visits After Baseline
+  condition: ABLFL != "Y" & !(AVISIT %in% c("SCREENING", "BASELINE"))
+  target: adlb
+  type: slref
+'
+
+# Create a temporary YAML file
+filters <- tempfile(fileext = ".yaml")
+
+# Write the YAML content to the temporary file
+write(yaml_content, file = filters)
+
+# Create the specs entry
+specs_entry <- '
+- program: t_ds_slide
+  titles: Patient Disposition ({filter_titles("adsl")})
+  footnotes: "t_ds footnotes"
+  paper: L6
+  suffix: ITT
+- program: t_dm_slide
+  titles: Patient Demographics and Baseline Characteristics
+  footnotes: "t_dm_slide footnote"
+  paper: L6
+  suffix: ITT
+  args:
+    arm: "TRT01A"
+    vars: ["SEX", "AGE", "RACE", "ETHNIC", "COUNTRY"]
+- program: lbt06
+  titles: Patient Disposition ({filter_titles("adsl")})
+  footnotes: "t_ds footnotes"
+  paper: L6
+  suffix: ITT_LBCRP_LBNOBAS
+'
+
+# Create a temporary specs entry file
+spec_file <- tempfile(fileext = ".yaml")
+
+# Write the specs entry to the temporary file
+write(specs_entry, file = spec_file)
+```
+
+## Workflow
+To get started, the folder structure for your project could look something like this:
+
+```
+Copy code
+├── programs
+│   ├── run_script.R
+│   ├── R
+│   │   ├── helping_functions.R
+│   │   ├── output_functions.R
+├── outputs
+├── specs.yml
+├── filters.yml
+```
+
+The autoslider.core workflow would involve implementing the key aspects in the run_script.R file. This script guides through the workflow without needing the files in R/. However, custom output-creating functions can be stored in the R/ folder.
+
+Specifications (specs.yml)
+This file contains the specifications of all outputs you want to create. Each output includes details such as the program name, footnotes & titles, paper orientation and font size, suffix, and additional arguments.
+
+Example specs.yml content:
+
+```
+
+- program: t_ds_slide
+  titles: Patient Disposition ({filter_titles("adsl")})
+  footnotes: 't_ds footnotes'
+  paper: L6
+  suffix: ITT
+- program: t_dm_slide
+  titles: Patient Demographics and Baseline Characteristics
+  footnotes: 't_dm_slide footnote'
+  paper: L6
+  suffix: ITT
+  args:
+    arm: "TRT01A"
+    vars: ["SEX", "AGE", "RACE", "ETHNIC", "COUNTRY"]
+```
+
+Filters (filters.yml)
+In the filters.yml file, the names of the filters used across outputs are specified. Each filter includes a name, title, filtering condition, target dataset, and type.
+
+Example filters.yml content:
+
+```
+ITT:
+  title: Intent to Treat Population
+  condition: ITTFL =='Y'
+  target: adsl
+  type: slref
+SAS:
+  title: Secondary Analysis Set
+  condition: SASFL == 'Y'
+  target: adsl
+  type: slref
+SE:
+  title: Safety Evaluable Population
+  condition: SAFFL=='Y'
+  target: adsl
+  type: slref
+SER:
+  title: Serious Adverse Events
+  condition: AESER == 'Y'
+  target: adae
+  type: anl
+```
+
+## Functions
+An overview of all autoslider.core functions can be found [here](LINK!). 
+Custom functions can be created if the built-in functions do not meet your needs.
+
+
+
+## Backend Machinery
+A typical workflow involves defining paths to the YAML files, loading the filters, reading the data, creating the outputs based on the specifications, and decorating the outputs with titles and footnotes.
+
+Example code for setting up the workflow:
+
+```{r, eval = FALSE}
+# define path to the yml files
+spec_file <- "spec.yml"
+filters <- "filters.yml"
+```
+
+```{r}
+library("dplyr")
+# load all filters
+filters::load_filters(filters, overwrite = TRUE)
+# read data
+data <- list(
+  "adsl" = eg_adsl %>%
+    mutate(
+      FASFL = SAFFL, # add FASFL for illustrative purpose for t_pop_slide
+      # DISTRTFL is needed for t_ds_slide but is missing in example data
+      DISTRTFL = sample(c("Y", "N"), size = length(TRT01A), replace = TRUE, prob = c(.1, .9))
+    ) %>%
+    preprocess_t_ds(), # this preproccessing is required by one of the autoslider.core functions
+  "adae" = eg_adae,
+  "adtte" = eg_adtte,
+  "adrs" = eg_adrs,
+  "adlb" = eg_adlb
+)
+
+# create outputs based on the specs and the functions
+outputs <- spec_file %>%
+  read_spec() %>%
+  filter_spec(., program %in% c("t_ds_slide", "t_dm_slide")) %>%
+  generate_outputs(datasets = data) %>%
+  decorate_outputs(version_label = NULL)
+```
+  
+## Example of saving outputs to a slide:
+
+```{r}
+# Output to slides with template and color theme
+outputs %>%
+  generate_slides(
+    outfile = tempfile(fileext = ".pptx"),
+    template = file.path(system.file(package = "autoslider.core"), "/theme/basic.pptx"),
+    table_format = autoslider_format
+  )
+
+```
+  
+  
+  
+## Writing Custom Functions
+For study-specific outputs not covered by autoslider.core functions, you can create custom functions. Custom functions need to return either a ggplot2, rtables, or rlistings object.
+
+Example custom function:
+
+```{r}
+lbt06 <- function(datasets) {
+  adsl <- datasets$adsl %>% tern::df_explicit_na()
+  adlb <- datasets$adlb %>% tern::df_explicit_na()
+
+  adlb_f <- adlb %>%
+    dplyr::filter(ABLFL != "Y") %>%
+    dplyr::filter(!(AVISIT %in% c("SCREENING", "BASELINE"))) %>%
+    dplyr::mutate(AVISIT = droplevels(AVISIT)) %>%
+    formatters::var_relabel(AVISIT = "Visit")
+
+  adlb_f_crp <- adlb_f %>% dplyr::filter(PARAMCD == "CRP")
+
+  split_fun <- rtables::drop_split_levels
+
+  lyt <- rtables::basic_table(show_colcounts = TRUE) %>%
+    rtables::split_cols_by("ARM") %>%
+    rtables::split_rows_by("AVISIT", split_fun = split_fun, label_pos = "topleft", split_label = formatters::obj_label(adlb_f_crp$AVISIT)) %>%
+    tern::count_abnormal_by_baseline("ANRIND", abnormal = c(Low = "LOW", High = "HIGH"), .indent_mods = 4L) %>%
+    tern::append_varlabels(adlb_f_crp, "ANRIND", indent = 1L) %>%
+    rtables::append_topleft("    Baseline Status")
+
+  result <- rtables::build_table(lyt = lyt, df = adlb_f_crp, alt_counts_df = adsl) %>%
+    rtables::trim_rows()
+
+  result
+}
+```
+
+Testing the custom function:
+
+```{r}
+lbt06(data)
+```
+
+
+To use the custom function within the autoslideR workflow, ensure it is available in the global environment:
+
+```{r, eval = FALSE}
+source("programs/output_functions.R")
+```
+With the correct specs.yml and filters.yml, integrate the custom function into the general workflow:
+
+```{r, eval = FALSE}
+filters <- "filters.yml"
+spec_file <- "specs.yml"
+filters::load_filters(filters, overwrite = TRUE)
+outputs <- spec_file %>%
+  read_spec() %>%
+  generate_outputs(data) %>%
+  decorate_outputs()
+
+outputs$lbt06_ITT_LBCRP_LBNOBAS
+```
+```{r, hide = TRUE}
+outputs <- spec_file %>%
+  read_spec() %>%
+  generate_outputs(data) %>%
+  decorate_outputs()
+outputs$lbt06_ITT_LBCRP_LBNOBAS
+```
+
+
+Generate the slides:
+```{r}
+filepath <- tempfile(fileext = ".pptx")
+generate_slides(outputs, outfile = filepath)
+```
+
+We hope this guide helps you get started with autoslider.core in Pharmaverse. Happy coding!
 
 <!--------------- appendices go here ----------------->
 
