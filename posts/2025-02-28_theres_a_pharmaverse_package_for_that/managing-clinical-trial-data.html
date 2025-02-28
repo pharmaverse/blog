@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Gift Kenneth">
+<meta name="author" content="Sunil Gupta">
+<meta name="author" content="APPSILON">
+<meta name="dcterms.date" content="2025-02-28">
+<meta name="description" content="Looking for R packages to manage clinical trial data? Pharmaverse has tools for every stage from data collection to submission!">
+
+<title>Working with Clinical Trial Data? There’s a Pharmaverse Package for That – pharmaverse blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../media/pharmaverseblog.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-761f0745fd4da7e2b42ba0867cbbfdb8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6ZDR80SCKG"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-6ZDR80SCKG', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: #eeeeee;
+      }
+</style>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Working with Clinical Trial Data? There’s a Pharmaverse Package for That – pharmaverse blog">
+<meta property="og:description" content="Looking for R packages to manage clinical trial data? Pharmaverse has tools for every stage from data collection to submission!">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/pharmaverse-post.png">
+<meta property="og:site_name" content="pharmaverse blog">
+<meta property="og:image:height" content="1081">
+<meta property="og:image:width" content="1921">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">pharmaverse blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/pharmaverse/blog"> <i class="bi bi-github" role="img" aria-label="github">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../session_info.html"> 
+<span class="menu-text">Session Info</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Working with Clinical Trial Data? There’s a Pharmaverse Package for That</h1>
+                  <div>
+        <div class="description">
+          Looking for R packages to manage clinical trial data? Pharmaverse has tools for every stage from data collection to submission!
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Technical</div>
+                <div class="quarto-category">Community</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-contents">
+               <p>Gift Kenneth </p>
+               <p>Sunil Gupta </p>
+               <p>APPSILON </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">February 28, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#key-stages-of-clinical-reporting" id="toc-key-stages-of-clinical-reporting" class="nav-link active" data-scroll-target="#key-stages-of-clinical-reporting">Key Stages of Clinical Reporting</a></li>
+  <li><a href="#example-creating-adsl" id="toc-example-creating-adsl" class="nav-link" data-scroll-target="#example-creating-adsl"><strong>Example: Creating ADSL</strong></a></li>
+  <li><a href="#who-are-the-key-players-in-pharmaverse-and-do-you-need-to-use-all-packages" id="toc-who-are-the-key-players-in-pharmaverse-and-do-you-need-to-use-all-packages" class="nav-link" data-scroll-target="#who-are-the-key-players-in-pharmaverse-and-do-you-need-to-use-all-packages"><strong>Who Are the Key Players in Pharmaverse, and Do You Need to Use All Packages?</strong></a>
+  <ul class="collapse">
+  <li><a href="#key-players-in-pharmaverse" id="toc-key-players-in-pharmaverse" class="nav-link" data-scroll-target="#key-players-in-pharmaverse"><strong>Key Players in pharmaverse</strong></a></li>
+  <li><a href="#do-you-need-to-use-all-pharmaverse-packages" id="toc-do-you-need-to-use-all-pharmaverse-packages" class="nav-link" data-scroll-target="#do-you-need-to-use-all-pharmaverse-packages"><strong>Do You Need to Use All Pharmaverse Packages?</strong></a></li>
+  </ul></li>
+  <li><a href="#how-pharmaverse-differs-from-tidyverse-how-to-learn-it-effectively" id="toc-how-pharmaverse-differs-from-tidyverse-how-to-learn-it-effectively" class="nav-link" data-scroll-target="#how-pharmaverse-differs-from-tidyverse-how-to-learn-it-effectively"><strong>How Pharmaverse Differs from Tidyverse &amp; How to Learn It Effectively</strong></a></li>
+  <li><a href="#getting-started-with-the-pharmaverse" id="toc-getting-started-with-the-pharmaverse" class="nav-link" data-scroll-target="#getting-started-with-the-pharmaverse"><strong>Getting Started with the Pharmaverse</strong></a>
+  <ul class="collapse">
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources"><strong>Resources</strong></a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>Working with clinical trial data is no small task. It needs to be precise, compliant, and efficient. Traditionally, this meant using proprietary tools and working within siloed systems, which often made the process more complicated and expensive than necessary. But we think there’s a better way.</p>
+<p>The <a href="https://pharmaverse.org/"><strong>pharmaverse</strong></a> is an open-source ecosystem of R packages built specifically for clinical trials. These tools integrate seamlessly with the <a href="https://www.tidyverse.org/">Tidyverse</a>, making data management more flexible, efficient, and transparent.</p>
+<p>Whether you’re collecting, validating, analyzing, or preparing data for regulatory submission, there’s a pharmaverse package designed to support your workflow and help you work smarter.</p>
+<p>This post covers:</p>
+<ul>
+<li><p>Key stages of clinical trials and the R packages that support them</p></li>
+<li><p>Creating ADSL datasets and essential programming steps</p></li>
+<li><p>Key players in pharmaverse and whether you need all packages</p></li>
+<li><p>How pharmaverse compares to Tidyverse and how to learn it</p></li>
+</ul>
+<p>By the end, you’ll have a clear understanding of how pharmaverse supports clinical trial operations and how to apply these tools in your work.</p>
+<section id="key-stages-of-clinical-reporting" class="level2">
+<h2 class="anchored" data-anchor-id="key-stages-of-clinical-reporting">Key Stages of Clinical Reporting</h2>
+<p>Managing clinical trial data involves multiple stages, each with its own challenges. <strong>Pharmaverse</strong> provides a range of R packages that support different parts of the process, sometimes even offering multiple options for the same task. This flexibility allows organizations to choose the best tools for their specific needs rather than sticking to a one-size-fits-all approach.</p>
+<p>A <strong>metadata-driven approach</strong> helps ensure that clinical trial data is consistently structured and aligned with regulatory standards. The typical process follows this sequence:</p>
+<p><strong>Metadata</strong> ➝ <strong>OAK</strong> ➝ <strong>Admiral</strong> ➝ <strong>Define.xml</strong> ➝ <strong>TLGs</strong> ➝ <strong>Submissions</strong></p>
+<p>Some examples of <strong>pharmaverse</strong> packages that support clinical reporting include:</p>
+<ul>
+<li>{diffdf} – Tracking differences in datasets.</li>
+<li>{metatools} – Metadata management and transformation.</li>
+<li>{sdtm.oak} – The primary <strong>pharmaverse</strong> package for SDTM dataset creation.</li>
+<li>{datacutr} - Performing data cuts.</li>
+<li>{admiral} – Standardized data derivations.</li>
+<li>{metacore} – Metadata-driven structures.</li>
+<li>The <strong>pharmaverse</strong> provides multiple table-making packages, such as {chevron} (which builds on {rtables}), {Tplyr}, {pharmaRTF}, {gtsummary}, {cards}, {tfrmt}, and {tidytlg}. More tools are listed on the <a href="https://pharmaverse.org/e2eclinical/tlg/">TLGs page</a>.</li>
+<li>{xportr} – CDISC-compliant dataset export.</li>
+<li>{pkglite} – Package management and tracking.</li>
+<li>{metacore} and {metatools} – For standardized metadata structures and validation.</li>
+<li>{logrx} - For logging R scripts.</li>
+</ul>
+<p>Pharmaverse packages are built on top of <strong><a href="https://www.tidyverse.org/">Tidyverse</a></strong> tools and integrate seamlessly with packages like {dplyr} for data manipulation and {ggplot2} for visualization.</p>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> This post highlights some key <strong>pharmaverse</strong> packages relevant to clinical reporting. For a full and up-to-date list, visit the <a href="https://pharmaverse.org/">Pharmaverse website</a>. If there’s a package we missed that should be included, let us know, and we’d be happy to update this post.</p>
+</blockquote>
+<p>By using these tools, organizations can optimize their data pipeline, ensuring clinical data is well-structured and ready for regulatory submission with ease.</p>
+</section>
+<section id="example-creating-adsl" class="level2">
+<h2 class="anchored" data-anchor-id="example-creating-adsl"><strong>Example: Creating ADSL</strong></h2>
+<p>Building an ADSL dataset involves several key steps, from reading in data to deriving treatment variables and population flags. While these steps apply regardless of the tools used, <strong>pharmaverse packages like {admiral} simplify the process</strong> with functions designed for CDISC-compliant datasets.</p>
+<p>This example is based on the <a href="https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html">ADSL template</a>, which provides a structured approach to creating an ADSL dataset.</p>
+<section id="step-1-read-in-data" class="level4">
+<h4 class="anchored" data-anchor-id="step-1-read-in-data"><strong>Step 1: Read in Data</strong></h4>
+<p>To begin, clinical trial datasets such as <strong>DM, EX, DS, AE, and LB</strong> are loaded. The {pharmaversesdtm} package provides sample CDISC SDTM datasets:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr, <span class="at">warn.conflicts =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pharmaversesdtm)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Load sample data</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"dm"</span>, <span class="at">package =</span> <span class="st">"pharmaversesdtm"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"ex"</span>, <span class="at">package =</span> <span class="st">"pharmaversesdtm"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"ds"</span>, <span class="at">package =</span> <span class="st">"pharmaversesdtm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ADSL is typically <strong>built from the DM dataset</strong>, removing unnecessary columns and adding treatment variables in one step:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> dm <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>DOMAIN) <span class="sc">%&gt;%</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">TRT01P =</span> ARM,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">TRT01A =</span> ACTARM</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-2-derive-treatment-variables" class="level4">
+<h4 class="anchored" data-anchor-id="step-2-derive-treatment-variables"><strong>Step 2: Derive Treatment Variables</strong></h4>
+<p>Using {admiral}, we extract and standardize treatment dates from the EX dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ex_ext <span class="ot">&lt;-</span> ex <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(USUBJID)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_dt</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">dtc =</span> EXSTDTC,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_vars_prefix =</span> <span class="st">"EXST"</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_dt</span>(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">dtc =</span> EXENDTC,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_vars_prefix =</span> <span class="st">"EXEN"</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then merge these dates into ADSL:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> adsl <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataset_add =</span> ex_ext,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">filter_add =</span> (EXDOSE <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">|</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      (EXDOSE <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">str_detect</span>(EXTRT, <span class="st">"PLACEBO"</span>))) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(EXSTDT),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(<span class="at">TRTSDT =</span> EXSTDT),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">order =</span> <span class="fu">exprs</span>(EXSTDT, EXSEQ),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">"first"</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataset_add =</span> ex_ext,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">filter_add =</span> (EXDOSE <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">|</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      (EXDOSE <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">str_detect</span>(EXTRT, <span class="st">"PLACEBO"</span>))) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(EXENDT),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(<span class="at">TRTEDT =</span> EXENDT),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">order =</span> <span class="fu">exprs</span>(EXENDT, EXSEQ),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode =</span> <span class="st">"last"</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-3-derive-end-of-study-eos-status" class="level4">
+<h4 class="anchored" data-anchor-id="step-3-derive-end-of-study-eos-status"><strong>Step 3: Derive End of Study (EOS) Status</strong></h4>
+<p>The disposition dataset (DS) is used to determine when a patient exited the study:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ds_ext <span class="ot">&lt;-</span> ds <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(DSSTDTC)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_dt</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">dtc =</span> DSSTDTC,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_vars_prefix =</span> <span class="st">"DSST"</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> adsl <span class="sc">%&gt;%</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataset_add =</span> ds_ext,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(<span class="at">EOSDT =</span> DSSTDT),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">filter_add =</span> DSCAT <span class="sc">==</span> <span class="st">"DISPOSITION EVENT"</span> <span class="sc">&amp;</span> DSDECOD <span class="sc">!=</span> <span class="st">"SCREEN FAILURE"</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-4-assign-population-flags" class="level4">
+<h4 class="anchored" data-anchor-id="step-4-assign-population-flags"><strong>Step 4: Assign Population Flags</strong></h4>
+<p>For safety population (<code>SAFFL</code>), we check if the patient received a treatment dose:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> adsl <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_var_merged_exist_flag</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataset_add =</span> ex,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_var =</span> SAFFL,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">condition =</span> EXDOSE <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">|</span> <span class="fu">str_detect</span>(EXTRT, <span class="st">"PLACEBO"</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-5-generate-and-save-results" class="level4">
+<h4 class="anchored" data-anchor-id="step-5-generate-and-save-results"><strong>Step 5: Generate and Save Results</strong></h4>
+<p>Finally, we save the dataset CSV and can view some of its columns:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save to a CSV file</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(adsl, <span class="st">"adsl_output.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>adsl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">USUBJID</th>
+<th style="text-align: left;">TRT01P</th>
+<th style="text-align: left;">TRT01A</th>
+<th style="text-align: left;">TRTSDT</th>
+<th style="text-align: left;">TRTEDT</th>
+<th style="text-align: left;">SAFFL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">01-701-1015</td>
+<td style="text-align: left;">Placebo</td>
+<td style="text-align: left;">Placebo</td>
+<td style="text-align: left;">2014-01-02</td>
+<td style="text-align: left;">2014-07-02</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1023</td>
+<td style="text-align: left;">Placebo</td>
+<td style="text-align: left;">Placebo</td>
+<td style="text-align: left;">2012-08-05</td>
+<td style="text-align: left;">2012-09-01</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1028</td>
+<td style="text-align: left;">Xanomeline High Dose</td>
+<td style="text-align: left;">Xanomeline High Dose</td>
+<td style="text-align: left;">2013-07-19</td>
+<td style="text-align: left;">2014-01-14</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1033</td>
+<td style="text-align: left;">Xanomeline Low Dose</td>
+<td style="text-align: left;">Xanomeline Low Dose</td>
+<td style="text-align: left;">2014-03-18</td>
+<td style="text-align: left;">2014-03-31</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1034</td>
+<td style="text-align: left;">Xanomeline High Dose</td>
+<td style="text-align: left;">Xanomeline High Dose</td>
+<td style="text-align: left;">2014-07-01</td>
+<td style="text-align: left;">2014-12-30</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1047</td>
+<td style="text-align: left;">Placebo</td>
+<td style="text-align: left;">Placebo</td>
+<td style="text-align: left;">2013-02-12</td>
+<td style="text-align: left;">2013-03-09</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1057</td>
+<td style="text-align: left;">Screen Failure</td>
+<td style="text-align: left;">Screen Failure</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1097</td>
+<td style="text-align: left;">Xanomeline Low Dose</td>
+<td style="text-align: left;">Xanomeline Low Dose</td>
+<td style="text-align: left;">2014-01-01</td>
+<td style="text-align: left;">2014-07-09</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">01-701-1111</td>
+<td style="text-align: left;">Xanomeline Low Dose</td>
+<td style="text-align: left;">Xanomeline Low Dose</td>
+<td style="text-align: left;">2012-09-07</td>
+<td style="text-align: left;">2012-09-16</td>
+<td style="text-align: left;">Y</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">01-701-1115</td>
+<td style="text-align: left;">Xanomeline Low Dose</td>
+<td style="text-align: left;">Xanomeline Low Dose</td>
+<td style="text-align: left;">2012-11-30</td>
+<td style="text-align: left;">2013-01-23</td>
+<td style="text-align: left;">Y</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="more-details-on-adsl-creation" class="level4">
+<h4 class="anchored" data-anchor-id="more-details-on-adsl-creation"><strong>More Details on ADSL Creation</strong></h4>
+<p>This is just a <strong>high-level example</strong>; the full process includes deriving death variables, grouping populations, and applying labels. For a deeper dive, check out the <a href="https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html">ADSL Implementation Guide</a>.</p>
+</section>
+</section>
+<section id="who-are-the-key-players-in-pharmaverse-and-do-you-need-to-use-all-packages" class="level2">
+<h2 class="anchored" data-anchor-id="who-are-the-key-players-in-pharmaverse-and-do-you-need-to-use-all-packages"><strong>Who Are the Key Players in Pharmaverse, and Do You Need to Use All Packages?</strong></h2>
+<section id="key-players-in-pharmaverse" class="level3">
+<h3 class="anchored" data-anchor-id="key-players-in-pharmaverse"><strong>Key Players in pharmaverse</strong></h3>
+<ul>
+<li><strong>Pharmaverse Council and Community</strong> – A collaborative group of developers, industry experts, and contributors maintaining and expanding the ecosystem.</li>
+<li><strong>Open-Source Contributors</strong> – Individuals and organizations developing and refining <strong>pharmaverse</strong> packages.</li>
+<li><strong>Pharmaverse is part of <a href="https://phuse.global/">PHUSE</a></strong> – PHUSE plays an active role in supporting and advancing the <strong>pharmaverse</strong> initiative.</li>
+<li><strong>The pharmaverse community collaborates with organizations like the FDA, EMA, R Consortium, and CDISC</strong> to align with industry standards and best practices for clinical data reporting.</li>
+</ul>
+</section>
+<section id="do-you-need-to-use-all-pharmaverse-packages" class="level3">
+<h3 class="anchored" data-anchor-id="do-you-need-to-use-all-pharmaverse-packages"><strong>Do You Need to Use All Pharmaverse Packages?</strong></h3>
+<ul>
+<li><p>No, organizations can select only the packages that fit their needs.</p></li>
+<li><p>Many packages are modular and independent, allowing selective integration.</p></li>
+<li><p>Pharmaverse hosts multiple packages with similar aims, giving users the flexibility to choose what works best for them rather than prescribing a single approach.</p></li>
+<li><p>Pharmaverse complements <a href="https://www.tidyverse.org/">Tidyverse</a>, allowing organizations to continue using familiar R workflows.</p></li>
+</ul>
+</section>
+</section>
+<section id="how-pharmaverse-differs-from-tidyverse-how-to-learn-it-effectively" class="level2">
+<h2 class="anchored" data-anchor-id="how-pharmaverse-differs-from-tidyverse-how-to-learn-it-effectively"><strong>How Pharmaverse Differs from Tidyverse &amp; How to Learn It Effectively</strong></h2>
+<section id="differences-between-pharmaverse-and-tidyverse" class="level4">
+<h4 class="anchored" data-anchor-id="differences-between-pharmaverse-and-tidyverse"><strong>Differences Between pharmaverse and Tidyverse</strong></h4>
+<ul>
+<li><p>Tidyverse provides general-purpose data science tools such as data wrangling and visualization…</p></li>
+<li><p>… Whereas pharmaverse integrates Tidyverse functions but adds compliance, validation, and reporting features for pharma-specific clinical data structuring, reporting and regulatory submissions.</p></li>
+</ul>
+</section>
+</section>
+<section id="getting-started-with-the-pharmaverse" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started-with-the-pharmaverse"><strong>Getting Started with the Pharmaverse</strong></h2>
+<p>Pharmaverse provides an open-source ecosystem for clinical reporting, extending Tidyverse with validation, compliance, and regulatory submission capabilities. By following a structured approach from raw data to ADaMs, organizations can enhance efficiency while maintaining data integrity.</p>
+<ul>
+<li><p>You can <a href="https://pharmaverse.github.io/examples/">start with Pharmaverse Examples</a> – A curated set of documentation and tutorials.</p></li>
+<li><p>Attend Pharma Industry Webinars and Conferences – Stay updated on new developments through events like <a href="https://phuse.global/Events_Calendar">PHUSE events and webinars</a>, <a href="https://rinpharma.com/">R/Pharma conferences and events</a>, <a href="https://www.cdisc.org/events">CDISC events</a>, <a href="https://www.youtube.com/playlist?list=PLexAKolMzPcpzPAXNU6KlQ_UpIFsuEPCx">Shiny Gatherings x Pharmaverse webinars</a>, etc.</p></li>
+<li><p>Engage with the Open-Source Community – Contribute to package improvements or discussions. <a href="join the pharmaverse](https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A)">You can join the pharmaverse community to get started.</a>.</p></li>
+<li><p>Explore packages on the <a href="https://pharmaverse.org">pharmaverse website</a>.</p></li>
+<li><p>Try implementing an ADSL dataset using following the <a href="https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html">ADSL Implementation Guide</a>.</p></li>
+<li><p>Refer to <a href="https://r-guru.com/pharma">this grid for guidance on using Tidyverse or pharmaverse</a> to complete tasks in the submission process.&nbsp;</p></li>
+</ul>
+<section id="resources" class="level3">
+<h3 class="anchored" data-anchor-id="resources"><strong>Resources</strong></h3>
+<ul>
+<li><p>This blog post was based on this presentation by Sunil Gupta: <a href="https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/SDE/US/Mississauga/PRE_Mississauga05.pdf">R and pharmaverse: The New Frontier for Today’s Statistical Programmers</a></p></li>
+<li><p><a href="https://www.lexjansen.com/phuse-us/2024/pd/PAP_PD05.pdf">R-Guru Resource Hub for Rapid R Learning</a></p></li>
+<li><p><a href="https://pharmaverse.github.io/blog/">Explore more posts in the pharmaverse blog</a></p></li>
+<li><p><a href="https://forms.office.com/pages/responsepage.aspx?id=xeEJLj1cykuXxFc6VpX1UAPF0grflaRJu8z6VC7-hy5UMTE0M0lXR1JON1Q0MkRIRlA1TlZSNDhUSC4u&amp;route=shorturl">Subscribe to the pharmaverse newsletter</a></p></li>
+</ul>
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{kenneth2025,
+  author = {Kenneth, Gift and Gupta, Sunil and , APPSILON},
+  title = {Working with {Clinical} {Trial} {Data?} {There’s} a
+    {Pharmaverse} {Package} for {That}},
+  date = {2025-02-28},
+  url = {https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/managing-clinical-trial-data.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-kenneth2025" class="csl-entry quarto-appendix-citeas" role="listitem">
+Kenneth, Gift, Sunil Gupta, and APPSILON. 2025. <span>“Working with
+Clinical Trial Data? There’s a Pharmaverse Package for That.”</span>
+February 28, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/managing-clinical-trial-data.html">https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/managing-clinical-trial-data.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/pharmaverse\.github\.io\/blog");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
