@@ -4,8 +4,8 @@ author:
   - name: Gift Kenneth
   - name: Sunil Gupta
   - name: APPSILON
-description: "Looking for R packages to manage clinical trial data? Pharmaverse has tools for every stage from data collection to submission."
-date: "2025-02-17"
+description: "Looking for R packages to manage clinical trial data? Pharmaverse has tools for every stage from data collection to submission!"
+date: "2025-02-28"
 # please do not use any non-default categories.
 # You can find the default categories in the repository README.md
 categories: [Technical, Community]
@@ -16,8 +16,10 @@ image: "pharmaverse-post.png"
 <!--------------- typical setup ----------------->
 
 ```{r setup, include=FALSE}
-long_slug <- "2025-02-17_managing_clinical_trial_data..."
+long_slug <- "2025-02-28_managing_clinical_trial_data..."
 # renv::use(lockfile = "renv.lock")
+
+library(admiraldev)
 ```
 
 <!--------------- post begins here ----------------->
@@ -50,20 +52,19 @@ A **metadata-driven approach** helps ensure that clinical trial data is consiste
 
 Some examples of **pharmaverse** packages that support clinical reporting include:
 
--   [**diffdf**](https://cran.r-project.org/web/packages/diffdf/vignettes/diffdf-basic.html) – Tracking differences in datasets.
--   [**metatools**](https://pharmaverse.github.io/metatools/) – Metadata management and transformation.
--   [**sdtm.oak**](https://pharmaverse.github.io/sdtm.oak/) – The primary **pharmaverse** package for SDTM dataset creation.
--   [**sdtmchecks**](https://pharmaverse.github.io/sdtmchecks/) – Validates SDTM datasets for compliance with CDISC standards.
--   [**admiral**](https://github.com/pharmaverse/admiral) – Standardized data derivations.
--   [**metacore**](https://cran.r-project.org/web/packages/metacore/index.html) – Metadata-driven structures.
--   [**rtables**](https://github.com/insightsengineering/rtables) – Structured table outputs.
--   The **pharmaverse** provides multiple table-making packages, such as [chevron](https://insightsengineering.github.io/chevron/latest-tag/), [Tplyr](https://github.com/atorus-research/Tplyr), [pharmaRTF](https://atorus-research.github.io/pharmaRTF/), [gtsummary](https://www.danieldsjoberg.com/gtsummary/), [cards](https://insightsengineering.github.io/cards/latest-tag/), [tfrmt](https://gsk-biostatistics.github.io/tfrmt/), and [tidytlg](https://pharmaverse.github.io/tidytlg/main/). More tools are listed on the [TLGs page](https://pharmaverse.org/e2eclinical/tlg/).
--   [**xportr**](https://github.com/atorus-research/xportr) – CDISC-compliant dataset export.
--   [**pkglite**](https://merck.github.io/pkglite/) – Package management and tracking.
--   [**metacore**](https://github.com/atorus-research/metacore), [**metatools**](https://pharmaverse.github.io/metatools/) – For standardized metadata structures and validation.
--   [**sdtmchecks**](https://github.com/pharmaverse/sdtmchecks), [**datacutr**](https://cran.r-project.org/web/packages/datacutr/index.html) – Ensuring data integrity and regulatory compliance.
+-   {diffdf} – Tracking differences in datasets.
+-   {metatools} – Metadata management and transformation.
+-   {sdtm.oak} – The primary **pharmaverse** package for SDTM dataset creation.
+-   {datcur} - Performind datacuts.
+-   {admiral} – Standardized data derivations.
+-   {metacore} – Metadata-driven structures.
+-   The **pharmaverse** provides multiple table-making packages, such as {chevron} (which builds on {rtables}), {tplyr}, {pharmaRTF}, {gtsummary}, {cards}, {tfrmt}, and {tidytlg}. More tools are listed on the [TLGs page](https://pharmaverse.org/e2eclinical/tlg/).
+-   {xportr} – CDISC-compliant dataset export.
+-   {pkglite} – Package management and tracking.
+-   {metacore} and {metatools} – For standardized metadata structures and validation.
+-   {logrx} - For logging R scripts.
 
-Pharmaverse packages are built on top of **[tidyverse](https://www.tidyverse.org/)** tools and integrate seamlessly with packages like **[dplyr](https://dplyr.tidyverse.org/)** for data manipulation and **[ggplot2](https://ggplot2.tidyverse.org/)** for visualization.
+Pharmaverse packages are built on top of **[Tidyverse](https://www.tidyverse.org/)** tools and integrate seamlessly with packages like {dplyr} for data manipulation and {ggplot2} for visualization.
 
 > **Note:** This post highlights some key **pharmaverse** packages relevant to clinical reporting. For a full and up-to-date list, visit the [Pharmaverse website](https://pharmaverse.org/). If there's a package we missed that should be included, let us know, and we’d be happy to update this post.
 
@@ -77,14 +78,13 @@ This example is based on the [ADSL template](https://cran.r-project.org/web/pack
 
 #### **Step 1: Read in Data**
 
-To begin, clinical trial datasets such as **DM, EX, DS, AE, and LB** are loaded. The [{pharmaversesdtm}](https://github.com/pharmaverse/pharmaversesdtm) package provides sample CDISC SDTM datasets:
+To begin, clinical trial datasets such as **DM, EX, DS, AE, and LB** are loaded. The {pharmaversesdtm} package provides sample CDISC SDTM datasets:
 
-``` r
+``` {R, eval = TRUE}
 library(admiral)
 library(dplyr, warn.conflicts = FALSE)
 library(pharmaversesdtm)
 library(stringr)
-library(magrittr)
 
 # Load sample data
 data("dm", package = "pharmaversesdtm")
@@ -94,7 +94,7 @@ data("ds", package = "pharmaversesdtm")
 
 ADSL is typically **built from the DM dataset**, removing unnecessary columns and adding treatment variables in one step:
 
-``` r
+``` {R, eval = TRUE}
 adsl <- dm %>%
   select(-DOMAIN) %>%
   mutate(
@@ -107,7 +107,7 @@ adsl <- dm %>%
 
 Using {admiral}, we extract and standardize treatment dates from the EX dataset:
 
-``` r
+``` {R, eval = TRUE}
 ex_ext <- ex %>%
   filter(!is.na(USUBJID)) %>%
   derive_vars_dt(
@@ -122,12 +122,26 @@ ex_ext <- ex %>%
 
 Then merge these dates into ADSL:
 
-``` r
+``` {R, eval = TRUE}
 adsl <- adsl %>%
   derive_vars_merged(
     dataset_add = ex_ext,
-    filter_add = EXDOSE > 0 | (EXDOSE == 0 & str_detect(EXTRT, "PLACEBO")),
-    new_vars = exprs(TRTSDT = EXSTDT, TRTEDT = EXENDT),
+    filter_add = (EXDOSE > 0 |
+      (EXDOSE == 0 &
+        str_detect(EXTRT, "PLACEBO"))) & !is.na(EXSTDT),
+    new_vars = exprs(TRTSDT = EXSTDT),
+    order = exprs(EXSTDT, EXSEQ),
+    mode = "first",
+    by_vars = exprs(STUDYID, USUBJID)
+  ) %>%
+  derive_vars_merged(
+    dataset_add = ex_ext,
+    filter_add = (EXDOSE > 0 |
+      (EXDOSE == 0 &
+        str_detect(EXTRT, "PLACEBO"))) & !is.na(EXENDT),
+    new_vars = exprs(TRTEDT = EXENDT),
+    order = exprs(EXENDT, EXSEQ),
+    mode = "last",
     by_vars = exprs(STUDYID, USUBJID)
   )
 ```
@@ -136,7 +150,7 @@ adsl <- adsl %>%
 
 The disposition dataset (DS) is used to determine when a patient exited the study:
 
-``` r
+``` {R, eval = TRUE}
 ds_ext <- ds %>%
   filter(!is.na(DSSTDTC)) %>%
   derive_vars_dt(
@@ -157,7 +171,7 @@ adsl <- adsl %>%
 
 For safety population (`SAFFL`), we check if the patient received a treatment dose:
 
-``` r
+``` {R, eval = TRUE}
 adsl <- adsl %>%
   derive_var_merged_exist_flag(
     dataset_add = ex,
@@ -169,94 +183,25 @@ adsl <- adsl %>%
 
 #### **Step 5: Generate and Save Results**
 
-Finally, we print the results and save them to a CSV file:
+Finally, we save the dataset CSV and can view some of its columns:
 
-``` r
-tryCatch({
-  print("ADSL creation complete. Showing first few rows:")
-  print(head(adsl))
-  
-  print("\nSummary of ADSL variables:")
-  print(summary(adsl))
-  
-  # Save to a CSV file
-  write.csv(adsl, "adsl_output.csv", row.names = FALSE)
-  print("\nADSL has been saved to 'adsl_output.csv'")
-}, error = function(e) {
-  print(paste("An error occurred:", e$message))
-})
-```
-**Results**
+```{R, eval = FALSE}
+# Save to a CSV file
+write.csv(adsl, "adsl_output.csv", row.names = FALSE)
 
-``` r
-[1] "ADSL creation complete. Showing first few rows:"
-       STUDYID     USUBJID SUBJID    RFSTDTC    RFENDTC   RFXSTDTC   RFXENDTC RFICDTC         RFPENDTC DTHDTC DTHFL SITEID AGE
-1 CDISCPILOT01 01-701-1015   1015 2014-01-02 2014-07-02 2014-01-02 2014-07-02    <NA> 2014-07-02T11:45   <NA>  <NA>    701  63
-2 CDISCPILOT01 01-701-1023   1023 2012-08-05 2012-09-02 2012-08-05 2012-09-01    <NA>       2013-02-18   <NA>  <NA>    701  64
-3 CDISCPILOT01 01-701-1028   1028 2013-07-19 2014-01-14 2013-07-19 2014-01-14    <NA> 2014-01-14T11:10   <NA>  <NA>    701  71
-4 CDISCPILOT01 01-701-1033   1033 2014-03-18 2014-04-14 2014-03-18 2014-03-31    <NA>       2014-09-15   <NA>  <NA>    701  74
-5 CDISCPILOT01 01-701-1034   1034 2014-07-01 2014-12-30 2014-07-01 2014-12-30    <NA> 2014-12-30T09:50   <NA>  <NA>    701  77
-6 CDISCPILOT01 01-701-1047   1047 2013-02-12 2013-03-29 2013-02-12 2013-03-09    <NA>       2013-07-28   <NA>  <NA>    701  85
-   AGEU SEX  RACE                 ETHNIC  ARMCD                  ARM ACTARMCD               ACTARM COUNTRY      DMDTC DMDY
-1 YEARS   F WHITE     HISPANIC OR LATINO    Pbo              Placebo      Pbo              Placebo     USA 2013-12-26   -7
-2 YEARS   M WHITE     HISPANIC OR LATINO    Pbo              Placebo      Pbo              Placebo     USA 2012-07-22  -14
-3 YEARS   M WHITE NOT HISPANIC OR LATINO Xan_Hi Xanomeline High Dose   Xan_Hi Xanomeline High Dose     USA 2013-07-11   -8
-4 YEARS   M WHITE NOT HISPANIC OR LATINO Xan_Lo  Xanomeline Low Dose   Xan_Lo  Xanomeline Low Dose     USA 2014-03-10   -8
-5 YEARS   F WHITE NOT HISPANIC OR LATINO Xan_Hi Xanomeline High Dose   Xan_Hi Xanomeline High Dose     USA 2014-06-24   -7
-6 YEARS   F WHITE NOT HISPANIC OR LATINO    Pbo              Placebo      Pbo              Placebo     USA 2013-01-22  -21
-                TRT01P               TRT01A      EOSDT SAFFL
-1              Placebo              Placebo 2014-07-02     Y
-2              Placebo              Placebo 2012-09-02     Y
-3 Xanomeline High Dose Xanomeline High Dose 2014-01-14     Y
-4  Xanomeline Low Dose  Xanomeline Low Dose 2014-04-14     Y
-5 Xanomeline High Dose Xanomeline High Dose 2014-12-30     Y
-6              Placebo              Placebo 2013-03-29     Y
+adsl
 ```
 
-``` r
-[1] "\nSummary of ADSL variables:"
-   STUDYID            USUBJID             SUBJID            RFSTDTC            RFENDTC            RFXSTDTC        
- Length:306         Length:306         Length:306         Length:306         Length:306         Length:306        
- Class :character   Class :character   Class :character   Class :character   Class :character   Class :character  
- Mode  :character   Mode  :character   Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-                                                                                                                                                                                                                
-   RFXENDTC           RFICDTC            RFPENDTC            DTHDTC             DTHFL              SITEID         
- Length:306         Length:306         Length:306         Length:306         Length:306         Length:306        
- Class :character   Class :character   Class :character   Class :character   Class :character   Class :character  
- Mode  :character   Mode  :character   Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-                                                                                                                                                                                                              
-      AGE            AGEU               SEX                RACE              ETHNIC             ARMCD          
- Min.   :50.00   Length:306         Length:306         Length:306         Length:306         Length:306        
- 1st Qu.:70.25   Class :character   Class :character   Class :character   Class :character   Class :character  
- Median :77.00   Mode  :character   Mode  :character   Mode  :character   Mode  :character   Mode  :character  
- Mean   :75.09                                                                                                 
- 3rd Qu.:81.00                                                                                                 
- Max.   :89.00                                                                                                 
-                                                                                                               
-     ARM              ACTARMCD            ACTARM            COUNTRY             DMDTC                DMDY    
- Length:306         Length:306         Length:306         Length:306         Length:306         Min.   :-37  
- Class :character   Class :character   Class :character   Class :character   Class :character   1st Qu.:-14  
- Mode  :character   Mode  :character   Mode  :character   Mode  :character   Mode  :character   Median :-10  
-                                                                                                Mean   :-11  
-                                                                                                3rd Qu.: -7  
-                                                                                                Max.   : -2  
-                                                                                                NA's   :52   
-    TRT01P             TRT01A              EOSDT               SAFFL          
- Length:306         Length:306         Min.   :2012-09-01   Length:306        
- Class :character   Class :character   1st Qu.:2013-05-16   Class :character  
- Mode  :character   Mode  :character   Median :2013-09-30   Mode  :character  
-                                       Mean   :2013-10-15                     
-                                       3rd Qu.:2014-03-20                     
-                                       Max.   :2015-03-05                     
-                                       NA's   :52                             
-[1] "\nADSL has been saved to 'adsl_output.csv'"
+```{r, eval=TRUE, echo=FALSE}
+adsl%>%
+  dataset_vignette(
+    display_vars = exprs(USUBJID, TRT01P, TRT01A, TRTSDT, TRTEDT, SAFFL)
+  )
 ```
 
 #### **More Details on ADSL Creation**
 
 This is just a **high-level example**; the full process includes deriving death variables, grouping populations, and applying labels. For a deeper dive, check out the [ADSL Implementation Guide](https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html).
-
-![](images/adsl.png)
 
 ## **Who Are the Key Players in Pharmaverse, and Do You Need to Use All Packages?**
 
@@ -282,11 +227,9 @@ This is just a **high-level example**; the full process includes deriving death 
 
 #### **Differences Between pharmaverse and Tidyverse**
 
--   Pharmaverse is designed specifically for clinical reporting, while Tidyverse provides general-purpose data science tools.
+-   Tidyverse provides general-purpose data science tools such as data wrangling and visualization...
 
--   Pharmaverse integrates Tidyverse functions but adds compliance, validation, and reporting features for regulatory submissions.
-
--   Tidyverse focuses on generic data wrangling and visualization, while pharmaverse extends this to pharma-specific clinical data structuring, reporting, and submission-ready formatting.
+-   ... Whereas pharmaverse integrates Tidyverse functions but adds compliance, validation, and reporting features for pharma-specific clinical data structuring, reporting and regulatory submissions.
 
 ## **Getting Started with the Pharmaverse**
 
@@ -300,7 +243,7 @@ Pharmaverse provides an open-source ecosystem for clinical reporting, extending 
 
 - Explore packages on the [pharmaverse website](https://pharmaverse.org).
 
-- Try implementing an ADSL dataset using [CRAN Admiral ADSL](https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html). 
+- Try implementing an ADSL dataset using following the [ADSL Implementation Guide](https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html). 
 
 - Refer to [this grid for guidance on using Tidyverse or pharmaverse](https://r-guru.com/pharma) to complete tasks in the submission process. 
 
@@ -315,15 +258,3 @@ Pharmaverse provides an open-source ecosystem for clinical reporting, extending 
 -   [Explore more posts in the pharmaverse blog](https://pharmaverse.github.io/blog/)
 
 -   [Subscribe to the pharmaverse newsletter](https://forms.office.com/pages/responsepage.aspx?id=xeEJLj1cykuXxFc6VpX1UAPF0grflaRJu8z6VC7-hy5UMTE0M0lXR1JON1Q0MkRIRlA1TlZSNDhUSC4u&route=shorturl)
-
-<!--------------- appendices go here ----------------->
-
-```{r, echo=FALSE, message = FALSE}
-source("appendix.R")
-insert_appendix(
-  repo_spec = "pharmaverse/blog",
-  name = long_slug,
-  # file_name should be the name of your file
-  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
-)
-```
