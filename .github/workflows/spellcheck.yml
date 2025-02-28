@@ -1,18 +1,15 @@
 name: Spellcheck
 on:
-  pull_request: {branches: ['main']}
+  pull_request:
+    branches: ['main']
 jobs:
   Spelling:
     runs-on: ubuntu-latest
-    container: {image: "rocker/tidyverse:4.3.1"}
+    container:
+      image: "rocker/tidyverse:4.3.1"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Remove links from .qmd files
-        run: |
-          find . -name "*.qmd" -type f -exec sed -i -E 's#https?://[^\s)"]+##g' {} +
-        shell: bash
 
       - name: Install packages
         run: |
@@ -21,16 +18,38 @@ jobs:
           if (!require("testthat")) install.packages("testthat")
         shell: Rscript {0}
 
+      - name: Remove links from .qmd files (Bash)
+        run: |
+          find . -type f -name "*.qmd" -print0 | while IFS= read -r -d '' file; do
+            sed -i -E '
+              s/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/\1/g;  # Remove Markdown links, keep text
+              s#https?://[a-zA-Z0-9./?=_-]+##g       # Remove standalone URLs
+            ' "$file"
+            echo "Processed: $file"
+          done
+        shell: bash
+
       - name: Check spelling
         run: |
-          testthat::test_that(desc = "Check spelling",
-          code = {
-            typos <- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE), ignore = readr::read_lines("inst/WORDLIST.txt"))
-            print(typos)
-            testthat::expect_equal(
-                  object = typos,
-                  expected =  spelling::spell_check_files(path = "inst/WORDLIST.txt", ignore = readr::read_lines("inst/WORDLIST.txt"))
-                  )
-            }
+          library(spelling)
+          library(readr)
+
+          qmd_files <- list.files(pattern = ".*\\.qmd$", recursive = TRUE)
+
+          words <- spelling::spell_check_files(
+            qmd_files,
+            ignore = read_lines("inst/WORDLIST.txt")
           )
+
+          print(words)
+
+          testthat::test_that(desc = "Check spelling", code = {
+            testthat::expect_equal(
+              object = words,
+              expected = spelling::spell_check_files(
+                path = "inst/WORDLIST.txt",
+                ignore = read_lines("inst/WORDLIST.txt")
+              )
+            )
+          })
         shell: Rscript {0}
