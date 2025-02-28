@@ -23,7 +23,7 @@ jobs:
           find . -type f -name "*.qmd" -print0 | while IFS= read -r -d '' file; do
               sed -i -E '
                   s/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/\1/g;  # Remove Markdown links, keep text
-                  s#https?://[a-zA-Z0-9./?=_-]+(#[-a-zA-Z0-9]*)?##g  # Remove standalone URLs including fragments
+                  s#https?://[a-zA-Z0-9./?=_-]+(\#[a-zA-Z0-9_-]*)?##g  # Remove standalone URLs, including fragments
               ' "$file"
               echo "Processed: $file"
           done
