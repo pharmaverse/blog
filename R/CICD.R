@@ -15,12 +15,14 @@ extract_text_for_spellcheck <- function(file) {
 
   for (line in text) {
     # Detect start of a fenced code block (```{r}, ```python, etc.)
-    if (str_detect(line, "^```")) {
-      inside_code_block <- !inside_code_block
-    }
+    # if (str_detect(line, "^```")) {
+    #   inside_code_block <- !inside_code_block
+    # }
 
     # Keep lines that are NOT inside a code block OR are comments in code blocks
-    if (!inside_code_block || str_detect(line, "^\\s*#")) {
+    if (
+      #!inside_code_block ||
+      str_detect(line, "^\\s*#")) {
       # Remove URLs from retained text
       clean_line <- str_replace_all(line, "https?://[^\\s)\"']+", "")
       extracted_lines <- c(extracted_lines, clean_line)
