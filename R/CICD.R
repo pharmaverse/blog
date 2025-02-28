@@ -21,7 +21,7 @@ extract_text_for_spellcheck <- function(file) {
 
     # Keep lines that are NOT inside a code block OR are comments in code blocks
     if (
-      #!inside_code_block ||
+      # !inside_code_block ||
       str_detect(line, "^\\s*#")) {
       # Remove URLs from retained text
       clean_line <- str_replace_all(line, "https?://[^\\s)\"']+", "")
