@@ -93,28 +93,43 @@ Most importantly:
 
 * You can use this code snippet to install all packages needed for the blog site or use the docker image cited below.
 ```
-install.packages(c("jsonlite",
-                   "tidyverse",
-                   "spelling",
-                   "janitor",
-                   "diffdf",
-                   "admiral",
-                   "patchwork",
-                   "here",
-                   "reactable",
-                   "pharmaversesdtm",
-                   "metacore",
-                   "metatools",
-                   "xportr",
-                   "pharmaverseadam",
-                   "link",
-                   "sessioninfo",
-                   "rtables",
-                   "teal",
-                   "riskmetric",
-                   "tidyCDISC",
-                   "mirai",
-                   "admiralmetabolic"))
+install.packages(
+  c(
+    "jsonlite",
+    "tidyverse",
+    "spelling",
+    "janitor",
+    "diffdf",
+    "admiral",
+    "patchwork",
+    "here",
+    "reactable",
+    "pharmaversesdtm",
+    "metacore",
+    "metatools",
+    "xportr",
+    "pharmaverseadam",
+    "link",
+    "sessioninfo",
+    "rtables",
+    "teal",
+    "riskmetric",
+    "tidyCDISC",
+    "mirai",
+    "dverse",
+    "DT",
+    "xportr",
+    "sdtm.oak",
+    "teal",
+    "riskmetric",
+    "tidyCDISC",
+    "admiralonco",
+    "admiralophtha",
+    "admiralpeds",
+    "admiralvaccine",
+    "admiralmetabolic"
+  )
+)
 ```
 ## How to Use the `blog` Docker Image for Local Development
 
