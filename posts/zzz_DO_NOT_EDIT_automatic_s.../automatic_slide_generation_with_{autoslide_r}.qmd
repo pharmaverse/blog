@@ -23,9 +23,9 @@ link::auto()
 
 <!--------------- post begins here ----------------->
 
-We are excited to announce that the autoslider.core package is now a part of Pharmaverse! This integration enhances the workflows for creating study-specific outputs by providing a structured framework that supports a wide array of outputs with easy customization options. In this blog post, we will guide you through the autoslider.core package and demonstrate how it can be used to streamline your data analysis and output generation.
+We are excited to announce that the autoslider.core package is now a part of Pharmaverse! This integration enhances the workflows for creating study-specific output slidedecks by providing a structured framework that supports a wide array of outputs with easy customization options. In this blog post, we will guide you through the autoslider.core package and demonstrate how it can be used to streamline your data analysis and output slide generation.
 
-Requirements
+# Requirements
 To follow along with this tutorial, you need to have the autoslider.core package installed. You will also need data available in the correct format, which should be stored in a named list where the names correspond to ADaM datasets.
 
 ```{r}
@@ -124,10 +124,10 @@ Copy code
 
 The autoslider.core workflow would involve implementing the key aspects in the run_script.R file. This script guides through the workflow without needing the files in R/. However, custom output-creating functions can be stored in the R/ folder.
 
-Specifications (specs.yml)
+## Specifications (specs.yml)
 This file contains the specifications of all outputs you want to create. Each output includes details such as the program name, footnotes & titles, paper orientation and font size, suffix, and additional arguments.
 
-Example specs.yml content:
+Example `specs.yml` content:
 
 ```
 
@@ -146,10 +146,11 @@ Example specs.yml content:
     vars: ["SEX", "AGE", "RACE", "ETHNIC", "COUNTRY"]
 ```
 
-Filters (filters.yml)
+## Filters (filters.yml)
+
 In the filters.yml file, the names of the filters used across outputs are specified. Each filter includes a name, title, filtering condition, target dataset, and type.
 
-Example filters.yml content:
+Example `filters.yml` content:
 
 ```
 ITT:
@@ -175,7 +176,7 @@ SER:
 ```
 
 ## Functions
-An overview of all autoslider.core functions can be found [here](LINK!). 
+An overview of all {autoslider.core} functions can be found [here](https://insightsengineering.github.io/autoslider.core/latest-tag/reference/index.html). 
 Custom functions can be created if the built-in functions do not meet your needs.
 
 
