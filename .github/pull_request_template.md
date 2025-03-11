@@ -3,8 +3,9 @@ Thank you for your Pull Request! We have developed this task checklist to help w
 Please check off each taskbox as an acknowledgment that you completed the task or check off that it is not relevant to your Pull Request. This checklist is part of the Github Action workflows and the Pull Request will not be merged into the `main` branch until you have checked off each task.
 
 - [ ] Place Closes #<insert_issue_number> into the beginning of your Pull Request Title (Use Edit button in top-right if you need to update), and make sure the corresponding issue is linked in the Development section on the right hand side
+- [ ] Ensure your new post folder is of the form `"posts/zzz_DO_NOT_EDIT_<your post title>"`. This is so that the post date can be auto-updated upon the merge into `main`.
 - [ ] Run the script from `CICD.R` line by line to first check the spelling in your post and then to make sure your code is compatible with our code-style. Address any incongruences by following the instructions in the file! 
-- [ ] Choose (possibly several) `tag(s)` or categories from the current list: `c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical")` for your blog post. If you cannot find anything that fits your blog post, add your own tag! We occasionally tidy up all `tags` for consistency.
+- [ ] Choose (possibly several) `tag(s)` or categories from the current list: ` c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical")` for your blog post. If you cannot find anything that fits your blog post, propose a new tag to the maintainers! Note: if you use a tag not from this list, the "Check Post Tags" CICD pipeline will error. We occasionally tidy up all `tags` for consistency.
 - [ ] Add a short description for your blog post in the `description` field at the top of the markdown document.
 - [ ] Blog post is *short*, *personalized*, *reproducible* and *readable*
 - [ ] Add a disclaimer at the top of your post, if appropriate (example: **Disclaimer** 

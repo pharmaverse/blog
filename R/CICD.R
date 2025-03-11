@@ -14,7 +14,11 @@ words <- spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive =
 )
 # now you can add words to the wordlist
 #-- uncomment the following line
-write(words[[1]], file =   "inst/WORDLIST.txt", append = TRUE)
+
+# write(words[[1]], file =   "inst/WORDLIST.txt", append = TRUE)
+# sort_words <- sort(readr::read_lines("inst/WORDLIST.txt"))
+# readr::write_lines(sort_words, "inst/WORDLIST.txt")
+
 
 spelling::spell_check_files(list.files(pattern = ".*.qmd$", recursive = TRUE),
   ignore = readr::read_lines("inst/WORDLIST.txt")

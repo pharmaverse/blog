@@ -1,0 +1,17 @@
+name: Check post tags
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  Check-post-tags:
+    runs-on: ubuntu-latest
+    container:
+      image: "rocker/tidyverse:4.2.1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run check_post_tags
+        run: source("R/check_post_tags.R")
+        shell: Rscript {0}

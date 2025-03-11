@@ -25,8 +25,7 @@ long_slug <- "2023-07-24_rounding"
 Both SAS and base R have the function `round()`, which rounds the input to the specified number of decimal places.
 However, they use different approaches when rounding off a 5:
 
--   SAS `round()` [rounds half up](https://en.wikipedia.org/wiki/Rounding#Rounding_half_up).
-    This is the most common method of rounding.
+-   SAS `round()` [rounds away from zero](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lefunctionsref/p0tj6cmga7p8qln1ejh6ebevm0c9.htm#p0zr4tmk27unjwn1izg4801h5l46). So, `0.5` would be rounded to 1 whereas `-1.5` to `-2`.
 
 -   base R `round()` [rounds to the nearest even](https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest). Therefore `round(0.5)` is `0` and `round(-1.5)` is `-2`. Note from the base R round documentation: 
 
@@ -35,11 +34,14 @@ However, they use different approaches when rounding off a 5:
         > this is dependent on OS services and on representation error (since e.g. `0.15` is not represented exactly, the rounding rule applies to the represented number and not to the printed number, and so `round(0.15, 1)` could be either `0.1` or `0.2`). 
         </div>
                                                 
+Other common methods include:
 
-Although base R does not have the option for "round half up", there are functions available in other R packages (e.g., `janitor`, `tidytlg`).
+- *Rounding half up*, where, as the name suggests, a 5 always gets rounded up. In base R, there are no functions that implement this method natively, however there are functions available in other R packages (e.g., `janitor`, `tidytlg`).
 
-In general, there are many often used rounding methods.
-In the table below, you can find examples of them applied to the number 1.45.
+- *Rounding towards zero*, which is the opposite of rounding away from zero.
+
+As the list above shows, there are many options to choose from when looking to round a number.
+In the table below, you can find examples of some of these applied to the number 1.45.
 
 +---------------+----------------------------+----------------------------+----------+------------+--------------------+
 |               | round half up              | round to even              | round up | round down | round towards zero |

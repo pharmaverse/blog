@@ -1,0 +1,260 @@
+---
+title: "Working with Clinical Trial Data? There’s a Pharmaverse Package for That"
+author:
+  - name: Gift Kenneth
+  - name: Sunil Gupta
+  - name: APPSILON
+description: "Looking for R packages to manage clinical trial data? Pharmaverse has tools for every stage from data collection to submission!"
+date: "2025-02-28"
+# please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Technical, Community]
+# feel free to change the image
+image: "pharmaverse-post.png"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2025-02-28_managing_clinical_trial_data..."
+# renv::use(lockfile = "renv.lock")
+
+library(admiraldev)
+```
+
+<!--------------- post begins here ----------------->
+
+Working with clinical trial data is no small task. It needs to be precise, compliant, and efficient. Traditionally, this meant using proprietary tools and working within siloed systems, which often made the process more complicated and expensive than necessary. But we think there’s a better way.
+
+The [**pharmaverse**](https://pharmaverse.org/) is an open-source ecosystem of R packages built specifically for clinical trials. These tools integrate seamlessly with the [Tidyverse](https://www.tidyverse.org/), making data management more flexible, efficient, and transparent.
+
+Whether you’re collecting, validating, analyzing, or preparing data for regulatory submission, there’s a pharmaverse package designed to support your workflow and help you work smarter.
+
+This post covers:
+
+-   Key stages of clinical trials and the R packages that support them
+
+-   Creating ADSL datasets and essential programming steps
+
+-   Key players in pharmaverse and whether you need all packages
+
+-   How pharmaverse compares to Tidyverse and how to learn it
+
+By the end, you'll have a clear understanding of how pharmaverse supports clinical trial operations and how to apply these tools in your work.
+
+## Key Stages of Clinical Reporting
+
+Managing clinical trial data involves multiple stages, each with its own challenges. **Pharmaverse** provides a range of R packages that support different parts of the process, sometimes even offering multiple options for the same task. This flexibility allows organizations to choose the best tools for their specific needs rather than sticking to a one-size-fits-all approach.
+
+A **metadata-driven approach** helps ensure that clinical trial data is consistently structured and aligned with regulatory standards. The typical process follows this sequence:
+
+**Metadata** ➝ **OAK** ➝ **Admiral** ➝ **Define.xml** ➝ **TLGs** ➝ **Submissions**
+
+Some examples of **pharmaverse** packages that support clinical reporting include:
+
+-   {diffdf} – Tracking differences in datasets.
+-   {metatools} – Metadata management and transformation.
+-   {sdtm.oak} – The primary **pharmaverse** package for SDTM dataset creation.
+-   {datacutr} - Performing data cuts.
+-   {admiral} – Standardized data derivations.
+-   {metacore} – Metadata-driven structures.
+-   The **pharmaverse** provides multiple table-making packages, such as {chevron} (which builds on {rtables}), {Tplyr}, {pharmaRTF}, {gtsummary}, {cards}, {tfrmt}, and {tidytlg}. More tools are listed on the [TLGs page](https://pharmaverse.org/e2eclinical/tlg/).
+-   {xportr} – CDISC-compliant dataset export.
+-   {pkglite} – Package management and tracking.
+-   {metacore} and {metatools} – For standardized metadata structures and validation.
+-   {logrx} - For logging R scripts.
+
+Pharmaverse packages are built on top of **[Tidyverse](https://www.tidyverse.org/)** tools and integrate seamlessly with packages like {dplyr} for data manipulation and {ggplot2} for visualization.
+
+> **Note:** This post highlights some key **pharmaverse** packages relevant to clinical reporting. For a full and up-to-date list, visit the [Pharmaverse website](https://pharmaverse.org/). If there's a package we missed that should be included, let us know, and we’d be happy to update this post.
+
+By using these tools, organizations can optimize their data pipeline, ensuring clinical data is well-structured and ready for regulatory submission with ease.
+
+## **Example: Creating ADSL**
+
+Building an ADSL dataset involves several key steps, from reading in data to deriving treatment variables and population flags. While these steps apply regardless of the tools used, **pharmaverse packages like {admiral} simplify the process** with functions designed for CDISC-compliant datasets.
+
+This example is based on the [ADSL template](https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html), which provides a structured approach to creating an ADSL dataset.
+
+#### **Step 1: Read in Data**
+
+To begin, clinical trial datasets such as **DM, EX, DS, AE, and LB** are loaded. The {pharmaversesdtm} package provides sample CDISC SDTM datasets:
+
+``` {R, eval = TRUE}
+library(admiral)
+library(dplyr, warn.conflicts = FALSE)
+library(pharmaversesdtm)
+library(stringr)
+
+# Load sample data
+data("dm", package = "pharmaversesdtm")
+data("ex", package = "pharmaversesdtm")
+data("ds", package = "pharmaversesdtm")
+```
+
+ADSL is typically **built from the DM dataset**, removing unnecessary columns and adding treatment variables in one step:
+
+``` {R, eval = TRUE}
+adsl <- dm %>%
+  select(-DOMAIN) %>%
+  mutate(
+    TRT01P = ARM,
+    TRT01A = ACTARM
+  )
+```
+
+#### **Step 2: Derive Treatment Variables**
+
+Using {admiral}, we extract and standardize treatment dates from the EX dataset:
+
+``` {R, eval = TRUE}
+ex_ext <- ex %>%
+  filter(!is.na(USUBJID)) %>%
+  derive_vars_dt(
+    dtc = EXSTDTC,
+    new_vars_prefix = "EXST"
+  ) %>%
+  derive_vars_dt(
+    dtc = EXENDTC,
+    new_vars_prefix = "EXEN"
+  )
+```
+
+Then merge these dates into ADSL:
+
+``` {R, eval = TRUE}
+adsl <- adsl %>%
+  derive_vars_merged(
+    dataset_add = ex_ext,
+    filter_add = (EXDOSE > 0 |
+      (EXDOSE == 0 &
+        str_detect(EXTRT, "PLACEBO"))) & !is.na(EXSTDT),
+    new_vars = exprs(TRTSDT = EXSTDT),
+    order = exprs(EXSTDT, EXSEQ),
+    mode = "first",
+    by_vars = exprs(STUDYID, USUBJID)
+  ) %>%
+  derive_vars_merged(
+    dataset_add = ex_ext,
+    filter_add = (EXDOSE > 0 |
+      (EXDOSE == 0 &
+        str_detect(EXTRT, "PLACEBO"))) & !is.na(EXENDT),
+    new_vars = exprs(TRTEDT = EXENDT),
+    order = exprs(EXENDT, EXSEQ),
+    mode = "last",
+    by_vars = exprs(STUDYID, USUBJID)
+  )
+```
+
+#### **Step 3: Derive End of Study (EOS) Status**
+
+The disposition dataset (DS) is used to determine when a patient exited the study:
+
+``` {R, eval = TRUE}
+ds_ext <- ds %>%
+  filter(!is.na(DSSTDTC)) %>%
+  derive_vars_dt(
+    dtc = DSSTDTC,
+    new_vars_prefix = "DSST"
+  )
+
+adsl <- adsl %>%
+  derive_vars_merged(
+    dataset_add = ds_ext,
+    by_vars = exprs(STUDYID, USUBJID),
+    new_vars = exprs(EOSDT = DSSTDT),
+    filter_add = DSCAT == "DISPOSITION EVENT" & DSDECOD != "SCREEN FAILURE"
+  )
+```
+
+#### **Step 4: Assign Population Flags**
+
+For safety population (`SAFFL`), we check if the patient received a treatment dose:
+
+``` {R, eval = TRUE}
+adsl <- adsl %>%
+  derive_var_merged_exist_flag(
+    dataset_add = ex,
+    by_vars = exprs(STUDYID, USUBJID),
+    new_var = SAFFL,
+    condition = EXDOSE > 0 | str_detect(EXTRT, "PLACEBO")
+  )
+```
+
+#### **Step 5: Generate and Save Results**
+
+Finally, we save the dataset CSV and can view some of its columns:
+
+```{R, eval = FALSE}
+# Save to a CSV file
+write.csv(adsl, "adsl_output.csv", row.names = FALSE)
+
+adsl
+```
+
+```{r, eval=TRUE, echo=FALSE}
+adsl %>%
+  dataset_vignette(
+    display_vars = exprs(USUBJID, TRT01P, TRT01A, TRTSDT, TRTEDT, SAFFL)
+  )
+```
+
+#### **More Details on ADSL Creation**
+
+This is just a **high-level example**; the full process includes deriving death variables, grouping populations, and applying labels. For a deeper dive, check out the [ADSL Implementation Guide](https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html).
+
+## **Who Are the Key Players in Pharmaverse, and Do You Need to Use All Packages?**
+
+### **Key Players in pharmaverse**
+
+-   **Pharmaverse Council and Community** – A collaborative group of developers, industry experts, and contributors maintaining and expanding the ecosystem.
+-   **Open-Source Contributors** – Individuals and organizations developing and refining **pharmaverse** packages.
+-   **Pharmaverse is part of [PHUSE](https://phuse.global/)** – PHUSE plays an active role in supporting and advancing the **pharmaverse** initiative.
+-   **The pharmaverse community collaborates with organizations like the FDA, EMA, R Consortium, and CDISC** to align with industry standards and best practices for clinical data reporting.
+
+
+### **Do You Need to Use All Pharmaverse Packages?**
+
+-   No, organizations can select only the packages that fit their needs.
+
+-   Many packages are modular and independent, allowing selective integration.
+
+-   Pharmaverse hosts multiple packages with similar aims, giving users the flexibility to choose what works best for them rather than prescribing a single approach.
+
+-   Pharmaverse complements [Tidyverse](https://www.tidyverse.org/), allowing organizations to continue using familiar R workflows.
+
+## **How Pharmaverse Differs from Tidyverse & How to Learn It Effectively**
+
+#### **Differences Between pharmaverse and Tidyverse**
+
+-   Tidyverse provides general-purpose data science tools such as data wrangling and visualization...
+
+-   ... Whereas pharmaverse integrates Tidyverse functions but adds compliance, validation, and reporting features for pharma-specific clinical data structuring, reporting and regulatory submissions.
+
+## **Getting Started with the Pharmaverse**
+
+Pharmaverse provides an open-source ecosystem for clinical reporting, extending Tidyverse with validation, compliance, and regulatory submission capabilities. By following a structured approach from raw data to ADaMs, organizations can enhance efficiency while maintaining data integrity.
+
+- You can [start with Pharmaverse Examples](https://pharmaverse.github.io/examples/) – A curated set of documentation and tutorials.
+
+- Attend Pharma Industry Webinars and Conferences – Stay updated on new developments through events like [PHUSE events and webinars](https://phuse.global/Events_Calendar), [R/Pharma conferences and events](https://rinpharma.com/), [CDISC events](https://www.cdisc.org/events), [Shiny Gatherings x Pharmaverse webinars](https://www.youtube.com/playlist?list=PLexAKolMzPcpzPAXNU6KlQ_UpIFsuEPCx), etc.
+
+-  Engage with the Open-Source Community – Contribute to package improvements or discussions. [You can join the pharmaverse community to get started.](join the pharmaverse](https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A)).
+
+- Explore packages on the [pharmaverse website](https://pharmaverse.org).
+
+- Try implementing an ADSL dataset using following the [ADSL Implementation Guide](https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html). 
+
+- Refer to [this grid for guidance on using Tidyverse or pharmaverse](https://r-guru.com/pharma) to complete tasks in the submission process. 
+
+
+
+### **Resources**
+
+-   This blog post was based on this presentation by Sunil Gupta: [R and pharmaverse: The New Frontier for Today’s Statistical Programmers](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/SDE/US/Mississauga/PRE_Mississauga05.pdf)
+
+-   [R-Guru Resource Hub for Rapid R Learning](https://www.lexjansen.com/phuse-us/2024/pd/PAP_PD05.pdf)
+
+-   [Explore more posts in the pharmaverse blog](https://pharmaverse.github.io/blog/)
+
+-   [Subscribe to the pharmaverse newsletter](https://forms.office.com/pages/responsepage.aspx?id=xeEJLj1cykuXxFc6VpX1UAPF0grflaRJu8z6VC7-hy5UMTE0M0lXR1JON1Q0MkRIRlA1TlZSNDhUSC4u&route=shorturl)

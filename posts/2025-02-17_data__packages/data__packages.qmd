@@ -1,0 +1,97 @@
+---
+title: Collecting all the data!
+author:
+- name: Ben Straub
+description: Where is all the data? An intermittent attempt to continuously compile,
+  collate, consolidate, and curate publicly available CDISC data useful for Clinical
+  Reporting in R
+date: '2025-02-17'
+categories:
+- SDTM
+- ADaM
+- Community
+- Technical
+image: data.jpg
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_data__packages"
+library(link)
+link::auto(keep_pkg_prefix = FALSE)
+```
+
+<!--------------- post begins here ----------------->
+
+The purpose of this blog is to maintain an ongoing list of publicly available data packages, data in packages or data sources that align to CDISC standards. My hope is that this could be a resource for:
+
+* those intrepid individuals looking to showcase new documentation, functions, packages and other tools
+* those enterprising individuals wanting to learn more about CDISC standards and exploring open-source tools.
+
+The data presented below is just a start and is shown in order of how I found them. Feel free to get in touch with me for additions or clarifications. You can find me on pharmaverse slack by joining [here](https://pharmaverse.slack.com/).  In fact, I encourage, nay implore you, to get in touch as this can't be all the data that we have available to us!
+
+## pharmaversesdtm: SDTM Test Data for the Pharmaverse Family of Packages
+
+A set of Study Data Tabulation Model (SDTM) datasets from the Clinical Data Interchange Standards Consortium (CDISC) pilot project used for testing and developing Analysis Data Model (ADaM) datasets inside the pharmaverse family of packages. A CDISC Pilot was conducted somewhere between 2008 and 2010. This is that Pilot data but slowly brought up to current CDISC standards. There are also new datasets in the same style (same `STUDYID`, `USUBJID`s, etc.) added by the {admiral} and the {admiral} extension package teams that provide test data for new domains or specific TAs (ophthalmology, vaccines, etc.).
+
+Most common SDTM datasets can be found as well as some specific disease area SDTMs that are not available in the CDISC pilot datasets.
+
+Available on [CRAN](https://cloud.r-project.org/web/packages/pharmaversesdtm/index.html). This package is actively maintained on [GitHub](https://github.com/pharmaverse/pharmaversesdtm)
+
+## pharmaverseadam: ADaM Test Data for the Pharmaverse Family of Packages
+
+A set of Analysis Data Model (ADaM) datasets constructed using the Study Data Tabulation Model (SDTM) datasets contained in the {pharmaversesdtm} package and the template scripts from the {admiral} family of packages. 
+
+Available on [CRAN](https://cloud.r-project.org/web/packages/pharmaverseadam/index.html). This package is actively maintained on [GitHub](https://github.com/pharmaverse/pharmaversesdtm)
+
+## admiral: ADaM in R Asset Library
+
+A toolbox for programming Clinical Data Interchange Standards Consortium (CDISC) compliant Analysis Data Model (ADaM) datasets in R. ADaM datasets are a mandatory part of any New Drug or Biologics License Application submitted to the United States Food and Drug Administration (FDA). Analysis derivations are implemented in accordance with the "Analysis Data Model Implementation Guide.
+
+Limited datasets like `ADSL`, `ADLB` are provided in {admiral}, because the template scripts available in this package are used to create the ADaMs in {pharmaverseadam}.
+
+Available on [CRAN](https://cran.r-project.org/web/packages/admiral/index.html). This package is actively maintained on [GitHub](https://github.com/pharmaverse/admiral).
+
+## random.cdisc.data: Create Random ADaM Datasets
+
+A set of functions to create *random* Analysis Data Model (ADaM) datasets and cached datasets. You can find a list of the possible random CDISC datasets generated [here](https://insightsengineering.github.io/random.cdisc.data/main/index.html). ADaM dataset specifications are described by the Clinical Data Interchange Standards Consortium (CDISC) Analysis Data Model Team. These datasets are used to power the [TLG Catalog](https://insightsengineering.github.io/tlg-catalog/stable/), though the NEST team is actively substituting them for {pharmaverseadam} datasets instead -  see [a recent blog post](https://pharmaverse.github.io/blog/posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html) about this very effort!
+
+
+
+Available on [CRAN](https://cran.r-project.org/web/packages/random.cdisc.data/index.html). The package is actively maintained on [GitHub](https://github.com/insightsengineering/random.cdisc.data) by the NEST team.
+
+## safetyData: Clinical Trial Data
+
+The package re-formats PHUSE's sample ADaM and SDTM datasets as an R package following R data best practices.
+
+PHUSE released the data under the permissive MIT license, so reuse with attribution is encouraged. The data are especially useful for prototyping new tables, listings and figures and for writing automated tests.
+
+Basic documentation for each data file is provided in help files (e.g. ?adam_adae). Full data specifications in the form of define.xml files can also be found at the links above (pdf for ADaM and pdf for SDTM).
+
+Available on [CRAN](https://cran.r-project.org/web/packages/random.cdisc.data/index.html). The package is available on [GitHub](https://github.com/SafetyGraphics/safetyData).
+
+
+## NEST: Accelerating Clinical Reporting
+
+[NEST](https://insightsengineering.github.io/nest/) is a collection of open-sourced R packages, which enables faster and more efficient insights generation under clinical research settings, for both exploratory and regulatory purposes.
+
+They have a wealth of data generated for documentation, demonstrations and testing.  You can find all the datasets and what packages they live in [here](https://insightsengineering.r-universe.dev/datasets). 
+
+## Collect all the data!
+
+As you can see the list is short! Let me know if you have sources (big and small) and we can add to this list.
+
+![](data.jpg){fig-align="center" width="220"}
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```

@@ -28,7 +28,7 @@ A bit of cheeky language is also encouraged.
 Every dependency introduced in a post adds some risk to the post longevity.
 As package dependencies change, posts should be built in a way that they can be updated to stay relevant.
 
-**Readable:** The CWG sees this site as more of introductory site rather advanced user site.
+**Readable:** The CWG sees this site as more of introductory site rather than an advanced user site.
 Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity.
 
 ## What types of posts are allowed on this site?
@@ -64,11 +64,12 @@ After that you can go wild, but we do ask that it is kept short!
 
 -   Source the script `help_create_blogpost.R` from within the `create_blogpost.R` file.
 
--   Enter your information into the `create_post` function.
-    Please note that we do not currently allow users to specify their own categories (or `tags`), so you must choose (possibly several) from this list: `c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical")`.
+-   Enter your information into the `create_post` function. For the post date, feel free to put a placeholder date as it will be automatically replaced once the post is merged onto `main`.
+    Please note that we do not currently allow users to specify their own categories (or `tags`), so you must choose (possibly  several) from this list: `c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical")`.
 
 -   Running that function will create a subfolder with a quarto file (`*.qmd`) in the `posts/` folder.
-    Both should be named based on the supplied `post_date` and `post_name` information.
+    The folder will be named `zzz_DO_NOT_EDIT_<your post name>`, and the `zzz_DO_NOT_EDIT` portion of the folder name
+    will also be automatically replaced once the post is merged onto `main`.
 
 -   Open the newly created folder and start working within the `*.qmd` file.
 
@@ -90,6 +91,46 @@ Most importantly:
   and it will create the link in your blog post.  See the raw code in this post [admiral 1.0.0](https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html) to see
   it in action.
 
+* You can use this code snippet to install all packages needed for the blog site or use the docker image cited below.
+```
+install.packages(
+  c(
+    "jsonlite",
+    "tidyverse",
+    "spelling",
+    "janitor",
+    "diffdf",
+    "admiral",
+    "patchwork",
+    "here",
+    "reactable",
+    "pharmaversesdtm",
+    "metacore",
+    "metatools",
+    "xportr",
+    "pharmaverseadam",
+    "link",
+    "sessioninfo",
+    "rtables",
+    "teal",
+    "riskmetric",
+    "tidyCDISC",
+    "mirai",
+    "dverse",
+    "DT",
+    "xportr",
+    "sdtm.oak",
+    "teal",
+    "riskmetric",
+    "tidyCDISC",
+    "admiralonco",
+    "admiralophtha",
+    "admiralpeds",
+    "admiralvaccine",
+    "admiralmetabolic"
+  )
+)
+```
 ## How to Use the `blog` Docker Image for Local Development
 
 Contributors can benefit from using the [`blog` Docker image](https://github.com/pharmaverse/blog/pkgs/container/blog) when creating their blog posts.
