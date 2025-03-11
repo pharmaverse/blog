@@ -11,7 +11,7 @@ print(allowed_tags)
 
 # Fill in the info, e.g.:
 create_post(
-  tags = c("TLG", "ADaM") # chose (multiple) from line 10
+  tags = c("TLG", "ADaM"), # chose (multiple) from line 10
   post_name = "My Blog", # needs to be character vector (length 1)
   post_date = "2024-12-01", # needs to be length 1 character vector and will be auto-updated when your post is merged
   description = "", # you can fill the description in later as well
