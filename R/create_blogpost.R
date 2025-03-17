@@ -17,7 +17,7 @@ create_post(
   description = "", # you can fill the description in later as well
   author = c("My Name"), # one or more authors are permitted
   cover_image = "pharmaverse", # chose one of the above (see line 8)
-  tags = c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical") # chose (multiple) from line 10
+  tags = c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical", "DEI") # chose (multiple) from line 10
 )
 
 # Remove that post:
