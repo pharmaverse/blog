@@ -6,12 +6,15 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Joel Laxamana">
-<meta name="author" content="Stefan Thoma">
-<meta name="dcterms.date" content="2024-07-03">
-<meta name="description" content="Releasing our second (hands-on) Coursera course, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.">
+<meta name="author" content="Ilse Augustyns">
+<meta name="author" content="Nicholas Masel">
+<meta name="author" content="Tad Lewandowski">
+<meta name="author" content="Gabriel Becker">
+<meta name="author" content="Clinical &amp; Statistical Programming, IDAR, Johnson &amp; Johnson, Innovative Medicine">
+<meta name="dcterms.date" content="2025-04-08">
+<meta name="description" content="Announcement on code collaboration for the NEST framework between Roche and Clinical &amp; Statistical Programming, Johnson &amp; Johnson Innovative Medicine">
 
-<title>Introducing a new Coursera course for hands-on clinical data science using R. – pharmaverse blog</title>
+<title>Code collaboration in NEST – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -113,12 +116,10 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Introducing a new Coursera course for hands-on clinical data science using R. – pharmaverse blog">
-<meta property="og:description" content="Releasing our second (hands-on) Coursera course, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../pharmaverse.png">
+<meta property="og:title" content="Code collaboration in NEST – pharmaverse blog">
+<meta property="og:description" content="Announcement on code collaboration for the NEST framework between Roche and Clinical &amp; Statistical Programming, Johnson &amp; Johnson Innovative Medicine">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2025-04-08_code_collab.../rtables_logo.svg">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="284">
-<meta property="og:image:width" content="320">
 </head>
 
 <body class="floating nav-fixed">
@@ -158,13 +159,14 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Introducing a <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">new Coursera course</a> for hands-on clinical data science using R.</h1>
+      <h1 class="title">Code collaboration in NEST</h1>
                   <div>
         <div class="description">
-          <p>Releasing <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">our second (hands-on) Coursera course</a>, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.</p>
+          Announcement on code collaboration for the NEST framework between Roche and Clinical &amp; Statistical Programming, Johnson &amp; Johnson Innovative Medicine
         </div>
       </div>
                           <div class="quarto-categories">
+                <div class="quarto-category">TLG</div>
                 <div class="quarto-category">Community</div>
               </div>
                   </div>
@@ -176,15 +178,18 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Authors</div>
       <div class="quarto-title-meta-contents">
-               <p>Joel Laxamana </p>
-               <p>Stefan Thoma </p>
+               <p>Ilse Augustyns </p>
+               <p>Nicholas Masel </p>
+               <p>Tad Lewandowski </p>
+               <p>Gabriel Becker </p>
+               <p>Clinical &amp; Statistical Programming, IDAR, Johnson &amp; Johnson, Innovative Medicine </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 3, 2024</p>
+        <p class="date">April 8, 2025</p>
       </div>
     </div>
     
@@ -195,7 +200,15 @@ cookieconsent.run({
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#table-creation-in-clinical-reporting-in-pharma" id="toc-table-creation-in-clinical-reporting-in-pharma" class="nav-link active" data-scroll-target="#table-creation-in-clinical-reporting-in-pharma">Table creation in clinical reporting in pharma</a></li>
+  <li><a href="#code-collaboration" id="toc-code-collaboration" class="nav-link" data-scroll-target="#code-collaboration">Code collaboration</a></li>
+  <li><a href="#get-involved" id="toc-get-involved" class="nav-link" data-scroll-target="#get-involved">Get Involved</a></li>
+  </ul>
+</nav>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -210,33 +223,34 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<div class="cell">
-<div class="cell-output-display">
-<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
-<template></template>
-
-</bslib-tooltip>
-</div>
-</div>
-<p>Shifting to R in an industry traditionally reliant on SAS is no small feat. It requires not just new tools, but also significant upskilling for programmers. Roche-Genentech is addressing this need by offering three publicly available Coursera courses aimed at enhancing the skills of current data scientists within the pharmaceutical sector and introducing our work to those outside the industry. In this post, we are excited to announce the release of <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">our second Coursera course</a>, and we will discuss how R open-source software is being embraced across the industry and particularly within Roche-Genentech. Additionally, we will provide an overview of the three Coursera courses and explain why such initiatives are essential for a successful transition to open-source tools and a new mindset.</p>
-<p>In recent years, the pharmaceutical industry has witnessed a significant shift towards adopting open-source software and programming languages for various applications. Among them, R has emerged as a game-changer, revolutionizing the way we approach Health Authority electronic submissions and pharmaceutical analysis.</p>
-<p>As the industry embraces new ways of working, R has gained immense popularity due to its flexibility, versatility, and extensive range of open-source packages and tools. Open source tools specifically created for the clinical data scientist are collected under and shared within the <a href="https://pharmaverse.org/">pharmaverse</a>, enabling data scientists and researchers to leverage the power of R for a wide array of applications, including clinical trial studies, data set creation, and analytical reports.</p>
-<p>Within Roche-Genentech, a dedicated working group of Data Scientists recognized the potential of R in a pharmaceutical regulatory setting. Leveraging their expertise and <a href="https://pharmaverse.org/">pharmaverse</a> knowledge, they developed a series of trainings on Coursera. These trainings provide hands-on demonstrations and examples, guiding industry professionals on how to effectively utilize R in running a complete clinical trial study. Specifically, the first training, <a href="https://www.coursera.org/learn/making-data-science-work-for-clinical-reporting">Making Data Science Work for Clinical Reporting</a>, offers a broad introduction to the work as a data scientist within the pharmaceutical industry. This should be of particular interest to aspiring clinical data scientists. The second training – which we are releasing this week – dives deep into the workflow of a clinical data scientist and introduces the tools we use on a daily basis. Looking into the future, there will be a project capstone training course that integrates the concepts from the preceding two courses, culminating in comprehensive learning, providing a strong foundation of knowledge for aspiring data scientists using R in the Pharma industry.</p>
-<p>Here is an outline of what participants will gain from the training we are releasing this week.</p>
-<p><a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r"><strong>Hands-On Clinical Reporting Using R</strong></a></p>
-<ol type="1">
-<li><p>Fundamentals &amp; SDTM; the Study Data Tabulation Model</p></li>
-<li><p>ADaM Transformations (Introductory, using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>)</p></li>
-<li><p>ADaM Transformations (Advanced, using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>)</p></li>
-<li><p>Static Tables, Listings, and Graphs (using NEST including <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>tern</template> <a href="https://insightsengineering.github.io/tern/" class="r-link-pkg" target="_blank">{tern}</a> </bslib-tooltip>, <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>GitHub - insightsengineering/rtables: Reporting tables with R</template> <a href="https://github.com/insightsengineering/rtables" class="r-link-pkg" target="_blank">{rtables}</a> </bslib-tooltip>, and <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>rlistings</template> <a href="https://insightsengineering.github.io/rlistings/" class="r-link-pkg" target="_blank">{rlistings}</a> </bslib-tooltip>)</p></li>
-<li><p>Interactive Data Displays (using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>teal</template> <a href="https://insightsengineering.github.io/teal/" class="r-link-pkg" target="_blank">{teal}</a> </bslib-tooltip>)</p></li>
-</ol>
-<p>In essence, participants will learn how to navigate and manipulate datasets using R, ensuring data integrity and accuracy. Additionally, R’s powerful statistical capabilities enable the creation of insightful Tables, Listings, and Figures/Graphs (TLF/Gs), which are vital components of regulatory submissions. Even further, the Coursera training offered by Roche-Genentech will empower industry professionals to unlock the full potential of R Shiny in their analytical reports. This feature enables researchers to present complex data in a user-friendly and interactive manner, enhancing the understanding and interpretation of results.</p>
-<p><em>A stepping stone towards the future:</em> For those in the industry who are embracing these new ways of working, the Coursera training provided by Roche-Genentech serves as a valuable stepping stone into the world of R open-source software. The training equips participants with the necessary skills to harness the power of R, facilitating efficient and effective pharmaceutical analysis.</p>
-<p>In conclusion, the adoption of R open-source software and programming language is transforming the pharmaceutical industry, enabling professionals to streamline their processes, enhance data analysis, and improve regulatory submissions. Roche-Genentech’s commitment to sharing knowledge and expertise through the Coursera trainings demonstrates their dedication to advancing the <a href="https://pharmaverse.org/">pharmaverse</a> As the industry continues to embrace this new direction, the future of pharmaceutical analysis looks increasingly promising with R at its core.</p>
-<p>Your journey to revolutionizing your pharmaceutical analysis knowledge awaits!</p>
-<p>Huge thanks to <a href="https://www.linkedin.com/in/adrian-c-23420033/">Adrian Chan</a> who led the effort of building <a href="https://www.coursera.org/learn/hands-on-clinical-reporting-using-r">this course</a> and the instructors Jana Stoilova, <a href="https://www.linkedin.com/in/jlaxamana/">Joel Laxamana, M.S.</a>, <a href="https://www.linkedin.com/in/leena-khatri-a8a364108/">Leena Khatri</a>, <a href="https://www.linkedin.com/in/tamor/">Tatiana Alonso Amor</a> &amp; <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
+<p>In the ever-evolving field of clinical data analysis, innovation and collaboration are key. Today, we are pleased to share an initial, yet important milestone as part of a collaboration effort between Roche and Clinical &amp; Statistical Programming, IDAR, J&amp;J Innovative Medicine (further referred to as J&amp;J) within the NEST framework.</p>
+<section id="table-creation-in-clinical-reporting-in-pharma" class="level3">
+<h3 class="anchored" data-anchor-id="table-creation-in-clinical-reporting-in-pharma">Table creation in clinical reporting in pharma</h3>
+<p>In clinical trials, the presentation of data is as crucial as the data itself. Clear, accurate, and standardized tables ensure that the results are interpreted correctly and that regulatory bodies can easily review and approve submissions.</p>
+<p>For an overview of creation of tables within end-to-end clinical reporting in pharma, both <a href="https://pharmaverse.org/e2eclinical/tlg/">Pharmaverse TLGs Overview</a> and the effort from <a href="https://rconsortium.github.io/rtrs-wg/">R Consortium</a> are a useful read to compare examples from several packages.</p>
+</section>
+<section id="code-collaboration" class="level3">
+<h3 class="anchored" data-anchor-id="code-collaboration">Code collaboration</h3>
+<p>Moving forward at J&amp;J, we are transitioning towards adopting R as our preferred analytical tool, and we were thrilled with the capabilities within the NEST framework (<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>GitHub - insightsengineering/rtables: Reporting tables with R</template> <a href="https://github.com/insightsengineering/rtables" class="r-link-pkg" target="_blank">{rtables}</a> </bslib-tooltip>, <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>tern</template> <a href="https://insightsengineering.github.io/tern/" class="r-link-pkg" target="_blank">{tern}</a> </bslib-tooltip> and <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>teal</template> <a href="https://insightsengineering.github.io/teal/" class="r-link-pkg" target="_blank">{teal}</a> </bslib-tooltip>) designed by Roche.</p>
+<p>As of today, we are building our new internal standard table shells using the open source packages from this NEST framework.</p>
+<p>The <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>GitHub - insightsengineering/rtables: Reporting tables with R</template> <a href="https://github.com/insightsengineering/rtables" class="r-link-pkg" target="_blank">{rtables}</a> </bslib-tooltip> package is designed to simplify and standardize the process of creating tables for clinical trial reports. It offers a flexible and robust framework for generating high-quality, reproducible tables that adhere to industry standards.</p>
+<p>While the framework is robust in terms of type of analysis that can be performed, a key requirement for <code>J&amp;J</code> was not met. Our table output format requirement is the usage of <code>rtf</code> with <code>non-monospace</code> fonts.</p>
+<p>As such, the initial scope of our collaboration was focusing on this <strong>Output Format Customization</strong> requirement.</p>
+<p>We are proud to share the first result of the collaboration effort! With the current <a href="https://cran.r-project.org/web/packages/rtables/index.html" target="_blank">CRAN</a> release of <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>GitHub - insightsengineering/rtables: Reporting tables with R</template> <a href="https://github.com/insightsengineering/rtables" class="r-link-pkg" target="_blank">{rtables}</a> </bslib-tooltip>, functions related to pagination or export can deal with <code>truetype</code> fonts. See the <a href="https://cran.r-project.org/web/packages/rtables/news/news.html" target="_blank">NEWS updates</a> (rtables 0.6.8) to find out more details on the new features.</p>
+<p>While a formal <code>rtf</code> exporter function is not yet available, these updates were key to be able to create tables in our desired output format. Further development will be done to release this functionality for broader usage.</p>
+<p>By improving the efficiency and reliability of data presentation, researchers can focus more on the science and less on the formatting. With this update, we have to focus even less on output formatting issues.</p>
+</section>
+<section id="get-involved" class="level3">
+<h3 class="anchored" data-anchor-id="get-involved">Get Involved</h3>
+<p>We believe in the power of community and open-source development.</p>
+<p>We are thankful to Roche for welcoming us as a new collaborator and giving us the opportunity to being part of this journey. Let’s make clinical data analysis smarter, faster, and more reliable than ever before!</p>
+<p>This partnership marks a significant milestone in our commitment to contribute to open source package development within a cross pharma network of companies.</p>
+<p>We are excited about the potential of NEST packages to transform the way clinical trial data is presented and are confident that, with combined expertise, our industry can achieve remarkable results.</p>
+<p>For more information, visit the <a href="https://insightsengineering.github.io/nest/index.html" target="_blank">NEST project page</a>, and don’t forget to follow our progress on <a href="https://github.com/insightsengineering" target="_blank">GitHub</a>.</p>
+<p>As we embarked on this journey, we invite you to join us. Whether you’re an experienced user with feedback, a developer interested in contributing code, or a researcher looking to leverage <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>GitHub - insightsengineering/rtables: Reporting tables with R</template> <a href="https://github.com/insightsengineering/rtables" class="r-link-pkg" target="_blank">{rtables}</a> </bslib-tooltip>, <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>tern</template> <a href="https://insightsengineering.github.io/tern/" class="r-link-pkg" target="_blank">{tern}</a> </bslib-tooltip>, or <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>teal</template> <a href="https://insightsengineering.github.io/teal/" class="r-link-pkg" target="_blank">{teal}</a> </bslib-tooltip> for your projects, your input is invaluable.</p>
+<p>We welcome both individual contributors and organizations. Please reach out to contribute via our <a href="https://insightsengineering.github.io/rtables/" target="_blank">GitHub</a>, via <a href="https://pharmaverse.slack.com/">pharmaverse/slack</a></p>
 <!--------------- appendices go here ----------------->
+</section>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -248,24 +262,24 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2025-04-08 12:23:22.550232</p>
+<p>2025-04-08 12:21:55.029331</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{laxamana2024,
-  author = {Laxamana, Joel and Thoma, Stefan},
-  title = {Introducing a {[}New {Coursera}
-    Course{]}(https://Www.coursera.org/Learn/Hands-on-Clinical-Reporting-Using-r)
-    for Hands-on Clinical Data Science Using {R.}},
-  date = {2024-07-03},
-  url = {https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-03-11_code_collaborati.../code_collaboration_in__ne_st.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{augustyns2025,
+  author = {Augustyns, Ilse and Masel, Nicholas and Lewandowski, Tad and
+    Becker, Gabriel and \&amp; Statistical Programming, IDAR, Johnson \&amp;
+    Johnson, Innovative Medicine, Clinical},
+  title = {Code Collaboration in {NEST}},
+  date = {2025-04-08},
+  url = {https://pharmaverse.github.io/blog/posts/2025-04-08_code_collab.../code_collaboration_in__ne_st.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-laxamana2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Laxamana, Joel, and Stefan Thoma. 2024. <span>“Introducing a [New
-Coursera
-Course](https://Www.coursera.org/Learn/Hands-on-Clinical-Reporting-Using-r)
-for Hands-on Clinical Data Science Using R.”</span> July 3, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html">https://pharmaverse.github.io/blog/posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-augustyns2025" class="csl-entry quarto-appendix-citeas" role="listitem">
+Augustyns, Ilse, Nicholas Masel, Tad Lewandowski, Gabriel Becker, and
+Clinical &amp; Statistical Programming, IDAR, Johnson &amp; Johnson,
+Innovative Medicine. 2025. <span>“Code Collaboration in NEST.”</span>
+April 8, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-04-08_code_collab.../code_collaboration_in__ne_st.html">https://pharmaverse.github.io/blog/posts/2025-04-08_code_collab.../code_collaboration_in__ne_st.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
