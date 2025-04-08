@@ -57,6 +57,7 @@ if (nrow(all_typos) > 0) {
 #-------------------------- Style-check ----------------------------------------
 
 # This is what happens in CI/CD:
+
 styler::style_dir(dry = "fail")
 
 # Fix it locally:
