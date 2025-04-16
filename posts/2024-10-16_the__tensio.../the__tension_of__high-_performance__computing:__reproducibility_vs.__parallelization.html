@@ -254,7 +254,7 @@ cookieconsent.run({
 <section id="harnessing-hpc-for-drug-development" class="level2">
 <h2 class="anchored" data-anchor-id="harnessing-hpc-for-drug-development">Harnessing HPC for Drug Development</h2>
 <p>In pharmaceutical research, high-performance computing (HPC) plays a pivotal role in driving advancements in drug discovery and development. From analyzing vast genomic datasets to simulating drug interactions across diverse populations, HPC enables researchers to tackle complex computational tasks at high speeds. As pharmaceutical research becomes increasingly data-driven, the need for powerful computational tools has grown, allowing for more accurate predictions, faster testing, and more efficient processes. However, with the growing complexity and scale of these computations, ensuring reproducibility of results becomes a significant challenge.</p>
-<p>In this blog post, we will explore common reproducibility challenges in drug development and simulations, using the <a href="https://shikokuchuo.net/mirai/"><code>{mirai}</code></a> package as a backend solution to manage parallelization.</p>
+<p>In this blog post, we will explore common reproducibility challenges in drug development and simulations, using the {mirai} package as a backend solution to manage parallelization.</p>
 </section>
 <section id="the-problem-reproducibility-in-parallel-processing" class="level2">
 <h2 class="anchored" data-anchor-id="the-problem-reproducibility-in-parallel-processing">The Problem: Reproducibility in Parallel Processing</h2>
@@ -340,7 +340,7 @@ $result
 </section>
 <section id="task-dispatching-and-rng-management" class="level3">
 <h3 class="anchored" data-anchor-id="task-dispatching-and-rng-management">Task Dispatching and RNG Management</h3>
-<p>By default, <code>{mirai}</code> uses an advanced dispatcher to manage task distribution efficiently, scheduling tasks in a First-In-First-Out manner and leveraging <a href="https://shikokuchuo.net/nanonext/"><code>{nanonext}</code></a> primitives for zero-latency, resource-free task management. However, its asynchronous execution can hinder reproducibility, especially with random number generation (RNG) or tasks needing strict order.</p>
+<p>By default, <code>{mirai}</code> uses an advanced dispatcher to manage task distribution efficiently, scheduling tasks in a First-In-First-Out manner and leveraging {nanonext} primitives for zero-latency, resource-free task management. However, its asynchronous execution can hinder reproducibility, especially with random number generation (RNG) or tasks needing strict order.</p>
 <p>To enhance reproducibility, <code>{mirai}</code> allows disabling the dispatcher which usually decides the order in which tasks are run. Instead, it connects directly to the workers one by one in a simple order (see <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling">round-robin</a>). While less efficient, this approach provides greater control over task execution and is better suited for ensuring reproducibility by initializing <a href="doi:10.1287/opre.47.1.159">L’Ecuyer-CMRG RNG streams</a>.</p>
 <p>In the following example, we simulate drug efficacy across different patient cohorts using parallel processing with the <code>{mirai}</code> package. We define three cohorts, each with a different mean drug effect and standard deviation, and initialize four daemons to handle the computations.</p>
 <div class="cell">
@@ -384,16 +384,16 @@ $result
 <pre><code># A tibble: 1,000 × 3
    patient_id mean_efficacy sd_efficacy
         &lt;int&gt;         &lt;dbl&gt;       &lt;dbl&gt;
- 1          1         0.618      0.101 
- 2          2         0.776      0.0461
- 3          3         0.786      0.0883
- 4          4         0.625      0.217 
- 5          5         0.663      0.124 
- 6          6         0.586      0.105 
- 7          7         0.687      0.100 
- 8          8         0.537      0.189 
- 9          9         0.719      0.120 
-10         10         0.707      0.0571
+ 1          1         0.608      0.116 
+ 2          2         0.809      0.0664
+ 3          3         0.786      0.0545
+ 4          4         0.676      0.136 
+ 5          5         0.695      0.0356
+ 6          6         0.583      0.114 
+ 7          7         0.731      0.0434
+ 8          8         0.574      0.0944
+ 9          9         0.712      0.0832
+10         10         0.716      0.0319
 # ℹ 990 more rows</code></pre>
 </div>
 </div>
@@ -421,7 +421,7 @@ $result
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2025-04-08 12:22:36.17224</p>
+<p>2025-04-16 09:36:57.22008</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
