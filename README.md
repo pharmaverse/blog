@@ -127,7 +127,9 @@ install.packages(
     "admiralophtha",
     "admiralpeds",
     "admiralvaccine",
-    "admiralmetabolic"
+    "admiralmetabolic",
+    "autoslider.core",
+    "filters"
   )
 )
 ```
