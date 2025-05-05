@@ -1,0 +1,338 @@
+---
+title: "logrx 0.4.0: logs for your R programs"
+author:
+  - name: Ben Straub
+description: "Are you in need of a log to ensure traceability and reproducibility
+for your Clinical Reporting R programs?"
+# Note that the date below will be auto-updated when the post is merged.
+date: "2025-05-05"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Logs, Technical]
+# Feel free to change the image
+image: "log.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_logrx_0.4.0..."
+library(link)
+link::auto()
+link::auto(keep_pkg_prefix = FALSE)
+```
+
+<!--------------- post begins here ----------------->
+
+## Introducing logrx 0.4.0: Enhanced Logging for Your R Programs
+
+The {logrx} R package facilitate logging in a clinical environment with the goal of making code easily traceable and reproducible. If you would like to take the package for a spin, please check out the core function [axecute()](https://pharmaverse.github.io/logrx/reference/axecute.html) to quickly make a log of your R file. If you would like even more information on each section of the log and how to further enhance your logs please see the [Get Started](https://pharmaverse.github.io/logrx/articles/logrx.html).
+
+The team from GSK, Atorus, J&J and Pfzier are excited to announce a mini-release of {logrx} 0.4.0, an update designed to further enrich your logging experience in R. We have three exciting enhancements to share to help users maintain clearer and more efficient logs. 
+
+## Making your first log with logrx
+
+Before we introduce the new features, let's first do a quick introduction to {logrx} with the core function `axecute()`. You can expand the `> R File axecuted by logrx` and `> Log File created from axecute() from logrx` folds to see the file as well as the log that is produced.
+
+```{r, message = FALSE, warning = FALSE, results= FALSE}
+logrx::axecute("logrx_test_file.R")
+```
+
+```{r, eval = FALSE}
+#| code-fold: true
+#| code-summary: "R File axecuted by logrx"
+
+# Load necessary libraries
+library(pharmaversesdtm)
+library(dplyr)
+
+# Check if the package is installed
+if (!requireNamespace("pharmaversesdtm", quietly = TRUE)) {
+  stop("The pharmaversesdtm package is not installed. Please install it first.")
+}
+
+# Load example data
+data("dm", package = "pharmaversesdtm")
+
+# Display a message
+message("Starting data manipulation using dplyr...")
+
+# Execute the manipulation
+tryCatch({
+  # Simple dplyr operations
+  # Filter for males and select specific columns
+  filtered_data <- dm %>%
+    filter(RACE == "M") %>%
+    select(STUDYID, USUBJID, AGE, SEX)
+
+  # Print the first few rows of the filtered data
+  print(filtered_data)
+
+  # If the dataset is empty after filtering, provide a warning
+  if (nrow(filtered_data) == 0) {
+    warning("The filtered dataset has no data. Please check your filter criteria.")
+  }
+}, error = function(err) {
+  warning("An error occurred during processing: ", err$message)
+})
+
+# Display a message indicating completion
+message("Data manipulation completed.")
+
+```
+
+```{r, engine='sh', eval = FALSE}
+#| code-fold: true
+#| code-summary: "Log File created from axecute() from logrx"
+--------------------------------------------------------------------------------
+-                                logrx Metadata                                -
+--------------------------------------------------------------------------------
+This log was generated using logrx 0.3.2
+logrx package version: 0.3.2
+logrx build: RSPM (R 4.4.0)
+logrx link to repository: https://github.com/pharmaverse/logrx
+--------------------------------------------------------------------------------
+-                          User and File Information                           -
+--------------------------------------------------------------------------------
+User: r590548
+File Name: logrx_test_file.R
+File Path: /cloud/project/posts/zzz_DO_NOT_EDIT_logrx_0.4.0...
+File HashSum: 242ca6d9df61ef9ee89bf6fa36ba318984fe2b22
+--------------------------------------------------------------------------------
+-                             Session Information                              -
+--------------------------------------------------------------------------------
+─ Session info ─────────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.4.3 (2025-02-28)
+ os       Ubuntu 20.04.6 LTS
+ system   x86_64, linux-gnu
+ ui       RStudio
+ language (EN)
+ collate  C.UTF-8
+ ctype    C.UTF-8
+ tz       UTC
+ date     2025-05-05
+ rstudio  2024.04.2+764.pro1 Chocolate Cosmos (server)
+ pandoc   3.1.11 @ /usr/lib/rstudio-server/bin/quarto/bin/tools/x86_64/ (via
+	  rmarkdown)
+ quarto   1.7.29 @ /usr/bin/quarto
+
+─ Packages ─────────────────────────────────────────────────────────────────────
+ package         * version  date (UTC) lib source
+ admiraldev      * 1.2.0    2025-01-15 [1] RSPM (R 4.4.0)
+ backports         1.5.0    2024-05-23 [1] RSPM (R 4.4.0)
+ bslib             0.9.0    2025-01-30 [1] RSPM (R 4.4.0)
+ cachem            1.1.0    2024-05-16 [1] RSPM (R 4.4.0)
+ checkmate       * 2.3.2    2024-07-29 [1] RSPM (R 4.4.0)
+ cli               3.6.3    2024-06-21 [1] RSPM (R 4.4.0)
+ digest            0.6.37   2024-08-19 [1] RSPM (R 4.4.0)
+ dplyr           * 1.1.4    2023-11-17 [1] RSPM (R 4.4.0)
+ evaluate          1.0.3    2025-01-10 [1] RSPM (R 4.4.0)
+ fastmap           1.2.0    2024-05-15 [1] RSPM (R 4.4.0)
+ fs                1.6.5    2024-10-30 [1] RSPM (R 4.4.0)
+ generics          0.1.3    2022-07-05 [1] RSPM (R 4.4.0)
+ glue              1.8.0    2024-09-30 [1] RSPM (R 4.4.0)
+ hms               1.1.3    2023-03-21 [1] RSPM (R 4.4.0)
+ htmltools         0.5.8.1  2024-04-04 [1] RSPM (R 4.4.0)
+ httpuv            1.6.15   2024-03-26 [1] RSPM (R 4.4.0)
+ jquerylib         0.1.4    2021-04-26 [1] RSPM (R 4.4.0)
+ jsonlite          1.8.9    2024-09-20 [1] RSPM (R 4.4.0)
+ knitr             1.49     2024-11-08 [1] RSPM (R 4.4.0)
+ later             1.4.1    2024-11-27 [1] RSPM (R 4.4.0)
+ lifecycle         1.0.4    2023-11-07 [1] RSPM (R 4.4.0)
+ link            * 2024.4.0 2024-03-11 [1] RSPM (R 4.4.0)
+ logrx             0.3.2    2025-02-18 [1] RSPM (R 4.4.0)
+ lubridate         1.9.4    2024-12-08 [1] RSPM (R 4.4.0)
+ magrittr          2.0.3    2022-03-30 [1] RSPM (R 4.4.0)
+ MedDataSets     * 0.1.0    2024-10-24 [1] RSPM (R 4.4.0)
+ memoise           2.0.1    2021-11-26 [1] RSPM (R 4.4.0)
+ mime              0.12     2021-09-28 [1] RSPM (R 4.4.0)
+ miniUI            0.1.1.1  2018-05-18 [1] RSPM (R 4.4.0)
+ pharmaversesdtm * 1.2.0    2025-01-23 [1] RSPM (R 4.4.0)
+ pillar            1.10.1   2025-01-07 [1] RSPM (R 4.4.0)
+ pkgconfig         2.0.3    2019-09-22 [1] RSPM (R 4.4.0)
+ processx          3.8.5    2025-01-08 [1] RSPM (R 4.4.0)
+ promises          1.3.2    2024-11-28 [1] RSPM (R 4.4.0)
+ ps                1.8.1    2024-10-28 [1] RSPM (R 4.4.0)
+ purrr             1.0.4    2025-02-05 [1] RSPM (R 4.4.0)
+ quarto          * 1.4.4    2024-07-20 [1] RSPM (R 4.4.0)
+ R.cache           0.16.0   2022-07-21 [1] RSPM (R 4.4.0)
+ R.methodsS3       1.8.2    2022-06-13 [1] RSPM (R 4.4.0)
+ R.oo              1.27.0   2024-11-01 [1] RSPM (R 4.4.0)
+ R.utils           2.12.3   2023-11-18 [1] RSPM (R 4.4.0)
+ R6                2.6.0    2025-02-12 [1] RSPM (R 4.4.0)
+ Rcpp              1.0.14   2025-01-12 [1] RSPM (R 4.4.0)
+ readr           * 2.1.5    2024-01-10 [1] RSPM (R 4.4.0)
+ rlang           * 1.1.5    2025-01-17 [1] RSPM (R 4.4.0)
+ rmarkdown         2.29     2024-11-04 [1] RSPM (R 4.4.0)
+ rstudioapi        0.17.1   2024-10-22 [1] RSPM (R 4.4.0)
+ sass              0.4.9    2024-03-15 [1] RSPM (R 4.4.0)
+ sessioninfo       1.2.3    2025-02-05 [1] RSPM (R 4.4.0)
+ shiny             1.10.0   2024-12-14 [1] RSPM (R 4.4.0)
+ spelling          2.3.1    2024-10-04 [1] RSPM (R 4.4.0)
+ stringi           1.8.4    2024-05-06 [1] RSPM (R 4.4.0)
+ stringr         * 1.5.1    2023-11-14 [1] RSPM (R 4.4.0)
+ styler            1.10.3   2024-04-07 [1] RSPM (R 4.4.0)
+ tibble            3.2.1    2023-03-20 [1] RSPM (R 4.4.0)
+ tidyr             1.3.1    2024-01-24 [1] RSPM (R 4.4.0)
+ tidyselect        1.2.1    2024-03-11 [1] RSPM (R 4.4.0)
+ timechange        0.3.0    2024-01-18 [1] RSPM (R 4.4.0)
+ tzdb              0.4.0    2023-05-12 [1] RSPM (R 4.4.0)
+ urlchecker        1.0.1    2021-11-30 [1] RSPM (R 4.4.0)
+ vctrs             0.6.5    2023-12-01 [1] RSPM (R 4.4.0)
+ waiter            0.2.5    2022-01-03 [1] RSPM (R 4.4.0)
+ withr             3.0.2    2024-10-28 [1] RSPM (R 4.4.0)
+ xfun              0.50     2025-01-07 [1] RSPM (R 4.4.0)
+ xtable            1.8-4    2019-04-21 [1] RSPM (R 4.4.0)
+ yaml              2.3.10   2024-07-26 [1] RSPM (R 4.4.0)
+
+ [1] /cloud/lib/x86_64-pc-linux-gnu-library/4.4
+ [2] /opt/R/4.4.1/lib/R/library
+ [3] /opt/R/4.4.2/lib/R/library
+ [4] /opt/R/4.4.3/lib/R/library
+ * ── Packages attached to the search path.
+
+─ External software ────────────────────────────────────────────────────────────
+ setting        value
+ cairo          1.16.0
+ cairoFT
+ pango          1.44.7
+ png            1.6.37
+ jpeg           8.0
+ tiff           LIBTIFF, Version 4.1.0
+ tcl            8.6.10
+ curl           7.68.0
+ zlib           1.2.11
+ bzlib          1.0.8, 13-Jul-2019
+ xz             5.2.4
+ deflate
+ PCRE           10.34 2019-11-21
+ ICU            66.1
+ TRE            TRE 0.8.0 R_fixes (BSD)
+ iconv          glibc 2.31
+ readline       8.0
+ BLAS           /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+ lapack         /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
+ lapack_version 3.9.0
+
+─ Python configuration ─────────────────────────────────────────────────────────
+ Python is not available
+
+────────────────────────────────────────────────────────────────────────────────
+--------------------------------------------------------------------------------
+-                               Masked Functions                               -
+--------------------------------------------------------------------------------
+function `dm` from {package:pharmaversesdtm} by .GlobalEnv
+function `words` from {package:stringr} by .GlobalEnv
+function `file` from {package:base} by .GlobalEnv
+function `replace` from {package:base} by .GlobalEnv
+function `ts` from {package:stats} by package:pharmaversesdtm
+function `cm` from {package:grDevices} by package:pharmaversesdtm
+function `as_label` from {package:dplyr} by package:rlang
+function `enexpr` from {package:dplyr} by package:rlang
+function `enexprs` from {package:dplyr} by package:rlang
+function `enquo` from {package:dplyr} by package:rlang
+function `enquos` from {package:dplyr} by package:rlang
+function `ensym` from {package:dplyr} by package:rlang
+function `ensyms` from {package:dplyr} by package:rlang
+function `expr` from {package:dplyr} by package:rlang
+function `quo` from {package:dplyr} by package:rlang
+function `quo_name` from {package:dplyr} by package:rlang
+function `quos` from {package:dplyr} by package:rlang
+function `sym` from {package:dplyr} by package:rlang
+function `syms` from {package:dplyr} by package:rlang
+function `%||%` from {package:base} by package:rlang
+function `assert_atomic_vector` from {package:checkmate} by package:admiraldev
+function `assert_data_frame` from {package:checkmate} by package:admiraldev
+function `assert_function` from {package:checkmate} by package:admiraldev
+function `assert_named` from {package:checkmate} by package:admiraldev
+function `anti_join` from {package:dplyr} by package:admiraldev
+function `filter_if` from {package:dplyr} by package:admiraldev
+function `inner_join` from {package:dplyr} by package:admiraldev
+function `left_join` from {package:dplyr} by package:admiraldev
+function `%>%` from {package:stringr} by package:dplyr
+function `filter` from {package:stats} by package:dplyr
+function `lag` from {package:stats} by package:dplyr
+function `intersect` from {package:base} by package:dplyr
+function `setdiff` from {package:base} by package:dplyr
+function `setequal` from {package:base} by package:dplyr
+function `union` from {package:base} by package:dplyr
+function `plot` from {package:base} by package:graphics
+function `body<-` from {package:base} by package:methods
+function `kronecker` from {package:base} by package:methods
+--------------------------------------------------------------------------------
+-                          Used Package and Functions                          -
+--------------------------------------------------------------------------------
+{package:base} library, requireNamespace, stop, message, tryCatch, print, nrow, warning
+{package:dplyr} %>%, filter, select
+{package:utils} data
+--------------------------------------------------------------------------------
+-                         Program Run Time Information                         -
+--------------------------------------------------------------------------------
+Start time: 2025-05-05 13:39:48 UTC
+End time: 2025-05-05 13:39:49 UTC
+Run time: 1 seconds
+--------------------------------------------------------------------------------
+-                             Errors and Warnings                              -
+--------------------------------------------------------------------------------
+Errors:
+	
+
+Warnings:
+	The filtered dataset has no data. Please check your filter criteria.
+--------------------------------------------------------------------------------
+-                         Messages, Output, and Result                         -
+--------------------------------------------------------------------------------
+Messages:
+	Starting data manipulation using dplyr...
+	Data manipulation completed.
+Output:
+	
+
+Result:
+	NULL
+--------------------------------------------------------------------------------
+-                               Log Output File                                -
+--------------------------------------------------------------------------------
+Log name: logrx_test_file.log
+Log path: /cloud/project/posts/zzz_DO_NOT_EDIT_logrx_0.4.0...
+
+```
+
+It is that easy to make a log for your R file with this lightweight logging package.
+
+## New Features
+
+### Enhanced Functionality with `axecute()`
+
+The latest update introduces the `extra_info` parameter in the logrx::axecute() function. This optional parameter allows users to pass a list object directly into the extra info section of the log, formatted in YAML. This enhancement opens up new possibilities for adding comprehensive contextual information to your logs, ensuring they are not only detailed but also structured for easy interpretation.
+
+### Create a `renv.lock` from a `logrx` `.log` file
+
+A [new vignette](https://pharmaverse.github.io/logrx/articles/generate-lockfile.html) has been added to guide users in creating a {renv} lockfile from a {logrx} lock file!  Now this is reproducible R code!! This document provides step-by-step instructions, helping you secure your project dependencies effortlessly and ensuring reproducible development environments.
+
+### Shiny Addin Changes
+
+As part of streamlining logrx's functionality, the Shiny Addin has been removed from the package. But don't worry! It hasn’t disappeared entirely.
+A standalone package called {logrxaddin} has been developed to house the Shiny Addin independently. This separation allows for more focused development and updates tailored specifically to the Shiny environment. For more details, feel free to explore {logrxaddin}. The team hopes to experiment and enhance this Addin making it even better!
+
+![](logrx_gif.gif)
+
+### Conclusion
+
+{logrx} 0.4.0 continues to evolve how logs are managed and interpreted in R. Whether you're a seasoned developer or a novice, these new features and updates provide the tools for building more insightful logs and honing your logging practices. We hope to release a `0.5.0` in the late fall of 2025 with the ability to customize the log file to your needs as well as enhance the Shiny Addin to allow for bulk logging of scripts. 
+
+Happy logging of those R files!
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```

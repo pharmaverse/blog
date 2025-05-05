@@ -130,6 +130,7 @@ install.packages(
     "admiralmetabolic",
     "autoslider.core",
     "filters"
+    "logrx"
   )
 )
 ```
