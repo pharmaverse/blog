@@ -27,7 +27,7 @@ link::auto(keep_pkg_prefix = FALSE)
 
 ## Introducing logrx 0.4.0: Enhanced Logging for Your R Programs
 
-We're excited to announce the release of {logrx} 0.4.0, an update designed to enrich your logging experience in R. We have few exciting enhancements to share to help users maintain clearer and more efficient logs. Let’s dive into what’s new in {logrx} 0.4.0!
+The {logrx} R package facilitate logging in a clinical environment with the goal of making code easily traceable and reproducible. The team from GSK, Atorus, J&J and Pfzier are excited to announce a mini-release of {logrx} 0.4.0, an update designed to further enrich your logging experience in R. We have a three exciting enhancements to share to help users maintain clearer and more efficient logs. 
 
 ## New Features
 
@@ -35,19 +35,20 @@ We're excited to announce the release of {logrx} 0.4.0, an update designed to en
 
 The latest update introduces the `extra_info` parameter in the logrx::axecute() function. This optional parameter allows users to pass a list object directly into the extra info section of the log, formatted in YAML. This enhancement opens up new possibilities for adding comprehensive contextual information to your logs, ensuring they are not only detailed but also structured for easy interpretation.
 
+### Create a `renv.lock` from a `logrx` `.log` file
+
+A [new vignette](https://pharmaverse.github.io/logrx/articles/generate-lockfile.html) has been added to guide users in creating a {renv} lockfile from a {logrx} lock file!  Now this is reproducible R code!! This document provides step-by-step instructions, helping you secure your project dependencies effortlessly and ensuring reproducible development environments.
+
 ### Shiny Addin Changes
 
 As part of streamlining logrx's functionality, the Shiny Addin has been removed from the package. But don't worry! It hasn’t disappeared entirely.
-A standalone package called [logrxaddin](https://github.com/pharmaverse/logrxaddin) has been developed to house the Shiny Addin independently. This separation allows for more focused development and updates tailored specifically to the Shiny environment. For more details, feel free to explore [logrxaddin](https://github.com/pharmaverse/logrxaddin)
+A standalone package called {logrxaddin} has been developed to house the Shiny Addin independently. This separation allows for more focused development and updates tailored specifically to the Shiny environment. For more details, feel free to explore {logrxaddin}. The team hopes to experiment and enhance this Addin making it even better!
 
 ![](logrx_gif.gif)
 
-## Create a `renv.lock` from a `logrx` `.log` file
+### Conclusion
 
-A [new vignette](https://pharmaverse.github.io/logrx/articles/generate-lockfile.html) has been added to guide users in creating a lockfile. This document provides step-by-step instructions, helping you secure your project dependencies effortlessly and ensuring reproducible development environments.
-Conclusion
-
-{logrx} 0.4.0 continues to evolve how logs are managed and interpreted in R. Whether you're a seasoned developer or a novice, these new features and updates provide the tools for building more insightful logs and honing your logging practices.
+{logrx} 0.4.0 continues to evolve how logs are managed and interpreted in R. Whether you're a seasoned developer or a novice, these new features and updates provide the tools for building more insightful logs and honing your logging practices. We hope to release a `0.5.0` in the late fall of 2025 with the ability to customize the log file to your needs as well as enhance the Shiny Addin to allow for bulk logging of scripts. 
 
 Happy logging!
 
