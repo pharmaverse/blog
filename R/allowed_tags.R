@@ -3,5 +3,5 @@
 
 allowed_tags <- c(
   "Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community",
-  "Conferences", "Submissions", "Technical", "DEI", "Logs"
+  "Conferences", "Submissions", "Technical", "DEI", "Logging"
 )
