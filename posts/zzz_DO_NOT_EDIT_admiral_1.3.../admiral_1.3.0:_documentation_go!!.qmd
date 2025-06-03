@@ -1,8 +1,9 @@
 ---
 title: "admiral 1.3.0: documentation go!!"
 author:
-  - name: Ben and Edoiardo
-description: "asdf"
+  - name: Ben Straub 
+  - name: Edoardo Mancini
+description: "{admiral} 1.3 is here - say hello to supercharged examples, bug fixes and more!"
 # Note that the date below will be auto-updated when the post is merged.
 date: "2025-06-20"
 # Please do not use any non-default categories.
@@ -23,38 +24,131 @@ link::auto()
 
 <!--------------- post begins here ----------------->
 
-Exciting Updates in the Pharmaverse: Unveiling New Features and Enhancements!
-Welcome back to the Pharmaverse Blog, where we bring you the latest and greatest from the world of pharmaceutical programming! We’ve got a fantastic array of updates and enhancements to share with you today, and we can’t wait for you to dive in!
+The second half of 2025 brings us once again to an exciting {admiral} release - doesn't time fly?! Read through this blog post to learn more what to expect in {admiral} 1.3.
 
-## New Features
+## Headline enhancement
 
-Our team has been busy enhancing the documentation to make your life easier and more productive. With default values now displayed in arguments descriptions, grasping complex functions has become a breeze. We’ve introduced titled examples with detailed descriptions, neatly organized in the Table of Contents for easy navigation—check out derive_extreme_records() to see these improvements in action! Plus, RStudio users, rejoice! The outputs of these structured examples will now be displayed seamlessly on your help pages. We’re thrilled to add new lab grading metadata specifically tailored for US (Conventional) units across three grading criteria. Admiral is not just your go-to for SI units anymore; it now includes:
-atoxgr_criteria_ctcv4_uscv (NCI-CTCAEv4 criteria)
-atoxgr_criteria_ctcv5_uscv (NCI-CTCAEv5 criteria)
+Our crowing update this release cycle is...
+
+**Documentation updates!**
+
+Hmmm, doesn't sound fancy enough? What about...
+
+<span style="font-size: 2em;
+              background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;">
+Documentation updates!!
+</span>
+
+Still not that interesting? Well, let us change your mind with an example. Here's what the examples section of the reference page for admiral::derive_extreme_records() looked like in {admiral} 1.2:
+
+<img src="derive_extreme_records_before.png" align="center" style="float:right" width="100%"/>
+
+And here's what it will look like in {admiral} 1.3:
+
+<img src="derive_extreme_records_before.png" align="center" style="float:right" width="100%"/>
+
+That's right! Through the implementation of a custom roclet, some of our reference examples have now been enhanced such that:
+
+- Each example has a title, which is also shown in the table of contents, and a description explaining what is happening.
+- The examples are often building up in complexity, starting from a simple application of the function in a toy case and building up to more structure use-cases.
+- The examples now cover __all__ the arguments of the function.
+
+As usual, you can access these reference examples from our [documentation website](https://pharmaverse.github.io/admiral/dev/reference/) or alternatively directly from RStudio's own Help pane by typing `?your_function_name` in the console.
+
+For this first iteration, we have targeted some of the most complex, flexible and important functions within {admiral}. As such, at the time of writing, the functions which have received this enhanced examples treatment are.
+
+- admiral::derive_extreme_records()
+- admiral::derive_param_tte()
+- admiral::derive_summary_records()
+- admiral::derive_extreme_event()
+- admiral::derive_vars_joined()
+- admiral::derive_vars_joined_summary()
+- admiral::derive_vars_merged()
+- admiral::derive_vars_crit_flag()
+- admiral::derive_var_trtemfl()
+- admiral::derive_param_computed()
+- admiral::derive_vars_dt()
+- admiral::derive_vars_dt()
+- admiral::derive_var_extreme_flag()
+
+This is not to say that the other functions do not have examples anymore; rather, they retain the previous material. 
+
+Now, our aim as a development team is to continually enhance the reference examples of our large portfolio of functions regularly across release cycles. If you'd like to play a part, this is also a great opportunity to contribute to {admiral} yourself - please pick an {admiral} function you'd like to enhance and make an issue in our Github repository, tagging it with the "Documentation" and "Examples Enhancement" labels.
+
+We've also made various other small documentation enhancements, which you can peruse in the [Changelog](https://pharmaverse.github.io/admiral/main/news/index.html).
+
+## Other new features
+
+But we haven't stopped there! Here's what else is new in {admiral} 1.3:
+
+- We've enhaned our catalogue of functions with a new addition: admiral::derive_vars_joined_summary(). This function is similar to admiral::derive_vars_joined(), but allows the derivation of summary variables (e.g. cumulative sum, etc) rather than variables using a formula. For instance, here's an example derivation in ADAE of `CUMDOSA`, the cumulative dose received up until an adverse event:
+
+```{r, eval = TRUE}
+library(tibble)
+library(dplyr, warn.conflicts = FALSE)
+library(admiral)
+
+adex <- tribble(
+  ~USUBJID, ~ADY, ~AVAL,
+  "1",         1,    10,
+  "1",         8,    20,
+  "1",        15,    10,
+  "2",         8,     5
+)
+
+adae <- tribble(
+  ~USUBJID, ~ADY, ~AEDECOD,
+  "1",         2, "Fatigue",
+  "1",         9, "Influenza",
+  "1",        15, "Theft",
+  "1",        15, "Fatigue",
+  "2",         4, "Parasomnia",
+  "3",         2, "Truancy"
+)
+
+derive_vars_joined_summary(
+  dataset = adae,
+  dataset_add = adex,
+  by_vars = exprs(USUBJID),
+  filter_join = ADY.join <= ADY,
+  join_type = "all",
+  join_vars = exprs(ADY),
+  new_vars = exprs(CUMDOSA = sum(AVAL, na.rm = TRUE))
+)
+```
+
+- We now provide new lab grading metadata specifically tailored for US (Conventional) units across three grading criteria: NCI-CTCAEv4 (`atoxgr_criteria_ctcv4_uscv`), NCI-CTCAEv5 (`atoxgr_criteria_ctcv5_uscv`), and `DAIDs` (atoxgr_criteria_daids_uscv).
+- Default values for function arguments are now always displayed in arguments description.
 atoxgr_criteria_daids_uscv (DAIDs criteria)
 
-## Updates of Existing Functions
+## Updates of existing functions and bug fixes
 
-Our existing functions are getting a makeover with enhancements that promise to streamline your workflow. derive_vars_joined() now applies filter_add for all join types correctly, fixing previous oversights. The extract_duplicate_records() function has been improved to consider all variables from the input dataset if no by_vars are specified, providing you more flexibility and control. Say goodbye to issues when dealing with empty subsets as slice_derivation() now calls derivation for all subsets, ensuring flawless operation even when the input dataset is empty. Dive deep into all scenarios discussed in the PHUSE White Paper on Treatment-Emergent AEs with the newly enhanced examples section for derive_var_trtemfl(). We’ve upped our game in grading metadata with derive_var_atoxgr_dir() now capable of handling more than one unit, offering you more versatility. Our background checks in derive_summary_records() got an improvement; you no longer need to worry about by_vars being a strict requirement in the dataset, resulting in smoother operations. Functions like derive_vars_joined(), derive_var_joined_exist_flag(), and filter_joined() now deliver accurate results when used with join_type = "before" or join_type = "after", even on differing datasets or when the filter_add argument is employed.
+We've also been busy updating some of our existing functions in response to bug fixes and requests for enhancements. Here are some of them (full list in [Changelog](https://pharmaverse.github.io/admiral/main/news/index.html)):
+
+- admiral::derive_vars_joined() now applies `filter_add` for all join types correctly, fixing an issue where it was ignored when `join_type != "all"`. 
+- admiral::extract_duplicate_records()`  has been improved to consider all variables from the input dataset if no by_vars are specified
+- admiral::slice_derivation() now calls derivation for all subsets, ensuring flawless operation even when the input dataset is empty
+- admiral::derive_summary_records();s background checks were improved, because they expected `by_vars` in the dataset dataset although the code did not require it. This requirement has therefore been dropped.
+- Functions like admiral::derive_vars_joined(), admiral::derive_var_joined_exist_flag(), and admiral::filter_joined() now deliver accurate results when used with `join_type = "before"` or `join_type = "after"`, even on differing datasets or when the `filter_add argument` is employed.
+- admiral::derive_vars_dt(), admiral::derive_vars_dtm(), admiral::impute_dtc_dt(), admiral::impute_dtc_dtm(), admiral::convert_dtc_to_dt(), admiral::convert_dtc_to_dtm() and related functions will now throw an error instead of a warning when `highest_imputation = "Y"` but neither `min_date` (when `date_imputation = "first"`) nor `max_dates` (when `date_imputation = "last"`) are specified.
+- admiral::derive_locf_records() was updated to include two new arguments: `id_vars_ref` and `imputation`. The `id_vars_ref` argument allows users to select the variables to group by in the reference dataset (`dataset_ref`) when determining which observations to add to the input dataset. The `imputation` argument lets users decide whether to update `analysis_var` when its value is `NA` ("update"), or to add a new observation instead ("add" and "update_add").
+- admiral::derive_summary_records() and admiral::derive_param_exist_flag() no longer add variables to the output dataset that are in both `dataset_add` and `dataset_ref` but not `by_vars`.
 
 ## Breaking Changes
 
-Some things are changing, but don't worry—it's all for the better!
+Excluding deprecations, we have only two small breaking changes: 
 
-We've renamed SI_UNIT_CHECK to UNIT_CHECK in lab grading metadata variables: atoxgr_criteria_ctcv4(), atoxgr_criteria_ctcv5(), and atoxgr_criteria_daids() to simplify specifications. The way values are populated for tmp_obs_nr_var in various functions is evolving to ensure stability and avoid redundancy when records match by_vars and order.
-Heads up on the deprecation process for certain function arguments—get ready to adapt and evolve with us as these changes take effect.
-
-## Documentation
-
-The documentation enhancements keep rolling in! We’ve enriched examples across several functions such as derive_extreme_records(), derive_param_tte(), and more, making it easier for you to navigate and utilize them. Excitingly, an example has been added to derive_vars_transposed() reference page to highlight potential duplicate-related errors, proactive problem-solving right at your fingertips! We've added clarity on default values in derive_vars_aage()—the type now shows interval to match its behavior.
-Our "Lab Grading" vignette not only got easier to read with corrected typos but expanded with new metadata for US units. Similarly, updates to templates, like ADAE and the OCCDS vignette, as well as the "Higher Order Functions" and others, showcase combinations and remove unnecessary derivation requirements.
-
-Explore updated derive_var_analysis_ratio() documentation with new references to R2AyHI and R2AyLO, ensuring you have all the insights and tools you need. Finally, derive_basetype_records() documentation is clarified for more effective BASETYPE derivations.
-These updates and enhancements make the pharmaverse even more exciting and productive, opening up new avenues for streamlined coding and efficient program management. We hope you're as thrilled as we are to explore and utilize these innovations. 
-
-Stay tuned for more updates, and happy coding!
+- We've renamed `SI_UNIT_CHECK` to `UNIT_CHECK` in lab grading metadata variables: `atoxgr_criteria_ctcv4()`, `atoxgr_criteria_ctcv5()`, and `atoxgr_criteria_daids()` to simplify specifications. 
+- The values of the variable specified for tmp_obs_nr_var in derive_vars_joined(), derive_var_joined_exist_flag(), filter_joined() are now populated differently if there are multiple records in dataset or dataset_add for the same values of by_vars and order. Before each of these records was assigned a different value, i.e., the variable (together with by_vars) was a unique identifier. Now the value is the same for all these records.
 
 
+## Conclusion
+
+As mentioned above, the release [Changelog](https://pharmaverse.github.io/admiral/main/news/index.html) contains a full list of all the updates in {admiral} 1.3. 
+
+We've been truly thrilled with the amount of user feedback and engagement with the package in the last six months, which is a big reason for the amount of content in this new release. Let's continue co-creating {admiral} together!
 
 <!--------------- appendices go here ----------------->
 
