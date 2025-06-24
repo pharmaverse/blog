@@ -51,7 +51,7 @@ And here's what it looks like in {admiral} 1.3:
 
 <img src="derive_extreme_records_after.png" align="center" style="float:right" width="100%"/>
 
-That's right! Through the implementation of a custom roclet, some of our reference examples have now been enhanced such that:
+That's right! Some of our reference examples have now been enhanced such that:
 
 - Each example has a title, which is also shown in the table of contents, and a description explaining what is happening.
 - The examples are often building up in complexity, starting from a simple application of the function in a toy case and building up to more structured use-cases.
@@ -69,7 +69,7 @@ For this first iteration, we have targeted some of the most complex, flexible an
 - admiral::derive_vars_joined_summary()
 - admiral::derive_vars_merged()
 - admiral::derive_vars_crit_flag()
-- admiral::derive_var_trtemfl()
+- admiral::derive_var_trtemfl() (now showcasing all scenarios discussed in the [PHUSE White Paper on Treatment-Emergent AEs](https://phuse.s3.eu-central-1.amazonaws.com/Deliverables/Safety+Analytics/WP-087+Recommended+Definition+of++Treatment-Emergent+Adverse+Events+in+Clinical+Trials+.pdf)!
 - admiral::derive_param_computed()
 - admiral::derive_vars_dt()
 - admiral::derive_vars_dt()
@@ -77,7 +77,7 @@ For this first iteration, we have targeted some of the most complex, flexible an
 
 This is not to say that the other functions do not have examples anymore; rather, they retain the previous material. 
 
-Now, our aim as a development team is to continually enhance the reference examples of our large portfolio of functions regularly across release cycles. If you'd like to play a part, this is also a great opportunity to contribute to {admiral} yourself - please pick an {admiral} function you'd like to enhance and make an issue in our Github repository, tagging it with the "Documentation" and "Examples Enhancement" labels.
+Now, our aim as a development team is to continually enhance the reference examples of our large portfolio of functions regularly across release cycles. If you'd like to play a part, this is also a great opportunity to contribute to {admiral} yourself - please get in touch with our development team through [Slack](https://pharmaverse.slack.com/) or our [Github repo](https://github.com/pharmaverse/admiral/) and we'd be happy to help you get started.
 
 We've also made various other small documentation enhancements, which you can peruse in the [Changelog](https://pharmaverse.github.io/admiral/main/news/index.html).
 
@@ -129,11 +129,15 @@ derive_vars_joined_summary(
 Excluding deprecations, we have only two small breaking changes: 
 
 - We've renamed `SI_UNIT_CHECK` to `UNIT_CHECK` in lab grading metadata variables: `atoxgr_criteria_ctcv4()`, `atoxgr_criteria_ctcv5()`, and `atoxgr_criteria_daids()` to simplify specifications. 
-- The values of the variable specified for `tmp_obs_nr_var` in derive_vars_joined(), derive_var_joined_exist_flag() and filter_joined() are now populated differently if there are multiple records in `dataset` or `dataset_add` for the same values of `by_vars` and order. Before each of these records was assigned a different value, i.e., the variable (together with `by_vars`) was a unique identifier. Now the value is the same for all these records.
+- The values of the variable specified for `tmp_obs_nr_var` in admiral::derive_vars_joined(), admiral::derive_var_joined_exist_flag() and admiral::filter_joined() are now populated differently if there are multiple records in `dataset` or `dataset_add` for the same values of `by_vars` and order. Before each of these records was assigned a different value, i.e., the variable (together with `by_vars`) was a unique identifier. Now the value is the same for all these records.
+
+We've also started pre-alerting users of an upcoming breaking change to the default behavior of admiral::derive_vars_dtm() in our next release (1.4.0), where we'll switch the default value of `ignore_seconds_flag` from `FALSE` to `TRUE`. Ahead of this change, admiral::derive_vars_dtm() now issues a helpful message informing users of the upcoming change, to allowing mitigation ahead of time. 
 
 ## Updates of existing functions and bug fixes
 
-We've also been busy updating some of our existing functions in response to bug fixes and requests for enhancements. You can find the full list of updates in the [Changelog](https://pharmaverse.github.io/admiral/main/news/index.html).
+We've also been busy updating some of our existing functions in response to bug fixes and requests for enhancements. One particular update of note was to admiral::derive_locf_records, which now comes with two new arguments `id_vars_ref` and `imputation.` The `id_vars_ref` argument allows users to select the variables to group by in the reference dataset when determining which observations to add to the input dataset. The `imputation` argument lets users decide whether to update `analysis_var` when its value is `NA` ("update" and "update_add"), or to add a new observation instead ("add").
+
+You can find the full list of updates in the [Changelog](https://pharmaverse.github.io/admiral/main/news/index.html).
 
 ## Conclusion
 
