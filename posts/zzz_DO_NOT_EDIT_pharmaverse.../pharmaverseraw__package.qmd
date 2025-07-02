@@ -75,6 +75,58 @@ datasets that could reasonably result in those SDTM outputs. This
 approach ensures data consistency while allowing us to demonstrate the
 flexibility of {sdtm.oak} in handling raw data in different formats.
 
+## From raw to SDTM
+
+Using {sdtm.oak}, you can take raw datasets from {pharmaverseraw} and
+apply SDTM mapping functions to map the target SDTM variables. Below is
+an example snippet that shows how to use a raw AE dataset from
+{pharmaverseraw} and generate SDTM AE variables with {sdtm.oak}:
+
+```{r, message = FALSE, warning = FALSE}
+library(pharmaverseraw)
+library(sdtm.oak)
+library(admiral)
+
+# Read in raw data
+ae_raw <- pharmaverseraw::ae_raw
+
+ae_raw <- convert_blanks_to_na(ae_raw)
+
+# Derive oak_id_vars
+ae_raw <- ae_raw %>%
+  generate_oak_id_vars(
+    pat_var = "PATNUM",
+    raw_src = "ae_raw"
+  )
+
+# Map AETERM and AESDTH variables for AE domain
+ae <-
+  # Derive topic variable
+  # Map AETERM using assign_no_ct, raw_var=IT.AETERM, tgt_var=AETERM
+  assign_no_ct(
+    raw_dat = ae_raw,
+    raw_var = "IT.AETERM",
+    tgt_var = "AETERM",
+    id_vars = oak_id_vars()
+  ) %>%
+  # Map AESDTH using hardcode_no_ct and condition_add, raw_var=IT.AESDTH, tgt_var=AESDTH
+  # If Yes then AESDTH = Y else Not submitted
+  hardcode_no_ct(
+    raw_dat = condition_add(ae_raw, IT.AESDTH == "Yes"),
+    raw_var = "IT.AESDTH",
+    tgt_var = "AESDTH",
+    tgt_val = "Y",
+    id_vars = oak_id_vars()
+  ) %>%
+  hardcode_no_ct(
+    raw_dat = condition_add(ae_raw, IT.AESDTH != "Yes"),
+    raw_var = "IT.AESDTH",
+    tgt_var = "AESDTH",
+    tgt_val = "Not Submitted",
+    id_vars = oak_id_vars()
+  )
+```
+
 ## Get involved
 
 Similar to the other tools under pharmaverse umbrella, the
