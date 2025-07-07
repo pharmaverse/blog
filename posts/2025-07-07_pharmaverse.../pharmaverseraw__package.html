@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Mike Stackhouse">
-<meta name="dcterms.date" content="2024-01-04">
-<meta name="description" content="2023 Was a big year - let’s talk about it!">
+<meta name="author" content="Shiyu Chen">
+<meta name="dcterms.date" content="2025-07-07">
+<meta name="description" content="pharmaverseraw package provides raw data for domains in the pharmaversesdtm package.">
 
-<title>End of Year Update from the pharmaverse Council – pharmaverse blog</title>
+<title>Raw data for domains in the pharmaversesdtm package – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,6 +22,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -106,13 +141,19 @@ cookieconsent.run({
         background: #eeeeee;
       }
 </style>
+<script src="../../site_libs/bslib-component-js-0.9.0/components.min.js"></script>
+<script src="../../site_libs/bslib-component-js-0.9.0/web-components.min.js" type="module"></script>
+<link href="../../site_libs/bslib-component-css-0.9.0/components.css" rel="stylesheet">
+<script src="../../site_libs/bslib-tag-require-0.9.0/tag-require.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="End of Year Update from the pharmaverse Council – pharmaverse blog">
-<meta property="og:description" content="2023 Was a big year - let’s talk about it!">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../pharmaverse.PNG">
+<meta property="og:title" content="Raw data for domains in the pharmaversesdtm package – pharmaverse blog">
+<meta property="og:description" content="pharmaverseraw package provides raw data for domains in the pharmaversesdtm package.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2025-07-07_pharmaverse.../pharmaverseraw.png">
 <meta property="og:site_name" content="pharmaverse blog">
+<meta property="og:image:height" content="667">
+<meta property="og:image:width" content="647">
 </head>
 
 <body class="floating nav-fixed quarto-light">
@@ -152,14 +193,14 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">End of Year Update from the pharmaverse Council</h1>
+      <h1 class="title">Raw data for domains in the pharmaversesdtm package</h1>
                   <div>
         <div class="description">
-          2023 Was a big year - let’s talk about it!
+          pharmaverseraw package provides raw data for domains in the pharmaversesdtm package.
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">Community</div>
+                <div class="quarto-category">SDTM</div>
               </div>
                   </div>
   </div>
@@ -170,14 +211,14 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Mike Stackhouse </p>
+               <p>Shiyu Chen </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">January 4, 2024</p>
+        <p class="date">July 7, 2025</p>
       </div>
     </div>
     
@@ -192,10 +233,12 @@ cookieconsent.run({
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#was-a-big-year" id="toc-was-a-big-year" class="nav-link active" data-scroll-target="#was-a-big-year">2023 Was a Big Year</a></li>
-  <li><a href="#what-we-accomplished" id="toc-what-we-accomplished" class="nav-link" data-scroll-target="#what-we-accomplished">What We Accomplished</a></li>
-  <li><a href="#where-next" id="toc-where-next" class="nav-link" data-scroll-target="#where-next">Where Next?</a></li>
-  <li><a href="#p.s." id="toc-p.s." class="nav-link" data-scroll-target="#p.s.">P.S.</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#why-now" id="toc-why-now" class="nav-link" data-scroll-target="#why-now">Why now?</a></li>
+  <li><a href="#what-is-in" id="toc-what-is-in" class="nav-link" data-scroll-target="#what-is-in">What is in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"></bslib-tooltip></a></li>
+  <li><a href="#how-are-these-datasets-created" id="toc-how-are-these-datasets-created" class="nav-link" data-scroll-target="#how-are-these-datasets-created">How are these datasets created?</a></li>
+  <li><a href="#from-raw-to-sdtm" id="toc-from-raw-to-sdtm" class="nav-link" data-scroll-target="#from-raw-to-sdtm">From raw to SDTM</a></li>
+  <li><a href="#get-involved" id="toc-get-involved" class="nav-link" data-scroll-target="#get-involved">Get involved</a></li>
   </ul>
 </nav>
 </nav>
@@ -212,25 +255,88 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<section id="was-a-big-year" class="level2">
-<h2 class="anchored" data-anchor-id="was-a-big-year">2023 Was a Big Year</h2>
-<p>This was a big year for open-source work in clinical submissions in general. We saw Roche speak about shifting to an <a href="https://www.youtube.com/watch?v=nqJsLSLd39A">open-source backbone for clinical trials</a>. Novo Nordisk spoke publicly of an <a href="https://www.youtube.com/watch?v=t33dS17QHuA">R based submission to the FDA</a>. These are true marks of progress being made in R becoming a first class language for clinical reporting.</p>
-<p>Back in August, Nicholas Eugenio released a <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html">blog post</a> on the history of pharmaverse. It’s funny to think about the fact that only 3 years ago, the idea of cross organization collaboration on R packages and building a community around this in the clinical world was just a conversation between friends. Since then, we have a community of more than 1200 people on Slack, 350 on LinkedIn, interest from over 150 organizations, and over 30 packages. If 2020 through 2022 was the birth of pharmaverse, 2023 was finding our identity as a community. For the council, 2024 will be about continuing to mature and find more ways that we can continue to support the community.</p>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>The <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Test Data for the Pharmaverse Family of Packages • pharmaversesdtm</template> <a href="https://pharmaverse.github.io/pharmaversesdtm/" class="r-link-pkg" target="_blank">{pharmaversesdtm}</a> </bslib-tooltip> and <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM Test Data for the Pharmaverse Family of Packages • pharmaverseadam</template> <a href="https://pharmaverse.github.io/pharmaverseadam/" class="r-link-pkg" target="_blank">{pharmaverseadam}</a> </bslib-tooltip> packages have been available for some time, providing reusable examples for SDTM and ADaM datasets, respectively. However, one critical piece of the workflow was missing: the raw datasets that serve as the starting point for these examples.</p>
 </section>
-<section id="what-we-accomplished" class="level2">
-<h2 class="anchored" data-anchor-id="what-we-accomplished">What We Accomplished</h2>
-<p>One of our biggest moves in 2023 was to form our partnership with <a href="https://phuse.global/PHUSE_Open_Source_Technology">PHUSE</a>. This latched us into an existing community with shared values and a platform that helps us continue to build the pharmaverse community. At the <a href="https://www.phuse-events.org/attend/frontend/reg/thome.csp?pageID=11403&amp;eventID=19&amp;traceRedir=2">PHUSE EU Connect</a> we had our first opportunity to host a pharmaverse meetup and bring together pharmaverse contributors in person. Additionally, there was an excellent panel session highlighting our use and adoption of open-source across industry, including the pharmaceutical, commercial, and software perspectives. As we move forward, we’ll continue to use this platform to find ways we can host events and encourage collaboration within the pharmaverse community.</p>
-<p>This year our community was also able to launch new platforms to share updates and knowledge throughout the industry. The <a href="https://pharmaverse.github.io/examples/">pharmaverse examples</a> webpage was launched to show pharmaverse packages in action, and the <a href="https://pharmaverse.github.io/blog/">pharmaverse blog</a> (which I’m using right here!) provides a platform to share updates and community news.</p>
+<section id="why-now" class="level2">
+<h2 class="anchored" data-anchor-id="why-now">Why now?</h2>
+<p>With the recent release of the <a href="https://pharmaverse.github.io/sdtm.oak/"><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Data Transformation Engine • sdtm.oak</template> </bslib-tooltip></a><a href="https://pharmaverse.github.io/sdtm.oak/" class="r-link-pkg" target="_blank">{sdtm.oak}</a>  package — an open-source package that enables SDTM programming in R — we now have an opportunity to complete the picture. The new <a href="https://pharmaverse.github.io/pharmaverseraw/"><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>pharmaverseraw | Test raw data for use within the pharmaverse family of packages</template> </bslib-tooltip></a><a href="https://pharmaverse.github.io/pharmaverseraw/" class="r-link-pkg" target="_blank">{pharmaverseraw}</a>  package fills this gap by providing example raw datasets that can be used as input for <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Test Data for the Pharmaverse Family of Packages • pharmaversesdtm</template> <a href="https://pharmaverse.github.io/pharmaversesdtm/" class="r-link-pkg" target="_blank">{pharmaversesdtm}</a> </bslib-tooltip> datasets generation with <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Data Transformation Engine • sdtm.oak</template> <a href="https://pharmaverse.github.io/sdtm.oak/" class="r-link-pkg" target="_blank">{sdtm.oak}</a> </bslib-tooltip>.</p>
 </section>
-<section id="where-next" class="level2">
-<h2 class="anchored" data-anchor-id="where-next">Where Next?</h2>
-<p>Back in October, I had the opportunity to do an interview with Michael Rimler for the <a href="https://youtu.be/F3vehIoJgdA?si=80p0pKobZqjlXChj">PHUSE video series</a> Open Source Technologies in Clinical Data Analytics. The last question he asked me was what I expect the state of data analytics in life science to be in 2 to 3 years. My response was that when that time comes, I hope I couldn’t have predicted where we would be - because back in 2020 I could never have predicted where we are now. The progress we’ve made is unbelievable, and the pharmaverse community has played a huge role in getting us where we are today. For the pharmaverse community, I hope to see that progress continue as we move into next year. As a council, our goal is to continue to mature this community. How can we support and foster collaboration between our organizations? How can we leverage this platform to drive the industry forward?</p>
-<p>For you as an individual, there’s always an opportunity to get involved - and you don’t have to be a package developer to contribute. You can <a href="https://pharmaverse.org/contribute/wg/">join a working group</a>, write <a href="https://github.com/pharmaverse/examples">examples</a>, or author a <a href="https://github.com/pharmaverse/blog">blog post</a>. Furthermore, you can get started with the pharmaverse packages, provide feedback via issues, and advocate for their use within your own organization. The pharmaverse community doesn’t exist without you, and we’re happy to have you all here to help us build this together.</p>
+<section id="what-is-in" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-in">What is in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"></bslib-tooltip></h2>
+<p><template>pharmaverseraw | Test raw data for use within the pharmaverse family of packages</template> <a href="https://pharmaverse.github.io/pharmaverseraw/" class="r-link-pkg" target="_blank">{pharmaverseraw}</a> ?</p>
+<p>The <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>pharmaverseraw | Test raw data for use within the pharmaverse family of packages</template> <a href="https://pharmaverse.github.io/pharmaverseraw/" class="r-link-pkg" target="_blank">{pharmaverseraw}</a> </bslib-tooltip> package v0.1.0 is out on <a href="https://cran.r-project.org/web/packages/pharmaverseraw/index.html">CRAN</a>. It is also available from the pharmaverse site at: https://pharmaverse.org/e2eclinical/developers/. It includes <strong>raw datasets</strong> for the following SDTM domains:</p>
+<p>- AE: Adverse Events</p>
+<p>- DS: Subject Disposition</p>
+<p>- DM: Demographics</p>
+<p>- EC/EX: Exposure</p>
+<p>These raw datasets in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>pharmaverseraw | Test raw data for use within the pharmaverse family of packages</template> <a href="https://pharmaverse.github.io/pharmaverseraw/" class="r-link-pkg" target="_blank">{pharmaverseraw}</a> </bslib-tooltip> package are intentionally designed to be:</p>
+<ul>
+<li>EDC agnostic: They are not tied to any specific Electronic Data Capture (EDC) system like Rave or Veeva.</li>
+<li>Standards agnostic: Some variables follow CDASH (Clinical Data Acquisition Standards Harmonization), while others do not. This reflects real-world data standards variability across companies.</li>
+</ul>
+<p>The <strong>annotated case report forms</strong> corresponding to the raw datasets are also present in the <code>inst\acrf</code> folder. These PDF files illustrate how each raw variable aligns with SDTM expectations, offering insight into the mapping logic used in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Data Transformation Engine • sdtm.oak</template> <a href="https://pharmaverse.github.io/sdtm.oak/" class="r-link-pkg" target="_blank">{sdtm.oak}</a> </bslib-tooltip>.</p>
 </section>
-<section id="p.s." class="level2">
-<h2 class="anchored" data-anchor-id="p.s.">P.S.</h2>
-<p>At PHUSE US Connect 2024 this coming February, be on the lookout for one of the keynote presentations from Michael Rimler and Ross Farrugia! We hope to see you there!</p>
-<p>Here’s to a 2024 full of progress and collaboration!</p>
+<section id="how-are-these-datasets-created" class="level2">
+<h2 class="anchored" data-anchor-id="how-are-these-datasets-created">How are these datasets created?</h2>
+<p>The datasets in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>pharmaverseraw | Test raw data for use within the pharmaverse family of packages</template> <a href="https://pharmaverse.github.io/pharmaverseraw/" class="r-link-pkg" target="_blank">{pharmaverseraw}</a> </bslib-tooltip> were created through <strong>reverse engineering</strong> - we started with the finalized SDTM datasets in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Test Data for the Pharmaverse Family of Packages • pharmaversesdtm</template> <a href="https://pharmaverse.github.io/pharmaversesdtm/" class="r-link-pkg" target="_blank">{pharmaversesdtm}</a> </bslib-tooltip> and worked backward to construct plausible raw datasets that could reasonably result in those SDTM outputs. This approach ensures data consistency while allowing us to demonstrate the flexibility of <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Data Transformation Engine • sdtm.oak</template> <a href="https://pharmaverse.github.io/sdtm.oak/" class="r-link-pkg" target="_blank">{sdtm.oak}</a> </bslib-tooltip> in handling raw data in different formats.</p>
+</section>
+<section id="from-raw-to-sdtm" class="level2">
+<h2 class="anchored" data-anchor-id="from-raw-to-sdtm">From raw to SDTM</h2>
+<p>Using <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Data Transformation Engine • sdtm.oak</template> <a href="https://pharmaverse.github.io/sdtm.oak/" class="r-link-pkg" target="_blank">{sdtm.oak}</a> </bslib-tooltip>, you can take raw datasets from <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>pharmaverseraw | Test raw data for use within the pharmaverse family of packages</template> <a href="https://pharmaverse.github.io/pharmaverseraw/" class="r-link-pkg" target="_blank">{pharmaverseraw}</a> </bslib-tooltip> and apply SDTM mapping functions to map the target SDTM variables. There will be new SDTM examples published using this data later at: https://pharmaverse.github.io/examples/sdtm/examples.html</p>
+<p>Below is an example snippet that shows how to use a raw AE dataset from <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>pharmaverseraw | Test raw data for use within the pharmaverse family of packages</template> <a href="https://pharmaverse.github.io/pharmaverseraw/" class="r-link-pkg" target="_blank">{pharmaverseraw}</a> </bslib-tooltip> and generate SDTM AE variables with <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Data Transformation Engine • sdtm.oak</template> <a href="https://pharmaverse.github.io/sdtm.oak/" class="r-link-pkg" target="_blank">{sdtm.oak}</a> </bslib-tooltip>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pharmaverseraw)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sdtm.oak)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Read in raw data</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>ae_raw <span class="ot">&lt;-</span> pharmaverseraw<span class="sc">::</span>ae_raw</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive oak_id_vars</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>ae_raw <span class="ot">&lt;-</span> ae_raw <span class="sc">%&gt;%</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate_oak_id_vars</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">pat_var =</span> <span class="st">"PATNUM"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_src =</span> <span class="st">"ae_raw"</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Map AETERM and AESDTH variables for AE domain</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>ae <span class="ot">&lt;-</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Derive topic variable</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Map AETERM using assign_no_ct, raw_var=IT.AETERM, tgt_var=AETERM</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign_no_ct</span>(</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_dat =</span> ae_raw,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_var =</span> <span class="st">"IT.AETERM"</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">tgt_var =</span> <span class="st">"AETERM"</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_vars =</span> <span class="fu">oak_id_vars</span>()</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Map AESDTH using hardcode_no_ct and condition_add, raw_var=IT.AESDTH, tgt_var=AESDTH</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># If Yes then AESDTH = Y else Not submitted</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hardcode_no_ct</span>(</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_dat =</span> <span class="fu">condition_add</span>(ae_raw, IT.AESDTH <span class="sc">==</span> <span class="st">"Yes"</span>),</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_var =</span> <span class="st">"IT.AESDTH"</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">tgt_var =</span> <span class="st">"AESDTH"</span>,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">tgt_val =</span> <span class="st">"Y"</span>,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_vars =</span> <span class="fu">oak_id_vars</span>()</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hardcode_no_ct</span>(</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_dat =</span> <span class="fu">condition_add</span>(ae_raw, IT.AESDTH <span class="sc">!=</span> <span class="st">"Yes"</span>),</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_var =</span> <span class="st">"IT.AESDTH"</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">tgt_var =</span> <span class="st">"AESDTH"</span>,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">tgt_val =</span> <span class="st">"Not Submitted"</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_vars =</span> <span class="fu">oak_id_vars</span>()</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="get-involved" class="level2">
+<h2 class="anchored" data-anchor-id="get-involved">Get involved</h2>
+<p>Similar to the other tools under pharmaverse umbrella, the <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>pharmaverseraw | Test raw data for use within the pharmaverse family of packages</template> <a href="https://pharmaverse.github.io/pharmaverseraw/" class="r-link-pkg" target="_blank">{pharmaverseraw}</a> </bslib-tooltip> package is open-source and community-driven. We welcome volunteers who are interested in contributing to the continued development and improvement of this package.</p>
+<p>If you’d like to get involved, here are some ways you can help:</p>
+<p>- <strong>Add new raw datasets:</strong> Take other SDTM domains from the <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>SDTM Test Data for the Pharmaverse Family of Packages • pharmaversesdtm</template> <a href="https://pharmaverse.github.io/pharmaversesdtm/" class="r-link-pkg" target="_blank">{pharmaversesdtm}</a> </bslib-tooltip> package and create corresponding raw datasets using R. This will help expand the coverage of the package.</p>
+<p>- <strong>Create mock aCRFs for the raw datasets:</strong> Develop annotated case report forms (aCRFs) that illustrate how the raw variables are mapped to align with SDTM standards.</p>
+<p>- <strong>Prepare documentation:</strong> For each raw dataset you create, include documentation that explains the data structure, variable definitions, and any relevant notes.</p>
+<p>Whether you’re a programmer, CDISC expert, or clinical data manager, your contributions can make a meaningful impact. Visit the <a href="https://github.com/pharmaverse/pharmaverseraw">github repository</a> to open up a issue or start a discussion.</p>
 <!--------------- appendices go here ----------------->
 </section>
 <div class="cell">
@@ -244,20 +350,20 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2025-07-07 17:05:25.021713</p>
+<p>2025-07-07 17:06:21.537118</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{stackhouse2024,
-  author = {Stackhouse, Mike},
-  title = {End of {Year} {Update} from the Pharmaverse {Council}},
-  date = {2024-01-04},
-  url = {https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverseraw__package.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{chen2025,
+  author = {Chen, Shiyu},
+  title = {Raw Data for Domains in the Pharmaversesdtm Package},
+  date = {2025-07-07},
+  url = {https://pharmaverse.github.io/blog/posts/2025-07-07_pharmaverse.../pharmaverseraw__package.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-stackhouse2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Stackhouse, Mike. 2024. <span>“End of Year Update from the Pharmaverse
-Council.”</span> January 4, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html">https://pharmaverse.github.io/blog/posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-chen2025" class="csl-entry quarto-appendix-citeas" role="listitem">
+Chen, Shiyu. 2025. <span>“Raw Data for Domains in the Pharmaversesdtm
+Package.”</span> July 7, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-07-07_pharmaverse.../pharmaverseraw__package.html">https://pharmaverse.github.io/blog/posts/2025-07-07_pharmaverse.../pharmaverseraw__package.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
