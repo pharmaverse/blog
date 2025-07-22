@@ -29,7 +29,7 @@ Christina remains on-hand as a mentor and I'd like to thank both her and Ben Str
 
 ## What's new in {metacore}
 
-The goal of this update was to clarify the distinction between an inported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via `metacore::select_dataset`).
+The goal of this update was to clarify the distinction between an imported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via `metacore::select_dataset`).
 
 We received a number of questions and issues raised where users were attempting to use a Metacore object containing metadata for multiple datasets in functions from {metatools} that were designed to take a single, subsetted specification.
 When developing datasets, the typical workflow is to be working on a single dataset at a time - so subsetting the Metacore object is the logical thing to do.
@@ -63,7 +63,7 @@ Functions that take a Metacore object as input will emit a helpful message if a 
 
 ```{r}
 #| error: true
-ds_list = list(DM = read_xpt(metatools_example("dm.xpt")))
+ds_list <- list(DM = read_xpt(metatools_example("dm.xpt")))
 create_var_from_codelist(data.frame(), metacore)
 ```
 
@@ -135,9 +135,9 @@ Now, specifying the option `create_from_decode = TRUE` will allow you to create 
 If you are using this option to also create a numeric coded variable (in this case `AGEGR2N`), ensure your CT is set up so that the `decode` columns match.
 
 ```{r}
-dm <- read_xpt(metatools_example('dm.xpt'))
+dm <- read_xpt(metatools_example("dm.xpt"))
 create_cat_var(dm, adsl, AGE, AGEGR2, AGEGR2N, create_from_decode = TRUE) %>%
-  select(USUBJID, AGE, AGEGR2, AGEGR2N) %>% 
+  select(USUBJID, AGE, AGEGR2, AGEGR2N) %>%
   head(5)
 ```
 
