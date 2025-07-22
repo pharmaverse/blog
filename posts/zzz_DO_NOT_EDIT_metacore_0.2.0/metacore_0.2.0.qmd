@@ -1,0 +1,190 @@
+---
+title: "Metacore 0.2.0"
+author:
+  - name: Liam Hobby
+description: "{metacore}/{metatools} 0.2.0 are live. Read package release information and hear from the new maintainer."
+date: "2024-12-01"
+categories: [Metadata, ADaM, Community]
+image: "metacore.png"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_metacore_0.2.0"
+library(link)
+link::auto()
+```
+
+<!--------------- post begins here ----------------->
+
+## {metacore} and {metatools} have a new package maintainer
+
+Hi, everyone!
+I'm [Liam](https://www.linkedin.com/in/liam-hobby/ "Liam Hobby") and I'm excited to announce that I have taken over as package maintainer for both {metacore} and {metatools} from Christina Fillmore.
+I work at GSK as a clinical programmer and I am coming to the end of my second year in the industry.
+This is my first experience working within the open-source world, but I am a regular user of Pharmaverse packages and am keen to get more involved with the community.
+
+Christina remains on-hand as a mentor and I'd like to thank both her and Ben Straub for the continued support before we dive into the details of {metacore}/{metatools} 0.2.0.
+
+## What's new in {metacore}
+
+The goal of this update was to clarify the distinction between an inported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via `metacore::select_dataset`).
+
+We received a number of questions and issues raised where users were attempting to use a Metacore object containing metadata for multiple datasets in functions from {metatools} that were designed to take a single, subsetted specification.
+When developing datasets, the typical workflow is to be working on a single dataset at a time - so subsetting the Metacore object is the logical thing to do.
+The issue was that the approach to functions in {metatools} was inconsistent, with some functions permitting multiple specification metadata and others not.
+
+Now, a Metacore object about multiple datasets and one about a single dataset have been redesigned to be programmatically distinct, with the single dataset implemented as a subclass of Metacore called "DatasetMeta".
+
+From the users perspective there is one key change.
+**A metadata object about a single dataset will be required for users to work with {metatools} functions**, which have had their API harmonised to accept only subsetted Metacore objects (`metacore::select_dataset`).
+
+The print statements of both combined and subsetted Metacore objects have been refined to better illustrate the differences between them and provide more helpful information to the user.
+
+```{r}
+load(metacore_example("pilot_ADaM.rda"))
+metacore
+```
+
+The `select_dataset` function is now explicit about what is being selected:
+
+```{r}
+adsl <- select_dataset(metacore, "ADSL", quiet = TRUE)
+```
+
+Printing the subsetted object now provides more detailed information:
+
+```{r}
+adsl
+```
+
+Functions that take a Metacore object as input will emit a helpful message if a subsetted object is not supplied.
+
+```{r}
+#| error: true
+ds_list = list(DM = read_xpt(metatools_example("dm.xpt")))
+create_var_from_codelist(data.frame(), metacore)
+```
+
+#### Related: soft deprecation of `dataset_name` in {metatools}
+
+Additionally, the argument `dataset_name` has been **soft-decprecated** across all functions in {metatools}.
+While the argument is still available and will not break existing code, using it will now issue a warning.
+This change encourages users to adopt the preferred workflow, creating a subsetted Metacore object, and improves performance by avoiding repeated subsetting operations each time these functions are called.
+
+The full list of affected functions is included below.
+The `dataset_name` argument will remain available for **at least one year** from the release date of 0.2.0 before being fully removed.
+
+[`build_from_derived`](https://pharmaverse.github.io/metatools/reference/build_from_derived.html "Build a dataset from derived"), [`check_variables`](https://pharmaverse.github.io/metatools/reference/check_variables.html "Check Variable Names"), [`check_unique_keys`](https://pharmaverse.github.io/metatools/reference/check_unique_keys.html "Check Uniqueness of Records by Key"), [`make_supp_qual`](https://pharmaverse.github.io/metatools/reference/make_supp_qual.html "Make Supplemental Qualifier"), [`drop_unspec_vars`](https://pharmaverse.github.io/metatools/reference/drop_unspec_vars.html "Drop Unspecified Variables"), [`add_variables`](https://pharmaverse.github.io/metatools/reference/add_variables.html "Add Missing Variables"), [`order_cols`](https://pharmaverse.github.io/metatools/reference/order_cols.html "Sort Columns by Order"), [`sort_by_key`](https://pharmaverse.github.io/metatools/reference/sort_by_key.html "Sort Rows by Key Sequence").
+
+## `metatools::create_var_from_codelist()`
+
+`create_var_from_codelist` now optionally allows the user to specify a codelist from which the new column should be generated.
+This is useful in situations like the one below where the user is trying to derive `PARAM` from `PARAMCD` but the codelist for the `out_var` (`PARAM`) does not contain the values of `PARAMCD`.
+
+| ID    | Order | Code                     | Decode                   |
+|-------|-------|--------------------------|--------------------------|
+| PARAM | 1     | Alanine Aminotransferase | Alanine Aminotransferase |
+| PARAM | 2     | Bilirubin                | Bilirubin                |
+| PARAM | 3     | Creatine                 | Creatine                 |
+
+Example of default usage not providing the correct result:
+
+```{r}
+adlbc <- suppressMessages(select_dataset(metacore, "ADLBC", quiet = TRUE))
+data <- tibble(PARAMCD = c("ALB", "ALP", "ALT"))
+create_var_from_codelist(data, adlbc, input_var = PARAMCD, out_var = PARAM, strict = FALSE)
+```
+
+By default, `create_var_from_codelist` takes the codelist of the `out_var` as input.
+The user can now overwrite this default with a specific codelist (in this case `PARAMCD` below) to achieve the desired result.
+
+| ID      | Order | Code  | Decode                   |
+|---------|-------|-------|--------------------------|
+| PARAMCD | 1     | ALT   | Alanine Aminotransferase |
+| PARAMCD | 2     | BILI  | Bilirubin                |
+| PARAMCD | 3     | CREAT | Creatine                 |
+
+```{r}
+create_var_from_codelist(data, adlbc, input_var = PARAMCD, out_var = PARAM, codelist = get_control_term(adlbc, PARAMCD), decode_to_code = FALSE)
+```
+
+This function also provides a new option `strict`, which when set to `TRUE` (default) will issue a warning indicating any values in your input column that do not appear in the codelist.
+
+```{r}
+#| warning: true
+data <- tibble(PARAMCD = c("ALB", "ALP", "ALT", "DUMMY1", "DUMMY2"))
+x <- create_var_from_codelist(data, adlbc, input_var = PARAMCD, out_var = PARAM, codelist = get_control_term(adlbc, PARAMCD), decode_to_code = FALSE, strict = TRUE)
+```
+
+## `metatools::create_cat_var()`
+
+`create_cat_var` has been updated so that users can now specify to create a new variable from either the `code` or `decode` column of the controlled terminology.
+Previously, a codelist set-up like the one below would be evaluated from the `code` column only, leaving out the "years" text from the new variable.
+
+| ID     | Name               | Data Type | Order | Code   | Decode       |
+|--------|--------------------|-----------|-------|--------|--------------|
+| AGEGR2 | Pooled Age Group 2 | text      | 1     | \<35   | \<35 years   |
+| AGEGR2 | Pooled Age Group 2 | text      | 2     | 35-49  | 35-49 years  |
+| AGEGR2 | Pooled Age Group 2 | text      | 3     | \>= 50 | \>= 50 years |
+
+: Example of a codelist for AGEGR2
+
+Now, specifying the option `create_from_decode = TRUE` will allow you to create the variable based on the text in the `decode` column.
+If you are using this option to also create a numeric coded variable (in this case `AGEGR2N`), ensure your CT is set up so that the `decode` columns match.
+
+```{r}
+dm <- read_xpt(metatools_example('dm.xpt'))
+create_cat_var(dm, adsl, AGE, AGEGR2, AGEGR2N, create_from_decode = TRUE) %>%
+  select(USUBJID, AGE, AGEGR2, AGEGR2N) %>% 
+  head(5)
+```
+
+This function now also provides a default `strict = TRUE` option, that issues a warning message if there are values in the reference column that do not fit into the categories in the controlled terminology.
+This can be disabled with `strict = FALSE`.
+
+```{r}
+#| warning: true
+dm2 <- dm |>
+  tibble::add_row(AGE = 15) |>
+  tibble::add_row(AGE = 16)
+x <- create_cat_var(dm2, adsl, AGE, AGEGR2, create_from_decode = TRUE)
+```
+
+## Summary of Other Changes
+
+-   `metacore` Fixed a bug where the presence of variables with VLM in the `value_spec` table would prevent variables of the same name in different datasets being populated in the `value_spec` table.
+
+-   `metatools::build_from_derived` adds new options for the `keep` parameter that allow users to derive either `all` or only `prerequisite` columns from source datasets.
+    Thanks to Matt Bearham for this amendment!
+
+-   `metatools::combine_supp` now adds the label found in `QLABEL` to the `QNAM` columns that are derived from supplementary datasets.
+    Thanks to Bill Denney for this amendment!
+
+-   {cli} output is now used across both packages and messaging for various functions has been improved.
+
+## What's next?
+
+The next step for both packages will be working through and closing out issues from the backlog, updating the examples and vignettes, and improving the user experience via more informative messaging.
+
+For {metacore}, there has been some interest in a UI to help users write custom specification readers for specs not in the standard P21 format.
+So this will be explored as well.
+
+I hope to release the next update towards the end of the year, looking at an approximately 6-monthly release schedule going forward.
+Until then I encourage people to explore some of the new features and provide feedback on the changes through GitHub.\
+
+\
+Thanks for reading!
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
