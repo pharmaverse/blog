@@ -2,7 +2,7 @@
 title: "Metacore 0.2.0"
 author:
   - name: Liam Hobby
-description: "{metacore}/{metatools} 0.2.0 are live. Read package release information and hear from the new maintainer."
+description: "metacore and metatools 0.2.0 are live. Read package release information and hear from the new maintainer."
 date: "2024-12-01"
 categories: [Metadata, ADaM, Community]
 image: "metacore.png"
@@ -29,15 +29,15 @@ Christina remains on-hand as a mentor and I'd like to thank both her and Ben Str
 
 ## What's new in {metacore}
 
-The goal of this update was to clarify the distinction between an imported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via `metacore::select_dataset`).
+The goal of this update was to clarify the distinction between an imported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via `metacore::select_dataset()`).
 
 We received a number of questions and issues raised where users were attempting to use a Metacore object containing metadata for multiple datasets in functions from {metatools} that were designed to take a single, subsetted specification.
 When developing datasets, the typical workflow is to be working on a single dataset at a time - so subsetting the Metacore object is the logical thing to do.
 The issue was that the approach to functions in {metatools} was inconsistent, with some functions permitting multiple specification metadata and others not.
 
-Now, a Metacore object about multiple datasets and one about a single dataset have been redesigned to be programmatically distinct, with the single dataset implemented as a subclass of Metacore called "DatasetMeta".
+Now, a Metacore object which has multiple datasets or one with a single dataset have been redesigned to be programmatically distinct, with the single dataset implemented as a subclass of Metacore called "DatasetMeta".
 
-From the users perspective there is one key change.
+From the users' perspective there is one key change.
 **A metadata object about a single dataset will be required for users to work with {metatools} functions**, which have had their API harmonised to accept only subsetted Metacore objects (`metacore::select_dataset`).
 
 The print statements of both combined and subsetted Metacore objects have been refined to better illustrate the differences between them and provide more helpful information to the user.
@@ -47,10 +47,10 @@ load(metacore_example("pilot_ADaM.rda"))
 metacore
 ```
 
-The `select_dataset` function is now explicit about what is being selected:
+The `select_dataset()` function is now explicit about what is being selected:
 
 ```{r}
-adsl <- select_dataset(metacore, "ADSL", quiet = TRUE)
+adsl_spec <- select_dataset(metacore, "ADSL", quiet = TRUE)
 ```
 
 Printing the subsetted object now provides more detailed information:
