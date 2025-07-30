@@ -29,7 +29,7 @@ Christina remains on-hand as a mentor and I'd like to thank both her and Ben Str
 
 ## What's new in {metacore}
 
-The goal of this update was to clarify the distinction between an imported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via `metacore::select_dataset()`).
+The goal of this update was to clarify the distinction between an imported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via metacore::select_dataset()).
 
 We received a number of questions and issues raised where users were attempting to use a Metacore object containing metadata for multiple datasets in functions from {metatools} that were designed to take a single, subsetted specification.
 When developing datasets, the typical workflow is to be working on a single dataset at a time - so subsetting the Metacore object is the logical thing to do.
@@ -38,7 +38,7 @@ The issue was that the approach to functions in {metatools} was inconsistent, wi
 Now, a Metacore object which has multiple datasets or one with a single dataset have been redesigned to be programmatically distinct, with the single dataset implemented as a subclass of Metacore called "DatasetMeta".
 
 From the users' perspective there is one key change.
-**A metadata object about a single dataset will be required for users to work with {metatools} functions**, which have had their API harmonised to accept only subsetted Metacore objects (`metacore::select_dataset`).
+**A metadata object about a single dataset will be required for users to work with {metatools} functions**, which have had their API harmonised to accept only subsetted Metacore objects (via metacore::select_dataset()).
 
 The print statements of both combined and subsetted Metacore objects have been refined to better illustrate the differences between them and provide more helpful information to the user.
 
@@ -47,7 +47,7 @@ load(metacore_example("pilot_ADaM.rda"))
 metacore
 ```
 
-The `select_dataset()` function is now explicit about what is being selected:
+The metacore::select_dataset() function is now explicit about what is being selected:
 
 ```{r}
 adsl_spec <- select_dataset(metacore, "ADSL", quiet = TRUE)
@@ -80,7 +80,7 @@ The `dataset_name` argument will remain available for **at least one year** from
 
 ## `metatools::create_var_from_codelist()`
 
-`create_var_from_codelist` now optionally allows the user to specify a codelist from which the new column should be generated.
+metatools::create_var_from_codelist() now optionally allows the user to specify a codelist from which the new column should be generated.
 This is useful in situations like the one below where the user is trying to derive `PARAM` from `PARAMCD` but the codelist for the `out_var` (`PARAM`) does not contain the values of `PARAMCD`.
 
 | ID    | Order | Code                     | Decode                   |
@@ -97,7 +97,7 @@ data <- tibble(PARAMCD = c("ALB", "ALP", "ALT"))
 create_var_from_codelist(data, adlbc, input_var = PARAMCD, out_var = PARAM, strict = FALSE)
 ```
 
-By default, `create_var_from_codelist` takes the codelist of the `out_var` as input.
+By default, metatools::create_var_from_codelist() takes the codelist of the `out_var` as input.
 The user can now overwrite this default with a specific codelist (in this case `PARAMCD` below) to achieve the desired result.
 
 | ID      | Order | Code  | Decode                   |
@@ -120,7 +120,7 @@ x <- create_var_from_codelist(data, adlbc, input_var = PARAMCD, out_var = PARAM,
 
 ## `metatools::create_cat_var()`
 
-`create_cat_var` has been updated so that users can now specify to create a new variable from either the `code` or `decode` column of the controlled terminology.
+metatools::create_cat_var() has been updated so that users can now specify to create a new variable from either the `code` or `decode` column of the controlled terminology.
 Previously, a codelist set-up like the one below would be evaluated from the `code` column only, leaving out the "years" text from the new variable.
 
 | ID     | Name               | Data Type | Order | Code   | Decode       |
@@ -154,12 +154,12 @@ x <- create_cat_var(dm2, adsl, AGE, AGEGR2, create_from_decode = TRUE)
 
 ## Summary of Other Changes
 
--   `metacore` Fixed a bug where the presence of variables with VLM in the `value_spec` table would prevent variables of the same name in different datasets being populated in the `value_spec` table.
+-   Fixed a bug where the presence of variables with VLM in the `value_spec` table would prevent variables of the same name in different datasets being populated in the `value_spec` table.
 
--   `metatools::build_from_derived` adds new options for the `keep` parameter that allow users to derive either `all` or only `prerequisite` columns from source datasets.
+-   metatools::build_from_derived() adds new options for the `keep` parameter that allow users to derive either `all` or only `prerequisite` columns from source datasets.
     Thanks to Matt Bearham for this amendment!
 
--   `metatools::combine_supp` now adds the label found in `QLABEL` to the `QNAM` columns that are derived from supplementary datasets.
+-   metatools::combine_supp() now adds the label found in `QLABEL` to the `QNAM` columns that are derived from supplementary datasets.
     Thanks to Bill Denney for this amendment!
 
 -   {cli} output is now used across both packages and messaging for various functions has been improved.
