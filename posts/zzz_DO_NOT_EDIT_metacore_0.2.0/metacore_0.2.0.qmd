@@ -23,13 +23,13 @@ link::auto()
 Hi, everyone!
 I'm [Liam](https://www.linkedin.com/in/liam-hobby/ "Liam Hobby") and I'm excited to announce that I have taken over as package maintainer for both {metacore} and {metatools} from Christina Fillmore.
 I work at GSK as a clinical programmer and I am coming to the end of my second year in the industry.
-This is my first experience working within the open-source world, but I am a regular user of Pharmaverse packages and am keen to get more involved with the community.
+This is my first experience working within the open-source world, but I am a regular user of pharmaverse packages and am keen to get more involved with the community.
 
 Christina remains on-hand as a mentor and I'd like to thank both her and Ben Straub for the continued support before we dive into the details of {metacore}/{metatools} 0.2.0.
 
-## What's new in {metacore}?
+## What's new in metacore?
 
-The goal of this update was to clarify the distinction between an imported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via metacore::select_dataset()).
+The goal of version 0.2.0 was to clarify the distinction between an imported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via metacore::select_dataset()).
 
 We received a number of questions and issues raised where users were attempting to use a Metacore object containing metadata for multiple datasets in functions from {metatools} that were designed to take a single, subsetted specification.
 When developing datasets, the typical workflow is to be working on a single dataset at a time - so subsetting the Metacore object is the logical thing to do.
@@ -67,7 +67,7 @@ ds_list <- list(DM = read_xpt(metatools_example("dm.xpt")))
 create_var_from_codelist(data.frame(), metacore)
 ```
 
-#### Related: soft deprecation of `dataset_name` in {metatools}
+#### Related: soft deprecation of `dataset_name` in metatools
 
 Additionally, the argument `dataset_name` has been **soft-deprecated** across all functions in {metatools}.
 While the argument is still available and will not break existing code, using it will now issue a warning.
@@ -78,7 +78,7 @@ The `dataset_name` argument will remain available for **at least one year** from
 
 [`build_from_derived`](https://pharmaverse.github.io/metatools/reference/build_from_derived.html "Build a dataset from derived"), [`check_variables`](https://pharmaverse.github.io/metatools/reference/check_variables.html "Check Variable Names"), [`check_unique_keys`](https://pharmaverse.github.io/metatools/reference/check_unique_keys.html "Check Uniqueness of Records by Key"), [`make_supp_qual`](https://pharmaverse.github.io/metatools/reference/make_supp_qual.html "Make Supplemental Qualifier"), [`drop_unspec_vars`](https://pharmaverse.github.io/metatools/reference/drop_unspec_vars.html "Drop Unspecified Variables"), [`add_variables`](https://pharmaverse.github.io/metatools/reference/add_variables.html "Add Missing Variables"), [`order_cols`](https://pharmaverse.github.io/metatools/reference/order_cols.html "Sort Columns by Order"), [`sort_by_key`](https://pharmaverse.github.io/metatools/reference/sort_by_key.html "Sort Rows by Key Sequence").
 
-## `metatools::create_var_from_codelist()`
+## `create_var_from_codelist()`
 
 metatools::create_var_from_codelist() now optionally allows the user to specify a codelist from which the new column should be generated.
 This is useful in situations like the one below where the user is trying to derive `PARAM` from `PARAMCD` but the codelist for the `out_var` (`PARAM`) does not contain the values of `PARAMCD`.
@@ -118,7 +118,7 @@ data <- tibble(PARAMCD = c("ALB", "ALP", "ALT", "DUMMY1", "DUMMY2"))
 x <- create_var_from_codelist(data, adlbc_spec, input_var = PARAMCD, out_var = PARAM, codelist = get_control_term(adlbc, PARAMCD), decode_to_code = FALSE, strict = TRUE)
 ```
 
-## `metatools::create_cat_var()`
+## create_cat_var()
 
 metatools::create_cat_var() has been updated so that users can now specify to create a new variable from either the `code` or `decode` column of the controlled terminology.
 Previously, a codelist set-up like the one below would be evaluated from the `code` column only, leaving out the "years" text from the new variable.
