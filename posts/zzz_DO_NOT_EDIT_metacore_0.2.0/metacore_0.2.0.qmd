@@ -113,7 +113,7 @@ The user can now overwrite this default with a specific codelist (in this case `
 | PARAMCD | 3     | CREAT | Creatine                 |
 
 ```{r}
-create_var_from_codelist(data, adlbc_spec, input_var = PARAMCD, out_var = PARAM, codelist = get_control_term(adlbc, PARAMCD), decode_to_code = FALSE)
+create_var_from_codelist(data, adlbc_spec, input_var = PARAMCD, out_var = PARAM, codelist = get_control_term(adlbc_spec, PARAMCD), decode_to_code = FALSE)
 ```
 
 This function also provides a new option `strict`, which when set to `TRUE` (default) will issue a warning indicating any values in your input column that do not appear in the codelist.
@@ -121,7 +121,7 @@ This function also provides a new option `strict`, which when set to `TRUE` (def
 ```{r}
 #| warning: true
 data <- tibble(PARAMCD = c("ALB", "ALP", "ALT", "DUMMY1", "DUMMY2"))
-x <- create_var_from_codelist(data, adlbc_spec, input_var = PARAMCD, out_var = PARAM, codelist = get_control_term(adlbc, PARAMCD), decode_to_code = FALSE, strict = TRUE)
+x <- create_var_from_codelist(data, adlbc_spec, input_var = PARAMCD, out_var = PARAM, codelist = get_control_term(adlbc_spec, PARAMCD), decode_to_code = FALSE, strict = TRUE)
 ```
 
 ## create_cat_var()
