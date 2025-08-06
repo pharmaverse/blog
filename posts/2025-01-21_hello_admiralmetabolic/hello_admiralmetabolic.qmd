@@ -34,13 +34,13 @@ The {admiral} team is celebrating the newest addition to the extension package f
 For this first 0.1 release, {admiralmetabolic} focuses primarily on the obesity indication. The package offers:
 
 * Obesity-specific SDTM test data (to be moved to {pharmaversesdtm} at the next release of the package);
-* Two brand-new functions: admiralmetabolic::derive_param_waisthgt() and admiralmetabolic::derive_param_waisthip();
+* Two brand-new functions: derive_param_waisthgt() and derive_param_waisthip();
 * Two vignettes for an [obesity vital signs ADaM ADVS](https://pharmaverse.github.io/admiralmetabolic/articles/advs.html) and a [Control of Eating Questionnaire ADaM ADCOEQ](https://pharmaverse.github.io/admiralmetabolic/articles/adcoeq.html);
 * Two template programs for [ADVS](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_advs.R) and [ADCOEQ](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_adcoeq.R) matching the corresponding vignettes.
 
 ## New Functions
 
-The first function, admiralmetabolic::derive_param_waisthgt(), is a wrapper to admiral::derive_param_computed() and enables users to add derived waist to height ratio parameters to a vital signs ADVS ADaM using waist circumference and height records. Here is an example of the function in action:
+The first function, derive_param_waisthgt(), is a wrapper to derive_param_computed() and enables users to add derived waist to height ratio parameters to a vital signs ADVS ADaM using waist circumference and height records. Here is an example of the function in action:
 
 ```{r, eval = TRUE}
 library(tibble)
@@ -81,7 +81,7 @@ Note that this function has built-in support for:
 * Single or multiple height measurement by modifying the argument `constant_by_vars`. 
 Please visit the function's reference page for more details.
 
-admiralmetabolic::derive_param_waisthip() is very similar: it is also a wrapper to admiral::derive_param_computed(), but this time enables users to add derived waist to hip ratio parameters using waist- and hip circumference. It boasts the same unit-flexibility as admiralmetabolic::derive_param_waisthgt() - let's look at that in action:
+derive_param_waisthip() is very similar: it is also a wrapper to derive_param_computed(), but this time enables users to add derived waist to hip ratio parameters using waist- and hip circumference. It boasts the same unit-flexibility as derive_param_waisthgt() - let's look at that in action:
 
 ```{r, eval = TRUE}
 advs2 <- tribble(
@@ -111,7 +111,7 @@ derive_param_waisthip(
 
 ## Vignettes and Template
 
-On the {admiralmetabolic} package website, users will find the [obesity ADVS vignette](https://pharmaverse.github.io/admiralmetabolic/articles/advs.html). This documentation page will guide users towards creating an obesity ADVS ADaM, touching upon how to use our two new functions admiralmetabolic::derive_param_waisthgt() and admiralmetabolic::derive_param_waisthip() as well as how to apply existing {admiral} tools such as the brand-new (as of [admiral 1.2](https://pharmaverse.github.io/blog/posts/2025-01-17_1.2_admiral.../1.2_admiral_release.html)) admiral::derive_vars_cat() to create weight classes within the AVALCAT variable and admiral::derive_vars_crit_flag() to create criterion flag/variable pairs for endpoints such as a 5% reduction in weight at a certain visit.
+On the {admiralmetabolic} package website, users will find the [obesity ADVS vignette](https://pharmaverse.github.io/admiralmetabolic/articles/advs.html). This documentation page will guide users towards creating an obesity ADVS ADaM, touching upon how to use our two new functions derive_param_waisthgt() and derive_param_waisthip() as well as how to apply existing {admiral} tools such as the brand-new (as of [admiral 1.2](https://pharmaverse.github.io/blog/posts/2025-01-17_1.2_admiral.../1.2_admiral_release.html)) derive_vars_cat() to create weight classes within the AVALCAT variable and derive_vars_crit_flag() to create criterion flag/variable pairs for endpoints such as a 5% reduction in weight at a certain visit.
 
 Of course, this vignette is coupled with the [obesity ADVS template program](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_advs.R), which users can use as a starting point for their ADaM scripts. The template can also be loaded and saved directly from the R console by running:
 
@@ -120,7 +120,7 @@ admiral::use_ad_template("ADVS", package = "admiralmetabolic")
 ```
 
 The [Control of Eating Questionnaire](https://licensing.leeds.ac.uk/product/control-of-eating-questionnaire-coeq) (COEQ) is used in many obesity trials as an endpoint. As such, {admiralmetabolic} also contains a vignette geared towards the creation of an ADaM dataset ADCOEQ for the COEQ. 
-Due to the flexibility of the parent {admiral} package, functions such as admiral::derive_summary_records() can be employed to create ADCOEQ. Users are invited to visit the [vignette](https://pharmaverse.github.io/admiralmetabolic/articles/adcoeq.html) for more details and a full walkthrough. 
+Due to the flexibility of the parent {admiral} package, functions such as derive_summary_records() can be employed to create ADCOEQ. Users are invited to visit the [vignette](https://pharmaverse.github.io/admiralmetabolic/articles/adcoeq.html) for more details and a full walkthrough. 
 
 Once again, this vignette comes hand-in-hand with the [ADCOEQ program](https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_advs.R), which can be accessed through the link above or directly from the R console by running:
 
