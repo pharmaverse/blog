@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.7.33">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -77,7 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-50da3434f0e8e0cbedbe4fddadc841a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
@@ -258,8 +258,8 @@ cookieconsent.run({
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p>Filtering and merging datasets is the bread and butter of statistical programming. Whether it’s on the way to an ADaM variable derivation, or in an effort to pull out a list of patients matching a specific condition for a TLG, or another task entirely, most steps in the statistical programming workflow feature some combination of these two tasks.</p>
-<p>The <code>{tidyverse}</code> functions <code>filter()</code>, <code>group_by()</code>, and<code>*_join()</code> are a fantastic toolset for filtering and merging, and can often suffice to carry out these sorts of operations. Often, however, this will be a multi-step process, requiring more than one set of pipe (<code>%&gt;%</code>) chains if multiple datasets are involved. As such, the <a href="https://pharmaverse.github.io/admiral/index.html">{admiral}</a> package builds on this concept by offering a very practical toolset of utility functions, henceforth referred to altogether as <code>filter_*()</code>. These are wrappers of common combinations of <code>{tidyverse}</code> function calls that enable the ADaM programmer to carry out such operations “in stride” within their ADaM workflow - in typical <code>{admiral}</code> style!</p>
-<p>Many of the <code>filter_*()</code> functions feature heavily within the <code>{admiral}</code> codebase, but they can be very handy in their own right. You can learn more about them from:</p>
+<p>The <code>{tidyverse}</code> functions <code>filter()</code>, <code>group_by()</code>, and<code>*_join()</code> are a fantastic toolset for filtering and merging, and can often suffice to carry out these sorts of operations. Often, however, this will be a multi-step process, requiring more than one set of pipe (<code>%&gt;%</code>) chains if multiple datasets are involved. As such, the <a href="https://pharmaverse.github.io/admiral/index.html">{admiral}</a> package builds on this concept by offering a very practical toolset of utility functions, henceforth referred to altogether as <code>filter_*()</code>. These are wrappers of common combinations of <code>{tidyverse}</code> function calls that enable the ADaM programmer to carry out such operations “in stride” within their ADaM workflow - in typical admiral style!</p>
+<p>Many of the <code>filter_*()</code> functions feature heavily within the admiral codebase, but they can be very handy in their own right. You can learn more about them from:</p>
 <ul>
 <li>The relevant section in the <a href="https://pharmaverse.github.io/admiral/reference/#utilities-for-filtering-observations">Reference page of the admiral documentation website</a>;</li>
 <li>The short visual explanations in the second page of the <a href="https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf">{admiral Cheat Sheet}</a>;</li>
@@ -477,7 +477,7 @@ cookieconsent.run({
 <li>Only keep those records if, after combining with <code>dataset_add</code>, we can find a record in <code>dataset_add</code> where <code>ACOVFL == "Y"</code> and <code>ADY</code> is within seven days of <code>ADY</code> from <code>dataset</code> (this will satisfy (2).</li>
 </ul>
 <p>In the <code>filter_join</code> argument, notice that <code>.join</code> syntax is used to refer to the variables come from <code>dataset_add</code>, and enables us to compare the same variable across observations (<code>ADY &gt;= ADY.join - 7</code>). Note finally that <code>join_type = "all"</code> allows the user to consider all observations in <code>dataset_add</code> when joining.</p>
-<p>For a much more detailed exposition of <code>filter_join()</code>, with more examples, consider visiting its <a href="https://pharmaverse.github.io/admiral/reference/filter_joined.html">reference page</a> on the <code>{admiral}</code> website.</p>
+<p>For a much more detailed exposition of <code>filter_join()</code>, with more examples, consider visiting its <a href="https://pharmaverse.github.io/admiral/reference/filter_joined.html">reference page</a> on the admiral website.</p>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
@@ -496,7 +496,7 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2025-07-16 14:24:04.393879</p>
+<p>2025-08-07 01:10:36.760731</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>

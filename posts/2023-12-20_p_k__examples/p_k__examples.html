@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.7.33">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -77,7 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-50da3434f0e8e0cbedbe4fddadc841a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
@@ -260,10 +260,10 @@ cookieconsent.run({
 <p>A new <a href="https://pharmaverse.github.io/examples" target="_blank">pharmaverse examples website</a> has some exciting new features to explore.</p>
 <p>One of these is the ability to launch Posit Cloud to explore the example code and make your own modifications. This interactive Posit Cloud environment is preconfigured with all required package installations. Click here: <a href="https://posit.cloud/content/7279124" target="_blank">Launch Posit Cloud</a> to explore the examples code.</p>
 <p>This sample code here is based on the Population PK Analysis Data (ADPPK) model which follows the recently released <a href="https://www.cdisc.org/standards/foundational/adam/basic-data-structure-adam-poppk-implementation-guide-v1-0" target="_blank">CDISC Implementation Guide</a>.</p>
-<p>Population PK models generally make use of nonlinear mixed effects models that require numeric variables. The data used in the models will include both dosing and concentration records, relative time variables, and numeric covariate variables. For more details see the <code>{admiral}</code> <a href="https://pharmaverse.github.io/admiral/articles/pk_adnca.html" target="_blank">vignette</a>.</p>
+<p>Population PK models generally make use of nonlinear mixed effects models that require numeric variables. The data used in the models will include both dosing and concentration records, relative time variables, and numeric covariate variables. For more details see the admiral <a href="https://pharmaverse.github.io/admiral/articles/pk_adnca.html" target="_blank">vignette</a>.</p>
 <section id="first-load-packages" class="level2">
 <h2 class="anchored" data-anchor-id="first-load-packages">First Load Packages</h2>
-<p>First we will load the packages required for our project. We will use <code>{admiral}</code> for the creation of analysis data. <code>{admiral}</code> requires <code>{dplyr}</code>, <code>{lubridate}</code> and <code>{stringr}</code>. We will use <code>{metacore}</code> and <code>{metatools}</code> to store and manipulate metadata from our specifications. We will use <code>{xportr}</code> to perform checks on the final data and export to a transport file.</p>
+<p>First we will load the packages required for our project. We will use admiral for the creation of analysis data. admiral requires <code>{dplyr}</code>, <code>{lubridate}</code> and <code>{stringr}</code>. We will use <code>{metacore}</code> and <code>{metatools}</code> to store and manipulate metadata from our specifications. We will use <code>{xportr}</code> to perform checks on the final data and export to a transport file.</p>
 <p>The source SDTM data will come from the CDISC pilot study data stored in <code>{pharmaversesdtm}</code> and the ADaM ADSL data will come from <code>{pharmaverseadam}</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Packages</span></span>
@@ -340,7 +340,7 @@ cookieconsent.run({
 </div>
 <section id="derive-additional-baselines" class="level3">
 <h3 class="anchored" data-anchor-id="derive-additional-baselines">Derive Additional Baselines</h3>
-<p>Next we add additional baselines from vital signs and laboratory data. Several common variables are computed using some of the built in functions in <code>{admiral}</code>.</p>
+<p>Next we add additional baselines from vital signs and laboratory data. Several common variables are computed using some of the built in functions in admiral.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>labsbl <span class="ot">&lt;-</span> lb <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(LBBLFL <span class="sc">==</span> <span class="st">"Y"</span> <span class="sc">&amp;</span> LBTESTCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"CREAT"</span>, <span class="st">"ALT"</span>, <span class="st">"AST"</span>, <span class="st">"BILI"</span>)) <span class="sc">%&gt;%</span></span>
@@ -402,7 +402,7 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2025-07-16 14:24:21.201308</p>
+<p>2025-08-07 01:10:52.237948</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-20_p_k__examples/p_k__examples.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
