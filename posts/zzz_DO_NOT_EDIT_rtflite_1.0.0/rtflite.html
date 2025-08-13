@@ -6,11 +6,12 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Stefan Thoma">
-<meta name="dcterms.date" content="2023-06-27">
-<meta name="description" content="Let’s have a look at the Admiral Hackathon 2023 together.">
+<meta name="author" content="Yilong Zhang">
+<meta name="author" content="Nan Xiao">
+<meta name="dcterms.date" content="2025-08-11">
+<meta name="description" content="Do you need to deliver and submit clinical study reports using Python? We have a solution.">
 
-<title>Admiral Hackathon 2023 Revisited – pharmaverse blog</title>
+<title>rtflite 1.0.0: Production-Ready Clinical TLFs in Python – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -106,15 +107,19 @@ cookieconsent.run({
         background: #eeeeee;
       }
 </style>
+<script src="../../site_libs/bslib-component-js-0.9.0/components.min.js"></script>
+<script src="../../site_libs/bslib-component-js-0.9.0/web-components.min.js" type="module"></script>
+<link href="../../site_libs/bslib-component-css-0.9.0/components.css" rel="stylesheet">
+<script src="../../site_libs/bslib-tag-require-0.9.0/tag-require.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Admiral Hackathon 2023 Revisited – pharmaverse blog">
-<meta property="og:description" content="Let’s have a look at the Admiral Hackathon 2023 together.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/community.png">
+<meta property="og:title" content="rtflite 1.0.0: Production-Ready Clinical TLFs in Python – pharmaverse blog">
+<meta property="og:description" content="Do you need to deliver and submit clinical study reports using Python? We have a solution.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_rtflite_1.0.0/logo.png">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="543">
-<meta property="og:image:width" content="544">
+<meta property="og:image:height" content="900">
+<meta property="og:image:width" content="900">
 </head>
 
 <body class="floating nav-fixed quarto-light">
@@ -154,15 +159,15 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Admiral Hackathon 2023 Revisited</h1>
+      <h1 class="title">rtflite 1.0.0: Production-Ready Clinical TLFs in Python</h1>
                   <div>
         <div class="description">
-          Let’s have a look at the Admiral Hackathon 2023 together.
+          Do you need to deliver and submit clinical study reports using Python? We have a solution.
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">Community</div>
-                <div class="quarto-category">ADaM</div>
+                <div class="quarto-category">TLG</div>
+                <div class="quarto-category">Python</div>
               </div>
                   </div>
   </div>
@@ -171,16 +176,17 @@ cookieconsent.run({
   <div class="quarto-title-meta">
 
       <div>
-      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-heading">Authors</div>
       <div class="quarto-title-meta-contents">
-               <p>Stefan Thoma </p>
+               <p>Yilong Zhang </p>
+               <p>Nan Xiao </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 27, 2023</p>
+        <p class="date">August 11, 2025</p>
       </div>
     </div>
     
@@ -195,9 +201,16 @@ cookieconsent.run({
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction-to-r-workshop" id="toc-introduction-to-r-workshop" class="nav-link active" data-scroll-target="#introduction-to-r-workshop"><em>Introduction to R</em> workshop</a></li>
-  <li><a href="#admiral-hackathon" id="toc-admiral-hackathon" class="nav-link" data-scroll-target="#admiral-hackathon"><code>admiral</code> Hackathon</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#what-is-rtflite" id="toc-what-is-rtflite" class="nav-link active" data-scroll-target="#what-is-rtflite">What is rtflite?</a></li>
+  <li><a href="#major-enhancements-in-rtflite-1.0.0" id="toc-major-enhancements-in-rtflite-1.0.0" class="nav-link" data-scroll-target="#major-enhancements-in-rtflite-1.0.0">Major enhancements in rtflite 1.0.0</a>
+  <ul class="collapse">
+  <li><a href="#pagination-capabilities" id="toc-pagination-capabilities" class="nav-link" data-scroll-target="#pagination-capabilities">Pagination capabilities</a></li>
+  <li><a href="#embedding-figures" id="toc-embedding-figures" class="nav-link" data-scroll-target="#embedding-figures">Embedding figures</a></li>
+  <li><a href="#table-combination" id="toc-table-combination" class="nav-link" data-scroll-target="#table-combination">Table combination</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting started</a></li>
+  </ul></li>
+  <li><a href="#acknowledgments" id="toc-acknowledgments" class="nav-link" data-scroll-target="#acknowledgments">Acknowledgments</a></li>
+  <li><a href="#disclaimer" id="toc-disclaimer" class="nav-link" data-scroll-target="#disclaimer">Disclaimer</a></li>
   </ul>
 </nav>
 </nav>
@@ -212,69 +225,42 @@ cookieconsent.run({
 
 
 
-<!--------------- my typical setup ----------------->
+<!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>This January and February (2023), the <code>admiral</code> development team and the CDISC Open Source Alliance jointly hosted the admiral hackathon. The idea was to build a community of <code>admiral</code> users, and help participants familiarize themselves with R and <code>admiral</code>. This whole effort was led by <a href="https://www.linkedin.com/in/thomasneitmann/">Thomas Neitmann</a> and was supported by <a href="https://www.linkedin.com/in/zelos-zhu-7969a1103/">Zelos Zhu</a>, <a href="https://www.linkedin.com/in/sadchla-mascary/">Sadchla Mascary</a>, and me – <a href="https://www.linkedin.com/in/stefan-thoma-77537bb5/">Stefan Thoma</a>.</p>
-<p>The hackathon event was structured in two parts. First, we offered an <em>Introduction to R</em> for SAS programmers, a three hour workshop for R beginners to get them up to speed. Here we covered practical R basics, talking about how the R-workflow differs from a SAS workflow, and discussed common R functions - mostly from the tidyverse. This ensured that hackathon participants were familiar with core R concepts. The <a href="https://www.cdisc.org/cosa">workshop recording</a> and the <a href="https://pharmaverse.github.io/intro-to-r-for-sas-programmers-workshop/">course materials</a> are available online.</p>
-<p>The main hackathon consisted of several ADAM data generating tasks based on a specs file and synthetic data. Participants were able to solve these tasks in groups at their own pace thanks to a online tool where participants could upload their task specific R scripts and they would get automatic feedback for the data-set produced by their script. Script upload through <a href="https://zxqguo-stefan0pascal-thoma.shinyapps.io/data_upload/">the feedback application</a> was available all through February, and we offered three additional online meetings throughout the month to discuss challenges and give some tips. If you are interested in learning more about the thoughts that went into the feedback application, you can read about it in <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_app/">this blogpost</a> or check out my <a href="https://github.com/StefanThoma/hackathon_app">public GitHub repository for such an application</a>.</p>
-<section id="introduction-to-r-workshop" class="level2">
-<h2 class="anchored" data-anchor-id="introduction-to-r-workshop"><em>Introduction to R</em> workshop</h2>
-<p>We were really excited to see over <strong>500</strong> people from around 40 countries joining our <em>Introduction to R workshop</em> in January! To get to know prospective users and hackathon participants better, we conducted some polls during the meetings. Below you can see that representatives of many different sorts of organisations joined our <em>Introduction to R</em> workshop:</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>216 out of 402 confirmed that their company is already using R for clinical trial data analysis, the remaining 131 did not answer this question.</p>
-<p>The target audience for this workshop was programmers who are very familiar with SAS, but not so familiar with R, our polls confirmed this.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Overall, we were very happy with how the workshop turned out, and participants overall agreed with this sentiment (although there may be a slight <a href="https://en.wikipedia.org/wiki/Survivorship_bias">survivorship bias</a>…).</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
+<p>We are thrilled to announce the release of <span class="r-link-pkg-error">{rtflite}</span> 1.0.0, marking a significant milestone in bringing production-ready TLF generation capabilities in RTF format to Python for clinical trial reporting. This major release represents our commitment to providing the pharmaceutical industry with robust, reliable tools for creating tables, listings, and figures (TLFs) in RTF format.</p>
+<section id="what-is-rtflite" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-rtflite">What is rtflite?</h2>
+<p><span class="r-link-pkg-error">{rtflite}</span> is a Python package designed specifically for generating TLFs in RTF format for clinical trial reporting. Inspired by the <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Easily Create Production-Ready Rich Text Format (RTF) Tables and Figures • r2rtf</template> <a href="https://merck.github.io/r2rtf/" class="r-link-pkg" target="_blank">{r2rtf}</a> </bslib-tooltip> it provides a programmatic interface to create highly customized TLFs that meet regulatory submission requirements. When used together with <a href="https://pharmaverse.github.io/py-pkglite/">pkglite for Python</a>, <a href="https://pharmaverse.github.io/rtflite/">rtflite</a> bridges the gap between Python’s data science ecosystem and the specialized requirements of clinical trial reporting and submission.</p>
 </section>
-<section id="admiral-hackathon" class="level2">
-<h2 class="anchored" data-anchor-id="admiral-hackathon"><code>admiral</code> Hackathon</h2>
-<p>Following the kick-off meeting, 371 participants joined the posit (rStudio) workspace that was made available to all participants at no costs by the <a href="https://posit.co/">posit company</a>. About half the participants planned to spend one to two hours per week on the admiral tasks, the other half planned to allocate even more. 15 participants even planned to spend eight hours or more!</p>
-<p>We were really happy to see an overwhelming amount of activity on the slack channel we set up with over 250 members. Not only were people engaging with the materials, but we saw how a community was formed where people were encouraged to ask questions and where community members went out of their way to help each other. Shout-out to our community hero: <a href="https://www.linkedin.com/in/jagadishkatam/">Jagadish Katam</a> without whom most issues related to the task programming raised by the community would not have been addressed as quickly as they were. Huge thanks from the organizers!</p>
-<p>In the end, a total of 44 teams spanning 87 statistical programmers took part in the admiral hackathon and uploaded solution scripts to the hackathon application solving at least one of the 8 tasks available (ADSL, ADAE, ADLBC, ADVS, ADTTE, ADADAS, ADLBH &amp; ADLBHY). Participants’ scripts were then run on the shiny server and the output data-frame were compared to the solutions we provided. At the read-out there was a live draft of teams to win one-on-one <code>admiral</code> consulting with one of the <code>admiral</code> core developers. Winning probabilities were weighted by the number of points each group received for the quality of their output data-frames and for the number of tasks solved.</p>
-<p>Congratulations to the winners:</p>
-<ul>
-<li><code>ViiV Team_GSK</code></li>
-<li><code>teamspoRt</code></li>
-<li><code>TatianaPXL</code></li>
-<li><code>Divyasneelam</code></li>
-<li><code>AdaMTeamIndia</code></li>
-<li><code>Sanofi_BP</code></li>
-<li><code>Jagadish</code> (our community hero)</li>
-<li><code>AZ_WAWA</code></li>
-</ul>
-<p>Although this was uncertain during the hackathon we were excited to provide a Certificate of Completion to all participants who uploaded a script to the Web Application.</p>
-<p>A recording of the hackathon readout can be found in the <a href="https://www.cdisc.org/cosa">CDISC Open Source Alliance Quarterly Spotlight</a>.</p>
+<section id="major-enhancements-in-rtflite-1.0.0" class="level2">
+<h2 class="anchored" data-anchor-id="major-enhancements-in-rtflite-1.0.0">Major enhancements in rtflite 1.0.0</h2>
+<section id="pagination-capabilities" class="level3">
+<h3 class="anchored" data-anchor-id="pagination-capabilities">Pagination capabilities</h3>
+<p>With the <code>page_by</code>, <code>group_by</code>, and <code>subline_by</code> features in <code>RTFBody</code> introduced in rtflite 1.0.0, we can efficiently create paginated TLFs (<a href="https://pharmaverse.github.io/rtflite/articles/advanced-group-by/#multi-page-example-with-group-context">examples</a>).</p>
+<p><img src="ae.png" align="center" style="float:right" width="100%"></p>
 </section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Overall, we are very happy with how the hackathon turned out. We were not only positively surprised with the huge audience for the <em>Intro to R</em> workshop (CDISC record breaking) and for the <code>admiral</code> hackathon, but even more so with the engagement of all the participants.</p>
-<p>Again, we would like to thank all the organizers, participants, and sponsors for their time and resources and hope to have provided a useful glimpse into our solution for ADAM creation within the end-to-end clinical data analysis open source R framework that the pharmaverse aims to provide.</p>
-<p>As always, we are very happy to hear more feedback on the hackathon as well as on <code>admiral</code> in general. Simply submit an issue on the <a href="https://github.com/pharmaverse/admiral"><code>admiral</code> GitHub repository</a>. You would like to join the <code>admiral</code> core developers? Please reach out to <a href="mailto:edoardo.mancini@roche.com">Edoardo Mancini (product owner)</a> or <a href="mailto:ben.x.straub@gsk.com">Ben Straub (technical lead)</a>.</p>
+<section id="embedding-figures" class="level3">
+<h3 class="anchored" data-anchor-id="embedding-figures">Embedding figures</h3>
+<p>With the <code>RTFFigure</code> feature introduced in rtflite 1.0.0, we can embed multiple figures with titles, footnotes, and data sources (<a href="https://pharmaverse.github.io/rtflite/articles/example-figure/">examples</a>).</p>
+<p><img src="figure.png" align="center" style="float:right" width="100%"></p>
+</section>
+<section id="table-combination" class="level3">
+<h3 class="anchored" data-anchor-id="table-combination">Table combination</h3>
+<p><code>RTFDocument</code> now supports a list of tables. This allows users to combine multiple tables to create advanced layouts (<a href="https://pharmaverse.github.io/rtflite/articles/example-figure/">examples</a>).</p>
+<p><img src="efficacy.png" align="center" style="float:right" width="100%"></p>
+</section>
+<section id="getting-started" class="level3">
+<h3 class="anchored" data-anchor-id="getting-started">Getting started</h3>
+<p>Please check out the <a href="https://pharmaverse.github.io/rtflite/articles/quickstart/">rtflite quick start guide</a>.</p>
+</section>
+</section>
+<section id="acknowledgments" class="level2">
+<h2 class="anchored" data-anchor-id="acknowledgments">Acknowledgments</h2>
+<p>We acknowledge the pharmaverse community for feedback and contributions, the r2rtf team for architectural inspiration, and the <a href="https://docs.astral.sh/uv/">uv project</a> for simplifying Python environment management. uv is a fast, Rust-based tool that unifies dependency resolution, packaging, and isolated environments which helped saving our time in building, testing, and publishing Python packages. We also appreciate Claude Code for accelerating our AI-assisted development workflow. For project architecture, coding standards, and shared workflows, see our <a href="https://github.com/pharmaverse/rtflite/blob/main/CLAUDE.md"><code>CLAUDE.md</code></a> and <a href="https://pharmaverse.github.io/rtflite/contributing/">contributing guidelines</a>.</p>
+</section>
+<section id="disclaimer" class="level2">
+<h2 class="anchored" data-anchor-id="disclaimer">Disclaimer</h2>
+<p>This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.</p>
 <!--------------- appendices go here ----------------->
 </section>
 <div class="cell">
@@ -288,20 +274,21 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2025-08-13 14:40:21.551831</p>
+<p>2025-08-13 14:40:43.772229</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-27_hackathon_writeup/index.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{thoma2023,
-  author = {Thoma, Stefan},
-  title = {Admiral {Hackathon} 2023 {Revisited}},
-  date = {2023-06-27},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-08-11_rtflite_1.0.0.../rtflite.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhang2025,
+  author = {Zhang, Yilong and Xiao, Nan},
+  title = {Rtflite 1.0.0: {Production-Ready} {Clinical} {TLFs} in
+    {Python}},
+  date = {2025-08-11},
+  url = {https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_rtflite_1.0.0/rtflite.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-thoma2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Thoma, Stefan. 2023. <span>“Admiral Hackathon 2023 Revisited.”</span>
-June 27, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/">https://pharmaverse.github.io/blog/posts/2023-06-27_hackathon_writeup/</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhang2025" class="csl-entry quarto-appendix-citeas" role="listitem">
+Zhang, Yilong, and Nan Xiao. 2025. <span>“Rtflite 1.0.0:
+Production-Ready Clinical TLFs in Python.”</span> August 11, 2025. <a href="https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_rtflite_1.0.0/rtflite.html">https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_rtflite_1.0.0/rtflite.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
