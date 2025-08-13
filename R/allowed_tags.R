@@ -2,6 +2,6 @@
 #' by `create_blogpost.R` and `check_post_tags.R`.
 
 allowed_tags <- c(
-  "Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community",
+  "Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Python", "Community",
   "Conferences", "Submissions", "Technical", "DEI", "Logging"
 )
