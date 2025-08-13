@@ -1,0 +1,99 @@
+---
+title: "rtflite 1.0.0: Production-Ready Clinical TLFs in Python"
+author:
+- name: Yilong Zhang
+- name: Nan Xiao
+description: Do you need to deliver and submit clinical study reports using Python? We have a solution.
+date: "2025-08-11"
+categories: [TLG, Python]
+image: logo.png
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2025-08-11_rtflite_1.0.0..."
+library(link)
+link::auto()
+```
+
+<!--------------- post begins here ----------------->
+
+We are thrilled to announce the release of {rtflite} 1.0.0,
+marking a significant milestone in bringing production-ready
+TLF generation capabilities in RTF format to Python for clinical trial reporting.
+This major release represents our commitment to providing the pharmaceutical
+industry with robust, reliable tools for creating tables, listings, and
+figures (TLFs) in RTF format.
+
+## What is rtflite?
+
+{rtflite} is a Python package
+designed specifically for generating TLFs in RTF format for clinical trial reporting.
+Inspired by the {r2rtf}
+it provides a programmatic interface to create highly customized TLFs that
+meet regulatory submission requirements.
+When used together with [pkglite for Python](https://pharmaverse.github.io/py-pkglite/),
+[rtflite](https://pharmaverse.github.io/rtflite/) bridges the gap between
+Python's data science ecosystem and the specialized requirements of
+clinical trial reporting and submission.
+
+## Major enhancements in rtflite 1.0.0
+
+### Pagination capabilities
+
+With the `page_by`, `group_by`, and `subline_by` features in `RTFBody`
+introduced in rtflite 1.0.0, we can efficiently create paginated TLFs
+([examples](https://pharmaverse.github.io/rtflite/articles/advanced-group-by/#multi-page-example-with-group-context)).
+
+<img src="ae.png" align="center" style="float:right" width="100%"/>
+
+### Embedding figures
+
+With the `RTFFigure` feature introduced in rtflite 1.0.0,
+we can embed multiple figures with titles, footnotes, and data sources
+([examples](https://pharmaverse.github.io/rtflite/articles/example-figure/)).
+
+<img src="figure.png" align="center" style="float:right" width="100%"/>
+
+### Table combination
+
+`RTFDocument` now supports a list of tables. This allows
+users to combine multiple tables to create advanced layouts
+([examples](https://pharmaverse.github.io/rtflite/articles/example-figure/)).
+
+<img src="efficacy.png" align="center" style="float:right" width="100%"/>
+
+### Getting started
+
+Please check out the [rtflite quick start
+guide](https://pharmaverse.github.io/rtflite/articles/quickstart/).
+
+## Acknowledgments
+
+We acknowledge the pharmaverse community for feedback and contributions,
+the r2rtf team for architectural inspiration, and the
+[uv project](https://docs.astral.sh/uv/) for simplifying Python environment
+management. uv is a fast, Rust-based tool that unifies dependency resolution,
+packaging, and isolated environments which helped saving our time in
+building, testing, and publishing Python packages.
+We also appreciate Claude Code for accelerating our AI-assisted development
+workflow. For project architecture, coding standards, and shared workflows,
+see our [`CLAUDE.md`](https://github.com/pharmaverse/rtflite/blob/main/CLAUDE.md)
+and [contributing guidelines](https://pharmaverse.github.io/rtflite/contributing/).
+
+## Disclaimer
+
+This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE, message=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
