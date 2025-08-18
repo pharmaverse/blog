@@ -1,0 +1,40 @@
+---
+title: "Introducing admiralneuro!"
+author:
+  - name: Miles Almond
+description: ""
+# Note that the date below will be auto-updated when the post is merged.
+date: "2025-09-01"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [ADaM, Community, Technical]
+# Feel free to change the image
+image: "admiralneuro.png"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_introducing..."
+library(link)
+link::auto()
+```
+
+<!--------------- post begins here ----------------->
+
+Please use the {link} package to automatically link packages and functions.
+To link to a package simply wrap it in curly braces: {dplyr}.
+Link a function from a package like: dplyr::filter().
+For more information check out {link}.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
