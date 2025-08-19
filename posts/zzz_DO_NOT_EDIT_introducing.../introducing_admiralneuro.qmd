@@ -38,20 +38,20 @@ In the 0.1 release, {admiralneuro} provides the following:
     -   [NV](https://github.com/pharmaverse/admiralneuro/blob/main/data-raw/nv_neuro.R) - Neurological exams dataset including amyloid and tau PET scans at baseline and two follow-up visits
     -   [SUPPNV](https://github.com/pharmaverse/admiralneuro/blob/main/data-raw/suppnv_neuro.R)- Supplemental neurological exams dataset including reference regions used for SUVR calculations
     -   [AG](https://github.com/pharmaverse/admiralneuro/blob/main/data-raw/ag_neuro.R) - Agents dataset including tracer details for amyloid and tau PET scans
--   A brand-new function `compute_centiloid()` that computes centiloid values based on amyloid PET tracer, SUVR pipeline, and reference region
+-   A brand-new function `compute_centiloid()` that computes Centiloid values based on amyloid PET tracer, SUVR pipeline, and reference region
 -   Two template programs for [ADAPET](https://github.com/pharmaverse/admiralneuro/blob/main/inst/templates/ad_adapet.R) and [ADTPET](https://github.com/pharmaverse/admiralneuro/blob/main/inst/templates/ad_adtpet.R)
 -   A corresponding [Creating ADTPET and ADAPET Vignette](https://pharmaverse.github.io/admiralneuro/articles/adpet.html)
 
 ### compute_centiloid
 
-The centiloid scale is a standardized quantitative measure for amyloid PET imaging that allows comparison between different tracers and analysis methods.
+The Centiloid scale is a standardized quantitative measure for amyloid PET imaging that allows comparison between different tracers and analysis methods.
 It is calculated as:
 
 $Centiloid = slope*SUVR + intercept$
 
 where SUVR is a patient's Standardized Uptake Value Ratio.
 
-The `compute_centiloid()` function neatly computes centiloid values from SUVR values given a specific combination of tracer, SUVR pipeline, and reference region in order to define slope and intercept.
+The `compute_centiloid()` function neatly computes Centiloid values from SUVR values given a specific combination of tracer, SUVR pipeline, and reference region in order to define slope and intercept.
 Currently, the following combinations of **tracer**, **pipeline**, and **ref_region** are supported:
 
 |                 |                            |                  |        |           |
@@ -93,13 +93,11 @@ adapet <- adapet %>%
       AVALU = "CL"
     )
   )
-
 ```
 
 ```{r, eval=TRUE, echo=FALSE, message=FALSE}
 library(admiraldev)
 dataset_vignette(adapet %>% filter(PARAMCD == "CLBFBB") %>% arrange(USUBJID, ADT), display_vars = exprs(USUBJID, PARAMCD, PARAM, VISIT, AVAL, AVALU))
-
 ```
 
 \
