@@ -71,10 +71,10 @@ library(admiral)
 library(admiralneuro)
 library(dplyr)
 
-adapet <- admiralneuro::admiralneuro_adapet %>%
+adapet_example <- admiralneuro::admiralneuro_adapet %>%
   filter(PARAMCD == "SUVRBFBB")
 
-adapet <- adapet %>%
+adapet_example <- adapet_example %>%
   admiral::derive_param_computed(
     by_vars = c(
       get_admiral_option("subject_keys"),
@@ -97,7 +97,7 @@ adapet <- adapet %>%
 
 ```{r, eval=TRUE, echo=FALSE, message=FALSE}
 library(admiraldev)
-dataset_vignette(adapet %>% filter(PARAMCD == "CLBFBB") %>% arrange(USUBJID, ADT), display_vars = exprs(USUBJID, PARAMCD, PARAM, VISIT, AVAL, AVALU))
+dataset_vignette(adapet_example %>% filter(PARAMCD == "CLBFBB") %>% arrange(USUBJID, ADT), display_vars = exprs(USUBJID, PARAMCD, PARAM, VISIT, AVAL, AVALU))
 ```
 
 \
