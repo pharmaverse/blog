@@ -75,12 +75,12 @@ R is widely used in clinical trial analysis due to its flexibility, powerful sta
 Pharmaverse is a collaborative open-source ecosystem of R packages tailored for clinical trial data processing and regulatory compliance. It provides tools that simplify the implementation of CDISC standards in R.
 
 -   Key Pharmaverse Packages:
-    -   **`sdtm.oak`** – Helps in structuring SDTM datasets.
-    -   **`admiral`** – Automates ADaM dataset creation.
-    -   **`teal`** – Builds interactive R/Shiny dashboards for exploratory clinical data analysis.
+    -   **`{sdtm.oak}`** – Helps in structuring SDTM datasets.
+    -   **`{admiral}`** – Automates ADaM dataset creation.
+    -   **`{teal}`** – Builds interactive R/Shiny dashboards for exploratory clinical data analysis.
 -   Related R Packages:
-    -   **`rtables`** – Creates regulatory-compliant tables for clinical reports.
-    -   **`tern`** – Creates regulatory-compliant tables/graphs for clinical reports.
+    -   **`{rtables}`** – Creates regulatory-compliant tables for clinical reports.
+    -   **`{tern}`** – Creates regulatory-compliant tables/graphs for clinical reports.
 
 These are not the only packages that are used, but these are the ones that will be referenced within this blogpost.
 
@@ -96,15 +96,15 @@ In Clinical Trial Reporting, the data pipeline could follow this standard:
 
 The raw data from patients is collected according to CDASH guidelines, then processed with SDTM and ADaM standards to produce related Tables, Listings, and Graphs/Figures outputs that correspond to all aspects of a specific clinical trial.
 
-Starting with the [CDASH data](https://www.cdisc.org/kb/ecrf) from a study, the preparation process starts with {sdtm.oak} and {sdtmchecks} packages from the Pharmaverse in order to get them ready for SDTM formatted datasets.
+Starting with the [CDASH data](https://www.cdisc.org/kb/ecrf) from a study, the preparation process starts with `{sdtm.oak}` and `{sdtmchecks}` packages from the Pharmaverse in order to get them ready for SDTM formatted datasets.
 
-Subsequently, ADaM standards are applied on this data using the `admiral` package, which can then be analysed and transformed into Tables, Listings, and Graphs/Figures using non-pharmaverse (but still related) packages such as `rtables` and `tern`.
+Subsequently, ADaM standards are applied on this data using the `{admiral}` package, which can then be analysed and transformed into Tables, Listings, and Graphs/Figures using non-pharmaverse (but still related) packages such as `{rtables}` and `{tern}`.
 
 ![](images/2.png)
 
-The Pharmaverse contains some repositories with test data that can help visualize and make sense of this, namely [`pharmaversesdtm`](https://pharmaverse.github.io/pharmaversesdtm/) and [`pharmaverseadam`](https://pharmaverse.github.io/pharmaverseadam/)`.
+The Pharmaverse contains some repositories with test data that can help visualize and make sense of this, namely [`{pharmaversesdtm}`](https://pharmaverse.github.io/pharmaversesdtm/) and [`{pharmaverseadam}`](https://pharmaverse.github.io/pharmaverseadam/)`.
 
-There is also the [`random.cdisc.data`](https://insightsengineering.github.io/random.cdisc.data/main/) package that can be used to generate randomized CDISC data for exploratory purposes.
+There is also the [`{random.cdisc.data}`](https://insightsengineering.github.io/random.cdisc.data/main/) package that can be used to generate randomized CDISC data for exploratory purposes.
 
 More information about these datasets can be found in their respective documentation sites.
 
@@ -118,11 +118,11 @@ The content of clinical trial reports comprises of 3 different types of outputs:
 
 These outputs play a vital part to summarize the results of a clinical trial during reporting. They can summarize safety, efficacy, and exploratory outcomes (such as biomarker analyses).
 
-In the next sections, we will be using the datasets in the `random.cdisc.data` package to help create example outputs used in clinical trials reports. These will be split into two sections each, namely “Data Setup” and “Standard Output Generation”.
+In the next sections, we will be using the datasets in the `{random.cdisc.data}` package to help create example outputs used in clinical trials reports. These will be split into two sections each, namely “Data Setup” and “Standard Output Generation”.
 
 ### Tables
 
-In this example, we will be creating a ***Standard Adverse Events Table (AET02)*** using the `cadsl` and `cadae` dataset from the `random.cdisc.data` package.
+In this example, we will be creating a ***Standard Adverse Events Table (AET02)*** using the `{cadsl}` and `{cadae}` dataset from the `{random.cdisc.data}` package.
 
 ![\> Adverse Events Table - AET02](images/3.png)
 
@@ -192,7 +192,7 @@ result
 
 ### Listings
 
-In this example, we will be creating a ***Standard Listing of Preferred Terms, Lowest Level Terms, and Investigator-Specified Adverse Event Terms*** ***(AEL01)*** using the `cadae` dataset from the `random.cdisc.data` package.
+In this example, we will be creating a ***Standard Listing of Preferred Terms, Lowest Level Terms, and Investigator-Specified Adverse Event Terms*** ***(AEL01)*** using the `{cadae}` dataset from the `{random.cdisc.data}` package.
 
 ![\> Listing of Preferred Terms, Lowest Level Terms, and Investigator-Specified Adverse Event Terms - AEL01](images/4.png)
 
@@ -231,7 +231,7 @@ head(lsting, 20)
 
 ### Graphs/Figures
 
-In this example, we will be creating a ***Standard Plot for Subgroup Analysis of Survival Duration (FSTG02)*** using the `caddtte` dataset from the `random.cdisc.data` package.
+In this example, we will be creating a ***Standard Plot for Subgroup Analysis of Survival Duration (FSTG02)*** using the `{caddtte}` dataset from the `{random.cdisc.data}` package.
 
 ![\> Subgroup Analysis of Survival Duration - FSTG02](images/5.png)\
 *\> Subgroup Analysis of Survival Duration - FSTG02*
