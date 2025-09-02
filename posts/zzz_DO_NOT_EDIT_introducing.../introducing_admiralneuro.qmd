@@ -87,8 +87,8 @@ adapet_example <- adapet_example %>%
         ref_region = "Whole Cerebellum",
         suvr = AVAL
       ),
-      PARAMCD = "CLBFBB",
-      PARAM = "Centiloid (CL) based on BERKELEY FBB",
+      PARAMCD = "CENTLD",
+      PARAM = "Centiloid value derived from SUVR pipeline",
       AVALU = "CL"
     )
   )
@@ -96,7 +96,7 @@ adapet_example <- adapet_example %>%
 
 ```{r, eval=TRUE, echo=FALSE, message=FALSE}
 library(admiraldev)
-dataset_vignette(adapet_example %>% filter(PARAMCD == "CLBFBB") %>% arrange(USUBJID, ADT), display_vars = exprs(USUBJID, PARAMCD, PARAM, VISIT, AVAL, AVALU))
+dataset_vignette(adapet_example %>% filter(PARAMCD == "CENTLD") %>% arrange(USUBJID, ADT), display_vars = exprs(USUBJID, PARAMCD, PARAM, VISIT, AVAL, AVALU))
 ```
 
 \
