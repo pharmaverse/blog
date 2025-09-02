@@ -1,0 +1,143 @@
+---
+title: "Introducing admiralneuro!"
+author:
+  - name: Miles Almond
+description: "Announcing the addition of {admiralneuro} to the {admiral} family!"
+# Note that the date below will be auto-updated when the post is merged.
+date: "2025-09-01"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [ADaM, Community, Technical]
+# Feel free to change the image
+image: "admiralneuro.png"
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_introducing..."
+library(link)
+link::auto()
+```
+
+<!--------------- post begins here ----------------->
+
+# Introduction
+
+{admiralneuro} joins the family as the latest {admiral} extension package.
+The package supports neurological disease areas, with the initial release of version 0.1.0 focusing on Alzheimer's disease.
+
+The package was born out of a collaboration between Eli Lilly, Roche, Cytel, GSK, and contributors from the wider industry.
+
+# Package Contents
+
+In the 0.1.0 release, {admiralneuro} provides the following:
+
+-   Alzheimer's-specific SDTM test data - this will be moved to {pharmaversesdtm} for the 0.2.0 release of {admiralneuro}
+    -   [DM](https://github.com/pharmaverse/admiralneuro/blob/main/data-raw/dm_neuro.R) - Demographics dataset including age-appropriate Alzheimer's patients
+    -   [NV](https://github.com/pharmaverse/admiralneuro/blob/main/data-raw/nv_neuro.R) - Neurological exams dataset including amyloid and tau PET scans at baseline and two follow-up visits
+    -   [SUPPNV](https://github.com/pharmaverse/admiralneuro/blob/main/data-raw/suppnv_neuro.R)- Supplemental neurological exams dataset including reference regions used for SUVR calculations
+    -   [AG](https://github.com/pharmaverse/admiralneuro/blob/main/data-raw/ag_neuro.R) - Agents dataset including tracer details for amyloid and tau PET scans
+-   A brand-new function admiralneuro::compute_centiloid() that computes Centiloid values based on amyloid PET tracer, SUVR pipeline, and reference region
+-   Two template programs for [ADAPET](https://github.com/pharmaverse/admiralneuro/blob/main/inst/templates/ad_adapet.R) and [ADTPET](https://github.com/pharmaverse/admiralneuro/blob/main/inst/templates/ad_adtpet.R)
+-   A corresponding [Creating ADTPET and ADAPET Vignette](https://pharmaverse.github.io/admiralneuro/articles/adpet.html)
+
+### `compute_centiloid()`
+
+The Centiloid scale is a standardized quantitative measure for amyloid PET imaging that allows comparison between different tracers and analysis methods.
+It is calculated as:
+
+$Centiloid = slope*SUVR + intercept$
+
+where SUVR is a patient's Standardized Uptake Value Ratio.
+
+The admiralneuro::compute_centiloid() function neatly computes Centiloid values from SUVR values given a specific combination of tracer, SUVR pipeline, and reference region in order to define slope and intercept.
+Currently, the following combinations of **tracer**, **pipeline**, and **ref_region** are supported:
+
+|                 |                            |                  |        |           |
+|---------------|---------------|---------------|---------------|---------------|
+| tracer          | pipeline                   | ref_region       | slope  | intercept |
+| 18F-Florbetapir | AVID FBP SUVR PIPELINE     | Whole Cerebellum | 183.07 | -177.26   |
+| 18F-Florbetaben | AVID FBB SUVR PIPELINE     | Whole Cerebellum | 156.06 | -148.13   |
+| 18F-Florbetapir | BERKELEY FBP SUVR PIPELINE | Whole Cerebellum | 188.22 | -189.16   |
+| 18F-Florbetaben | BERKELEY FBB SUVR PIPELINE | Whole Cerebellum | 157.15 | -151.87   |
+
+\
+Here is an example of the function in action:
+
+```{r, message=FALSE}
+library(admiral)
+library(admiralneuro)
+library(dplyr)
+
+adapet_example <- admiralneuro::admiralneuro_adapet %>%
+  filter(PARAMCD == "SUVRBFBB")
+
+adapet_example <- adapet_example %>%
+  admiral::derive_param_computed(
+    by_vars = c(
+      get_admiral_option("subject_keys"),
+      exprs(ADT, ADY, VISIT)
+    ),
+    parameters = c("SUVRBFBB"),
+    set_values_to = exprs(
+      AVAL = compute_centiloid(
+        tracer = "18F-Florbetaben",
+        pipeline = "BERKELEY FBB SUVR PIPELINE",
+        ref_region = "Whole Cerebellum",
+        suvr = AVAL
+      ),
+      PARAMCD = "CENTLD",
+      PARAM = "Centiloid value derived from SUVR pipeline",
+      AVALU = "CL"
+    )
+  )
+```
+
+```{r, eval=TRUE, echo=FALSE, message=FALSE}
+library(admiraldev)
+dataset_vignette(adapet_example %>% filter(PARAMCD == "CENTLD") %>% arrange(USUBJID, ADT), display_vars = exprs(USUBJID, PARAMCD, PARAM, VISIT, AVAL, AVALU))
+```
+
+\
+Alternatively, the user can specify a custom slope and intercept to the function using the **custom_slope** and **custom_intercept** parameters.
+
+Note that support for additional combinations of tracers, pipelines, and reference regions may be added in the future as needed.
+See [Iaccarino, L. et al., 2025](https://doi.org/10.1016/j.nicl.2025.103765) for more Centiloid transformation formulas.
+
+### Templates and Vignette
+
+The {admiralneuro} package website contains the [Creating ADTPET and ADAPET Vignette](https://pharmaverse.github.io/admiralneuro/articles/adpet.html) which guides users through the creation of both ADTPET (Tau PET) and ADAPET (Amyloid PET) ADaM datasets.
+This covers the use of the admiralneuro::compute_centiloid() function above, as well as other therapeutic area-specific considerations for these BDS datasets such as derivation of criterion flag variables for Centiloid categories.
+
+The vignette accompanies the ADTPET and ADAPET template scripts, which can be used as a starting point for creating these ADaM datasets.
+These scripts can be loaded and saved directly from the R console by running either of the following:
+
+```{r, eval=FALSE}
+use_ad_template("ADTPET", package = "admiralneuro")
+```
+
+```{r, eval=FALSE}
+use_ad_template("ADAPET", package = "admiralneuro")
+```
+
+# Conclusion
+
+We’re excited to share the first release of {admiralneuro}, and we hope it will be a valuable resource for those working in the Alzheimer’s disease space.
+We look forward to expanding the package in future releases to include alpha-synuclein pathology, a hallmark of Parkinson’s disease that is also found in other neurodegenerative conditions, including Alzheimer’s disease.
+We’ll also be adding functions to explore olfactory impairment, a fascinating early signal connected to both Parkinson’s disease and Alzheimer’s disease.
+
+As with all pharmaverse packages, community feedback is not only welcomed but encouraged so that development remains in a direction that is relevant and useful!
+Please raise your feedback as issues or discussions in our [GitHub repository](https://github.com/pharmaverse/admiralneuro) or the [pharmaverse slack](https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A).
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
