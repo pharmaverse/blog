@@ -31,7 +31,7 @@ This blog post will discuss our commitment to stability, walk you through the ne
 
 # Commitment to Stability
 
-{admiral} was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this [history blog post](https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html) for some of additional context on its development. Over the last three years, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and with some minor tweaks could be made redundant in favor of other functions.  This has lead to some deprecation of either whole functions or arguments as we have sought to consolidate. Unfortunately, this creates a lot of frustration for users.
+admiral was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this [history blog post](https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html) for some of additional context on its development. Over the last three years, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and with some minor tweaks could be made redundant in favor of other functions.  This has lead to some deprecation of either whole functions or arguments as we have sought to consolidate. Unfortunately, this creates a lot of frustration for users.
 
 Enter Superseded!!
 
@@ -42,18 +42,18 @@ Now with the release of `1.0.0` we are going to _supersede_ functions going forw
 
 We have 3 new functions available in this release: 
 
-* admiral::derive_vars_extreme_event()
-* admiral::derive_var_merged_ef_msrc()
-* admiral::derive_vars_computed()
+* derive_vars_extreme_event()
+* derive_var_merged_ef_msrc()
+* derive_vars_computed()
 
-and a new option in admiral::derive_var_atoxgr_dir() and admiral::derive_var_anrind() to handle floating point issues.
+and a new option in derive_var_atoxgr_dir() and derive_var_anrind() to handle floating point issues.
 
 ## `derive_vars_extreme_event()`
 
-This function takes available records from user-defined events by selecting the extreme observations and appending them as a variable(s) to your dataset. admiral::derive_vars_extreme_event() works similar to admiral::derive_extreme_event(), but instead of adding observations the function will add variable(s). 
+This function takes available records from user-defined events by selecting the extreme observations and appending them as a variable(s) to your dataset. derive_vars_extreme_event() works similar to derive_extreme_event(), but instead of adding observations the function will add variable(s). 
 
 Let's take a peek with a very simple example where we just use ADSL! The documentation for 
-admiral::derive_vars_extreme_event() has a much richer example with events from other domains that is more aligned to where you would use this function. 
+derive_vars_extreme_event() has a much richer example with events from other domains that is more aligned to where you would use this function. 
 
 Let us make some dummy `ADSL` data and load up our packages. The goal here is to add two new variables `LSTALVDT` and `DTHFL` based on a list of objects that are used to specify the following:
 
@@ -109,7 +109,7 @@ out the more detailed example in the [function documentation](https://pharmavers
 
 ## `derive_var_merged_ef_msrc()`
 
-This function has some similarity to admiral::derive_vars_extreme_event(), but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.
+This function has some similarity to derive_vars_extreme_event(), but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.
 
 We develop some _simple_ dummy data for `ADSL`, `CM` and `PR`. Our goal is to flag patients who have `CMCAT = "ANTI-CANCER"` in the `CM` dataset or have records in the `PR` dataset. Any participants who meet these conditions will have our new variable `CANCTRFL` set as `"Y"`.
 
@@ -162,7 +162,7 @@ Let's go! We searched over multiple datasets, `CM` and `PR`, with multiple condi
 
 ## `derive_vars_computed()`
 
-This function is very similar to admiral::derive_param_computed(), but instead of adding observations we are going to add variable(s).  Very handy when wanting to add some additional variables to `ADSL`, e.g. baseline variables.
+This function is very similar to derive_param_computed(), but instead of adding observations we are going to add variable(s).  Very handy when wanting to add some additional variables to `ADSL`, e.g. baseline variables.
 
 Let's make some dummy data for an `ADSL` and `ADVS`.  Our goal is to derive a `BMIBL` variable pulled from `ADVS` and append to `ADSL`.
 
@@ -211,9 +211,9 @@ Alright! Simple enough. We just took records from `ADVS`to help us calculate the
 
 ## Argument Alignment
 
-A huge push was made for `1.0.0` to help align our arguments across all of `{admiral}` functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For `1.0.0`, we really want users to have a solid API for `{admiral}` functions.  
+A huge push was made for `1.0.0` to help align our arguments across all of admiral functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For `1.0.0`, we really want users to have a solid API for admiral functions.  
 
-Let's take a peak at the function admiral::consolidate_metadata() to even better understand our goal here.  
+Let's take a peak at the function consolidate_metadata() to even better understand our goal here.  
 
 ```
 consolidate_metadata(
@@ -226,7 +226,7 @@ consolidate_metadata(
 )
 ```
 
-In previous versions of {admiral} the admiral::consolidate_metadata() function had the argument `check_keys`, which helps to check uniqueness.  Other functions had a similar argument, but were called `check_unique`.  Therefore, to better align our common API for {admiral} functions we decided to rename the `check_keys` argument to `check_unique`. You can follow the discussion around this renaming effort in this [GitHub Issue](https://github.com/pharmaverse/admiral/issues/2184).
+In previous versions of admiral the consolidate_metadata() function had the argument `check_keys`, which helps to check uniqueness.  Other functions had a similar argument, but were called `check_unique`.  Therefore, to better align our common API for admiral functions we decided to rename the `check_keys` argument to `check_unique`. You can follow the discussion around this renaming effort in this [GitHub Issue](https://github.com/pharmaverse/admiral/issues/2184).
 
 ```{r, fig.align = 'center', echo=FALSE}
 knitr::include_graphics("check.png")
@@ -253,11 +253,11 @@ For example, if you click through the issue for [`derive_extreme_event()`](https
 
 # New On-boarding Resources
 
-`{admiral}` has a lot of functions for working with ADaMs. This can be overwhelming for new users and we really sympathize.  To help new users onboarding to `{admiral}` we have developed the following resources:
+admiral has a lot of functions for working with ADaMs. This can be overwhelming for new users and we really sympathize.  To help new users onboarding to admiral we have developed the following resources:
 
 ## [admiraldiscovery](https://pharmaverse.github.io/admiraldiscovery/index.html)
 
-This is a dedicated website that lists out in a tabular format standard ADaM datasets and their common variables with corresponding `{admiral}` functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving `EOSDT` or `TRTSDT`!  
+This is a dedicated website that lists out in a tabular format standard ADaM datasets and their common variables with corresponding admiral functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving `EOSDT` or `TRTSDT`!  
 
 
 ```{r, fig.align = 'center', echo=FALSE}
@@ -275,7 +275,7 @@ knitr::include_graphics("cheatsheet.png")
 
 ## Way Back Machine
 
-Studies can last a long time. Adopting R as your primary analysis language for your study can introduce certain risks around package dependencies.  Fixing those dependencies to certain package versions can help mitigate those risks. Unfortunately, as package websites are updated those helpful documents, examples and vignettes can be lost as the version changes. Do not lose heart `{admiral}` users. If you decided to fix to a certain version of `{admiral}`, we have you covered with our __Way Back Machine__ that allows you to change the website documentation back to the version you are using.
+Studies can last a long time. Adopting R as your primary analysis language for your study can introduce certain risks around package dependencies.  Fixing those dependencies to certain package versions can help mitigate those risks. Unfortunately, as package websites are updated those helpful documents, examples and vignettes can be lost as the version changes. Do not lose heart admiral users. If you decided to fix to a certain version of admiral, we have you covered with our __Way Back Machine__ that allows you to change the website documentation back to the version you are using.
 
 ```{r, fig.align = 'center', echo=FALSE}
 knitr::include_graphics("wayback.png")

@@ -39,7 +39,7 @@ Hmmm, doesn't sound fancy enough? What about...
 Documentation updates!!
 </span>
 
-Still not that interesting? Well, let us change your mind with an example. Here's what the examples section of the reference page for admiral::derive_extreme_records() looked like in {admiral} 1.2:
+Still not that interesting? Well, let us change your mind with an example. Here's what the examples section of the reference page for derive_extreme_records() looked like in {admiral} 1.2:
 
 <img src="derive_extreme_records_before.png" align="center" style="float:right" width="100%"/>
 
@@ -81,7 +81,7 @@ We've also made various other small documentation enhancements, which you can pe
 
 But we haven't stopped there! Here's what else is new in {admiral} 1.3:
 
-- We've enhanced our catalog of functions with a new addition: admiral::derive_vars_joined_summary(). This function is similar to admiral::derive_vars_joined(), but allows the derivation of summary variables (e.g. cumulative sum, etc) rather than variables using a formula. For instance, here's an example derivation in ADAE of `CUMDOSA`, the cumulative dose received up until an adverse event:
+- We've enhanced our catalog of functions with a new addition: derive_vars_joined_summary(). This function is similar to derive_vars_joined(), but allows the derivation of summary variables (e.g. cumulative sum, etc) rather than variables using a formula. For instance, here's an example derivation in ADAE of `CUMDOSA`, the cumulative dose received up until an adverse event:
 
 ```{r, eval = TRUE}
 library(tibble)
@@ -125,13 +125,13 @@ derive_vars_joined_summary(
 Excluding deprecations, we have only two small breaking changes: 
 
 - We've renamed `SI_UNIT_CHECK` to `UNIT_CHECK` in lab grading metadata variables: `atoxgr_criteria_ctcv4()`, `atoxgr_criteria_ctcv5()`, and `atoxgr_criteria_daids()` to simplify specifications. 
-- The values of the variable specified for `tmp_obs_nr_var` in admiral::derive_vars_joined(), admiral::derive_var_joined_exist_flag() and admiral::filter_joined() are now populated differently if there are multiple records in `dataset` or `dataset_add` for the same values of `by_vars` and order. Before each of these records was assigned a different value, i.e., the variable (together with `by_vars`) was a unique identifier. Now the value is the same for all these records.
+- The values of the variable specified for `tmp_obs_nr_var` in derive_vars_joined(), derive_var_joined_exist_flag() and filter_joined() are now populated differently if there are multiple records in `dataset` or `dataset_add` for the same values of `by_vars` and order. Before each of these records was assigned a different value, i.e., the variable (together with `by_vars`) was a unique identifier. Now the value is the same for all these records.
 
-We've also started pre-alerting users of an upcoming breaking change to the default behavior of admiral::derive_vars_dtm() in our next release (1.4.0), where we'll switch the default value of `ignore_seconds_flag` from `FALSE` to `TRUE`. Ahead of this change, admiral::derive_vars_dtm() now issues a helpful message informing users of the upcoming change, to allowing mitigation ahead of time. 
+We've also started pre-alerting users of an upcoming breaking change to the default behavior of derive_vars_dtm() in our next release (1.4.0), where we'll switch the default value of `ignore_seconds_flag` from `FALSE` to `TRUE`. Ahead of this change, derive_vars_dtm() now issues a helpful message informing users of the upcoming change, to allowing mitigation ahead of time. 
 
 ## Updates of existing functions and bug fixes
 
-We've also been busy updating some of our existing functions in response to bug fixes and requests for enhancements. One particular update of note was to admiral::derive_locf_records, which now comes with two new arguments `id_vars_ref` and `imputation.` The `id_vars_ref` argument allows users to select the variables to group by in the reference dataset when determining which observations to add to the input dataset. The `imputation` argument lets users decide whether to update `analysis_var` when its value is `NA` ("update" and "update_add"), or to add a new observation instead ("add").
+We've also been busy updating some of our existing functions in response to bug fixes and requests for enhancements. One particular update of note was to derive_locf_records, which now comes with two new arguments `id_vars_ref` and `imputation.` The `id_vars_ref` argument allows users to select the variables to group by in the reference dataset when determining which observations to add to the input dataset. The `imputation` argument lets users decide whether to update `analysis_var` when its value is `NA` ("update" and "update_add"), or to add a new observation instead ("add").
 
 You can find the full list of updates in the [Changelog](https://pharmaverse.github.io/admiral/main/news/index.html).
 

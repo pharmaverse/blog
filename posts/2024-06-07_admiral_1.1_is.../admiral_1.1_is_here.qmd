@@ -124,8 +124,8 @@ While we hope you don't encounter too many errors and warnings while working wit
 
 # New metadata object for ISO 3166 country codes
 
-{admiral} now offers a new metadata object, admiral::country_code_lookup(), that can aid metadata added to decode countries based on [ISO 3166 codes](https://www.iso.org/iso-3166-country-codes.html).
-Our hugely-flexible admiral::derive_vars_merged() then comes in handy if you ever need to leverage this metadata:
+{admiral} now offers a new metadata object, country_code_lookup(), that can aid metadata added to decode countries based on [ISO 3166 codes](https://www.iso.org/iso-3166-country-codes.html).
+Our hugely-flexible derive_vars_merged() then comes in handy if you ever need to leverage this metadata:
 
 ```{r}
 adsl <- tribble(
@@ -151,14 +151,14 @@ If you were worried about having to type these up manually yourself, fear not as
 
 # New helper functions for metadata-driven programming
 
-Driven by a request from our GSK users, the {admiral} back-end now contains helper functions to admiral::derive_vars_merged() (admiral::get_flagged_records()) and admiral::derive_vars_query() (admiral::get_vars_query()) so that those can be called independently if required.
+Driven by a request from our GSK users, the {admiral} back-end now contains helper functions to derive_vars_merged() (get_flagged_records()) and derive_vars_query() (get_vars_query()) so that those can be called independently if required.
 This should aid efforts to automate execution of {admiral} code in a metadata-drive way.
 You can read more about the the reasoning behind this update in the following [discussion](https://github.com/pharmaverse/admiral/discussions/2349) on GitHub.
 
 # Enhancements to derive_var_trtemfl()
 
-The function admiral::derive_var_trtemfl() now comes with a new (optional) argument, `group_var`.
-This allows users to derive Treatment Emergent Flags in Adverse Event ADaMs in the case where data are collected as one episode of AE with multiple lines. Indeed, if the argument is specified, admiral::derive_var_trtemfl() then assumes that AEs are recorded as one episode of AE with multiple lines using a grouping variable. Events starting during treatment or before treatment and worsening afterward are then flagged. Once an AE record in a group is flagged, all subsequent records in the treatment window are flagged regardless of severity.
+The function derive_var_trtemfl() now comes with a new (optional) argument, `group_var`.
+This allows users to derive Treatment Emergent Flags in Adverse Event ADaMs in the case where data are collected as one episode of AE with multiple lines. Indeed, if the argument is specified, derive_var_trtemfl() then assumes that AEs are recorded as one episode of AE with multiple lines using a grouping variable. Events starting during treatment or before treatment and worsening afterward are then flagged. Once an AE record in a group is flagged, all subsequent records in the treatment window are flagged regardless of severity.
 Take a look at the example below, which uses the grouping variable `AEGRPID`. In particular, observe how the second of the four AEs with `AEGRPID = 2` occurs while on treatment and marks a worsening of severity since `AETOXGR` increases by one. As such, that AE and the following one are flagged as treatment emergent.
 
 ```{r}

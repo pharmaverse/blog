@@ -24,9 +24,9 @@ long_slug <- "2024-03-01_admiral_filter_functions"
 
 Filtering and merging datasets is the bread and butter of statistical programming. Whether it's on the way to an ADaM variable derivation, or in an effort to pull out a list of patients matching a specific condition for a TLG, or another task entirely, most steps in the statistical programming workflow feature some combination of these two tasks. 
 
-The `{tidyverse}` functions `filter()`, `group_by()`, and`*_join()` are a fantastic toolset for filtering and merging, and can often suffice to carry out these sorts of operations. Often, however, this will be a multi-step process, requiring more than one set of pipe (`%>%`) chains if multiple datasets are involved. As such, the [{admiral}](https://pharmaverse.github.io/admiral/index.html) package builds on this concept by offering a very practical toolset of utility functions, henceforth referred to altogether as `filter_*()`. These are wrappers of common combinations of `{tidyverse}` function calls that enable the ADaM programmer to carry out such operations "in stride" within their ADaM workflow - in typical `{admiral}` style!
+The `{tidyverse}` functions `filter()`, `group_by()`, and`*_join()` are a fantastic toolset for filtering and merging, and can often suffice to carry out these sorts of operations. Often, however, this will be a multi-step process, requiring more than one set of pipe (`%>%`) chains if multiple datasets are involved. As such, the [{admiral}](https://pharmaverse.github.io/admiral/index.html) package builds on this concept by offering a very practical toolset of utility functions, henceforth referred to altogether as `filter_*()`. These are wrappers of common combinations of `{tidyverse}` function calls that enable the ADaM programmer to carry out such operations "in stride" within their ADaM workflow - in typical admiral style!
 
-Many of the `filter_*()` functions feature heavily within the `{admiral}` codebase, but they can be very handy in their own right. You can learn more about them from:
+Many of the `filter_*()` functions feature heavily within the admiral codebase, but they can be very handy in their own right. You can learn more about them from:
 
 * The relevant section in the [Reference page of the admiral documentation website](https://pharmaverse.github.io/admiral/reference/#utilities-for-filtering-observations);
 * The short visual explanations in the second page of the [{admiral Cheat Sheet}](https://github.com/pharmaverse/admiral/blob/main/inst/cheatsheet/admiral_cheatsheet.pdf);
@@ -209,7 +209,7 @@ All that is left is to specify our condition and how to select records relative 
 
 In the `filter_join` argument, notice that `.join` syntax is used to refer to the variables come from `dataset_add`, and enables us to compare the same variable across observations (`ADY >= ADY.join - 7`). Note finally that `join_type = "all"` allows the user to consider all observations in `dataset_add` when joining.
 
-For a much more detailed exposition of `filter_join()`, with more examples, consider visiting its [reference page](https://pharmaverse.github.io/admiral/reference/filter_joined.html) on the `{admiral}` website.
+For a much more detailed exposition of `filter_join()`, with more examples, consider visiting its [reference page](https://pharmaverse.github.io/admiral/reference/filter_joined.html) on the admiral website.
 
 # Conclusion
 
