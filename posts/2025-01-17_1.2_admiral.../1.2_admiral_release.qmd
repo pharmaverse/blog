@@ -40,15 +40,15 @@ As always, we have listed the full set of 1.2 updates in our [changelog](https:/
 
 To commence, for the first time since {admiral} 1.0 we have added new functions! The three new functions available in this release are:
 
-* admiral::derive_vars_cat(): Derive Categorization Variables Like `AVALCATy` and `AVALCAyN`.
-* admiral::derive_vars_crit_flag(): Derive ADaM-compliant criterion flags to facilitate subgroup analyses like `CRITy`, `CRITyFL`, and `CRITyFN`.
-* admiral::transform_scale(): Transform questionnaire values onto a standardized scale.
+* derive_vars_cat(): Derive Categorization Variables Like `AVALCATy` and `AVALCAyN`.
+* derive_vars_crit_flag(): Derive ADaM-compliant criterion flags to facilitate subgroup analyses like `CRITy`, `CRITyFL`, and `CRITyFN`.
+* transform_scale(): Transform questionnaire values onto a standardized scale.
 
-## New function: admiral::derive_vars_cat()
+## New function: derive_vars_cat()
 
 We wanted a function that could take in user-defined inputs for category-like variables, e.g. `AVALCATy` and `AVALCAyN`.  While this is typically defined in the metadata for an ADaM, we thought having a dedicated function in {admiral} could help either with double programming or smaller projects that don't have metadata fully developed.  Let us know what you think!
 
-Below you can expand to get a few simple examples of this new function with dummy data in action.  Be sure to check out the function's documentation on the admiral website for full understanding of admiral::derive_vars_cat().
+Below you can expand to get a few simple examples of this new function with dummy data in action.  Be sure to check out the function's documentation on the admiral website for full understanding of derive_vars_cat().
 
 ::: {.callout-tip collapse="true" title="Expand for Full Code Walkthrough"}
 ```{r, eval = FALSE}
@@ -127,7 +127,7 @@ adlb %>%
 ```
 :::
 
-## New function: admiral::derive_vars_crit_flag()
+## New function: derive_vars_crit_flag()
 
 The function derives ADaM-compliant criterion flags, e.g. `CRIT1FL`, to facilitate subgroup analyses.
 
@@ -139,7 +139,7 @@ If a criterion flag can't be derived with this function, the derivation is not A
 
 * the CRITy variable is populated correctly.
 
-Below you can expand to get a few simple examples of this new function with dummy data in action.  Be sure to check out the function's documentation on the {admiral} website for a full understanding of admiral::derive_vars_crit_flag().
+Below you can expand to get a few simple examples of this new function with dummy data in action.  Be sure to check out the function's documentation on the {admiral} website for a full understanding of derive_vars_crit_flag().
 
 ::: {.callout-tip collapse="true" title="Expand for Full Code Walkthrough"}
 ```{r, eval = FALSE}
@@ -174,9 +174,9 @@ derive_vars_crit_flag(
 ```
 :::
 
-## New function: admiral::transform_scale()
+## New function: transform_scale()
 
-The final new function we are adding is admiral::transform_scale(). Coming directly from a user request, with this function we now have functionality to linearly transform a vector of values with a certain associated range into values from another range.
+The final new function we are adding is transform_scale(). Coming directly from a user request, with this function we now have functionality to linearly transform a vector of values with a certain associated range into values from another range.
 
 ``` {r, eval = FALSE}
 library(admiral)
@@ -188,7 +188,7 @@ transform_range(
 )
 ```
 
-Within ADaM programming, this is a common task, arising for instance when transforming questionnaire values into a standardized scale (e.g. 1-100). As such, we see this function being employed principally within calls to admiral::derive_param_computed() during the creation of datasets such as ADQS. You can read more about this topic within our [Questionnaire ADaMs vignette](https://pharmaverse.github.io/admiral/articles/questionnaires.html#transformed-items).
+Within ADaM programming, this is a common task, arising for instance when transforming questionnaire values into a standardized scale (e.g. 1-100). As such, we see this function being employed principally within calls to derive_param_computed() during the creation of datasets such as ADQS. You can read more about this topic within our [Questionnaire ADaMs vignette](https://pharmaverse.github.io/admiral/articles/questionnaires.html#transformed-items).
 
 # Deprecation Strategy
 
