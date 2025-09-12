@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.34">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Fabian Hee">
+<meta name="author" content="Alexandros Kouretsis">
+<meta name="author" content="APPSILON">
+<meta name="dcterms.date" content="2025-09-12">
+<meta name="description" content="Explore how R and Pharmaverse tools simplify clinical trial reporting with CDISC standards, improving transparency, reproducibility, and regulatory compliance.">
+
+<title>Faster Clinical Trial Reporting: A Beginner’s Guide to Implementing CDISC SDTM and ADaM Standards with Open-Source R Packages – pharmaverse blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../media/pharmaverseblog.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-c8ad9e5dbd60b7b70b38521ab19b7da4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-17adfc3a9c81f9b42c39cdfccb5d279b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6ZDR80SCKG"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-6ZDR80SCKG', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: #eeeeee;
+      }
+</style>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Faster Clinical Trial Reporting: A Beginner’s Guide to Implementing CDISC SDTM and ADaM Standards with Open-Source R Packages – pharmaverse blog">
+<meta property="og:description" content="Explore how R and Pharmaverse tools simplify clinical trial reporting with CDISC standards, improving transparency, reproducibility, and regulatory compliance.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2025-09-12_faster_clinical_trial_reporting/pharmaverse-post.png">
+<meta property="og:site_name" content="pharmaverse blog">
+<meta property="og:image:height" content="1081">
+<meta property="og:image:width" content="1921">
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">pharmaverse blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/pharmaverse/blog"> <i class="bi bi-github" role="img" aria-label="github">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../session_info.html"> 
+<span class="menu-text">Session Info</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Faster Clinical Trial Reporting: A Beginner’s Guide to Implementing CDISC SDTM and ADaM Standards with Open-Source R Packages</h1>
+                  <div>
+        <div class="description">
+          Explore how R and Pharmaverse tools simplify clinical trial reporting with CDISC standards, improving transparency, reproducibility, and regulatory compliance.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Technical</div>
+                <div class="quarto-category">Community</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-contents">
+               <p>Fabian Hee </p>
+               <p>Alexandros Kouretsis </p>
+               <p>APPSILON </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 12, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#current-challenges" id="toc-current-challenges" class="nav-link active" data-scroll-target="#current-challenges">Current challenges</a>
+  <ul class="collapse">
+  <li><a href="#ethical-and-transparency-issues" id="toc-ethical-and-transparency-issues" class="nav-link" data-scroll-target="#ethical-and-transparency-issues">Ethical and Transparency Issues</a></li>
+  <li><a href="#cost-and-efficiency-challenges" id="toc-cost-and-efficiency-challenges" class="nav-link" data-scroll-target="#cost-and-efficiency-challenges">Cost and Efficiency Challenges</a></li>
+  <li><a href="#data-and-reproducibility-concerns" id="toc-data-and-reproducibility-concerns" class="nav-link" data-scroll-target="#data-and-reproducibility-concerns">Data and Reproducibility Concerns</a></li>
+  </ul></li>
+  <li><a href="#pharmaceutical-standards" id="toc-pharmaceutical-standards" class="nav-link" data-scroll-target="#pharmaceutical-standards">Pharmaceutical Standards</a>
+  <ul class="collapse">
+  <li><a href="#cdash---clinical-data-acquisition-standards-harmonization" id="toc-cdash---clinical-data-acquisition-standards-harmonization" class="nav-link" data-scroll-target="#cdash---clinical-data-acquisition-standards-harmonization">CDASH - Clinical Data Acquisition Standards Harmonization</a></li>
+  <li><a href="#sdtm---study-data-tabulation-model" id="toc-sdtm---study-data-tabulation-model" class="nav-link" data-scroll-target="#sdtm---study-data-tabulation-model">SDTM - Study Data Tabulation Model</a></li>
+  <li><a href="#adam---analysis-data-model" id="toc-adam---analysis-data-model" class="nav-link" data-scroll-target="#adam---analysis-data-model">ADaM - Analysis Data Model</a></li>
+  </ul></li>
+  <li><a href="#the-role-of-r-in-clinical-trials" id="toc-the-role-of-r-in-clinical-trials" class="nav-link" data-scroll-target="#the-role-of-r-in-clinical-trials">The Role of R in Clinical Trials</a></li>
+  <li><a href="#pharmaverse" id="toc-pharmaverse" class="nav-link" data-scroll-target="#pharmaverse">Pharmaverse</a></li>
+  <li><a href="#data-pipeline" id="toc-data-pipeline" class="nav-link" data-scroll-target="#data-pipeline">Data Pipeline</a></li>
+  <li><a href="#tables-listings-graphsfigures" id="toc-tables-listings-graphsfigures" class="nav-link" data-scroll-target="#tables-listings-graphsfigures">Tables, Listings, Graphs/Figures</a>
+  <ul class="collapse">
+  <li><a href="#tables" id="toc-tables" class="nav-link" data-scroll-target="#tables">Tables</a></li>
+  <li><a href="#listings" id="toc-listings" class="nav-link" data-scroll-target="#listings">Listings</a></li>
+  <li><a href="#graphsfigures" id="toc-graphsfigures" class="nav-link" data-scroll-target="#graphsfigures">Graphs/Figures</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#conclusion-1" id="toc-conclusion-1" class="nav-link" data-scroll-target="#conclusion-1">Conclusion</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>Clinical trials are a crucial component of the pharmaceutical industry, providing the evidence needed to demonstrate the safety, efficacy, and overall benefit of new drugs or treatments.</p>
+<p>Clinical trials reporting, a detailed process in itself, is guided by regulatory agencies like the U.S. Food and Drug Administration (FDA), the European Medicines Agency (EMA), and the International Conference on Harmonisation (ICH).</p>
+<p>The results of these trials must be carefully reported to protect public health and foster trust in the pharmaceutical industry. Pharmaverse and R directly support this need by providing open-source, transparent, and standardized tools that enable consistent data handling and reporting.</p>
+<section id="current-challenges" class="level2">
+<h2 class="anchored" data-anchor-id="current-challenges">Current challenges</h2>
+<p>Clinical trials face several challenges in their current state, which can be broadly categorized into three key areas:</p>
+<section id="ethical-and-transparency-issues" class="level3">
+<h3 class="anchored" data-anchor-id="ethical-and-transparency-issues">Ethical and Transparency Issues</h3>
+<p>International ethical standards, including the <a href="https://www.wma.net/policies-post/wma-declaration-of-helsinki-ethical-principles-for-medical-research-involving-human-subjects/">Declaration of Helsinki</a>, emphasize that the results of all clinical trials—whether positive, negative, or inconclusive—should be made publicly accessible. Nevertheless, empirical studies show that compliance remains inconsistent. In particular, early-phase or smaller studies, as well as trials with negative outcomes, are less likely to be reported in a timely or visible manner (<a href="https://www.socra.org/blog/clinicaltrials-registration-results-reporting/">SOCRA</a>; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4508873/">BMJ/PMC analysis</a>). Furthermore, evidence suggests that industry sponsorship can introduce bias at various stages of trial design, analysis, and reporting, which reinforces the importance of transparent dissemination of all findings (<a href="https://pubmed.ncbi.nlm.nih.gov/28207928/">Cochrane review, 2017</a>).</p>
+</section>
+<section id="cost-and-efficiency-challenges" class="level3">
+<h3 class="anchored" data-anchor-id="cost-and-efficiency-challenges">Cost and Efficiency Challenges</h3>
+<p>Clinical trials are expensive, often exceeding hundreds of millions of dollars, and this can inhibit the development of drugs for rare diseases where the return on investment is limited by the small size of the patient population. Failure in clinical trials – especially in late phase trials that often include upwards of 1000 patients – can incur huge losses, compounded by the complex and varying nature of global regulations around them.</p>
+</section>
+<section id="data-and-reproducibility-concerns" class="level3">
+<h3 class="anchored" data-anchor-id="data-and-reproducibility-concerns">Data and Reproducibility Concerns</h3>
+<p>Reproducibility is key for independent verification of clinical trial results. Differences in data collection methods, formats, and methodologies often hinder cross-study comparisons, especially if a study was not designed with international standards that are consistent and reproducible.</p>
+</section>
+</section>
+<section id="pharmaceutical-standards" class="level2">
+<h2 class="anchored" data-anchor-id="pharmaceutical-standards">Pharmaceutical Standards</h2>
+<p>The <a href="https://www.cdisc.org/"><strong>Clinical Data Interchange Standards Consortium (CDISC)</strong></a> provides globally accepted data standards, which are a set of guidelines and models used to standardize the collection, exchange, and analysis of clinical trial data. These standards aim to improve efficiency, data quality, and interoperability across various clinical research areas.</p>
+<p>In this article specifically, the key CDISC Standards we are going to highlight are Clinical Data Acquisition Standards Harmonization (CDASH), Study Data Tabulation Model (SDTM) and Analysis Data Model (ADaM).</p>
+<section id="cdash---clinical-data-acquisition-standards-harmonization" class="level3">
+<h3 class="anchored" data-anchor-id="cdash---clinical-data-acquisition-standards-harmonization">CDASH - Clinical Data Acquisition Standards Harmonization</h3>
+<p><a href="https://www.cdisc.org/standards/foundational/cdash">CDASH</a> provides <strong><em>guidelines for standardized data collection</em></strong> across clinical trial studies. It ensures that data collected at clinical sites is structured, consistent, and easily translatable into regulatory submission formats like SDTM.</p>
+</section>
+<section id="sdtm---study-data-tabulation-model" class="level3">
+<h3 class="anchored" data-anchor-id="sdtm---study-data-tabulation-model">SDTM - Study Data Tabulation Model</h3>
+<p><a href="https://www.cdisc.org/standards/foundational/sdtmig">SDTM Implementation Guide</a> is a standard for <strong>structuring and organizing clinical study datasets</strong> for regulatory submissions (e.g., to the FDA, EMA). SDTM data is generally treated by the FDA as the <strong>raw or source data</strong>, since it represents the collected study information in a standardized format.</p>
+<p>Importantly, SDTM <strong>restructures the collected data</strong> for consistency and transparency across studies, but it does <strong>not derive or create new analysis variables</strong> — that role is covered by ADaM.</p>
+</section>
+<section id="adam---analysis-data-model" class="level3">
+<h3 class="anchored" data-anchor-id="adam---analysis-data-model">ADaM - Analysis Data Model</h3>
+<p><a href="https://www.cdisc.org/standards/foundational/adam">ADaM Implementation Guide</a> ensures traceability from SDTM data to analysis-ready datasets. This model establishes a <strong><em>standardized way to create datasets for statistical analysis</em></strong> from SDTM organized data, facilitating efficient analysis and reporting.</p>
+</section>
+</section>
+<section id="the-role-of-r-in-clinical-trials" class="level2">
+<h2 class="anchored" data-anchor-id="the-role-of-r-in-clinical-trials">The Role of R in Clinical Trials</h2>
+<p>Nowadays, R is widely used in clinical trial analysis due to its flexibility, powerful statistical capabilities, and strong support for regulatory compliance. R provides:</p>
+<ul>
+<li><strong>Robust Statistical Analysis</strong> used for survival analysis, mixed models, and Bayesian statistics.</li>
+<li><strong>Data Cleaning &amp; Transformation</strong> facilitated by specialized packages and modeling tools.</li>
+<li><strong>Reproducibility &amp; Open Source Solutions</strong> to ensure that clinical reports and submissions can be automated, reducing errors.</li>
+<li><strong>Integration with CDISC Standards</strong> with the help of various R packages that can structure data according to SDTM and ADaM requirements.</li>
+</ul>
+</section>
+<section id="pharmaverse" class="level2">
+<h2 class="anchored" data-anchor-id="pharmaverse">Pharmaverse</h2>
+<p>Pharmaverse is a collaborative open-source ecosystem of tools for clinical trial data processing and regulatory compliance, currently consisting mainly of R packages but now also including emerging Python software. It provides resources that streamline the implementation of CDISC standards such as SDTM, ADaM, and Define-XML.</p>
+<ul>
+<li>Key Pharmaverse Packages:
+<ul>
+<li><strong><code>{sdtm.oak}</code></strong> – Helps in structuring SDTM datasets.</li>
+<li><strong><code>{admiral}</code></strong> – Facilitates ADaM dataset creation.</li>
+<li><strong><code>{teal}</code></strong> – Builds interactive R/Shiny dashboards for exploratory clinical data analysis.</li>
+</ul></li>
+<li>Related R Packages:
+<ul>
+<li><strong><code>{rtables}</code></strong> – Creates regulatory-compliant tables for clinical reports.</li>
+<li><strong><code>{tern}</code></strong> – Creates regulatory-compliant tables/graphs for clinical reports.</li>
+</ul></li>
+</ul>
+<p>These are not the only packages that are used, but these are the ones that will be referenced within this blogpost.</p>
+<p>Pharmaverse doesn’t have a dedicated CDASH package, but its metadata-driven approach means you can still work with CDASH concepts to connect source data collection to SDTM mapping.</p>
+<p>A more comprehensive list of packages can be found here: <a href="https://pharmaverse.org/e2eclinical/" class="uri">https://pharmaverse.org/e2eclinical/</a></p>
+</section>
+<section id="data-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="data-pipeline">Data Pipeline</h2>
+<p>In Clinical Trial Reporting, the data pipeline could follow this standard:</p>
+<p><img src="images/1.png" class="img-fluid"></p>
+<p>The raw data from patients is collected according to CDASH guidelines, then processed with SDTM and ADaM standards to produce related Tables, Listings, and Graphs/Figures outputs that correspond to all aspects of a specific clinical trial.</p>
+<p>Starting with the <a href="https://www.cdisc.org/kb/ecrf">CDASH data</a> from a study, the preparation process starts with <code>{sdtm.oak}</code> and <code>{sdtmchecks}</code> packages from the Pharmaverse in order to get them ready for SDTM formatted datasets.</p>
+<p>Subsequently, ADaM standards are applied on this data using the <code>{admiral}</code> package, which can then be analysed and transformed into Tables, Listings, and Graphs/Figures using non-pharmaverse (but still related) packages such as <code>{rtables}</code> and <code>{tern}</code>.</p>
+<p><img src="images/2.png" class="img-fluid"></p>
+<p>The Pharmaverse contains some repositories with test data that can help visualize and make sense of this, namely <a href="https://pharmaverse.github.io/pharmaversesdtm/"><code>pharmaversesdtm</code></a> and <a href="https://pharmaverse.github.io/pharmaverseadam/"><code>pharmaverseadam</code></a>.</p>
+<p>There is also the <a href="https://insightsengineering.github.io/random.cdisc.data/main/"><code>{random.cdisc.data}</code></a> package that can be used to generate randomized CDISC data for exploratory purposes.</p>
+<p>More information about these datasets can be found in their respective documentation sites.</p>
+</section>
+<section id="tables-listings-graphsfigures" class="level2">
+<h2 class="anchored" data-anchor-id="tables-listings-graphsfigures">Tables, Listings, Graphs/Figures</h2>
+<p>The content of clinical trial reports contains 3 different types of outputs:</p>
+<ol type="1">
+<li>Tables</li>
+<li>Listings</li>
+<li>Graphs/Figures</li>
+</ol>
+<p>These outputs play a vital part to summarize the results of a clinical trial during reporting. They can summarize safety, efficacy, and exploratory outcomes (such as biomarker analyses).</p>
+<p>In the next sections, we will be using the datasets in the <code>{random.cdisc.data}</code> package to help create example outputs used in clinical trials reports. These will be split into two sections each, namely “Data Setup” and “Standard Output Generation”.</p>
+<section id="tables" class="level3">
+<h3 class="anchored" data-anchor-id="tables">Tables</h3>
+<p>In this example, we will be creating a <strong><em>Standard Adverse Events Table (AET02)</em></strong> using the <code>cadsl</code> and <code>cadae</code> datasets from the <code>random.cdisc.data</code> package (see the <a href="https://insightsengineering.github.io/tlg-catalog/">TLG Catalogue</a> for reference).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/3.png" class="img-fluid figure-img"></p>
+<figcaption>&gt; Adverse Events Table - AET02</figcaption>
+</figure>
+</div>
+<section id="data-setup" class="level4">
+<h4 class="anchored" data-anchor-id="data-setup">Data Setup:</h4>
+<pre><code>library(random.cdisc.data)
+library(dplyr)
+library(tern)
+
+# Ensure character variables are converted to factors so that
+# empty strings and NAs are explicit missing levels.
+
+adsl &lt;- df_explicit_na(cadsl)
+adae &lt;- df_explicit_na(cadae) %&gt;%
+  var_relabel(
+    AEBODSYS = "MedDRA System Organ Class",
+    AEDECOD = "MedDRA Preferred Term"
+  ) %&gt;%
+  filter(ANL01FL == "Y")
+
+# Define the split function
+split_fun &lt;- drop_split_levels</code></pre>
+</section>
+<section id="aet02-output-generation" class="level4">
+<h4 class="anchored" data-anchor-id="aet02-output-generation">AET02 Output Generation:</h4>
+<pre><code># Standard Table for AET02 --------------------------------------------------------------
+lyt &lt;- basic_table(show_colcounts = TRUE) %&gt;%
+  split_cols_by(var = "ACTARM") %&gt;%
+  add_overall_col(label = "All Patients") %&gt;%
+  analyze_num_patients(
+    vars = "USUBJID",
+    .stats = c("unique", "nonunique"),
+    .labels = c(
+      unique = "Total number of patients with at least one adverse event",
+      nonunique = "Overall total number of events"
+    )
+  ) %&gt;%
+  split_rows_by(
+    "AEBODSYS",
+    child_labels = "visible",
+    nested = FALSE,
+    split_fun = split_fun,
+    label_pos = "topleft",
+    split_label = obj_label(adae$AEBODSYS)
+  ) %&gt;%
+  summarize_num_patients(
+    var = "USUBJID",
+    .stats = c("unique", "nonunique"),
+    .labels = c(
+      unique = "Total number of patients with at least one adverse event",
+      nonunique = "Total number of events"
+    )
+  ) %&gt;%
+  count_occurrences(
+    vars = "AEDECOD",
+    .indent_mods = -1L
+  ) %&gt;%
+  append_varlabels(adae, "AEDECOD", indent = 1L)
+
+result &lt;- build_table(lyt, df = adae, alt_counts_df = adsl)
+
+result</code></pre>
+</section>
+</section>
+<section id="listings" class="level3">
+<h3 class="anchored" data-anchor-id="listings">Listings</h3>
+<p>In this example, we will be creating a <strong><em>Standard Listing of Preferred Terms, Lowest Level Terms, and Investigator-Specified Adverse Event Terms</em></strong> <strong><em>(AEL01)</em></strong> using the <code>{cadae}</code> dataset from the <code>{random.cdisc.data}</code> package.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/4.png" class="img-fluid figure-img"></p>
+<figcaption>&gt; Listing of Preferred Terms, Lowest Level Terms, and Investigator-Specified Adverse Event Terms - AEL01</figcaption>
+</figure>
+</div>
+<section id="data-setup-1" class="level4">
+<h4 class="anchored" data-anchor-id="data-setup-1">Data Setup:</h4>
+<pre><code>library(random.cdisc.data)
+library(dplyr)
+library(rlistings)
+
+out &lt;- cadae %&gt;%
+  select(AESOC, AEDECOD, AELLT, AETERM) %&gt;%
+  unique()
+
+var_labels(out) &lt;- c(
+  AESOC = "MedDRA System Organ Class",
+  AEDECOD = "MedDRA Preferred Term",
+  AELLT = "MedDRA Lowest Level Term",
+  AETERM = "Investigator-Specified\nAdverse Event Term"
+)</code></pre>
+</section>
+<section id="ael01-output-generation" class="level4">
+<h4 class="anchored" data-anchor-id="ael01-output-generation">AEL01 Output Generation:</h4>
+<pre><code># Standard Listing for AEL01 ------------------------------------------------------------
+lsting &lt;- as_listing(
+  out,
+  key_cols = c("AESOC", "AEDECOD", "AELLT"),
+  disp_cols = names(out),
+  main_title = "Listing of Preferred Terms, Lowest Level Terms, and Investigator-Specified Adverse Event Terms"
+)
+
+head(lsting, 20)</code></pre>
+</section>
+</section>
+<section id="graphsfigures" class="level3">
+<h3 class="anchored" data-anchor-id="graphsfigures">Graphs/Figures</h3>
+<p>In this example, we will be creating a <strong><em>Standard Plot for Subgroup Analysis of Survival Duration (FSTG02)</em></strong> using the <code>{caddtte}</code> dataset from the <code>{random.cdisc.data}</code> package.</p>
+<p><img src="images/5.png" class="img-fluid" alt="> Subgroup Analysis of Survival Duration - FSTG02"><br>
+<em>&gt; Subgroup Analysis of Survival Duration - FSTG02</em></p>
+<section id="data-setup-2" class="level4">
+<h4 class="anchored" data-anchor-id="data-setup-2">Data Setup:</h4>
+<pre><code>library(random.cdisc.data)
+library(tern)
+library(dplyr)
+library(forcats)
+library(nestcolor)
+
+preprocess_adtte &lt;- function(adtte) {
+  # Save variable labels before data processing steps.
+  adtte_labels &lt;- var_labels(adtte)
+
+  adtte &lt;- adtte %&gt;%
+    df_explicit_na() %&gt;%
+    dplyr::filter(
+      PARAMCD == "OS",
+      ARM %in% c("B: Placebo", "A: Drug X"),
+      SEX %in% c("M", "F")
+    ) %&gt;%
+    dplyr::mutate(
+      # Reorder levels of ARM to display reference arm before treatment arm.
+      ARM = droplevels(forcats::fct_relevel(ARM, "B: Placebo")),
+      SEX = droplevels(SEX),
+      is_event = CNSR == 0,
+      # Convert time to MONTH
+      AVAL = day2month(AVAL),
+      AVALU = "Months"
+    ) %&gt;%
+    var_relabel(
+      ARM = adtte_labels["ARM"],
+      SEX = adtte_labels["SEX"],
+      is_event = "Event Flag",
+      AVAL = adtte_labels["AVAL"],
+      AVALU = adtte_labels["AVALU"]
+    )
+
+  adtte
+}
+
+anl &lt;- cadtte %&gt;%
+  preprocess_adtte()</code></pre>
+</section>
+<section id="fstg02-output-generation" class="level4">
+<h4 class="anchored" data-anchor-id="fstg02-output-generation">FSTG02 Output Generation:</h4>
+<pre><code># Standard Plot for FSTG02 -------------------------------------------------------
+anl1 &lt;- anl
+
+df &lt;- extract_survival_subgroups(
+  variables = list(tte = "AVAL", is_event = "is_event", arm = "ARM", subgroups = c("SEX", "BMRKR2")),
+  data = anl1
+)
+
+result &lt;- basic_table() %&gt;%
+  tabulate_survival_subgroups(
+    df = df,
+    vars = c("n_tot", "n", "median", "hr", "ci"),
+    time_unit = anl1$AVALU[1]
+  )
+
+result
+
+plot &lt;- g_forest(tbl = result)
+
+plot</code></pre>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+</section>
+<section id="conclusion-1" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion-1">Conclusion</h2>
+<p>Clinical trial reporting remains fundamental to public trust and to the integrity of drug development. Nevertheless, the field continues to face persistent <strong>transparency deficits</strong>, <strong>escalating costs</strong>, and <strong>reproducibility challenges</strong>.</p>
+<p>Adopting open standards and collaborative platforms—such as the <strong>Pharmaverse</strong> ecosystem—together with broader open-source initiatives in R and related technologies, offers a practical path forward. These approaches enable greater transparency, improved efficiency, and rigorous, standards-based data practices that strengthen the scientific foundation of clinical research. Consequently, the level of trust can be further enhanced, and public welfare can be assured.</p>
+<p>Join us in part 2 of this series where we take a look at interactive clinical trials data analysis using packages that create custom shiny applications specifically for this space.</p>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<ul>
+<li><a href="https://pharmaverse.org/">Pharmaverse</a></li>
+<li><a href="https://www.cdisc.org/standards/foundational">CDISC</a></li>
+<li><a href="https://insightsengineering.github.io/tlg-catalog/stable/">TLG Catalog</a></li>
+</ul>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2025-09-12 09:11:58.119603</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-05-12_faster_clinical_trial_reporting.../faster_clinical_trial_reporting.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{hee2025,
+  author = {Hee, Fabian and Kouretsis, Alexandros and , APPSILON},
+  title = {Faster {Clinical} {Trial} {Reporting:} {A} {Beginner’s}
+    {Guide} to {Implementing} {CDISC} {SDTM} and {ADaM} {Standards} with
+    {Open-Source} {R} {Packages}},
+  date = {2025-09-12},
+  url = {https://pharmaverse.github.io/blog/posts/2025-09-12_faster_clinical_trial_reporting/faster_clinical_trial_reporting.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-hee2025" class="csl-entry quarto-appendix-citeas" role="listitem">
+Hee, Fabian, Alexandros Kouretsis, and APPSILON. 2025. <span>“Faster
+Clinical Trial Reporting: A Beginner’s Guide to Implementing CDISC SDTM
+and ADaM Standards with Open-Source R Packages.”</span> September 12,
+2025. <a href="https://pharmaverse.github.io/blog/posts/2025-09-12_faster_clinical_trial_reporting/faster_clinical_trial_reporting.html">https://pharmaverse.github.io/blog/posts/2025-09-12_faster_clinical_trial_reporting/faster_clinical_trial_reporting.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/pharmaverse\.github\.io\/blog");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
