@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.8.24">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Vladyslav Shuliar">
-<meta name="dcterms.date" content="2024-09-30">
-<meta name="description" content="A Data Science placement student shares their experience of rewriting a lost R script to regenerate an essential ECG dataset for the open-source pharmaversesdtm project. The post covers their approach to data exploration, identifying key parameters, and overcoming challenges in recreating the dataset from scratch.">
+<meta name="dcterms.date" content="2024-10-31">
+<meta name="description" content="During my Data Science placement, I faced the challenge of recreating an ECG dataset for the {pharmaversesdtm} project after the original R script was lost. I explored the existing data, identified key parameters, and experimented with R packages to replicate the dataset structure and ensure SDTM compliance. Despite challenges with ensuring accurate ECG measurements, I eventually regenerated the dataset, learning valuable lessons in problem-solving and resilience.">
 
 <title>How I Rebuilt a Lost ECG Data Script in R – pharmaverse blog</title>
 <style>
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -36,15 +71,17 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../media/pharmaverseblog.png" rel="icon" type="image/png">
 <script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
 <link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
-<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-a53006f0c921170e515b9f9350597155.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-059e32e6cff55c8e6349f43a621d3b3d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -116,13 +153,15 @@ cookieconsent.run({
 <meta property="og:image:width" content="465">
 </head>
 
-<body class="floating nav-fixed">
+<body class="floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">pharmaverse blog</span>
     </a>
@@ -156,7 +195,7 @@ cookieconsent.run({
       <h1 class="title">How I Rebuilt a Lost ECG Data Script in R</h1>
                   <div>
         <div class="description">
-          A Data Science placement student shares their experience of rewriting a lost R script to regenerate an essential ECG dataset for the open-source <em>pharmaversesdtm</em> project. The post covers their approach to data exploration, identifying key parameters, and overcoming challenges in recreating the dataset from scratch.
+          During my Data Science placement, I faced the challenge of recreating an ECG dataset for the {pharmaversesdtm} project after the original R script was lost. I explored the existing data, identified key parameters, and experimented with R packages to replicate the dataset structure and ensure SDTM compliance. Despite challenges with ensuring accurate ECG measurements, I eventually regenerated the dataset, learning valuable lessons in problem-solving and resilience.
         </div>
       </div>
                           <div class="quarto-categories">
@@ -179,7 +218,7 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">September 30, 2024</p>
+        <p class="date">October 31, 2024</p>
       </div>
     </div>
     
@@ -194,17 +233,11 @@ cookieconsent.run({
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#rebuilding-a-lost-script-my-journey-into-open-source-data-science" id="toc-rebuilding-a-lost-script-my-journey-into-open-source-data-science" class="nav-link active" data-scroll-target="#rebuilding-a-lost-script-my-journey-into-open-source-data-science">Rebuilding a Lost Script: My Journey into Open-Source Data Science</a>
+  <li><a href="#how-i-solved-the-problem" id="toc-how-i-solved-the-problem" class="nav-link active" data-scroll-target="#how-i-solved-the-problem">How I Solved the Problem</a>
   <ul class="collapse">
-  <li><a href="#the-challenge-rewriting-a-lost-script" id="toc-the-challenge-rewriting-a-lost-script" class="nav-link" data-scroll-target="#the-challenge-rewriting-a-lost-script">The Challenge: Rewriting a Lost Script</a></li>
-  <li><a href="#my-approach-reverse-engineering-the-data" id="toc-my-approach-reverse-engineering-the-data" class="nav-link" data-scroll-target="#my-approach-reverse-engineering-the-data">My Approach: Reverse-Engineering the Data</a>
-  <ul class="collapse">
-  <li><a href="#data-exploration-and-analysis" id="toc-data-exploration-and-analysis" class="nav-link" data-scroll-target="#data-exploration-and-analysis">1. Data Exploration and Analysis</a></li>
-  <li><a href="#identifying-the-parameters" id="toc-identifying-the-parameters" class="nav-link" data-scroll-target="#identifying-the-parameters">2. Identifying the Parameters</a></li>
-  <li><a href="#writing-the-new-r-script" id="toc-writing-the-new-r-script" class="nav-link" data-scroll-target="#writing-the-new-r-script">3. Writing the New R Script</a></li>
-  </ul></li>
-  <li><a href="#challenges-and-solutions" id="toc-challenges-and-solutions" class="nav-link" data-scroll-target="#challenges-and-solutions">Challenges and Solutions</a></li>
-  <li><a href="#the-result-a-recreated-ecg-dataset" id="toc-the-result-a-recreated-ecg-dataset" class="nav-link" data-scroll-target="#the-result-a-recreated-ecg-dataset">The Result: A Recreated ECG Dataset</a></li>
+  <li><a href="#explored-and-analyzed-the-data" id="toc-explored-and-analyzed-the-data" class="nav-link" data-scroll-target="#explored-and-analyzed-the-data">Explored and Analyzed the Data</a></li>
+  <li><a href="#wrote-the-new-r-script" id="toc-wrote-the-new-r-script" class="nav-link" data-scroll-target="#wrote-the-new-r-script">Wrote the New R Script</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -222,37 +255,197 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<section id="rebuilding-a-lost-script-my-journey-into-open-source-data-science" class="level1">
-<h1>Rebuilding a Lost Script: My Journey into Open-Source Data Science</h1>
-<p>As a new Data Science placement student, I was given an exciting opportunity to sharpen my R programming skills while contributing to the open-source community. Under the guidance of my manager, Edoardo Mancini, I took on a unique and challenging task for <em>pharmaversesdtm</em>, which tested both my technical know-how and problem-solving abilities.</p>
-<section id="the-challenge-rewriting-a-lost-script" class="level2">
-<h2 class="anchored" data-anchor-id="the-challenge-rewriting-a-lost-script">The Challenge: Rewriting a Lost Script</h2>
-<p>One of the open-source datasets from CDISC, specifically the Electrocardiogram (ECG) data, had been created by a script that had unfortunately been lost and couldn’t be recovered. This was a major issue because the program used to retrieve and process the ECG data was essential for future work. My task was to write a new R script from scratch to regenerate the ECG dataset—one that closely matched the original in both structure and content.</p>
+<p>As a Data Science placement student at Roche UK, I was given an exciting opportunity to enhance my R programming skills while contributing to the open-source community. Under the guidance of my manager, Edoardo Mancini, I undertook a unique and challenging task within the {pharmaversesdtm} project that tested both my technical expertise and problem-solving abilities.</p>
+<p>The project involved recreating the <code>eg</code> domain (Electrocardiogram data) from the SDTM datasets used within {pharmaversesdtm}. The original dataset had been sourced from the <a href="https://github.com/cdisc-org/sdtm-adam-pilot-project">CDISC pilot project</a>, but since that source was no longer available, we had no direct reference. Fortunately, a saved copy of the dataset still existed, allowing me to analyze it and attempt to reproduce it as closely as possible.</p>
+<section id="how-i-solved-the-problem" class="level2">
+<h2 class="anchored" data-anchor-id="how-i-solved-the-problem">How I Solved the Problem</h2>
+<section id="explored-and-analyzed-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="explored-and-analyzed-the-data">Explored and Analyzed the Data</h3>
+<p>The first step was to thoroughly explore the existing ECG dataset of over 25,000 entries. I needed to understand the structure and key variables that defined the dataset, such as the “one row for each patient’s test during each visit” format. By analyzing these elements, I was able to gain a clear picture of how the dataset was organized. I also examined the range of values, variance, and other characteristics of the tests to ensure that my recreated version would align with the original dataset’s structure and statistical properties.</p>
+<p>To provide a clearer understanding of how the data is structured, let’s take a quick look at the information collected during a patient’s visit. Below is an example of data for patient <code>01-701-1015</code> during their <code>WEEK 2</code> visit:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 7
+   USUBJID     EGTEST             VISIT  EGDTC      EGTPT      EGSTRESN EGSTRESC
+   &lt;chr&gt;       &lt;chr&gt;              &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;   
+ 1 01-701-1015 ECG Interpretation WEEK 2 2014-01-16 ""               NA ABNORMAL
+ 2 01-701-1015 Heart Rate         WEEK 2 2014-01-16 "AFTER LY…       63 63      
+ 3 01-701-1015 Heart Rate         WEEK 2 2014-01-16 "AFTER ST…       83 83      
+ 4 01-701-1015 Heart Rate         WEEK 2 2014-01-16 "AFTER ST…       66 66      
+ 5 01-701-1015 QT Duration        WEEK 2 2014-01-16 "AFTER LY…      449 449     
+ 6 01-701-1015 QT Duration        WEEK 2 2014-01-16 "AFTER ST…      511 511     
+ 7 01-701-1015 QT Duration        WEEK 2 2014-01-16 "AFTER ST…      534 534     
+ 8 01-701-1015 RR Duration        WEEK 2 2014-01-16 "AFTER LY…      316 316     
+ 9 01-701-1015 RR Duration        WEEK 2 2014-01-16 "AFTER ST…      581 581     
+10 01-701-1015 RR Duration        WEEK 2 2014-01-16 "AFTER ST…      570 570     </code></pre>
+</div>
+</div>
+<p>In this example, <code>USUBJID</code> identifies the subject, while <code>EGTEST</code> specifies the type of ECG test performed. <code>VISIT</code> refers to the visit during which the test occurred, and <code>EGDTC</code> records the date of the test. <code>EGTPT</code> indicates the condition under which the ECG test was conducted. <code>EGSTRESN</code> provides the numeric result, and <code>EGSTRESC</code> gives the corresponding categorical result.</p>
 </section>
-<section id="my-approach-reverse-engineering-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="my-approach-reverse-engineering-the-data">My Approach: Reverse-Engineering the Data</h2>
-<p>The existing ECG dataset contained over 25,000 entries, and without the original code, I had to manually explore and make sense of the data to understand how it had been generated. Here’s how I approached it:</p>
-<section id="data-exploration-and-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="data-exploration-and-analysis">1. Data Exploration and Analysis</h3>
-<p>I started by thoroughly analysing the available ECG dataset. My goal was to identify patterns, structures, and key variables that were likely involved in creating the original dataset. By digging deep into the data, I could understand how it was organised and what factors were critical to replicate.</p>
+<section id="wrote-the-new-r-script" class="level3">
+<h3 class="anchored" data-anchor-id="wrote-the-new-r-script">Wrote the New R Script</h3>
+<p>Armed with insights from my analysis, I set about writing a new R script to replicate the lost one. This involved a lot of trial and error, as I kept refining the code to ensure it generated a dataset that closely resembled the original ECG data in both structure and content. In order to give you, my reader, better understanding of the solution, I’ll walk you through the main parts of the script.</p>
+<section id="loading-libraries-and-data" class="level4">
+<h4 class="anchored" data-anchor-id="loading-libraries-and-data">Loading Libraries and Data</h4>
+<p>To begin, I loaded the necessary libraries and read in the vital signs (<code>vs</code>) dataset, This dataset is functional to my cause because it has the same structure and schedule as the <code>eg</code> data, so I can recreate the <code>eg</code> visit schedule for each patient from it. By setting a seed for the random data generation, I ensured that the process was reproducible, allowing others to verify my results and maintain consistency in future analyses. Additionally, the metatools package was loaded to facilitate adding labels to the variables later, which enhanced the readability of the dataset.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(metatools)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pharmaversesdtm)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"vs"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
-<section id="identifying-the-parameters" class="level3">
-<h3 class="anchored" data-anchor-id="identifying-the-parameters">2. Identifying the Parameters</h3>
-<p>As I explored the dataset, I focused on identifying which features were crucial for recreating the lost data. By paying close attention to trends and relationships between different variables, I could form a rough idea of how the original script might have worked.</p>
+<section id="extracting-unique-datetime-of-measurements" class="level4">
+<h4 class="anchored" data-anchor-id="extracting-unique-datetime-of-measurements">Extracting Unique Date/Time of Measurements</h4>
+<p>Next, I extracted the unique combination of subject IDs, visit names, and visit dates from the <code>vs</code> dataset.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>egdtc <span class="ot">&lt;-</span> vs <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(USUBJID, VISIT, VSDTC) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">EGDTC =</span> VSDTC)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>egdtc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,741 × 3
+   USUBJID     VISIT               EGDTC     
+   &lt;chr&gt;       &lt;chr&gt;               &lt;chr&gt;     
+ 1 01-701-1015 SCREENING 1         2013-12-26
+ 2 01-701-1015 SCREENING 2         2013-12-31
+ 3 01-701-1015 BASELINE            2014-01-02
+ 4 01-701-1015 AMBUL ECG PLACEMENT 2014-01-14
+ 5 01-701-1015 WEEK 2              2014-01-16
+ 6 01-701-1015 WEEK 4              2014-01-30
+ 7 01-701-1015 AMBUL ECG REMOVAL   2014-02-01
+ 8 01-701-1015 WEEK 6              2014-02-12
+ 9 01-701-1015 WEEK 8              2014-03-05
+10 01-701-1015 WEEK 12             2014-03-26
+# ℹ 2,731 more rows</code></pre>
+</div>
+</div>
+<p>This data was used later to match the generated ECG data to the correct visit and time points.</p>
 </section>
-<section id="writing-the-new-r-script" class="level3">
-<h3 class="anchored" data-anchor-id="writing-the-new-r-script">3. Writing the New R Script</h3>
-<p>Armed with insights from my analysis, I set about writing a new R script to replicate the lost one. This involved a lot of trial and error, as I kept refining the code to ensure it generated a dataset that closely resembled the original ECG data in both structure and content.</p>
+<section id="generating-a-grid-of-patient-data" class="level4">
+<h4 class="anchored" data-anchor-id="generating-a-grid-of-patient-data">Generating a Grid of Patient Data</h4>
+<p>Subsequently, I created a grid of all possible combinations of subject IDs, test codes (e.g., <code>QT</code>, <code>HR</code>, <code>RR</code>, <code>ECGINT</code>), time points (e.g., after lying down, after standing), and visits. These combinations represented different test results collected across multiple visits.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>eg <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">USUBJID =</span> <span class="fu">unique</span>(vs<span class="sc">$</span>USUBJID),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">EGTESTCD =</span> <span class="fu">c</span>(<span class="st">"QT"</span>, <span class="st">"HR"</span>, <span class="st">"RR"</span>, <span class="st">"ECGINT"</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">EGTPT =</span> <span class="fu">c</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"AFTER LYING DOWN FOR 5 MINUTES"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"AFTER STANDING FOR 1 MINUTE"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"AFTER STANDING FOR 3 MINUTES"</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">VISIT =</span> <span class="fu">c</span>(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"SCREENING 1"</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"SCREENING 2"</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BASELINE"</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"AMBUL ECG PLACEMENT"</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WEEK 2"</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WEEK 4"</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"AMBUL ECG REMOVAL"</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WEEK 6"</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WEEK 8"</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WEEK 12"</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WEEK 16"</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WEEK 20"</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WEEK 24"</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WEEK 26"</span>,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"RETRIEVAL"</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the dataset for one subject and one visit</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>filtered_eg <span class="ot">&lt;-</span> eg <span class="sc">%&gt;%</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(USUBJID <span class="sc">==</span> <span class="st">"01-701-1015"</span> <span class="sc">&amp;</span> VISIT <span class="sc">==</span> <span class="st">"WEEK 2"</span>)</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the result</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>filtered_eg</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       USUBJID EGTESTCD                          EGTPT  VISIT
+1  01-701-1015       QT AFTER LYING DOWN FOR 5 MINUTES WEEK 2
+2  01-701-1015       HR AFTER LYING DOWN FOR 5 MINUTES WEEK 2
+3  01-701-1015       RR AFTER LYING DOWN FOR 5 MINUTES WEEK 2
+4  01-701-1015   ECGINT AFTER LYING DOWN FOR 5 MINUTES WEEK 2
+5  01-701-1015       QT    AFTER STANDING FOR 1 MINUTE WEEK 2
+6  01-701-1015       HR    AFTER STANDING FOR 1 MINUTE WEEK 2
+7  01-701-1015       RR    AFTER STANDING FOR 1 MINUTE WEEK 2
+8  01-701-1015   ECGINT    AFTER STANDING FOR 1 MINUTE WEEK 2
+9  01-701-1015       QT   AFTER STANDING FOR 3 MINUTES WEEK 2
+10 01-701-1015       HR   AFTER STANDING FOR 3 MINUTES WEEK 2
+11 01-701-1015       RR   AFTER STANDING FOR 3 MINUTES WEEK 2
+12 01-701-1015   ECGINT   AFTER STANDING FOR 3 MINUTES WEEK 2</code></pre>
+</div>
+</div>
+<p>In order to demonstrate the data more clearly, I have displayed the combinations for only one subject and one visit for you to see, as the full table is very large. Each of these test codes corresponds to specific ECG measurements: <code>QT</code> refers to the QT interval (a measurement made on an electrocardiogram used to assess some of the electrical properties of the heart), <code>HR</code> represents heart rate, <code>RR</code> is the interval between R waves, and <code>ECGINT</code> refers to the ECG interpretation.</p>
+<p>As I analyzed the original ECG dataset, I learned more about these test codes and their relevance to the clinical data.</p>
+</section>
+<section id="generating-random-test-results" class="level4">
+<h4 class="anchored" data-anchor-id="generating-random-test-results">Generating Random Test Results</h4>
+<p>For each combination in the grid, I generated random test results using a normal distribution to simulate realistic values for each test code. To determine the means and standard deviations, I used the original EG dataset as a reference. By analyzing the range and distribution of values in the original dataset, I was able to extract realistic means and standard deviations for each numerical ECG test (<code>QT</code>, <code>HR</code>, <code>RR</code>).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>EGSTRESN <span class="ot">=</span> <span class="fu">case_when</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>EGTESTCD <span class="sc">==</span> <span class="st">"RR"</span> <span class="sc">&amp;</span> EGELTM <span class="sc">==</span> <span class="st">"PT5M"</span> <span class="sc">~</span> <span class="fu">floor</span>(<span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="fl">543.9985</span>, <span class="dv">80</span>)),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>EGTESTCD <span class="sc">==</span> <span class="st">"RR"</span> <span class="sc">&amp;</span> EGELTM <span class="sc">==</span> <span class="st">"PT3M"</span> <span class="sc">~</span> <span class="fu">floor</span>(<span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="fl">536.0161</span>, <span class="dv">80</span>)),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>EGTESTCD <span class="sc">==</span> <span class="st">"RR"</span> <span class="sc">&amp;</span> EGELTM <span class="sc">==</span> <span class="st">"PT1M"</span> <span class="sc">~</span> <span class="fu">floor</span>(<span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="fl">532.3233</span>, <span class="dv">80</span>)),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>EGTESTCD <span class="sc">==</span> <span class="st">"HR"</span> <span class="sc">&amp;</span> EGELTM <span class="sc">==</span> <span class="st">"PT5M"</span> <span class="sc">~</span> <span class="fu">floor</span>(<span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="fl">70.04389</span>, <span class="dv">8</span>)),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>EGTESTCD <span class="sc">==</span> <span class="st">"HR"</span> <span class="sc">&amp;</span> EGELTM <span class="sc">==</span> <span class="st">"PT3M"</span> <span class="sc">~</span> <span class="fu">floor</span>(<span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="fl">74.27798</span>, <span class="dv">8</span>)),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>EGTESTCD <span class="sc">==</span> <span class="st">"HR"</span> <span class="sc">&amp;</span> EGELTM <span class="sc">==</span> <span class="st">"PT1M"</span> <span class="sc">~</span> <span class="fu">floor</span>(<span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="fl">74.77461</span>, <span class="dv">8</span>)),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>EGTESTCD <span class="sc">==</span> <span class="st">"QT"</span> <span class="sc">&amp;</span> EGELTM <span class="sc">==</span> <span class="st">"PT5M"</span> <span class="sc">~</span> <span class="fu">floor</span>(<span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="fl">450.9781</span>, <span class="dv">60</span>)),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>EGTESTCD <span class="sc">==</span> <span class="st">"QT"</span> <span class="sc">&amp;</span> EGELTM <span class="sc">==</span> <span class="st">"PT3M"</span> <span class="sc">~</span> <span class="fu">floor</span>(<span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="fl">457.7265</span>, <span class="dv">60</span>)),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>EGTESTCD <span class="sc">==</span> <span class="st">"QT"</span> <span class="sc">&amp;</span> EGELTM <span class="sc">==</span> <span class="st">"PT1M"</span> <span class="sc">~</span> <span class="fu">floor</span>(<span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="fl">455.3394</span>, <span class="dv">60</span>))</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This approach ensured that the synthetic data aligned closely with the patterns and variability observed in the original clinical data.</p>
+</section>
+<section id="finalizing-the-dataset" class="level4">
+<h4 class="anchored" data-anchor-id="finalizing-the-dataset">Finalizing the Dataset</h4>
+<p>Finally, I added labels to the dataframe for easier analysis and future use by utilizing the <code>metatools::add_labels()</code> function.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">add_labels</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="at">STUDYID =</span> <span class="st">"Study Identifier"</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="at">USUBJID =</span> <span class="st">"Unique Subject Identifier"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="at">EGTEST =</span> <span class="st">"ECG Test Name"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="at">VISIT =</span> <span class="st">"Visit Name"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="at">EGSTRESC =</span> <span class="st">"Character Result/Finding in Std Format"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="at">EGSTRESN =</span> <span class="st">"Numeric Result/Finding in Standard Units"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="sc">&lt;</span>etc<span class="sc">&gt;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This provided descriptive names for each column in the dataset, making it more intuitive to understand the data during analysis and ensuring clarity in its subsequent use.</p>
+</section>
+<section id="limitations" class="level4">
+<h4 class="anchored" data-anchor-id="limitations">Limitations</h4>
+<p>However, this approach has certain limitations. One key issue is that the simulations do not account for the time structure, as each observation is generated independently (i.i.d.), which does not reflect real-world dynamics. Additionally, sampling from a normal distribution may not always be appropriate and can sometimes yield unrealistic results, such as negative heart rate (HR) values. To mitigate this, I manually reviewed the generated data to ensure that only plausible values were included. Below are the valid ranges I established for this purpose:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the data for the relevant test codes (QT, RR, HR)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>eg_filtered <span class="ot">&lt;-</span> pharmaversesdtm<span class="sc">::</span>eg <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(EGTESTCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"QT"</span>, <span class="st">"HR"</span>, <span class="st">"RR"</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the minimum and maximum values for each test code</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>value_ranges <span class="ot">&lt;-</span> eg_filtered <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EGTESTCD) <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_value =</span> <span class="fu">min</span>(EGSTRESN, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_value =</span> <span class="fu">max</span>(EGSTRESN, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the result</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>value_ranges</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  EGTESTCD min_value max_value
+  &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+1 HR              40       107
+2 QT             242       671
+3 RR             236       889</code></pre>
+</div>
+</div>
 </section>
 </section>
-<section id="challenges-and-solutions" class="level2">
-<h2 class="anchored" data-anchor-id="challenges-and-solutions">Challenges and Solutions</h2>
-<p>Working with a dataset of over 25,000 entries brought its own challenges. Making sure the script was efficient and scalable while still producing accurate, high-quality data was a key focus. I used a range of R techniques to streamline the process and make sure the dataset followed the original patterns.</p>
-</section>
-<section id="the-result-a-recreated-ecg-dataset" class="level2">
-<h2 class="anchored" data-anchor-id="the-result-a-recreated-ecg-dataset">The Result: A Recreated ECG Dataset</h2>
-<p>After days of analysis, coding, and refinement, I successfully wrote an R script that could regenerate the lost ECG dataset. This project not only helped me improve my R programming skills but also gave me valuable experience in reverse-engineering data, exploring large healthcare datasets, and solving practical problems in the open-source world.</p>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
+<p>This project not only sharpened my R programming skills but also provided invaluable experience in reverse-engineering data, analyzing large healthcare datasets, and tackling real-world challenges in the open-source domain. By following a structured approach, I was able to successfully recreate the <code>EG</code> dataset synthetically, ensuring it mirrors realistic clinical data. This achievement not only enhances my technical capabilities but also contributes to the broader open-source community, as the synthetic dataset will be featured in the next release of {pharmaversesdtm}, offering a valuable resource for future research and development.</p>
 <!--------------- appendices go here ----------------->
+</section>
 </section>
 <div class="cell">
 <div class="cell-output-display">
@@ -262,11 +455,10 @@ cookieconsent.run({
 </div>
 
 
-</section>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2024-10-31 12:53:45.336505</p>
+<p>2025-09-16 08:01:33.697757</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_how__i__reb.../how__i__rebuilt_a__lost__ec_g__data__script_in__r.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -282,236 +474,243 @@ Shuliar, Vladyslav. 2024. <span>“How I Rebuilt a Lost ECG Data Script in
 R.”</span> October 31, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-10-31_how__i__reb.../how__i__rebuilt_a__lost__ec_g__data__script_in__r.html">https://pharmaverse.github.io/blog/posts/2024-10-31_how__i__reb.../how__i__rebuilt_a__lost__ec_g__data__script_in__r.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
+      return false;
     }
-    return false;
-  }
-  const onCopySuccess = function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
       }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
         }
       }
       return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
-  });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
     });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/pharmaverse\.github\.io\/blog");
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
     }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/pharmaverse\.github\.io\/blog");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-    const config = {
-      allowHTML: true,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start',
-    };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
         }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
         }
-        return container.innerHTML
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
       } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
       }
     }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
           }
         } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
+            const note = htmlDoc.querySelector('main.content');
             if (note !== null) {
-              const html = processXRef(id, note);
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -519,185 +718,161 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+      }, function(instance) {
       });
     }
-  }
-});
-</script>
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
