@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.34">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -24,9 +24,8 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -37,7 +36,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -71,16 +70,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../media/pharmaverseblog.png" rel="icon" type="image/png">
 <script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
 <link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
-<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-c8ad9e5dbd60b7b70b38521ab19b7da4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-17adfc3a9c81f9b42c39cdfccb5d279b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-a53006f0c921170e515b9f9350597155.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -141,10 +139,10 @@ cookieconsent.run({
         background: #eeeeee;
       }
 </style>
-<script src="../../site_libs/bslib-component-js-0.9.0/components.min.js"></script>
-<script src="../../site_libs/bslib-component-js-0.9.0/web-components.min.js" type="module"></script>
-<link href="../../site_libs/bslib-component-css-0.9.0/components.css" rel="stylesheet">
-<script src="../../site_libs/bslib-tag-require-0.9.0/tag-require.js"></script>
+<script src="../../site_libs/bslib-component-js-0.7.0/components.min.js"></script>
+<script src="../../site_libs/bslib-component-js-0.7.0/web-components.min.js" type="module"></script>
+<link href="../../site_libs/bslib-component-css-0.7.0/components.css" rel="stylesheet">
+<script src="../../site_libs/bslib-tag-require-0.7.0/tag-require.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -154,7 +152,7 @@ cookieconsent.run({
 <meta property="og:site_name" content="pharmaverse blog">
 </head>
 
-<body class="floating nav-fixed quarto-light">
+<body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -269,7 +267,7 @@ cookieconsent.run({
 <p>This blog post will discuss our commitment to stability, walk you through the new features available, discuss some of the bug fixes, a push for common APIs across our functions, and showcase the resources available to help you on-board to <a href="https://pharmaverse.github.io/admiral/index.html">admiral</a>.</p>
 <section id="commitment-to-stability" class="level1">
 <h1>Commitment to Stability</h1>
-<p>admiral was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html">history blog post</a> for some of additional context on its development. Over the last three years, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and with some minor tweaks could be made redundant in favor of other functions. This has lead to some deprecation of either whole functions or arguments as we have sought to consolidate. Unfortunately, this creates a lot of frustration for users.</p>
+<p><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> was born out of a conversation between Thomas Neitmann and Michael Rimler almost three years ago. Check out this <a href="https://pharmaverse.github.io/blog/posts/2023-10-10_pharmaverse_story/pharmaverse_story.html">history blog post</a> for some of additional context on its development. Over the last three years, we have worked at a furious pace to produce functions that can do almost all derivations needed for common ADaMs. However, we have noticed that some functions are very similar to others and with some minor tweaks could be made redundant in favor of other functions. This has lead to some deprecation of either whole functions or arguments as we have sought to consolidate. Unfortunately, this creates a lot of frustration for users.</p>
 <p>Enter Superseded!!</p>
 <p>Now with the release of <code>1.0.0</code> we are going to <em>supersede</em> functions going forward. This is the process where when we introduce new functions to replace other functions, we will no longer fast-deprecate the replaced functions. Now we will supersede them, i.e.&nbsp;we will keep the function in the codebase for a long time, but recommend the use of the new function. If the function were to be removed from the codebase this will be done many years from the time it is superseded. Please note that although superseded functions are not in scope for active development, any bugs identified within them will nevertheless be fixed.</p>
 </section>
@@ -277,15 +275,15 @@ cookieconsent.run({
 <h1>New Features</h1>
 <p>We have 3 new functions available in this release:</p>
 <ul>
-<li>derive_vars_extreme_event()</li>
-<li>derive_var_merged_ef_msrc()</li>
-<li>derive_vars_computed()</li>
+<li><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Add the Worst or Best Observation for Each By Group as New Variables — derive_vars_extreme_event • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html" class="r-link-call" target="_blank">derive_vars_extreme_event()</a> </bslib-tooltip></li>
+<li><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Merge an Existence Flag From Multiple Sources — derive_var_merged_ef_msrc • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_var_merged_ef_msrc.html" class="r-link-call" target="_blank">derive_var_merged_ef_msrc()</a> </bslib-tooltip></li>
+<li><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Adds Variable(s) Computed from the Analysis Value of one or more Parameters — derive_vars_computed • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html" class="r-link-call" target="_blank">derive_vars_computed()</a> </bslib-tooltip></li>
 </ul>
-<p>and a new option in derive_var_atoxgr_dir() and derive_var_anrind() to handle floating point issues.</p>
+<p>and a new option in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Derive Lab Toxicity Grade 0 - 4 — derive_var_atoxgr_dir • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_var_atoxgr_dir.html" class="r-link-call" target="_blank">derive_var_atoxgr_dir()</a> </bslib-tooltip> and <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Derive Reference Range Indicator — derive_var_anrind • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_var_anrind.html" class="r-link-call" target="_blank">derive_var_anrind()</a> </bslib-tooltip> to handle floating point issues.</p>
 <section id="derive_vars_extreme_event" class="level2">
 <h2 class="anchored" data-anchor-id="derive_vars_extreme_event"><code>derive_vars_extreme_event()</code></h2>
-<p>This function takes available records from user-defined events by selecting the extreme observations and appending them as a variable(s) to your dataset. derive_vars_extreme_event() works similar to derive_extreme_event(), but instead of adding observations the function will add variable(s).</p>
-<p>Let’s take a peek with a very simple example where we just use ADSL! The documentation for derive_vars_extreme_event() has a much richer example with events from other domains that is more aligned to where you would use this function.</p>
+<p>This function takes available records from user-defined events by selecting the extreme observations and appending them as a variable(s) to your dataset. <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Add the Worst or Best Observation for Each By Group as New Variables — derive_vars_extreme_event • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html" class="r-link-call" target="_blank">derive_vars_extreme_event()</a> </bslib-tooltip> works similar to <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Add the Worst or Best Observation for Each By Group as New Records — derive_extreme_event • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html" class="r-link-call" target="_blank">derive_extreme_event()</a> </bslib-tooltip>, but instead of adding observations the function will add variable(s).</p>
+<p>Let’s take a peek with a very simple example where we just use ADSL! The documentation for <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Add the Worst or Best Observation for Each By Group as New Variables — derive_vars_extreme_event • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html" class="r-link-call" target="_blank">derive_vars_extreme_event()</a> </bslib-tooltip> has a much richer example with events from other domains that is more aligned to where you would use this function.</p>
 <p>Let us make some dummy <code>ADSL</code> data and load up our packages. The goal here is to add two new variables <code>LSTALVDT</code> and <code>DTHFL</code> based on a list of objects that are used to specify the following:</p>
 <ul>
 <li>the dataset to look at</li>
@@ -343,7 +341,7 @@ cookieconsent.run({
 </section>
 <section id="derive_var_merged_ef_msrc" class="level2">
 <h2 class="anchored" data-anchor-id="derive_var_merged_ef_msrc"><code>derive_var_merged_ef_msrc()</code></h2>
-<p>This function has some similarity to derive_vars_extreme_event(), but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.</p>
+<p>This function has some similarity to <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Add the Worst or Best Observation for Each By Group as New Variables — derive_vars_extreme_event • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html" class="r-link-call" target="_blank">derive_vars_extreme_event()</a> </bslib-tooltip>, but now we are only looking at adding a single flag variable based on checking conditions across multiple datasets.</p>
 <p>We develop some <em>simple</em> dummy data for <code>ADSL</code>, <code>CM</code> and <code>PR</code>. Our goal is to flag patients who have <code>CMCAT = "ANTI-CANCER"</code> in the <code>CM</code> dataset or have records in the <code>PR</code> dataset. Any participants who meet these conditions will have our new variable <code>CANCTRFL</code> set as <code>"Y"</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
@@ -399,7 +397,7 @@ cookieconsent.run({
 </section>
 <section id="derive_vars_computed" class="level2">
 <h2 class="anchored" data-anchor-id="derive_vars_computed"><code>derive_vars_computed()</code></h2>
-<p>This function is very similar to derive_param_computed(), but instead of adding observations we are going to add variable(s). Very handy when wanting to add some additional variables to <code>ADSL</code>, e.g.&nbsp;baseline variables.</p>
+<p>This function is very similar to <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Adds a Parameter Computed from the Analysis Value of Other Parameters — derive_param_computed • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/derive_param_computed.html" class="r-link-call" target="_blank">derive_param_computed()</a> </bslib-tooltip>, but instead of adding observations we are going to add variable(s). Very handy when wanting to add some additional variables to <code>ADSL</code>, e.g.&nbsp;baseline variables.</p>
 <p>Let’s make some dummy data for an <code>ADSL</code> and <code>ADVS</code>. Our goal is to derive a <code>BMIBL</code> variable pulled from <code>ADVS</code> and append to <code>ADSL</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
@@ -451,8 +449,8 @@ cookieconsent.run({
 <h1>Argument Alignment and Bug Fixes</h1>
 <section id="argument-alignment" class="level2">
 <h2 class="anchored" data-anchor-id="argument-alignment">Argument Alignment</h2>
-<p>A huge push was made for <code>1.0.0</code> to help align our arguments across all of admiral functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For <code>1.0.0</code>, we really want users to have a solid API for admiral functions.</p>
-<p>Let’s take a peak at the function consolidate_metadata() to even better understand our goal here.</p>
+<p>A huge push was made for <code>1.0.0</code> to help align our arguments across all of <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;ADaM in R Asset Library • admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> functions. What does this mean? We identified arguments in functions where the argument did the same things but was slightly named differently. For <code>1.0.0</code>, we really want users to have a solid API for <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;ADaM in R Asset Library • admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> functions.</p>
+<p>Let’s take a peak at the function <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Consolidate Multiple Meta Datasets Into a Single One — consolidate_metadata • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/consolidate_metadata.html" class="r-link-call" target="_blank">consolidate_metadata()</a> </bslib-tooltip> to even better understand our goal here.</p>
 <pre><code>consolidate_metadata(
   datasets,
   key_vars,
@@ -461,12 +459,12 @@ cookieconsent.run({
   check_keys,
   check_type = "error"
 )</code></pre>
-<p>In previous versions of admiral the consolidate_metadata() function had the argument <code>check_keys</code>, which helps to check uniqueness. Other functions had a similar argument, but were called <code>check_unique</code>. Therefore, to better align our common API for admiral functions we decided to rename the <code>check_keys</code> argument to <code>check_unique</code>. You can follow the discussion around this renaming effort in this <a href="https://github.com/pharmaverse/admiral/issues/2184">GitHub Issue</a>.</p>
+<p>In previous versions of <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> the <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>Consolidate Multiple Meta Datasets Into a Single One — consolidate_metadata • admiral</template> <a href="https://pharmaverse.github.io/admiral/reference/consolidate_metadata.html" class="r-link-call" target="_blank">consolidate_metadata()</a> </bslib-tooltip> function had the argument <code>check_keys</code>, which helps to check uniqueness. Other functions had a similar argument, but were called <code>check_unique</code>. Therefore, to better align our common API for <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>ADaM in R Asset Library • admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> functions we decided to rename the <code>check_keys</code> argument to <code>check_unique</code>. You can follow the discussion around this renaming effort in this <a href="https://github.com/pharmaverse/admiral/issues/2184">GitHub Issue</a>.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="check.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="450"></p>
+<p><img src="check.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
 </div>
 </div>
@@ -482,7 +480,7 @@ cookieconsent.run({
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="issue_tag.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="469"></p>
+<p><img src="issue_tag.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
 </div>
 </div>
@@ -492,15 +490,15 @@ cookieconsent.run({
 </section>
 <section id="new-on-boarding-resources" class="level1">
 <h1>New On-boarding Resources</h1>
-<p>admiral has a lot of functions for working with ADaMs. This can be overwhelming for new users and we really sympathize. To help new users onboarding to admiral we have developed the following resources:</p>
+<p><code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;ADaM in R Asset Library • admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> has a lot of functions for working with ADaMs. This can be overwhelming for new users and we really sympathize. To help new users onboarding to <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;ADaM in R Asset Library • admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> we have developed the following resources:</p>
 <section id="admiraldiscovery" class="level2">
 <h2 class="anchored" data-anchor-id="admiraldiscovery"><a href="https://pharmaverse.github.io/admiraldiscovery/index.html">admiraldiscovery</a></h2>
-<p>This is a dedicated website that lists out in a tabular format standard ADaM datasets and their common variables with corresponding admiral functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving <code>EOSDT</code> or <code>TRTSDT</code>!</p>
+<p>This is a dedicated website that lists out in a tabular format standard ADaM datasets and their common variables with corresponding <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;ADaM in R Asset Library • admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> functions that could be used to create the variables. Very handy when you just want to get some starter code on deriving <code>EOSDT</code> or <code>TRTSDT</code>!</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="admiraldisc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="652"></p>
+<p><img src="admiraldisc.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
 </div>
 </div>
@@ -513,7 +511,7 @@ cookieconsent.run({
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="cheatsheet.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="781"></p>
+<p><img src="cheatsheet.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
 </div>
 </div>
@@ -521,12 +519,12 @@ cookieconsent.run({
 </section>
 <section id="way-back-machine" class="level2">
 <h2 class="anchored" data-anchor-id="way-back-machine">Way Back Machine</h2>
-<p>Studies can last a long time. Adopting R as your primary analysis language for your study can introduce certain risks around package dependencies. Fixing those dependencies to certain package versions can help mitigate those risks. Unfortunately, as package websites are updated those helpful documents, examples and vignettes can be lost as the version changes. Do not lose heart admiral users. If you decided to fix to a certain version of admiral, we have you covered with our <strong>Way Back Machine</strong> that allows you to change the website documentation back to the version you are using.</p>
+<p>Studies can last a long time. Adopting R as your primary analysis language for your study can introduce certain risks around package dependencies. Fixing those dependencies to certain package versions can help mitigate those risks. Unfortunately, as package websites are updated those helpful documents, examples and vignettes can be lost as the version changes. Do not lose heart <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;ADaM in R Asset Library • admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> users. If you decided to fix to a certain version of <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;ADaM in R Asset Library • admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code>, we have you covered with our <strong>Way Back Machine</strong> that allows you to change the website documentation back to the version you are using.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="wayback.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="770"></p>
+<p><img src="wayback.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
 </div>
 </div>
@@ -545,7 +543,7 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2025-09-12 09:09:29.925472</p>
+<p>2024-09-05 07:36:47.949217</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-12-18_admiral_1_0/admiral_1_0.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -560,242 +558,236 @@ cookieconsent.run({
 Straub, Ben. 2024. <span>“Admiral 1.0.0.”</span> January 4, 2024. <a href="https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html">https://pharmaverse.github.io/blog/posts/2023-12-18_admiral_1_0/admiral_1_0.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-  window.document.addEventListener("DOMContentLoaded", function (event) {
-    const icon = "";
-    const anchorJS = new window.AnchorJS();
-    anchorJS.options = {
-      placement: 'right',
-      icon: icon
-    };
-    anchorJS.add('.anchored');
-    const isCodeAnnotation = (el) => {
-      for (const clz of el.classList) {
-        if (clz.startsWith('code-annotation-')) {                     
-          return true;
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
       }
-      return false;
-    }
-    const onCopySuccess = function(e) {
-      // button target
-      const button = e.trigger;
-      // don't keep focus
-      button.blur();
-      // flash "checked"
-      button.classList.add('code-copy-button-checked');
-      var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Copied!");
-      let tooltip;
-      if (window.bootstrap) {
-        button.setAttribute("data-bs-toggle", "tooltip");
-        button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Copied!");
-        tooltip = new bootstrap.Tooltip(button, 
-          { trigger: "manual", 
-            customClass: "code-copy-button-tooltip",
-            offset: [0, -8]});
-        tooltip.show();    
-      }
-      setTimeout(function() {
-        if (tooltip) {
-          tooltip.hide();
-          button.removeAttribute("data-bs-title");
-          button.removeAttribute("data-bs-toggle");
-          button.removeAttribute("data-bs-placement");
-        }
-        button.setAttribute("title", currentTitle);
-        button.classList.remove('code-copy-button-checked');
-      }, 1000);
-      // clear code selection
-      e.clearSelection();
-    }
-    const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
-        }
-        return codeEl.innerText;
-    }
-    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-      text: getTextToCopy
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
     });
-    clipboard.on('success', onCopySuccess);
-    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-        text: getTextToCopy,
-        container: window.document.getElementById('quarto-embedded-source-code-modal')
-      });
-      clipboardModal.on('success', onCopySuccess);
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/pharmaverse\.github\.io\/blog");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
-      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-      var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/pharmaverse\.github\.io\/blog");
-      var isInternal = (href) => {
-          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-      }
-      // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-      for (var i=0; i<links.length; i++) {
-        const link = links[i];
-        if (!isInternal(link.href)) {
-          // undo the damage that might have been done by quarto-nav.js in the case of
-          // links that we want to consider external
-          if (link.dataset.originalHref !== undefined) {
-            link.href = link.dataset.originalHref;
-          }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
         }
       }
-    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-      const config = {
-        allowHTML: true,
-        maxWidth: 500,
-        delay: 100,
-        arrow: false,
-        appendTo: function(el) {
-            return el.parentElement;
-        },
-        interactive: true,
-        interactiveBorder: 10,
-        theme: 'quarto',
-        placement: 'bottom-start',
-      };
-      if (contentFn) {
-        config.content = contentFn;
-      }
-      if (onTriggerFn) {
-        config.onTrigger = onTriggerFn;
-      }
-      if (onUntriggerFn) {
-        config.onUntrigger = onUntriggerFn;
-      }
-      window.tippy(el, config); 
     }
-    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-    for (var i=0; i<noterefs.length; i++) {
-      const ref = noterefs[i];
-      tippyHover(ref, function() {
-        // use id or data attribute instead here
-        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-        try { href = new URL(href).hash; } catch {}
-        const id = href.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note) {
-          return note.innerHTML;
-        } else {
-          return "";
-        }
-      });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
     }
-    const xrefs = window.document.querySelectorAll('a.quarto-xref');
-    const processXRef = (id, note) => {
-      // Strip column container classes
-      const stripColumnClz = (el) => {
-        el.classList.remove("page-full", "page-columns");
-        if (el.children) {
-          for (const child of el.children) {
-            stripColumnClz(child);
-          }
-        }
-      }
-      stripColumnClz(note)
-      if (id === null || id.startsWith('sec-')) {
-        // Special case sections, only their first couple elements
-        const container = document.createElement("div");
-        if (note.children && note.children.length > 2) {
-          container.appendChild(note.children[0].cloneNode(true));
-          for (let i = 1; i < note.children.length; i++) {
-            const child = note.children[i];
-            if (child.tagName === "P" && child.innerText === "") {
-              continue;
-            } else {
-              container.appendChild(child.cloneNode(true));
-              break;
-            }
-          }
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(container);
-          }
-          return container.innerHTML
-        } else {
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(note);
-          }
-          return note.innerHTML;
-        }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
       } else {
-        // Remove any anchor links if they are present
-        const anchorLink = note.querySelector('a.anchorjs-link');
-        if (anchorLink) {
-          anchorLink.remove();
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
         }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        if (note.classList.contains("callout")) {
-          return note.outerHTML;
-        } else {
-          return note.innerHTML;
-        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
       }
     }
-    for (var i=0; i<xrefs.length; i++) {
-      const xref = xrefs[i];
-      tippyHover(xref, undefined, function(instance) {
-        instance.disable();
-        let url = xref.getAttribute('href');
-        let hash = undefined; 
-        if (url.startsWith('#')) {
-          hash = url;
-        } else {
-          try { hash = new URL(url).hash; } catch {}
-        }
-        if (hash) {
-          const id = hash.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note !== null) {
-            try {
-              const html = processXRef(id, note.cloneNode(true));
-              instance.setContent(html);
-            } finally {
-              instance.enable();
-              instance.show();
-            }
-          } else {
-            // See if we can fetch this
-            fetch(url.split('#')[0])
-            .then(res => res.text())
-            .then(html => {
-              const parser = new DOMParser();
-              const htmlDoc = parser.parseFromString(html, "text/html");
-              const note = htmlDoc.getElementById(id);
-              if (note !== null) {
-                const html = processXRef(id, note);
-                instance.setContent(html);
-              } 
-            }).finally(() => {
-              instance.enable();
-              instance.show();
-            });
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
           }
         } else {
-          // See if we can fetch a full url (with no hash to target)
-          // This is a special case and we should probably do some content thinning / targeting
-          fetch(url)
+          // See if we can fetch this
+          fetch(url.split('#')[0])
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.querySelector('main.content');
+            const note = htmlDoc.getElementById(id);
             if (note !== null) {
-              // This should only happen for chapter cross references
-              // (since there is no id in the URL)
-              // remove the first header
-              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-                note.children[0].remove();
-              }
-              const html = processXRef(null, note);
+              const html = processXRef(id, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -803,161 +795,185 @@ Straub, Ben. 2024. <span>“Admiral 1.0.0.”</span> January 4, 2024. <a href="h
             instance.show();
           });
         }
-      }, function(instance) {
-      });
-    }
-        let selectedAnnoteEl;
-        const selectorForAnnotation = ( cell, annotation) => {
-          let cellAttr = 'data-code-cell="' + cell + '"';
-          let lineAttr = 'data-code-annotation="' +  annotation + '"';
-          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-          return selector;
-        }
-        const selectCodeLines = (annoteEl) => {
-          const doc = window.document;
-          const targetCell = annoteEl.getAttribute("data-target-cell");
-          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-          const lineIds = lines.map((line) => {
-            return targetCell + "-" + line;
-          })
-          let top = null;
-          let height = null;
-          let parent = null;
-          if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
-            }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
-            }
-            selectedAnnoteEl = annoteEl;
-          }
-        };
-        const unselectCodeLines = () => {
-          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-          elementsIds.forEach((elId) => {
-            const div = window.document.getElementById(elId);
-            if (div) {
-              div.remove();
-            }
-          });
-          selectedAnnoteEl = undefined;
-        };
-          // Handle positioning of the toggle
-      window.addEventListener(
-        "resize",
-        throttle(() => {
-          elRect = undefined;
-          if (selectedAnnoteEl) {
-            selectCodeLines(selectedAnnoteEl);
-          }
-        }, 10)
-      );
-      function throttle(fn, ms) {
-      let throttle = false;
-      let timer;
-        return (...args) => {
-          if(!throttle) { // first call gets through
-              fn.apply(this, args);
-              throttle = true;
-          } else { // all the others get throttled
-              if(timer) clearTimeout(timer); // cancel #2
-              timer = setTimeout(() => {
-                fn.apply(this, args);
-                timer = throttle = false;
-              }, ms);
-          }
-        };
-      }
-        // Attach click handler to the DT
-        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-        for (const annoteDlNode of annoteDls) {
-          annoteDlNode.addEventListener('click', (event) => {
-            const clickedEl = event.target;
-            if (clickedEl !== selectedAnnoteEl) {
-              unselectCodeLines();
-              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-              if (activeEl) {
-                activeEl.classList.remove('code-annotation-active');
-              }
-              selectCodeLines(clickedEl);
-              clickedEl.classList.add('code-annotation-active');
-            } else {
-              // Unselect the line
-              unselectCodeLines();
-              clickedEl.classList.remove('code-annotation-active');
-            }
-          });
-        }
-    const findCites = (el) => {
-      const parentEl = el.parentElement;
-      if (parentEl) {
-        const cites = parentEl.dataset.cites;
-        if (cites) {
-          return {
-            el,
-            cites: cites.split(' ')
-          };
-        } else {
-          return findCites(el.parentElement)
-        }
       } else {
-        return undefined;
-      }
-    };
-    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-    for (var i=0; i<bibliorefs.length; i++) {
-      const ref = bibliorefs[i];
-      const citeInfo = findCites(ref);
-      if (citeInfo) {
-        tippyHover(citeInfo.el, function() {
-          var popup = window.document.createElement('div');
-          citeInfo.cites.forEach(function(cite) {
-            var citeDiv = window.document.createElement('div');
-            citeDiv.classList.add('hanging-indent');
-            citeDiv.classList.add('csl-entry');
-            var biblioDiv = window.document.getElementById('ref-' + cite);
-            if (biblioDiv) {
-              citeDiv.innerHTML = biblioDiv.innerHTML;
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
             }
-            popup.appendChild(citeDiv);
-          });
-          return popup.innerHTML;
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
         });
       }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
     }
-  });
-  </script>
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
