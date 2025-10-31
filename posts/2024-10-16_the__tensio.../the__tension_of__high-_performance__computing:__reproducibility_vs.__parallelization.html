@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.24">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -79,10 +79,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-059e32e6cff55c8e6349f43a621d3b3d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-0865e4e96387d1993860dc6d432811f4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -385,22 +385,6 @@ $result
 <span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_efficacy =</span> <span class="fu">mean</span>(efficacy),</span>
 <span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_efficacy =</span> <span class="fu">sd</span>(efficacy)</span>
 <span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1,000 × 3
-   patient_id mean_efficacy sd_efficacy
-        &lt;int&gt;         &lt;dbl&gt;       &lt;dbl&gt;
- 1          1         0.639     0.0752 
- 2          2         0.775     0.00724
- 3          3         0.706     0.168  
- 4          4         0.715     0.179  
- 5          5         0.745     0.0895 
- 6          6         0.633     0.0567 
- 7          7         0.810     0.180  
- 8          8         0.542     0.119  
- 9          9         0.669     0.132  
-10         10         0.709     0.0393 
-# ℹ 990 more rows</code></pre>
-</div>
 </div>
 <p>We used <code>tribble()</code> to define the simulation parameters and initialize 4 daemons with <code>dispatcher = "none"</code> and a fixed seed to ensure consistent random number generation across tasks. The <code>mirai_map()</code> function parallelizes the drug efficacy simulation, and the results are combined using <code>bind_rows()</code> for further analysis.</p>
 <p>Disabling the dispatcher gives more control over task execution, ensuring reproducibility. If you repeat the computation you will notice that it generates consistent results. However, this approach comes at a cost. Disabling the dispatcher may lead to inefficient resource utilization when tasks are unevenly distributed, as some daemons may remain idle. While reproducibility is prioritized, we sacrifice some performance, especially when handling tasks with varying workloads.</p>
@@ -426,7 +410,7 @@ $result
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2025-09-16 08:03:19.390963</p>
+<p>2025-10-31 14:59:53.392424</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
