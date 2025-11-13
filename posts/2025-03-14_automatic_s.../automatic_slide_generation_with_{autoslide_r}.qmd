@@ -13,13 +13,11 @@ image: autoslider.png
 
 ```{r setup, include=FALSE}
 long_slug <- "zzz_DO_NOT_EDIT_automatic_s..."
-library(link)
-link::auto()
 ```
 
 <!--------------- post begins here ----------------->
 
-We are excited to announce that the {autoslider.core} package is now a part of pharmaverse! 
+We are excited to announce that the `{autoslider.core}` package is now a part of pharmaverse! 
 
 The normal process of creating clinical study slides is that a statistician manually types in numbers from outputs and a separate statistician then double checks the typed-in numbers. This process is time consuming, resource intensive, and error prone. 
 This package lets users create slides with study-specific outputs in an automated and reproducible way -- without the need to copy-paste.
@@ -30,11 +28,11 @@ The `autoslider` development work started as a Roche internal initiative.
 As it grew over the years, it was well received and we decided to open-source this package while at the same time not causing any downstream breaking changes to our internal users.
 Therefore, the `autoslider` package became two layers, the outer layer exposed to internal users remains as `autoslider`.
 It now mostly contains Roche-specific formats, layouts and designs.
-The inner layer, aka {autoslider.core}, which controls the rendering and workflow, is open source and fully functional and user-facing on its own.
+The inner layer, aka `{autoslider.core}`, which controls the rendering and workflow, is open source and fully functional and user-facing on its own.
 We consider `autoslider` as a framework, and would like to invite users to build their own `autoslider.*` packages. 
 You can find t0he developer guidelines at the [package homepage](https://insightsengineering.github.io/autoslider.core/latest-tag/articles/opensource.html).
 
-The value proposition of the {autoslider.core} package is two-fold: 
+The value proposition of the `{autoslider.core}` package is two-fold: 
 
 1. functions to create standard outputs with (some) inbuilt customization capability
   - mostly built on code from the [tlg catalog](https://insightsengineering.github.io/tlg-catalog/stable/)
@@ -45,10 +43,10 @@ The value proposition of the {autoslider.core} package is two-fold:
   - decorating outputs (think: footnotes & titles)
   - adding these outputs to a PowerPoint slide deck, including pagination.
 
-In this blog post, we will guide you through the {autoslider.core} package and demonstrate how it can be used to streamline your data analysis and output slide generation.
+In this blog post, we will guide you through the `{autoslider.core}` package and demonstrate how it can be used to streamline your data analysis and output slide generation.
 
 ## Requirements
-To follow along with this tutorial, you need to have the {autoslider.core} package installed. 
+To follow along with this tutorial, you need to have the `{autoslider.core}` package installed. 
 You will also need data available in ADaM format (or SDTM, depending on the template used), which should be stored in a named list where the names correspond to ADaM datasets.
 
 ```{r}
@@ -145,7 +143,7 @@ Copy code
 ├── filters.yml
 ```
 
-The {autoslider.core} workflow would involve implementing the key aspects in the `run_script.R` file. 
+The `{autoslider.core}` workflow would involve implementing the key aspects in the `run_script.R` file. 
 This script guides through the workflow without needing the files in `R/`. 
 However, custom output-creating functions can be stored in the `R/` folder.
 
@@ -202,7 +200,7 @@ SER:
 ```
 
 ## Functions
-An overview of all {autoslider.core} functions can be found [here](https://insightsengineering.github.io/autoslider.core/latest-tag/reference/index.html). 
+An overview of all `{autoslider.core}` functions can be found [here](https://insightsengineering.github.io/autoslider.core/latest-tag/reference/index.html). 
 Custom functions can be created if the built-in functions do not meet your needs.
 
 ## Backend Machinery
@@ -257,8 +255,8 @@ outputs %>%
   
   
 ## Writing Custom Functions
-For study-specific outputs not covered by {autoslider.core} functions, you can create custom functions. 
-Custom functions need to return either a {ggplot2} (for plots), {rtables} (for tables), or {rlistings} or `data.frame` objects (for listings).
+For study-specific outputs not covered by `{autoslider.core}` functions, you can create custom functions. 
+Custom functions need to return either a `{ggplot2}` (for plots), `{rtables}` (for tables), or `{rlistings}` or `data.frame` objects (for listings).
 
 Example custom function:
 
@@ -298,7 +296,7 @@ lbt06(data)
 ```
 
 
-To use the custom function within the {autoslider.core} workflow, ensure it is available in the global environment:
+To use the custom function within the `{autoslider.core}` workflow, ensure it is available in the global environment:
 
 ```{r, eval = FALSE}
 source("programs/output_functions.R")
@@ -332,7 +330,7 @@ filepath <- tempfile(fileext = ".pptx")
 generate_slides(outputs, outfile = filepath)
 ```
 
-We hope this guide helps you get started with {autoslider.core} in pharmaverse. 
+We hope this guide helps you get started with `{autoslider.core}` in pharmaverse. 
 Happy coding!
 
 <!--------------- appendices go here ----------------->
