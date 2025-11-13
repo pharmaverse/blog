@@ -12,33 +12,30 @@ image: sdtmoak.png
 <!--------------- typical setup ----------------->
 
 ```{r setup, include=FALSE}
-library(link)
 long_slug <- "zzz_DO_NOT_EDIT_introducing..."
-# renv::use(lockfile = "renv.lock")
-link::auto(keep_pkg_prefix = FALSE)
 ```
 
 <!--------------- post begins here ----------------->
 
-{sdtm.oak} v0.1 is now available on [CRAN](https://cran.r-project.org/web/packages/sdtm.oak/index.html).
-In this blog post, we will introduce the package, key concepts, and examples. {sdtm.oak} is developed in collaboration with volunteers from several companies, including Roche, Pfizer, GSK, Pattern Institute, Transition Technologies Science, and Atorus Research. {sdtm.oak} is also sponsored by [CDISC COSA](https://www.cdisc.org/cosa) with a vision of being part of [CDISC 360](https://www.cdisc.org/cdisc-360) to address end-to-end standards development and implementation.
+`{sdtm.oak}` v0.1 is now available on [CRAN](https://cran.r-project.org/web/packages/sdtm.oak/index.html).
+In this blog post, we will introduce the package, key concepts, and examples. `{sdtm.oak}` is developed in collaboration with volunteers from several companies, including Roche, Pfizer, GSK, Pattern Institute, Transition Technologies Science, and Atorus Research. `{sdtm.oak}` is also sponsored by [CDISC COSA](https://www.cdisc.org/cosa) with a vision of being part of [CDISC 360](https://www.cdisc.org/cdisc-360) to address end-to-end standards development and implementation.
 
 # Filling the Gap
 
-{sdtm.oak} package addresses a critical gap in the pharmaverse suite by enabling study programmers to create SDTM datasets in R, complementing the existing capabilities for ADaM, TLGs, eSubmission, etc.
+`{sdtm.oak}` package addresses a critical gap in the pharmaverse suite by enabling study programmers to create SDTM datasets in R, complementing the existing capabilities for ADaM, TLGs, eSubmission, etc.
 
 Let's explore the challenges with SDTM programming. Although SDTM is simpler with less complex derivations compared to ADaM, it presents unique challenges. Unlike ADaM, which uses SDTM datasets as its source with a well-defined structure, SDTM relies on raw datasets as input.
 These raw datasets can vary widely in structure, depending on the data collection and EDC (Electronic Data Capture) system used. Even the same eCRF (electronic Case Report Form), when designed in different EDC systems, can produce raw datasets with different structures.
 
 Another challenge is the variability in data collection standards. Although CDISC has established CDASH data collection standards, many pharmaceutical companies have their own standards, which can differ significantly from CDASH. Additionally, since CDASH is not mandated by the FDA, sponsors can choose the data collection standards that best fit their needs.
 
-There are hundreds of EDC systems available in the marketplace, and the data collection standards vary significantly. Creating a single open-source package to work with all sorts of raw data formats and data collection standards seemed impossible. But here's the good news: not anymore! The {sdtm.oak} team has a solution to address this challenge.
+There are hundreds of EDC systems available in the marketplace, and the data collection standards vary significantly. Creating a single open-source package to work with all sorts of raw data formats and data collection standards seemed impossible. But here's the good news: not anymore! The `{sdtm.oak}` team has a solution to address this challenge.
 
-{sdtm.oak} is designed to be highly versatile, accommodating varying raw data structures from different EDC systems and external vendors. Moreover, {sdtm.oak} is data standards agnostic, meaning it supports both CDISC-defined data collection standards (CDASH) and various proprietary data collection standards defined by pharmaceutical companies. The reusable algorithms concept in {sdtm.oak} provides a framework for modular programming, making it a valuable addition to the pharmaverse ecosystem.
+`{sdtm.oak}` is designed to be highly versatile, accommodating varying raw data structures from different EDC systems and external vendors. Moreover, `{sdtm.oak}` is data standards agnostic, meaning it supports both CDISC-defined data collection standards (CDASH) and various proprietary data collection standards defined by pharmaceutical companies. The reusable algorithms concept in `{sdtm.oak}` provides a framework for modular programming, making it a valuable addition to the pharmaverse ecosystem.
 
 # EDC & Data standards agnostic
 
-We adopted the following innovative approach to make {sdtm.oak} adaptable to various EDC systems and data collection standards:
+We adopted the following innovative approach to make `{sdtm.oak}` adaptable to various EDC systems and data collection standards:
 
 -   SDTM mappings are categorized as algorithms and developed as R functions.
 -   Used datasets and variables are specified as arguments to function calls.
@@ -46,13 +43,13 @@ We adopted the following innovative approach to make {sdtm.oak} adaptable to var
 # Algorithms
 
 The SDTM mappings that transform the collected source data (eDT: External Data Transfer) into the target SDTM data model are grouped into algorithms.
-These mapping algorithms form the backbone of {sdtm.oak}.
+These mapping algorithms form the backbone of `{sdtm.oak}`.
 
 Key Points:
 *  Algorithms can be re-used across multiple SDTM domains.
 *  Programming language agnostic: This concept does not rely on a specific programming language for implementation.
 
-The {sdtm.oak} package includes R functions to handle these algorithms.
+The `{sdtm.oak}` package includes R functions to handle these algorithms.
 
 Some of the basic algorithms are below, also explaining how these algorithms can be used across multiple domains.
 
@@ -188,11 +185,11 @@ cm <-
 
 As you can see in this function call, the raw dataset and variable names are passed as arguments. As long as the raw dataset and variable are present in the global environment, the function will execute the algorithm's logic and create the target SDTM variable.
 
-{sdtm.oak} is designed to handle any type of raw input format. It is not tied to any specific data collection standards, making it both EDC-agnostic and data standards-agnostic.
+`{sdtm.oak}` is designed to handle any type of raw input format. It is not tied to any specific data collection standards, making it both EDC-agnostic and data standards-agnostic.
 
 # Why not use dplyr?
 
-As you can see from the definition of the algorithms, all of them are a form of {dplyr::mutate()} statement.
+As you can see from the definition of the algorithms, all of them are a form of `{dplyr::mutate()}` statement.
 However, these functions provide a way to pass dataset and variable names as arguments and the ability to merge with the previous step by id variables.
 This enables users to build the code in a modular and simplistic fashion, mapping one SDTM variable at a time, connected by pipes.
 
@@ -200,14 +197,14 @@ The SDTM mappings can also be used together in a single step, such as applying a
 When there is a need to apply controlled terminology, the algorithms perform additional checks, such as verifying the presence of the value in the study's controlled terminology specification, which is passed as an argument to the function call.
 If the collected value is present, it applies the standard submission value.
 
-While all these functionalities can be achieved with {dplyr}, the functions provided by {sdtm.oak} simplify the process and enhance efficiency. By leveraging metadata and controlled terminology, we further minimize errors and offer a modular approach to building SDTM datasets.
+While all these functionalities can be achieved with `{dplyr}`, the functions provided by `{sdtm.oak}` simplify the process and enhance efficiency. By leveraging metadata and controlled terminology, we further minimize errors and offer a modular approach to building SDTM datasets.
 
 # `oak_id_vars`
 
 The `oak_id_vars` is a crucial link between the raw datasets and the mapped SDTM domain.
 As the user derives each SDTM variable, it is merged with the corresponding topic variable using `oak_id_vars`.
-In {sdtm.oak}, the variables `oak_id`, `raw_source`, and `patient_number` are considered `oak_id_vars`.
-These three variables must be added to all raw datasets. Users can also extend this with any additional id vars.`oak_id_vars` can be added to the raw datasets using the function {sdtm.oak::generate_oak_id_vars()}.
+In `{sdtm.oak}`, the variables `oak_id`, `raw_source`, and `patient_number` are considered `oak_id_vars`.
+These three variables must be added to all raw datasets. Users can also extend this with any additional id vars.`oak_id_vars` can be added to the raw datasets using the function `{sdtm.oak::generate_oak_id_vars()}`.
 
 
 ```{r echo = FALSE, results = "asis"}
@@ -236,7 +233,7 @@ knitr::kable(oak_id_vars)
 
 # In this Release
 
-The v0.1.0 release of {sdtm.oak} users can create the majority of the SDTM domains.
+The v0.1.0 release of `{sdtm.oak}` users can create the majority of the SDTM domains.
 Domains that are NOT in scope for the v0.1.0 release are DM (Demographics), Trial Design Domains, SV (Subject Visits), SE (Subject Elements), RELREC (Related Records), Associated Person domains, creation of SUPP domain, and EPOCH variable across all domains.
 
 # Roadmap
