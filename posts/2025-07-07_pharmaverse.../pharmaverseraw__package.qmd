@@ -16,15 +16,13 @@ editor:
 
 ```{r setup, include=FALSE}
 long_slug <- "zzz_DO_NOT_EDIT_pharmaverse..."
-library(link)
-link::auto()
 ```
 
 <!--------------- post begins here ----------------->
 
 ## Background
 
-The {pharmaversesdtm} and {pharmaverseadam} packages have been available
+The `{pharmaversesdtm}` and `{pharmaverseadam}` packages have been available
 for some time, providing reusable examples for SDTM and ADaM datasets,
 respectively. However, one critical piece of the workflow was missing:
 the raw datasets that serve as the starting point for these examples.
@@ -32,16 +30,16 @@ the raw datasets that serve as the starting point for these examples.
 ## Why now?
 
 With the recent release of the
-[{sdtm.oak}](https://pharmaverse.github.io/sdtm.oak/) package — an
+[`{sdtm.oak}`](https://pharmaverse.github.io/sdtm.oak/) package — an
 open-source package that enables SDTM programming in R — we now have an
 opportunity to complete the picture. The new
-[{pharmaverseraw}](https://pharmaverse.github.io/pharmaverseraw/)
+[`{pharmaverseraw}`](https://pharmaverse.github.io/pharmaverseraw/)
 package fills this gap by providing example raw datasets that can be
-used as input for {pharmaversesdtm} datasets generation with {sdtm.oak}.
+used as input for `{pharmaversesdtm}` datasets generation with `{sdtm.oak}`.
 
-## What is in {pharmaverseraw}?
+## What is in `{pharmaverseraw}`?
 
-The {pharmaverseraw} package v0.1.0 is out on
+The `{pharmaverseraw}` package v0.1.0 is out on
 [CRAN](https://cran.r-project.org/web/packages/pharmaverseraw/index.html).
 It is also available from the pharmaverse site at:
 https://pharmaverse.org/e2eclinical/developers/. It includes **raw
@@ -55,7 +53,7 @@ datasets** for the following SDTM domains:
 
 \- EC/EX: Exposure
 
-These raw datasets in {pharmaverseraw} package are intentionally
+These raw datasets in `{pharmaverseraw}` package are intentionally
 designed to be:
 
 -   EDC agnostic: They are not tied to any specific Electronic Data
@@ -67,26 +65,26 @@ designed to be:
 The **annotated case report forms** corresponding to the raw datasets
 are also present in the `inst\acrf` folder. These PDF files illustrate
 how each raw variable aligns with SDTM expectations, offering insight
-into the mapping logic used in {sdtm.oak}.
+into the mapping logic used in `{sdtm.oak}`.
 
 ## How are these datasets created?
 
-The datasets in {pharmaverseraw} were created through **reverse
+The datasets in `{pharmaverseraw}` were created through **reverse
 engineering** - we started with the finalized SDTM datasets in
-{pharmaversesdtm} and worked backward to construct plausible raw
+`{pharmaversesdtm}` and worked backward to construct plausible raw
 datasets that could reasonably result in those SDTM outputs. This
 approach ensures data consistency while allowing us to demonstrate the
 flexibility of {sdtm.oak} in handling raw data in different formats.
 
 ## From raw to SDTM
 
-Using {sdtm.oak}, you can take raw datasets from {pharmaverseraw} and
+Using `{sdtm.oak}`, you can take raw datasets from `{pharmaverseraw}` and
 apply SDTM mapping functions to map the target SDTM variables. There
 will be new SDTM examples published using this data later at:
 https://pharmaverse.github.io/examples/sdtm/examples.html
 
 Below is an example snippet that shows how to use a raw AE dataset from
-{pharmaverseraw} and generate SDTM AE variables with {sdtm.oak}:
+`{pharmaverseraw}` and generate SDTM AE variables with `{sdtm.oak}`:
 
 ```{r, message = FALSE, warning = FALSE}
 library(pharmaverseraw)
@@ -134,14 +132,14 @@ ae <-
 ## Get involved
 
 Similar to the other tools under pharmaverse umbrella, the
-{pharmaverseraw} package is open-source and community-driven. We welcome
+`{pharmaverseraw}` package is open-source and community-driven. We welcome
 volunteers who are interested in contributing to the continued
 development and improvement of this package.
 
 If you’d like to get involved, here are some ways you can help:
 
 \- **Add new raw datasets:** Take other SDTM domains from the
-{pharmaversesdtm} package and create corresponding raw datasets using R.
+`{pharmaversesdtm}` package and create corresponding raw datasets using R.
 This will help expand the coverage of the package.
 
 \- **Create mock aCRFs for the raw datasets:** Develop annotated case
