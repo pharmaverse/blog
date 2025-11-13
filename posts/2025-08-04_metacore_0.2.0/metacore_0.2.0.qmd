@@ -17,33 +17,31 @@ image: metacore.png
 ```{r setup, include=FALSE}
 long_slug <- "zzz_DO_NOT_EDIT_metacore_0.2.0"
 # Load libraries required for the blog to render
-library(link)
-link::auto()
 ```
 
 <!--------------- post begins here ----------------->
 
-## {metacore} and {metatools} have a new package maintainer
+## `{metacore}` and `{metatools}` have a new package maintainer
 
 Hi, everyone!
-I'm [Liam](https://www.linkedin.com/in/liam-hobby/ "Liam Hobby") and I'm excited to announce that I have taken over as package maintainer for both {metacore} and {metatools} from Christina Fillmore.
+I'm [Liam](https://www.linkedin.com/in/liam-hobby/ "Liam Hobby") and I'm excited to announce that I have taken over as package maintainer for both `{metacore}` and `{metatools}` from Christina Fillmore.
 I work at GSK as a clinical programmer and I am coming to the end of my second year in the industry.
 This is my first experience working within the open-source world, but I am a regular user of pharmaverse packages and am keen to get more involved with the community.
 
-Christina remains on-hand as a mentor and I'd like to thank both her and Ben Straub for the continued support before we dive into the details of {metacore}/{metatools} 0.2.0.
+Christina remains on-hand as a mentor and I'd like to thank both her and Ben Straub for the continued support before we dive into the details of `{metacore}`/`{metatools}` 0.2.0.
 
 ## What's new in metacore?
 
 The goal of version 0.2.0 was to clarify the distinction between an imported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via metacore::select_dataset()).
 
-We received a number of questions and issues raised where users were attempting to use a Metacore object containing metadata for multiple datasets in functions from {metatools} that were designed to take a single, subsetted specification.
+We received a number of questions and issues raised where users were attempting to use a Metacore object containing metadata for multiple datasets in functions from `{metatools}` that were designed to take a single, subsetted specification.
 When developing datasets, the typical workflow is to be working on a single dataset at a time - so subsetting the Metacore object is the logical thing to do.
-The issue was that the approach to functions in {metatools} was inconsistent, with some functions permitting multiple specification metadata and others not.
+The issue was that the approach to functions in `{metatools}` was inconsistent, with some functions permitting multiple specification metadata and others not.
 
 Now, a Metacore object which has multiple datasets or one with a single dataset have been redesigned to be programmatically distinct, with the single dataset implemented as a subclass of Metacore called "DatasetMeta".
 
 From the users' perspective there is one key change.
-**A metadata object about a single dataset will be required for users to work with {metatools} functions**, which have had their API harmonised to accept only subsetted Metacore objects (via metacore::select_dataset()).
+**A metadata object about a single dataset will be required for users to work with `{metatools}` functions**, which have had their API harmonised to accept only subsetted Metacore objects (via `metacore::select_dataset()`).
 
 The print statements of both combined and subsetted Metacore objects have been refined to better illustrate the differences between them and provide more helpful information to the user.
 
@@ -58,7 +56,7 @@ load(metacore_example("pilot_ADaM.rda"))
 metacore
 ```
 
-The metacore::select_dataset() function is now explicit about what is being selected:
+The `metacore::select_dataset()` function is now explicit about what is being selected:
 
 ```{r}
 adsl_spec <- select_dataset(metacore, "ADSL", quiet = TRUE)
@@ -80,7 +78,7 @@ create_var_from_codelist(data.frame(), metacore)
 
 #### Related: soft deprecation of `dataset_name` in metatools
 
-Additionally, the argument `dataset_name` has been **soft-deprecated** across all functions in {metatools}.
+Additionally, the argument `dataset_name` has been **soft-deprecated** across all functions in `{metatools}`.
 While the argument is still available and will not break existing code, using it will now issue a warning.
 This change encourages users to adopt the preferred workflow, creating a subsetted Metacore object, and improves performance by avoiding repeated subsetting operations each time these functions are called.
 
@@ -175,13 +173,13 @@ x <- create_cat_var(dm2, adsl_spec, AGE, AGEGR2, create_from_decode = TRUE)
 
 -   metatools::check_variables() now provides a `strict` option that will issue a warning rather than throw an error when `strict = FALSE`.
 
--   {cli} output is now used across both packages and messaging for various functions has been improved.
+-   `{cli}` output is now used across both packages and messaging for various functions has been improved.
 
 ## What's next?
 
 The next step for both packages will be working through and closing out issues from the backlog, updating the examples and vignettes, and improving the user experience via more informative messaging.
 
-For {metacore}, there has been some interest in a UI to help users write custom specification readers for specs not in the standard P21 format.
+For `{metacore}`, there has been some interest in a UI to help users write custom specification readers for specs not in the standard P21 format.
 So this will be explored as well.
 
 I hope to release the next update towards the end of the year, looking at an approximately 6-monthly release schedule going forward.
