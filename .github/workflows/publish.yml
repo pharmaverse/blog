@@ -9,7 +9,7 @@ jobs:
   Update-post-dates:
     runs-on: ubuntu-latest
     container:
-      image: "rocker/tidyverse:4.2.1"
+      image: "ghcr.io/pharmaverse/docker_pharmaverse:v4.5.1"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -54,41 +54,16 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-            jsonlite
-            tidyverse
-            spelling
-            janitor
             diffdf
-            admiral
-            admiralonco
-            admiralophtha
-            admiralpeds
-            admiralvaccine
-            admiralmetabolic
-            admiralneuro
             patchwork
             here
-            reactable
-            pharmaversesdtm
-            metacore
-            metatools
-            xportr
-            pharmaverseadam
             link
             sessioninfo
-            rtables
-            teal
-            riskmetric
-            tidyCDISC
-            mirai
-            sdtm.oak
+            riskmetric           
+            mirai            
             dverse
             autoslider.core
-            logrx
-            pharmaverseraw
-            random.cdisc.data
-            tern
-            haven
+
 
       - name: Install tinytex
         run: quarto install tool tinytex
