@@ -69,6 +69,8 @@ jobs:
       - name: Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
+          path: . # Path to your .qmd file
+          output: .  # This is the default output directory
           target: gh-pages  # Target branch for GitHub Pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
