@@ -5,7 +5,7 @@ description: "List of all packages (and package versions) required to render all
 
 
 ```{r, include = FALSE, eval = TRUE, message = FALSE}
-package_names <- unique(renv::dependencies()$Package)
+package_names <- intersect(rownames(installed.packages()), unique(renv::dependencies()$Package))
 
 
 # Load all the packages
