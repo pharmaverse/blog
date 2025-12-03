@@ -44,6 +44,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory /__w/blog/blog
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
@@ -70,7 +73,6 @@ jobs:
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           path: . # Path to your .qmd file
-          output: .  # This is the default output directory
           target: gh-pages  # Target branch for GitHub Pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
