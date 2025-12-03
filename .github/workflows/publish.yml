@@ -65,10 +65,8 @@ jobs:
         run: quarto install tool tinytex
 
       - name: Install GitHub CLI
-        uses: cli/gh-action@v2
-        with:
-          version: "2.x"
-
+        uses: actions4gh/setup-gh@v1
+        
       - name: Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
