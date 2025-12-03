@@ -73,6 +73,9 @@ jobs:
       - name: Install tinytex
         run: quarto install tool tinytex
 
+      - name: Mark repo directory as safe
+        run: git config --global --add safe.directory /__w/blog/blog
+
       - name: Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
