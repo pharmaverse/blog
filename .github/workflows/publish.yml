@@ -47,7 +47,7 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
-            version: 1.4.515
+            version: 1.9.12
 
       - name: Install R Packages
         run: |
@@ -69,6 +69,6 @@ jobs:
       - name: Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
-          target: gh-pages
+          target: gh-pages  # Target branch for GitHub Pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
