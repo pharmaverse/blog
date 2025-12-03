@@ -44,14 +44,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install GitHub CLI
-        uses: actions4gh/setup-gh@v1
-
-      - name: Verify gh
-        run: gh --version
-
       - name: Set up Quarto
-        uses: quarto-dev/quarto-actions/setup@v2.1.9
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+            version: 1.4.515
 
       - name: Install R Packages
         run: |
