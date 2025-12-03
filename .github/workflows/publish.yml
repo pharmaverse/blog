@@ -65,8 +65,18 @@ jobs:
         run: quarto install tool tinytex
 
       - name: Install GitHub CLI
-        uses: actions4gh/setup-gh@v1
-        
+        run: |
+          apt-get update
+          apt-get install -y curl apt-transport-https gnupg2 lsb-release
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list
+          apt-get update
+          apt-get install -y gh
+
+      - name: Verify gh
+        run: gh --version
+
       - name: Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
