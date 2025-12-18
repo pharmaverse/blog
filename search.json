@@ -60,7 +60,7 @@
     "href": "posts/2025-06-26_admiral_1.3.../admiral_1.3.0:_documentation_go!!.html#last-updated",
     "title": "admiral 1.3.0: documentation go!!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:36:48.492242"
+    "text": "Last updated\n\n2025-12-18 20:50:05.879124"
   },
   {
     "objectID": "posts/2025-06-26_admiral_1.3.../admiral_1.3.0:_documentation_go!!.html#details",
@@ -130,14 +130,14 @@
     "href": "posts/2025-03-14_automatic_s.../automatic_slide_generation_with_{autoslide_r}.html#writing-custom-functions",
     "title": "Automatic slide generation with autoslider.core",
     "section": "Writing Custom Functions",
-    "text": "Writing Custom Functions\nFor study-specific outputs not covered by {autoslider.core} functions, you can create custom functions. Custom functions need to return either a {ggplot2} (for plots), {rtables} (for tables), or {rlistings} or data.frame objects (for listings).\nExample custom function:\n\nlbt06 &lt;- function(datasets) {\n  adsl &lt;- datasets$adsl %&gt;% tern::df_explicit_na()\n  adlb &lt;- datasets$adlb %&gt;% tern::df_explicit_na()\n\n  adlb_f &lt;- adlb %&gt;%\n    dplyr::filter(ABLFL != \"Y\") %&gt;%\n    dplyr::filter(!(AVISIT %in% c(\"SCREENING\", \"BASELINE\"))) %&gt;%\n    dplyr::mutate(AVISIT = droplevels(AVISIT)) %&gt;%\n    formatters::var_relabel(AVISIT = \"Visit\")\n\n  adlb_f_crp &lt;- adlb_f %&gt;% dplyr::filter(PARAMCD == \"CRP\")\n\n  split_fun &lt;- rtables::drop_split_levels\n\n  lyt &lt;- rtables::basic_table(show_colcounts = TRUE) %&gt;%\n    rtables::split_cols_by(\"ARM\") %&gt;%\n    rtables::split_rows_by(\"AVISIT\", split_fun = split_fun, label_pos = \"topleft\", split_label = formatters::obj_label(adlb_f_crp$AVISIT)) %&gt;%\n    tern::count_abnormal_by_baseline(\"ANRIND\", abnormal = c(Low = \"LOW\", High = \"HIGH\"), .indent_mods = 4L) %&gt;%\n    tern::append_varlabels(adlb_f_crp, \"ANRIND\", indent = 1L) %&gt;%\n    rtables::append_topleft(\"    Baseline Status\")\n\n  result &lt;- rtables::build_table(lyt = lyt, df = adlb_f_crp, alt_counts_df = adsl) %&gt;%\n    rtables::trim_rows()\n\n  result\n}\n\nTesting the custom function:\n\nlbt06(data)\n\nVisit                                                                                  \n  Analysis Reference Range Indicator     A: Drug X        B: Placebo     C: Combination\n    Baseline Status                       (N=134)          (N=134)          (N=132)    \n———————————————————————————————————————————————————————————————————————————————————————\nWEEK 1 DAY 8                                                                           \n  Low                                                                                  \n            Not low                    16/119 (13.4%)   22/113 (19.5%)   24/112 (21.4%)\n            Low                         2/15 (13.3%)     2/21 (9.5%)       7/20 (35%)  \n            Total                      18/134 (13.4%)   24/134 (17.9%)   31/132 (23.5%)\n  High                                                                                 \n            Not high                   21/114 (18.4%)   20/112 (17.9%)   17/115 (14.8%)\n            High                         2/20 (10%)      4/22 (18.2%)     3/17 (17.6%) \n            Total                      23/134 (17.2%)   24/134 (17.9%)   20/132 (15.2%)\nWEEK 2 DAY 15                                                                          \n  Low                                                                                  \n            Not low                    26/119 (21.8%)   20/113 (17.7%)   12/112 (10.7%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      4/20 (20%)  \n            Total                      28/134 (20.9%)   23/134 (17.2%)   16/132 (12.1%)\n  High                                                                                 \n            Not high                   15/114 (13.2%)   17/112 (15.2%)    15/115 (13%) \n            High                         2/20 (10%)      4/22 (18.2%)     4/17 (23.5%) \n            Total                      17/134 (12.7%)   21/134 (15.7%)   19/132 (14.4%)\nWEEK 3 DAY 22                                                                          \n  Low                                                                                  \n            Not low                    15/119 (12.6%)   21/113 (18.6%)   18/112 (16.1%)\n            Low                             0/15         3/21 (14.3%)         0/20     \n            Total                      15/134 (11.2%)   24/134 (17.9%)   18/132 (13.6%)\n  High                                                                                 \n            Not high                   22/114 (19.3%)   18/112 (16.1%)   17/115 (14.8%)\n            High                         2/20 (10%)      5/22 (22.7%)     1/17 (5.9%)  \n            Total                      24/134 (17.9%)   23/134 (17.2%)   18/132 (13.6%)\nWEEK 4 DAY 29                                                                          \n  Low                                                                                  \n            Not low                    30/119 (25.2%)   13/113 (11.5%)   16/112 (14.3%)\n            Low                          3/15 (20%)      2/21 (9.5%)       5/20 (25%)  \n            Total                      33/134 (24.6%)   15/134 (11.2%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   17/114 (14.9%)   11/112 (9.8%)    16/115 (13.9%)\n            High                         2/20 (10%)      6/22 (27.3%)     3/17 (17.6%) \n            Total                      19/134 (14.2%)   17/134 (12.7%)   19/132 (14.4%)\nWEEK 5 DAY 36                                                                          \n  Low                                                                                  \n            Not low                    17/119 (14.3%)   19/113 (16.8%)   16/112 (14.3%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      5/20 (25%)  \n            Total                      19/134 (14.2%)   22/134 (16.4%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   19/114 (16.7%)   17/112 (15.2%)   11/115 (9.6%) \n            High                         4/20 (20%)      6/22 (27.3%)     2/17 (11.8%) \n            Total                      23/134 (17.2%)   23/134 (17.2%)   13/132 (9.8%) \n\n\nTo use the custom function within the {autoslider.core} workflow, ensure it is available in the global environment:\n\nsource(\"programs/output_functions.R\")\n\nWith the correct specs.yml and filters.yml, integrate the custom function into the general workflow:\n\nfilters &lt;- \"filters.yml\"\nspec_file &lt;- \"specs.yml\"\nfilters::load_filters(filters, overwrite = TRUE)\noutputs &lt;- spec_file %&gt;%\n  read_spec() %&gt;%\n  generate_outputs(data) %&gt;%\n  decorate_outputs()\n\noutputs$lbt06_ITT_LBCRP_LBNOBAS\n\n\noutputs &lt;- spec_file %&gt;%\n  read_spec() %&gt;%\n  generate_outputs(data) %&gt;%\n  decorate_outputs()\n\n❯ Running program `t_ds_slide` with suffix 'ITT'.\n\n\nFilter 'ITT' matched target ADSL.\n\n\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\n❯ Running program `t_dm_slide` with suffix 'ITT'.\n\n\nFilter 'ITT' matched target ADSL.\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\n❯ Running program `lbt06` with suffix 'ITT_LBCRP_LBNOBAS'.\n\n\nFilter 'ITT' matched target ADSL.\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\nFilters 'LBCRP', 'LBNOBAS' matched target ADLB.\n\n\n2000/8400 records matched the filter condition `PARAMCD == 'CRP' & (ABLFL != 'Y' & !(AVISIT %in% c('SCREENING', 'BASELINE')))`.\n\noutputs$lbt06_ITT_LBCRP_LBNOBAS\n\nAn object of class \"dVTableTree\"\nSlot \"tbl\":\n\n\n Patient Disposition (Intent to Treat Population)\n\n———————————————————————————————————————————————————————————————————————————————————————\nVisit                                                                                  \n  Analysis Reference Range Indicator     A: Drug X        B: Placebo     C: Combination\n    Baseline Status                       (N=134)          (N=134)          (N=132)    \n———————————————————————————————————————————————————————————————————————————————————————\nWEEK 1 DAY 8                                                                           \n  Low                                                                                  \n            Not low                    16/119 (13.4%)   22/113 (19.5%)   24/112 (21.4%)\n            Low                         2/15 (13.3%)     2/21 (9.5%)       7/20 (35%)  \n            Total                      18/134 (13.4%)   24/134 (17.9%)   31/132 (23.5%)\n  High                                                                                 \n            Not high                   21/114 (18.4%)   20/112 (17.9%)   17/115 (14.8%)\n            High                         2/20 (10%)      4/22 (18.2%)     3/17 (17.6%) \n            Total                      23/134 (17.2%)   24/134 (17.9%)   20/132 (15.2%)\nWEEK 2 DAY 15                                                                          \n  Low                                                                                  \n            Not low                    26/119 (21.8%)   20/113 (17.7%)   12/112 (10.7%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      4/20 (20%)  \n            Total                      28/134 (20.9%)   23/134 (17.2%)   16/132 (12.1%)\n  High                                                                                 \n            Not high                   15/114 (13.2%)   17/112 (15.2%)    15/115 (13%) \n            High                         2/20 (10%)      4/22 (18.2%)     4/17 (23.5%) \n            Total                      17/134 (12.7%)   21/134 (15.7%)   19/132 (14.4%)\nWEEK 3 DAY 22                                                                          \n  Low                                                                                  \n            Not low                    15/119 (12.6%)   21/113 (18.6%)   18/112 (16.1%)\n            Low                             0/15         3/21 (14.3%)         0/20     \n            Total                      15/134 (11.2%)   24/134 (17.9%)   18/132 (13.6%)\n  High                                                                                 \n            Not high                   22/114 (19.3%)   18/112 (16.1%)   17/115 (14.8%)\n            High                         2/20 (10%)      5/22 (22.7%)     1/17 (5.9%)  \n            Total                      24/134 (17.9%)   23/134 (17.2%)   18/132 (13.6%)\nWEEK 4 DAY 29                                                                          \n  Low                                                                                  \n            Not low                    30/119 (25.2%)   13/113 (11.5%)   16/112 (14.3%)\n            Low                          3/15 (20%)      2/21 (9.5%)       5/20 (25%)  \n            Total                      33/134 (24.6%)   15/134 (11.2%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   17/114 (14.9%)   11/112 (9.8%)    16/115 (13.9%)\n            High                         2/20 (10%)      6/22 (27.3%)     3/17 (17.6%) \n            Total                      19/134 (14.2%)   17/134 (12.7%)   19/132 (14.4%)\nWEEK 5 DAY 36                                                                          \n  Low                                                                                  \n            Not low                    17/119 (14.3%)   19/113 (16.8%)   16/112 (14.3%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      5/20 (25%)  \n            Total                      19/134 (14.2%)   22/134 (16.4%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   19/114 (16.7%)   17/112 (15.2%)   11/115 (9.6%) \n            High                         4/20 (20%)      6/22 (27.3%)     2/17 (11.8%) \n            Total                      23/134 (17.2%)   23/134 (17.2%)   13/132 (9.8%) \n———————————————————————————————————————————————————————————————————————————————————————\n\nt_ds footnotes\nConfidential and for internal use only\nGitHub repository: NA\nGit hash: 491d0220ac585f5a4a66ad03b2f5bf4ec25d13df\n\nSlot \"titles\":\n Patient Disposition (Intent to Treat Population)\n\nSlot \"footnotes\":\n[1] \"t_ds footnotes\"                        \n[2] \"Confidential and for internal use only\"\n\nSlot \"usernotes\":\n[1] \"\"\n\nSlot \"paper\":\n[1] \"L6\"\n\nSlot \"width\":\n[1] 36 14 14 14\n\n\nGenerate the slides:\n\nfilepath &lt;- tempfile(fileext = \".pptx\")\ngenerate_slides(outputs, outfile = filepath)\n\n[1] \" Patient Disposition (Intent to Treat Population)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n\n\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n\n\n[1] \" Patient Disposition (Intent to Treat Population)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n\n\nWe hope this guide helps you get started with {autoslider.core} in pharmaverse. Happy coding!"
+    "text": "Writing Custom Functions\nFor study-specific outputs not covered by {autoslider.core} functions, you can create custom functions. Custom functions need to return either a {ggplot2} (for plots), {rtables} (for tables), or {rlistings} or data.frame objects (for listings).\nExample custom function:\n\nlbt06 &lt;- function(datasets) {\n  adsl &lt;- datasets$adsl %&gt;% tern::df_explicit_na()\n  adlb &lt;- datasets$adlb %&gt;% tern::df_explicit_na()\n\n  adlb_f &lt;- adlb %&gt;%\n    dplyr::filter(ABLFL != \"Y\") %&gt;%\n    dplyr::filter(!(AVISIT %in% c(\"SCREENING\", \"BASELINE\"))) %&gt;%\n    dplyr::mutate(AVISIT = droplevels(AVISIT)) %&gt;%\n    formatters::var_relabel(AVISIT = \"Visit\")\n\n  adlb_f_crp &lt;- adlb_f %&gt;% dplyr::filter(PARAMCD == \"CRP\")\n\n  split_fun &lt;- rtables::drop_split_levels\n\n  lyt &lt;- rtables::basic_table(show_colcounts = TRUE) %&gt;%\n    rtables::split_cols_by(\"ARM\") %&gt;%\n    rtables::split_rows_by(\"AVISIT\", split_fun = split_fun, label_pos = \"topleft\", split_label = formatters::obj_label(adlb_f_crp$AVISIT)) %&gt;%\n    tern::count_abnormal_by_baseline(\"ANRIND\", abnormal = c(Low = \"LOW\", High = \"HIGH\"), .indent_mods = 4L) %&gt;%\n    tern::append_varlabels(adlb_f_crp, \"ANRIND\", indent = 1L) %&gt;%\n    rtables::append_topleft(\"    Baseline Status\")\n\n  result &lt;- rtables::build_table(lyt = lyt, df = adlb_f_crp, alt_counts_df = adsl) %&gt;%\n    rtables::trim_rows()\n\n  result\n}\n\nTesting the custom function:\n\nlbt06(data)\n\nVisit                                                                                  \n  Analysis Reference Range Indicator     A: Drug X        B: Placebo     C: Combination\n    Baseline Status                       (N=134)          (N=134)          (N=132)    \n———————————————————————————————————————————————————————————————————————————————————————\nWEEK 1 DAY 8                                                                           \n  Low                                                                                  \n            Not low                    16/119 (13.4%)   22/113 (19.5%)   24/112 (21.4%)\n            Low                         2/15 (13.3%)     2/21 (9.5%)       7/20 (35%)  \n            Total                      18/134 (13.4%)   24/134 (17.9%)   31/132 (23.5%)\n  High                                                                                 \n            Not high                   21/114 (18.4%)   20/112 (17.9%)   17/115 (14.8%)\n            High                         2/20 (10%)      4/22 (18.2%)     3/17 (17.6%) \n            Total                      23/134 (17.2%)   24/134 (17.9%)   20/132 (15.2%)\nWEEK 2 DAY 15                                                                          \n  Low                                                                                  \n            Not low                    26/119 (21.8%)   20/113 (17.7%)   12/112 (10.7%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      4/20 (20%)  \n            Total                      28/134 (20.9%)   23/134 (17.2%)   16/132 (12.1%)\n  High                                                                                 \n            Not high                   15/114 (13.2%)   17/112 (15.2%)    15/115 (13%) \n            High                         2/20 (10%)      4/22 (18.2%)     4/17 (23.5%) \n            Total                      17/134 (12.7%)   21/134 (15.7%)   19/132 (14.4%)\nWEEK 3 DAY 22                                                                          \n  Low                                                                                  \n            Not low                    15/119 (12.6%)   21/113 (18.6%)   18/112 (16.1%)\n            Low                             0/15         3/21 (14.3%)         0/20     \n            Total                      15/134 (11.2%)   24/134 (17.9%)   18/132 (13.6%)\n  High                                                                                 \n            Not high                   22/114 (19.3%)   18/112 (16.1%)   17/115 (14.8%)\n            High                         2/20 (10%)      5/22 (22.7%)     1/17 (5.9%)  \n            Total                      24/134 (17.9%)   23/134 (17.2%)   18/132 (13.6%)\nWEEK 4 DAY 29                                                                          \n  Low                                                                                  \n            Not low                    30/119 (25.2%)   13/113 (11.5%)   16/112 (14.3%)\n            Low                          3/15 (20%)      2/21 (9.5%)       5/20 (25%)  \n            Total                      33/134 (24.6%)   15/134 (11.2%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   17/114 (14.9%)   11/112 (9.8%)    16/115 (13.9%)\n            High                         2/20 (10%)      6/22 (27.3%)     3/17 (17.6%) \n            Total                      19/134 (14.2%)   17/134 (12.7%)   19/132 (14.4%)\nWEEK 5 DAY 36                                                                          \n  Low                                                                                  \n            Not low                    17/119 (14.3%)   19/113 (16.8%)   16/112 (14.3%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      5/20 (25%)  \n            Total                      19/134 (14.2%)   22/134 (16.4%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   19/114 (16.7%)   17/112 (15.2%)   11/115 (9.6%) \n            High                         4/20 (20%)      6/22 (27.3%)     2/17 (11.8%) \n            Total                      23/134 (17.2%)   23/134 (17.2%)   13/132 (9.8%) \n\n\nTo use the custom function within the {autoslider.core} workflow, ensure it is available in the global environment:\n\nsource(\"programs/output_functions.R\")\n\nWith the correct specs.yml and filters.yml, integrate the custom function into the general workflow:\n\nfilters &lt;- \"filters.yml\"\nspec_file &lt;- \"specs.yml\"\nfilters::load_filters(filters, overwrite = TRUE)\noutputs &lt;- spec_file %&gt;%\n  read_spec() %&gt;%\n  generate_outputs(data) %&gt;%\n  decorate_outputs()\n\noutputs$lbt06_ITT_LBCRP_LBNOBAS\n\n\noutputs &lt;- spec_file %&gt;%\n  read_spec() %&gt;%\n  generate_outputs(data) %&gt;%\n  decorate_outputs()\n\n❯ Running program `t_ds_slide` with suffix 'ITT'.\n\n\nFilter 'ITT' matched target ADSL.\n\n\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\n❯ Running program `t_dm_slide` with suffix 'ITT'.\n\n\nFilter 'ITT' matched target ADSL.\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\n❯ Running program `lbt06` with suffix 'ITT_LBCRP_LBNOBAS'.\n\n\nFilter 'ITT' matched target ADSL.\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\nFilters 'LBCRP', 'LBNOBAS' matched target ADLB.\n\n\n2000/8400 records matched the filter condition `PARAMCD == 'CRP' & (ABLFL != 'Y' & !(AVISIT %in% c('SCREENING', 'BASELINE')))`.\n\noutputs$lbt06_ITT_LBCRP_LBNOBAS\n\nAn object of class \"dVTableTree\"\nSlot \"tbl\":\n\n\n Patient Disposition (Intent to Treat Population)\n\n———————————————————————————————————————————————————————————————————————————————————————\nVisit                                                                                  \n  Analysis Reference Range Indicator     A: Drug X        B: Placebo     C: Combination\n    Baseline Status                       (N=134)          (N=134)          (N=132)    \n———————————————————————————————————————————————————————————————————————————————————————\nWEEK 1 DAY 8                                                                           \n  Low                                                                                  \n            Not low                    16/119 (13.4%)   22/113 (19.5%)   24/112 (21.4%)\n            Low                         2/15 (13.3%)     2/21 (9.5%)       7/20 (35%)  \n            Total                      18/134 (13.4%)   24/134 (17.9%)   31/132 (23.5%)\n  High                                                                                 \n            Not high                   21/114 (18.4%)   20/112 (17.9%)   17/115 (14.8%)\n            High                         2/20 (10%)      4/22 (18.2%)     3/17 (17.6%) \n            Total                      23/134 (17.2%)   24/134 (17.9%)   20/132 (15.2%)\nWEEK 2 DAY 15                                                                          \n  Low                                                                                  \n            Not low                    26/119 (21.8%)   20/113 (17.7%)   12/112 (10.7%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      4/20 (20%)  \n            Total                      28/134 (20.9%)   23/134 (17.2%)   16/132 (12.1%)\n  High                                                                                 \n            Not high                   15/114 (13.2%)   17/112 (15.2%)    15/115 (13%) \n            High                         2/20 (10%)      4/22 (18.2%)     4/17 (23.5%) \n            Total                      17/134 (12.7%)   21/134 (15.7%)   19/132 (14.4%)\nWEEK 3 DAY 22                                                                          \n  Low                                                                                  \n            Not low                    15/119 (12.6%)   21/113 (18.6%)   18/112 (16.1%)\n            Low                             0/15         3/21 (14.3%)         0/20     \n            Total                      15/134 (11.2%)   24/134 (17.9%)   18/132 (13.6%)\n  High                                                                                 \n            Not high                   22/114 (19.3%)   18/112 (16.1%)   17/115 (14.8%)\n            High                         2/20 (10%)      5/22 (22.7%)     1/17 (5.9%)  \n            Total                      24/134 (17.9%)   23/134 (17.2%)   18/132 (13.6%)\nWEEK 4 DAY 29                                                                          \n  Low                                                                                  \n            Not low                    30/119 (25.2%)   13/113 (11.5%)   16/112 (14.3%)\n            Low                          3/15 (20%)      2/21 (9.5%)       5/20 (25%)  \n            Total                      33/134 (24.6%)   15/134 (11.2%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   17/114 (14.9%)   11/112 (9.8%)    16/115 (13.9%)\n            High                         2/20 (10%)      6/22 (27.3%)     3/17 (17.6%) \n            Total                      19/134 (14.2%)   17/134 (12.7%)   19/132 (14.4%)\nWEEK 5 DAY 36                                                                          \n  Low                                                                                  \n            Not low                    17/119 (14.3%)   19/113 (16.8%)   16/112 (14.3%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      5/20 (25%)  \n            Total                      19/134 (14.2%)   22/134 (16.4%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   19/114 (16.7%)   17/112 (15.2%)   11/115 (9.6%) \n            High                         4/20 (20%)      6/22 (27.3%)     2/17 (11.8%) \n            Total                      23/134 (17.2%)   23/134 (17.2%)   13/132 (9.8%) \n———————————————————————————————————————————————————————————————————————————————————————\n\nt_ds footnotes\nConfidential and for internal use only\nGitHub repository: NA\nGit hash: bf6ca72f204abef30e0ac9177ad2c0e7c2e11eba\n\nSlot \"titles\":\n Patient Disposition (Intent to Treat Population)\n\nSlot \"footnotes\":\n[1] \"t_ds footnotes\"                        \n[2] \"Confidential and for internal use only\"\n\nSlot \"usernotes\":\n[1] \"\"\n\nSlot \"paper\":\n[1] \"L6\"\n\nSlot \"width\":\n[1] 36 14 14 14\n\n\nGenerate the slides:\n\nfilepath &lt;- tempfile(fileext = \".pptx\")\ngenerate_slides(outputs, outfile = filepath)\n\n[1] \" Patient Disposition (Intent to Treat Population)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n\n\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n\n\n[1] \" Patient Disposition (Intent to Treat Population)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n\n\nWe hope this guide helps you get started with {autoslider.core} in pharmaverse. Happy coding!"
   },
   {
     "objectID": "posts/2025-03-14_automatic_s.../automatic_slide_generation_with_{autoslide_r}.html#last-updated",
     "href": "posts/2025-03-14_automatic_s.../automatic_slide_generation_with_{autoslide_r}.html#last-updated",
     "title": "Automatic slide generation with autoslider.core",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:36:41.3666"
+    "text": "Last updated\n\n2025-12-18 20:49:59.700015"
   },
   {
     "objectID": "posts/2025-03-14_automatic_s.../automatic_slide_generation_with_{autoslide_r}.html#details",
@@ -165,7 +165,7 @@
     "href": "posts/2023-11-27_higher_order/higher_order.html#last-updated",
     "title": "Believe in a higher order!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:36:21.775388"
+    "text": "Last updated\n\n2025-12-18 20:49:42.712587"
   },
   {
     "objectID": "posts/2023-11-27_higher_order/higher_order.html#details",
@@ -228,7 +228,7 @@
     "href": "posts/2025-07-07_pharmaverse.../pharmaverseraw__package.html#last-updated",
     "title": "Raw data for domains in the pharmaversesdtm package",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:36:16.149803"
+    "text": "Last updated\n\n2025-12-18 20:49:37.773678"
   },
   {
     "objectID": "posts/2025-07-07_pharmaverse.../pharmaverseraw__package.html#details",
@@ -249,7 +249,7 @@
     "href": "posts/2024-04-29_appsilon_and__sa.../appsilon_and__sanofi_joins_the_pharmaverse_council!.html#last-updated",
     "title": "Appsilon and Sanofi join the pharmaverse council!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:36:00.851976"
+    "text": "Last updated\n\n2025-12-18 20:49:00.291865"
   },
   {
     "objectID": "posts/2024-04-29_appsilon_and__sa.../appsilon_and__sanofi_joins_the_pharmaverse_council!.html#details",
@@ -298,7 +298,7 @@
     "href": "posts/2024-03-11_tips_for__first_.../tips_for__first__time__contributors.html#last-updated",
     "title": "Tips for First Time Contributors",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:57.632539"
+    "text": "Last updated\n\n2025-12-18 20:48:57.56172"
   },
   {
     "objectID": "posts/2024-03-11_tips_for__first_.../tips_for__first__time__contributors.html#details",
@@ -347,7 +347,7 @@
     "href": "posts/2023-07-09_cardinal/falcon.html#last-updated",
     "title": "cardinal",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:54.515058"
+    "text": "Last updated\n\n2025-12-18 20:48:54.949762"
   },
   {
     "objectID": "posts/2023-07-09_cardinal/falcon.html#details",
@@ -375,7 +375,7 @@
     "href": "posts/2024-10-31_how__i__reb.../how__i__rebuilt_a__lost__ec_g__data__script_in__r.html#last-updated",
     "title": "How I Rebuilt a Lost ECG Data Script in R",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:51.428922"
+    "text": "Last updated\n\n2025-12-18 20:48:52.404161"
   },
   {
     "objectID": "posts/2024-10-31_how__i__reb.../how__i__rebuilt_a__lost__ec_g__data__script_in__r.html#details",
@@ -396,7 +396,7 @@
     "href": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html#last-updated",
     "title": "Undergraduate University Statistics Report using pharmaverseadam data",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:46.05001"
+    "text": "Last updated\n\n2025-12-18 20:48:47.844873"
   },
   {
     "objectID": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html#details",
@@ -417,7 +417,7 @@
     "href": "posts/2024-10-11_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.html#last-updated",
     "title": "roxy.shinylive - shinylive applications in roxygen documentation",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:42.546133"
+    "text": "Last updated\n\n2025-12-18 20:48:44.901346"
   },
   {
     "objectID": "posts/2024-10-11_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.html#details",
@@ -438,7 +438,7 @@
     "href": "posts/2024-02-13_teal_on_cran/teal_on_cran.html#last-updated",
     "title": "teal is now available on CRAN 🎉",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:38.215065"
+    "text": "Last updated\n\n2025-12-18 20:48:41.195363"
   },
   {
     "objectID": "posts/2024-02-13_teal_on_cran/teal_on_cran.html#details",
@@ -487,7 +487,7 @@
     "href": "posts/2023-10-30_floating_point/floating_point.html#last-updated",
     "title": "Floating point",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:34.34629"
+    "text": "Last updated\n\n2025-12-18 20:48:37.905848"
   },
   {
     "objectID": "posts/2023-10-30_floating_point/floating_point.html#details",
@@ -564,7 +564,7 @@
     "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
     "title": "Derive a new parameter computed from the value of other parameters",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:24.926232"
+    "text": "Last updated\n\n2025-12-18 20:48:29.914934"
   },
   {
     "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
@@ -613,7 +613,7 @@
     "href": "posts/2024-04-08_tmc_cran/tmc_cran.html#last-updated",
     "title": "teal.modules.clinical v0.9.0 is now on CRAN!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:21.321398"
+    "text": "Last updated\n\n2025-12-18 20:48:26.851072"
   },
   {
     "objectID": "posts/2024-04-08_tmc_cran/tmc_cran.html#details",
@@ -697,7 +697,7 @@
     "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#last-updated",
     "title": "Date/Time Functions and Imputation in {admiral}",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:17.693502"
+    "text": "Last updated\n\n2025-12-18 20:48:23.776687"
   },
   {
     "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#details",
@@ -718,7 +718,7 @@
     "href": "posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html#last-updated",
     "title": "xportr 0.4.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:13.105034"
+    "text": "Last updated\n\n2025-12-18 20:48:19.801832"
   },
   {
     "objectID": "posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html#details",
@@ -732,7 +732,7 @@
     "href": "posts/2024-12-02_a_nca/a_nca.html#last-updated",
     "title": "Introducing the aNCA Package for Automated Non-Compartmental Analysis",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:09.65247"
+    "text": "Last updated\n\n2025-12-18 20:48:16.844341"
   },
   {
     "objectID": "posts/2024-12-02_a_nca/a_nca.html#details",
@@ -760,7 +760,7 @@
     "href": "posts/2025-01-21_hello_admiralmetabolic/hello_admiralmetabolic.html#last-updated",
     "title": "Hello admiralmetabolic!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:06.301338"
+    "text": "Last updated\n\n2025-12-18 20:48:14.021911"
   },
   {
     "objectID": "posts/2025-01-21_hello_admiralmetabolic/hello_admiralmetabolic.html#details",
@@ -781,7 +781,7 @@
     "href": "posts/2024-05-31_diversity_&__inc.../diversity_&__inclusion_in_pharmaverse.html#last-updated",
     "title": "Diversity & Inclusion in pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:02.421548"
+    "text": "Last updated\n\n2025-12-18 20:48:10.701042"
   },
   {
     "objectID": "posts/2024-05-31_diversity_&__inc.../diversity_&__inclusion_in_pharmaverse.html#details",
@@ -823,7 +823,7 @@
     "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
     "title": "Rounding",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:57.592888"
+    "text": "Last updated\n\n2025-12-18 20:48:06.543631"
   },
   {
     "objectID": "posts/2023-07-24_rounding/rounding.html#details",
@@ -893,7 +893,7 @@
     "href": "posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html#last-updated",
     "title": "A collaborative triumph: Re-using test data between the NEST and admiral teams",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:53.722142"
+    "text": "Last updated\n\n2025-12-18 20:48:03.260809"
   },
   {
     "objectID": "posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html#details",
@@ -935,7 +935,7 @@
     "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
     "title": "Admiral Hackathon 2023 Revisited",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:50.67768"
+    "text": "Last updated\n\n2025-12-18 20:48:00.683811"
   },
   {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
@@ -956,7 +956,7 @@
     "href": "posts/2025-02-28_council__me.../council__member_updates.html#last-updated",
     "title": "Council Member updates",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:45.303562"
+    "text": "Last updated\n\n2025-12-18 20:47:56.035776"
   },
   {
     "objectID": "posts/2025-02-28_council__me.../council__member_updates.html#details",
@@ -1026,7 +1026,7 @@
     "href": "posts/2024-03-04_inside_the__phar.../inside_the__pharmaverse.html#last-updated",
     "title": "Inside the pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:41.557959"
+    "text": "Last updated\n\n2025-12-18 20:47:52.849837"
   },
   {
     "objectID": "posts/2024-03-04_inside_the__phar.../inside_the__pharmaverse.html#details",
@@ -1075,7 +1075,7 @@
     "href": "posts/2023-12-20_p_k__examples/p_k__examples.html#last-updated",
     "title": "PK Examples",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:37.790996"
+    "text": "Last updated\n\n2025-12-18 20:47:49.648687"
   },
   {
     "objectID": "posts/2023-12-20_p_k__examples/p_k__examples.html#details",
@@ -1085,86 +1085,44 @@
     "text": "Details\n\nSource, Session info"
   },
   {
-    "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html",
-    "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html",
-    "title": "Filter out the noise!",
+    "objectID": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html",
+    "href": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html",
+    "title": "Introducing a new Coursera course for hands-on clinical data science using R.",
     "section": "",
-    "text": "Filtering and merging datasets is the bread and butter of statistical programming. Whether it’s on the way to an ADaM variable derivation, or in an effort to pull out a list of patients matching a specific condition for a TLG, or another task entirely, most steps in the statistical programming workflow feature some combination of these two tasks.\nThe {tidyverse} functions filter(), group_by(), and*_join() are a fantastic toolset for filtering and merging, and can often suffice to carry out these sorts of operations. Often, however, this will be a multi-step process, requiring more than one set of pipe (%&gt;%) chains if multiple datasets are involved. As such, the {admiral} package builds on this concept by offering a very practical toolset of utility functions, henceforth referred to altogether as filter_*(). These are wrappers of common combinations of {tidyverse} function calls that enable the ADaM programmer to carry out such operations “in stride” within their ADaM workflow - in typical admiral style!\nMany of the filter_*() functions feature heavily within the admiral codebase, but they can be very handy in their own right. You can learn more about them from:\n\nThe relevant section in the Reference page of the admiral documentation website;\nThe short visual explanations in the second page of the {admiral Cheat Sheet};\n\n\n\n\n\n\n\n…and the rest of this blog post!\n\n\n\nThe examples in this blog post require the following packages.\n\nlibrary(admiral)\nlibrary(pharmaversesdtm)\nlibrary(dplyr, warn.conflicts = FALSE)\nlibrary(tibble)\n\nWe also create minimally viable ADSL, ADAE and EX datasets to be used where needed in the following examples.\n\nadsl &lt;- tribble(\n  ~USUBJID,      ~AGE, ~SEX,\n  \"01-701-1015\", 63,   \"F\",\n  \"01-701-1034\", 77,   \"F\",\n  \"01-701-1115\", 84,   \"M\",\n  \"01-701-1146\", 75,   \"F\",\n  \"01-701-1444\", 63,   \"M\"\n)\n\nadae1 &lt;- tribble(\n  ~USUBJID,      ~AEDECOD,                    ~AESEV,     ~AESTDTC,\n  \"01-701-1015\", \"DIARRHOEA\",                 \"MODERATE\", \"2014-01-09\",\n  \"01-701-1034\", \"FATIGUE\",                   \"SEVERE\",   \"2014-11-02\",\n  \"01-701-1034\", \"HEADACHE\",                  \"MILD\",     \"2014-12-01\",\n  \"01-701-1034\", \"APPLICATION SITE PRURITUS\", \"MODERATE\", \"2014-08-27\",\n  \"01-701-1115\", \"FATIGUE\",                   \"MILD\",     \"2013-01-14\",\n  \"01-701-1146\", \"FATIGUE\",                   \"MODERATE\", \"2013-06-03\",\n  \"01-701-1146\", \"ANOSMIA\",                   \"MODERATE\", \"2013-08-11\"\n)\n\nadae2 &lt;- tribble(\n  ~USUBJID,      ~ADY, ~ACOVFL,     ~ADURN,\n  \"01-701-1015\",   10,     \"N\",          1,\n  \"01-701-1015\",   21,     \"N\",         50,\n  \"01-701-1015\",   23,     \"Y\",         14,\n  \"01-701-1015\",   32,     \"N\",         31,\n  \"01-701-1015\",   42,     \"N\",         20,\n  \"01-701-1034\",   11,     \"Y\",         13,\n  \"01-701-1034\",   23,     \"N\",          2,\n  \"01-701-1146\",   13,     \"Y\",         12,\n  \"01-701-1444\",   14,     \"N\",         32,\n  \"01-701-1444\",   21,     \"N\",         41\n)\n\n\nex &lt;- tribble(\n  ~USUBJID, ~EXSEQ, ~EXDOSE, ~EXTRT,\n  \"01-701-1015\", 1, 54, \"XANO\",\n  \"01-701-1015\", 2, 54, \"XANO\",\n  \"01-701-1015\", 3, 54, \"XANO\",\n  \"01-701-1034\", 1, 54, \"XANO\",\n  \"01-701-1034\", 2, 54, \"XANO\",\n  \"01-701-1115\", 1, 0, \"PLACEBO\",\n  \"01-701-1115\", 2, 0, \"PLACEBO\",\n  \"01-701-1115\", 3, 0, \"PLACEBO\",\n  \"01-701-1146\", 1, 0, \"PLACEBO\",\n  \"01-701-1146\", 2, 0, \"PLACEBO\",\n  \"01-701-1146\", 3, 0, \"PLACEBO\",\n  \"01-701-1444\", 1, 54, \"XANO\",\n  \"01-701-1444\", 2, 54, \"XANO\"\n)"
+    "text": "Shifting to R in an industry traditionally reliant on SAS is no small feat. It requires not just new tools, but also significant upskilling for programmers. Roche-Genentech is addressing this need by offering three publicly available Coursera courses aimed at enhancing the skills of current data scientists within the pharmaceutical sector and introducing our work to those outside the industry. In this post, we are excited to announce the release of our second Coursera course, and we will discuss how R open-source software is being embraced across the industry and particularly within Roche-Genentech. Additionally, we will provide an overview of the three Coursera courses and explain why such initiatives are essential for a successful transition to open-source tools and a new mindset.\nIn recent years, the pharmaceutical industry has witnessed a significant shift towards adopting open-source software and programming languages for various applications. Among them, R has emerged as a game-changer, revolutionizing the way we approach Health Authority electronic submissions and pharmaceutical analysis.\nAs the industry embraces new ways of working, R has gained immense popularity due to its flexibility, versatility, and extensive range of open-source packages and tools. Open source tools specifically created for the clinical data scientist are collected under and shared within the pharmaverse, enabling data scientists and researchers to leverage the power of R for a wide array of applications, including clinical trial studies, data set creation, and analytical reports.\nWithin Roche-Genentech, a dedicated working group of Data Scientists recognized the potential of R in a pharmaceutical regulatory setting. Leveraging their expertise and pharmaverse knowledge, they developed a series of trainings on Coursera. These trainings provide hands-on demonstrations and examples, guiding industry professionals on how to effectively utilize R in running a complete clinical trial study. Specifically, the first training, Making Data Science Work for Clinical Reporting, offers a broad introduction to the work as a data scientist within the pharmaceutical industry. This should be of particular interest to aspiring clinical data scientists. The second training – which we are releasing this week – dives deep into the workflow of a clinical data scientist and introduces the tools we use on a daily basis. Looking into the future, there will be a project capstone training course that integrates the concepts from the preceding two courses, culminating in comprehensive learning, providing a strong foundation of knowledge for aspiring data scientists using R in the Pharma industry.\nHere is an outline of what participants will gain from the training we are releasing this week.\nHands-On Clinical Reporting Using R\nIn essence, participants will learn how to navigate and manipulate datasets using R, ensuring data integrity and accuracy. Additionally, R’s powerful statistical capabilities enable the creation of insightful Tables, Listings, and Figures/Graphs (TLF/Gs), which are vital components of regulatory submissions. Even further, the Coursera training offered by Roche-Genentech will empower industry professionals to unlock the full potential of R Shiny in their analytical reports. This feature enables researchers to present complex data in a user-friendly and interactive manner, enhancing the understanding and interpretation of results.\nA stepping stone towards the future: For those in the industry who are embracing these new ways of working, the Coursera training provided by Roche-Genentech serves as a valuable stepping stone into the world of R open-source software. The training equips participants with the necessary skills to harness the power of R, facilitating efficient and effective pharmaceutical analysis.\nIn conclusion, the adoption of R open-source software and programming language is transforming the pharmaceutical industry, enabling professionals to streamline their processes, enhance data analysis, and improve regulatory submissions. Roche-Genentech’s commitment to sharing knowledge and expertise through the Coursera trainings demonstrates their dedication to advancing the pharmaverse As the industry continues to embrace this new direction, the future of pharmaceutical analysis looks increasingly promising with R at its core.\nYour journey to revolutionizing your pharmaceutical analysis knowledge awaits!\nHuge thanks to Adrian Chan who led the effort of building this course and the instructors Jana Stoilova, Joel Laxamana, M.S., Leena Khatri, Tatiana Alonso Amor & Stefan Thoma."
   },
   {
-    "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#required-packages",
-    "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#required-packages",
-    "title": "Filter out the noise!",
-    "section": "",
-    "text": "The examples in this blog post require the following packages.\n\nlibrary(admiral)\nlibrary(pharmaversesdtm)\nlibrary(dplyr, warn.conflicts = FALSE)\nlibrary(tibble)\n\nWe also create minimally viable ADSL, ADAE and EX datasets to be used where needed in the following examples.\n\nadsl &lt;- tribble(\n  ~USUBJID,      ~AGE, ~SEX,\n  \"01-701-1015\", 63,   \"F\",\n  \"01-701-1034\", 77,   \"F\",\n  \"01-701-1115\", 84,   \"M\",\n  \"01-701-1146\", 75,   \"F\",\n  \"01-701-1444\", 63,   \"M\"\n)\n\nadae1 &lt;- tribble(\n  ~USUBJID,      ~AEDECOD,                    ~AESEV,     ~AESTDTC,\n  \"01-701-1015\", \"DIARRHOEA\",                 \"MODERATE\", \"2014-01-09\",\n  \"01-701-1034\", \"FATIGUE\",                   \"SEVERE\",   \"2014-11-02\",\n  \"01-701-1034\", \"HEADACHE\",                  \"MILD\",     \"2014-12-01\",\n  \"01-701-1034\", \"APPLICATION SITE PRURITUS\", \"MODERATE\", \"2014-08-27\",\n  \"01-701-1115\", \"FATIGUE\",                   \"MILD\",     \"2013-01-14\",\n  \"01-701-1146\", \"FATIGUE\",                   \"MODERATE\", \"2013-06-03\",\n  \"01-701-1146\", \"ANOSMIA\",                   \"MODERATE\", \"2013-08-11\"\n)\n\nadae2 &lt;- tribble(\n  ~USUBJID,      ~ADY, ~ACOVFL,     ~ADURN,\n  \"01-701-1015\",   10,     \"N\",          1,\n  \"01-701-1015\",   21,     \"N\",         50,\n  \"01-701-1015\",   23,     \"Y\",         14,\n  \"01-701-1015\",   32,     \"N\",         31,\n  \"01-701-1015\",   42,     \"N\",         20,\n  \"01-701-1034\",   11,     \"Y\",         13,\n  \"01-701-1034\",   23,     \"N\",          2,\n  \"01-701-1146\",   13,     \"Y\",         12,\n  \"01-701-1444\",   14,     \"N\",         32,\n  \"01-701-1444\",   21,     \"N\",         41\n)\n\n\nex &lt;- tribble(\n  ~USUBJID, ~EXSEQ, ~EXDOSE, ~EXTRT,\n  \"01-701-1015\", 1, 54, \"XANO\",\n  \"01-701-1015\", 2, 54, \"XANO\",\n  \"01-701-1015\", 3, 54, \"XANO\",\n  \"01-701-1034\", 1, 54, \"XANO\",\n  \"01-701-1034\", 2, 54, \"XANO\",\n  \"01-701-1115\", 1, 0, \"PLACEBO\",\n  \"01-701-1115\", 2, 0, \"PLACEBO\",\n  \"01-701-1115\", 3, 0, \"PLACEBO\",\n  \"01-701-1146\", 1, 0, \"PLACEBO\",\n  \"01-701-1146\", 2, 0, \"PLACEBO\",\n  \"01-701-1146\", 3, 0, \"PLACEBO\",\n  \"01-701-1444\", 1, 54, \"XANO\",\n  \"01-701-1444\", 2, 54, \"XANO\"\n)"
-  },
-  {
-    "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#last-updated",
-    "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#last-updated",
-    "title": "Filter out the noise!",
+    "objectID": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#last-updated",
+    "href": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#last-updated",
+    "title": "Introducing a new Coursera course for hands-on clinical data science using R.",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:32.336951"
+    "text": "Last updated\n\n2025-12-18 20:47:44.183493"
   },
   {
-    "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#details",
-    "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#details",
-    "title": "Filter out the noise!",
+    "objectID": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#details",
+    "href": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#details",
+    "title": "Introducing a new Coursera course for hands-on clinical data science using R.",
     "section": "Details",
     "text": "Details\n\nSource, Session info"
   },
   {
-    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html",
-    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html",
-    "title": "Rhino: A Step Forward in Validating Shiny Apps",
+    "objectID": "posts/2025-12-18_pharmaverse/pharmaverse__examples.html",
+    "href": "posts/2025-12-18_pharmaverse/pharmaverse__examples.html",
+    "title": "Explore the Pharmaverse Examples: Your Gateway to Clinical Reporting with Open-Source Tools",
     "section": "",
-    "text": "The importance of reliable and accurate software in the pharmaceutical industry cannot be overstated. As you grapple with the complexities of developing Shiny applications that not only meet requirements but also remain free of defects, the conversation inevitably turns to the topic of validation. This is where the Rhino framework comes into play. It provides a validation environment through a set of tools that not only ensure the thorough testing of your Shiny Application but also enforce good software practices for producing quality code."
+    "text": "If you’re navigating the world of clinical reporting with modern tooling or are curious about open-source tooling then the pharmaverse examples site is your one-stop-shop! This living collection of end-to-end examples showcases how open-source packages from the pharmaverse ecosystem work together to solve real clinical reporting challenges.\nThe site is organized into easy-to-navigate sections:\n\nSDTM examples like DM (Demographics), VS (Vital Signs), AE (Adverse Events).\nADaM examples including ADSL (Subject Level), ADTTE (Time-to-Event) and ADVS (Vital Signs).\nTLG examples showing how to build demographic tables, adverse event summaries, and pharmacokinetic displays.\nInteractive content such as data visualization apps built with teal.\nAutomated reporting of outputs via slides or docs.\neSubmission for submission preparation.\nand so much more! - visit the site to see all the latest articles!\n\nYou can check out Pharmaverse examples in a bunch of different ways, and also offering translation in different spoken languages!\n\nYou can follow the examples step-by-step reading the code snippets and tracing the evolution of a set of representative data from end to end.\nYou can use our interactive setup using posit cloud that takes care of any environment set up allowing you to jump straight into exploration."
   },
   {
-    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#what-is-validation",
-    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#what-is-validation",
-    "title": "Rhino: A Step Forward in Validating Shiny Apps",
-    "section": "What is Validation?",
-    "text": "What is Validation?\nAt its core, validation is about generating objective evidence that the software consistently fulfills the users’ needs and requirements. It is closely intertwined with concepts such as verification, testing, quality assurance, and quality control. However, it is not a one-time activity. Validation is an ongoing aspect of the entire development process for assessing whether an application meets requirements and is free of defects. (phuse, 2021)\nThe foundational aspect of validation lies in the clarity and precision of the requirements set upfront. Projects often encounter challenges not due to technical constraints but unclear requirements. This clear definition of needs is the first and most critical step in the validation process, setting the stage for effective and meaningful software evaluation.\nTesting in some form is indispensable in any software engineering project. However, writing automated tests costs time and effort. Therefore, the approach to testing can vary widely depending on the project’s scope, complexity, and purpose.\nFor instance, manual testing, which involves checking the software by hand for bugs or other issues, might suffice for a Proof of Concept (PoC) application. On the other hand, in applications performing critical functions, such as those involved in clinical trial data analysis, the cost of failure could be extremely high, necessitating more rigorous and comprehensive automated testing.\nThe key is to strike a balance, ensuring the software is thoroughly validated without exhausting resources."
-  },
-  {
-    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#how-rhino-helps-in-validating-r-shiny-apps",
-    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#how-rhino-helps-in-validating-r-shiny-apps",
-    "title": "Rhino: A Step Forward in Validating Shiny Apps",
-    "section": "How Rhino Helps in Validating R Shiny Apps",
-    "text": "How Rhino Helps in Validating R Shiny Apps\nRhino automates the steps for creating the validation environment so you can spend your time and effort on writing the actual tests.\n\n\n\nValidation with Rhino\n\n\nWhen you first run rhino::init() inside your project’s root directory, Rhino introduces a suite of tools that will help you validate your Shiny application and a robust file structure to modularize your code into meaningful parts. With Rhino initialized, validating your Shiny application becomes an integral and seamless part of your development workflow.\n\nTesting\nRhino comes with testthat installed and introduces the tests/ directory in your project. As part of the validation process, you want to test your requirements. With Rhino, all you need to do is create your test-*.R files in tests/testthat directory and run rhino::test_r().\nAlthough shinytest2 tests can also be added with minimal effort (How to use shinytest2), one of the distinct features of Rhino is the ability to write end-to-end tests with Cypress out of the box. To learn more about how to write Cypress tests via Rhino, you can read more on Write end-to-end tests with Cypress tutorial in the documentation.\n\nContinuous Integration via GitHub\nAs discussed in the “What is validation?” section, validation is a continuous process. To accomplish this, Rhino uses a GitHub Actions workflow. This file enables the automatic running of tests and linting checks every time the code is pushed to the Github repository.\nYou can further configure your repository to require these checks to pass before a pull request can be merged, ensuring only validated code makes it into your project.\n\n\n\nStandardization of Good Practices\nRhino also provides tools for good software development practices. These standardization tools don’t directly address requirements or defects, but they raise the overall code quality.\n\nrhino::lint_* Functions\nRhino provides linters for R (rhino::lint_r), Javascript (rhino::lint_js), and Sass (rhino::lint_sass) code. These linters ensure that the code style is consistent. This consistency might not be visible to the end-users, but it significantly enhances code readability and maintainability, which are crucial for reducing bugs and errors in the application. The cleaner and more readable the code, the easier it is for you to spot and rectify issues.\n\n\nModularization with box\nModularization allows developers to compartmentalize different aspects of the application, making each part easier to understand, develop, and validate individually.\nRhino leverages the box package for effective modularization. This approach to structuring the app makes the codebase more manageable and navigable and significantly enhances the ease of testing and maintenance.\n\n\nReproducibility with renv\nrenv is currently the best tool for ensuring reproducibility and consistency across different development environments. Each Rhino project comes with renv activated. It further automatizes managing dependencies with rhino::pkg_install() and rhino::pkg_remove() functions to install, update or remove a package with just one call. Check out this explanation on Renv configuration to learn more!"
-  },
-  {
-    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#wider-picture",
-    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#wider-picture",
-    "title": "Rhino: A Step Forward in Validating Shiny Apps",
-    "section": "Wider picture",
-    "text": "Wider picture\n\nBare Bones Approach\nA minimal Shiny app can be as simple as a single file. This ‘bare bones’ approach is the most straightforward, requiring minimal setup. However, it places the workload on the developer to establish everything from scratch.\nThis method may be suitable for quick prototypes or small-scale projects but it lacks the robustness needed for complex, large-scale applications, especially in a field as critical as pharmaceuticals.\n\n\nOther Shiny Frameworks\nFrameworks like Golem and Leprechaun adopt R package structure for Shiny apps. This method allows developers to leverage standard R package testing tools like R CMD check.\nWhile this approach brings the benefits of R’s package development ecosystem, it does not offer extra state-of-the-art tools such as linters, Cypress tests, and GitHub Actions that Rhino provides out of the box. Leaving the burden of manually setting them up on the developers.\nRead our {rhino} vs {golem} vs {leprechaun}: Which R/Shiny Library is Right for You? blog post to learn more about the differences.\n\n\nValidation Theater\nTest coverage is often cited as a key metric for assessing the reliability of an application. While high test coverage is beneficial, it is not a definitive guarantee of software quality. The quality of the tests themselves matters significantly more. A common pitfall is the overreliance on achieving 100% test coverage, which may give a false sense of security about the application’s robustness.\nAdditionally, R CMD checks provide reassurance with their green check marks. However, many of these automated validations are not directly applicable or relevant to Shiny apps. This is one of the reasons why Rhino does not use these checks. While they are useful, they do not encompass the full spectrum of what needs to be tested in a Shiny application.\nThe key takeaway is that no automated check can substitute for a thorough and well-thought-out development process. The quality of a Shiny application hinges not just on the tests it passes but on the entirety of its development lifecycle, from initial design to final deployment."
-  },
-  {
-    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#summing-up-rhino-for-r-shiny-app-validation",
-    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#summing-up-rhino-for-r-shiny-app-validation",
-    "title": "Rhino: A Step Forward in Validating Shiny Apps",
-    "section": "Summing up Rhino for R Shiny App Validation",
-    "text": "Summing up Rhino for R Shiny App Validation\nRhino adopts a software engineering perspective, focusing primarily on the technical facets of validation. It provides a comprehensive suite of tools that streamline the process of creating Shiny applications that are not only functionally sound but also robust and maintainable.\nHowever, it’s crucial to recognize that Rhino’s contribution is a piece of a much larger puzzle. Validation, as emphasized throughout this post, is not a standalone activity but a continuous process that intertwines with every phase of software development.\nFrom the initial requirement gathering to the final deployment, each step plays a vital role in shaping the overall quality and effectiveness of the application.\nIf you’d like to learn more about Rhino, especially within the context of building Shiny apps for regulatory submissions you can check out this blogpost, Reproducible and Reliable Shiny Apps for Regulatory Submissions or visit Appsilon’s website."
-  },
-  {
-    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#references",
-    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#references",
-    "title": "Rhino: A Step Forward in Validating Shiny Apps",
-    "section": "References",
-    "text": "References\nphuse. (2021). R Package Validation Framework. R Package Validation Framework. https://phuse.s3.eu-central-1.amazonaws.com/Deliverables/Data+Visualisation+%26+Open+Source+Technology/WP059.pdf\n\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union"
-  },
-  {
-    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#last-updated",
-    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#last-updated",
-    "title": "Rhino: A Step Forward in Validating Shiny Apps",
+    "objectID": "posts/2025-12-18_pharmaverse/pharmaverse__examples.html#last-updated",
+    "href": "posts/2025-12-18_pharmaverse/pharmaverse__examples.html#last-updated",
+    "title": "Explore the Pharmaverse Examples: Your Gateway to Clinical Reporting with Open-Source Tools",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:28.179622"
+    "text": "Last updated\n\n2025-12-18 20:47:41.43802"
   },
   {
-    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#details",
-    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#details",
-    "title": "Rhino: A Step Forward in Validating Shiny Apps",
+    "objectID": "posts/2025-12-18_pharmaverse/pharmaverse__examples.html#details",
+    "href": "posts/2025-12-18_pharmaverse/pharmaverse__examples.html#details",
+    "title": "Explore the Pharmaverse Examples: Your Gateway to Clinical Reporting with Open-Source Tools",
     "section": "Details",
     "text": "Details\n\nSource, Session info"
   },
@@ -1229,7 +1187,7 @@
     "href": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html#last-updated",
     "title": "Testing Containers and WebAssembly in Submissions to the FDA",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:22.269015"
+    "text": "Last updated\n\n2025-12-18 20:47:36.239453"
   },
   {
     "objectID": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html#details",
@@ -1299,7 +1257,7 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:18.575662"
+    "text": "Last updated\n\n2025-12-18 20:47:33.159768"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
@@ -1348,7 +1306,7 @@
     "href": "posts/2023-06-28_welcome/index.html#last-updated",
     "title": "Hello pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:14.710578"
+    "text": "Last updated\n\n2025-12-18 20:47:29.888764"
   },
   {
     "objectID": "posts/2023-06-28_welcome/index.html#details",
@@ -1369,7 +1327,7 @@
     "href": "posts/2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.html#last-updated",
     "title": "New {admiral} extension packages: {admiralpeds} & more coming soon!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:11.541595"
+    "text": "Last updated\n\n2025-12-18 20:47:27.20068"
   },
   {
     "objectID": "posts/2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.html#details",
@@ -1390,7 +1348,7 @@
     "href": "posts/2025-04-08_code_collab.../code_collaboration_in__ne_st.html#last-updated",
     "title": "Code collaboration in NEST",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:06.932397"
+    "text": "Last updated\n\n2025-12-18 20:47:23.242483"
   },
   {
     "objectID": "posts/2025-04-08_code_collab.../code_collaboration_in__ne_st.html#details",
@@ -1460,7 +1418,7 @@
     "href": "posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html#last-updated",
     "title": "De-Mystifying R Programming in Clinical Trials",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:03.364694"
+    "text": "Last updated\n\n2025-12-18 20:47:20.146459"
   },
   {
     "objectID": "posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html#details",
@@ -1516,7 +1474,7 @@
     "href": "posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html#last-updated",
     "title": "Unix versus SAS Time",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:33:59.741064"
+    "text": "Last updated\n\n2025-12-18 20:47:17.0266"
   },
   {
     "objectID": "posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html#details",
@@ -1544,7 +1502,7 @@
     "href": "posts/2025-03-03_teal_0.16.0.../teal_0.16.0_is_released.html#last-updated",
     "title": "teal 0.16.0 is released!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:33:58.209872"
+    "text": "Last updated\n\n2025-12-18 20:47:15.723452"
   },
   {
     "objectID": "posts/2025-03-03_teal_0.16.0.../teal_0.16.0_is_released.html#details",
@@ -1586,7 +1544,7 @@
     "href": "posts/2024-10-16_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.html#last-updated",
     "title": "The Tension of High-Performance Computing: Reproducibility vs. Parallelization",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:01.470972"
+    "text": "Last updated\n\n2025-12-18 20:47:18.559366"
   },
   {
     "objectID": "posts/2024-10-16_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.html#details",
@@ -1628,7 +1586,7 @@
     "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
     "title": "How to use Code Sections",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:05.171792"
+    "text": "Last updated\n\n2025-12-18 20:47:21.74664"
   },
   {
     "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
@@ -1705,7 +1663,7 @@
     "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#last-updated",
     "title": "admiral 1.0.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:09.60935"
+    "text": "Last updated\n\n2025-12-18 20:47:25.537665"
   },
   {
     "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#details",
@@ -1754,7 +1712,7 @@
     "href": "posts/2024-02-14_iscr_conference/iscr_conference.html#last-updated",
     "title": "ISCR 17th Annual Conference 2024",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:13.097409"
+    "text": "Last updated\n\n2025-12-18 20:47:28.532651"
   },
   {
     "objectID": "posts/2024-02-14_iscr_conference/iscr_conference.html#details",
@@ -1796,7 +1754,7 @@
     "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
     "title": "Blanks and NAs",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:16.619129"
+    "text": "Last updated\n\n2025-12-18 20:47:31.521517"
   },
   {
     "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
@@ -1817,7 +1775,7 @@
     "href": "posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html#last-updated",
     "title": "Our experience as new admiral developers, coming from a CRO",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:20.644184"
+    "text": "Last updated\n\n2025-12-18 20:47:34.85823"
   },
   {
     "objectID": "posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html#details",
@@ -1838,7 +1796,7 @@
     "href": "posts/2025-10-31_new__counci.../new__council__members.html#last-updated",
     "title": "New Council Members",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:24.016"
+    "text": "Last updated\n\n2025-12-18 20:47:37.832046"
   },
   {
     "objectID": "posts/2025-10-31_new__counci.../new__council__members.html#details",
@@ -1904,44 +1862,86 @@
     "text": "Conclusion\nThe pharmaverse offers a rich ecosystem of tools designed to streamline clinical research workflows, ensuring high-quality data management and reporting. By leveraging packages like {rtables}, {admiral}, {teal}, {riskmetric}, {tidyCDISC}, and {xportr}, pharmaceutical companies can enhance their data analysis capabilities, ensure regulatory compliance, and drive innovation in clinical research. Remember to give the packages that you use and value a star on GitHub. ⭐\n\nTo receive the latest updates on what’s new in the pharmaverse, subscribe to the periodic newsletter!"
   },
   {
-    "objectID": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html",
-    "href": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html",
-    "title": "Introducing a new Coursera course for hands-on clinical data science using R.",
+    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html",
+    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html",
+    "title": "Rhino: A Step Forward in Validating Shiny Apps",
     "section": "",
-    "text": "Shifting to R in an industry traditionally reliant on SAS is no small feat. It requires not just new tools, but also significant upskilling for programmers. Roche-Genentech is addressing this need by offering three publicly available Coursera courses aimed at enhancing the skills of current data scientists within the pharmaceutical sector and introducing our work to those outside the industry. In this post, we are excited to announce the release of our second Coursera course, and we will discuss how R open-source software is being embraced across the industry and particularly within Roche-Genentech. Additionally, we will provide an overview of the three Coursera courses and explain why such initiatives are essential for a successful transition to open-source tools and a new mindset.\nIn recent years, the pharmaceutical industry has witnessed a significant shift towards adopting open-source software and programming languages for various applications. Among them, R has emerged as a game-changer, revolutionizing the way we approach Health Authority electronic submissions and pharmaceutical analysis.\nAs the industry embraces new ways of working, R has gained immense popularity due to its flexibility, versatility, and extensive range of open-source packages and tools. Open source tools specifically created for the clinical data scientist are collected under and shared within the pharmaverse, enabling data scientists and researchers to leverage the power of R for a wide array of applications, including clinical trial studies, data set creation, and analytical reports.\nWithin Roche-Genentech, a dedicated working group of Data Scientists recognized the potential of R in a pharmaceutical regulatory setting. Leveraging their expertise and pharmaverse knowledge, they developed a series of trainings on Coursera. These trainings provide hands-on demonstrations and examples, guiding industry professionals on how to effectively utilize R in running a complete clinical trial study. Specifically, the first training, Making Data Science Work for Clinical Reporting, offers a broad introduction to the work as a data scientist within the pharmaceutical industry. This should be of particular interest to aspiring clinical data scientists. The second training – which we are releasing this week – dives deep into the workflow of a clinical data scientist and introduces the tools we use on a daily basis. Looking into the future, there will be a project capstone training course that integrates the concepts from the preceding two courses, culminating in comprehensive learning, providing a strong foundation of knowledge for aspiring data scientists using R in the Pharma industry.\nHere is an outline of what participants will gain from the training we are releasing this week.\nHands-On Clinical Reporting Using R\nIn essence, participants will learn how to navigate and manipulate datasets using R, ensuring data integrity and accuracy. Additionally, R’s powerful statistical capabilities enable the creation of insightful Tables, Listings, and Figures/Graphs (TLF/Gs), which are vital components of regulatory submissions. Even further, the Coursera training offered by Roche-Genentech will empower industry professionals to unlock the full potential of R Shiny in their analytical reports. This feature enables researchers to present complex data in a user-friendly and interactive manner, enhancing the understanding and interpretation of results.\nA stepping stone towards the future: For those in the industry who are embracing these new ways of working, the Coursera training provided by Roche-Genentech serves as a valuable stepping stone into the world of R open-source software. The training equips participants with the necessary skills to harness the power of R, facilitating efficient and effective pharmaceutical analysis.\nIn conclusion, the adoption of R open-source software and programming language is transforming the pharmaceutical industry, enabling professionals to streamline their processes, enhance data analysis, and improve regulatory submissions. Roche-Genentech’s commitment to sharing knowledge and expertise through the Coursera trainings demonstrates their dedication to advancing the pharmaverse As the industry continues to embrace this new direction, the future of pharmaceutical analysis looks increasingly promising with R at its core.\nYour journey to revolutionizing your pharmaceutical analysis knowledge awaits!\nHuge thanks to Adrian Chan who led the effort of building this course and the instructors Jana Stoilova, Joel Laxamana, M.S., Leena Khatri, Tatiana Alonso Amor & Stefan Thoma."
+    "text": "The importance of reliable and accurate software in the pharmaceutical industry cannot be overstated. As you grapple with the complexities of developing Shiny applications that not only meet requirements but also remain free of defects, the conversation inevitably turns to the topic of validation. This is where the Rhino framework comes into play. It provides a validation environment through a set of tools that not only ensure the thorough testing of your Shiny Application but also enforce good software practices for producing quality code."
   },
   {
-    "objectID": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#last-updated",
-    "href": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#last-updated",
-    "title": "Introducing a new Coursera course for hands-on clinical data science using R.",
+    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#what-is-validation",
+    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#what-is-validation",
+    "title": "Rhino: A Step Forward in Validating Shiny Apps",
+    "section": "What is Validation?",
+    "text": "What is Validation?\nAt its core, validation is about generating objective evidence that the software consistently fulfills the users’ needs and requirements. It is closely intertwined with concepts such as verification, testing, quality assurance, and quality control. However, it is not a one-time activity. Validation is an ongoing aspect of the entire development process for assessing whether an application meets requirements and is free of defects. (phuse, 2021)\nThe foundational aspect of validation lies in the clarity and precision of the requirements set upfront. Projects often encounter challenges not due to technical constraints but unclear requirements. This clear definition of needs is the first and most critical step in the validation process, setting the stage for effective and meaningful software evaluation.\nTesting in some form is indispensable in any software engineering project. However, writing automated tests costs time and effort. Therefore, the approach to testing can vary widely depending on the project’s scope, complexity, and purpose.\nFor instance, manual testing, which involves checking the software by hand for bugs or other issues, might suffice for a Proof of Concept (PoC) application. On the other hand, in applications performing critical functions, such as those involved in clinical trial data analysis, the cost of failure could be extremely high, necessitating more rigorous and comprehensive automated testing.\nThe key is to strike a balance, ensuring the software is thoroughly validated without exhausting resources."
+  },
+  {
+    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#how-rhino-helps-in-validating-r-shiny-apps",
+    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#how-rhino-helps-in-validating-r-shiny-apps",
+    "title": "Rhino: A Step Forward in Validating Shiny Apps",
+    "section": "How Rhino Helps in Validating R Shiny Apps",
+    "text": "How Rhino Helps in Validating R Shiny Apps\nRhino automates the steps for creating the validation environment so you can spend your time and effort on writing the actual tests.\n\n\n\nValidation with Rhino\n\n\nWhen you first run rhino::init() inside your project’s root directory, Rhino introduces a suite of tools that will help you validate your Shiny application and a robust file structure to modularize your code into meaningful parts. With Rhino initialized, validating your Shiny application becomes an integral and seamless part of your development workflow.\n\nTesting\nRhino comes with testthat installed and introduces the tests/ directory in your project. As part of the validation process, you want to test your requirements. With Rhino, all you need to do is create your test-*.R files in tests/testthat directory and run rhino::test_r().\nAlthough shinytest2 tests can also be added with minimal effort (How to use shinytest2), one of the distinct features of Rhino is the ability to write end-to-end tests with Cypress out of the box. To learn more about how to write Cypress tests via Rhino, you can read more on Write end-to-end tests with Cypress tutorial in the documentation.\n\nContinuous Integration via GitHub\nAs discussed in the “What is validation?” section, validation is a continuous process. To accomplish this, Rhino uses a GitHub Actions workflow. This file enables the automatic running of tests and linting checks every time the code is pushed to the Github repository.\nYou can further configure your repository to require these checks to pass before a pull request can be merged, ensuring only validated code makes it into your project.\n\n\n\nStandardization of Good Practices\nRhino also provides tools for good software development practices. These standardization tools don’t directly address requirements or defects, but they raise the overall code quality.\n\nrhino::lint_* Functions\nRhino provides linters for R (rhino::lint_r), Javascript (rhino::lint_js), and Sass (rhino::lint_sass) code. These linters ensure that the code style is consistent. This consistency might not be visible to the end-users, but it significantly enhances code readability and maintainability, which are crucial for reducing bugs and errors in the application. The cleaner and more readable the code, the easier it is for you to spot and rectify issues.\n\n\nModularization with box\nModularization allows developers to compartmentalize different aspects of the application, making each part easier to understand, develop, and validate individually.\nRhino leverages the box package for effective modularization. This approach to structuring the app makes the codebase more manageable and navigable and significantly enhances the ease of testing and maintenance.\n\n\nReproducibility with renv\nrenv is currently the best tool for ensuring reproducibility and consistency across different development environments. Each Rhino project comes with renv activated. It further automatizes managing dependencies with rhino::pkg_install() and rhino::pkg_remove() functions to install, update or remove a package with just one call. Check out this explanation on Renv configuration to learn more!"
+  },
+  {
+    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#wider-picture",
+    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#wider-picture",
+    "title": "Rhino: A Step Forward in Validating Shiny Apps",
+    "section": "Wider picture",
+    "text": "Wider picture\n\nBare Bones Approach\nA minimal Shiny app can be as simple as a single file. This ‘bare bones’ approach is the most straightforward, requiring minimal setup. However, it places the workload on the developer to establish everything from scratch.\nThis method may be suitable for quick prototypes or small-scale projects but it lacks the robustness needed for complex, large-scale applications, especially in a field as critical as pharmaceuticals.\n\n\nOther Shiny Frameworks\nFrameworks like Golem and Leprechaun adopt R package structure for Shiny apps. This method allows developers to leverage standard R package testing tools like R CMD check.\nWhile this approach brings the benefits of R’s package development ecosystem, it does not offer extra state-of-the-art tools such as linters, Cypress tests, and GitHub Actions that Rhino provides out of the box. Leaving the burden of manually setting them up on the developers.\nRead our {rhino} vs {golem} vs {leprechaun}: Which R/Shiny Library is Right for You? blog post to learn more about the differences.\n\n\nValidation Theater\nTest coverage is often cited as a key metric for assessing the reliability of an application. While high test coverage is beneficial, it is not a definitive guarantee of software quality. The quality of the tests themselves matters significantly more. A common pitfall is the overreliance on achieving 100% test coverage, which may give a false sense of security about the application’s robustness.\nAdditionally, R CMD checks provide reassurance with their green check marks. However, many of these automated validations are not directly applicable or relevant to Shiny apps. This is one of the reasons why Rhino does not use these checks. While they are useful, they do not encompass the full spectrum of what needs to be tested in a Shiny application.\nThe key takeaway is that no automated check can substitute for a thorough and well-thought-out development process. The quality of a Shiny application hinges not just on the tests it passes but on the entirety of its development lifecycle, from initial design to final deployment."
+  },
+  {
+    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#summing-up-rhino-for-r-shiny-app-validation",
+    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#summing-up-rhino-for-r-shiny-app-validation",
+    "title": "Rhino: A Step Forward in Validating Shiny Apps",
+    "section": "Summing up Rhino for R Shiny App Validation",
+    "text": "Summing up Rhino for R Shiny App Validation\nRhino adopts a software engineering perspective, focusing primarily on the technical facets of validation. It provides a comprehensive suite of tools that streamline the process of creating Shiny applications that are not only functionally sound but also robust and maintainable.\nHowever, it’s crucial to recognize that Rhino’s contribution is a piece of a much larger puzzle. Validation, as emphasized throughout this post, is not a standalone activity but a continuous process that intertwines with every phase of software development.\nFrom the initial requirement gathering to the final deployment, each step plays a vital role in shaping the overall quality and effectiveness of the application.\nIf you’d like to learn more about Rhino, especially within the context of building Shiny apps for regulatory submissions you can check out this blogpost, Reproducible and Reliable Shiny Apps for Regulatory Submissions or visit Appsilon’s website."
+  },
+  {
+    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#references",
+    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#references",
+    "title": "Rhino: A Step Forward in Validating Shiny Apps",
+    "section": "References",
+    "text": "References\nphuse. (2021). R Package Validation Framework. R Package Validation Framework. https://phuse.s3.eu-central-1.amazonaws.com/Deliverables/Data+Visualisation+%26+Open+Source+Technology/WP059.pdf\n\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union"
+  },
+  {
+    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#last-updated",
+    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#last-updated",
+    "title": "Rhino: A Step Forward in Validating Shiny Apps",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:29.843547"
+    "text": "Last updated\n\n2025-12-18 20:47:42.761142"
   },
   {
-    "objectID": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#details",
-    "href": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#details",
-    "title": "Introducing a new Coursera course for hands-on clinical data science using R.",
+    "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#details",
+    "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#details",
+    "title": "Rhino: A Step Forward in Validating Shiny Apps",
     "section": "Details",
     "text": "Details\n\nSource, Session info"
   },
   {
-    "objectID": "posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.html",
-    "href": "posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.html",
-    "title": "Explore the Pharmaverse Examples: Your Gateway to Clinical Reporting with Open-Source Tools",
+    "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html",
+    "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html",
+    "title": "Filter out the noise!",
     "section": "",
-    "text": "If you’re navigating the world of clinical reporting with modern tooling or are curious about open-source tooling then the pharmaverse examples site is your one-stop-shop! This living collection of end-to-end examples showcases how open-source packages from the pharmaverse ecosystem work together to solve real clinical reporting challenges.\nThe site is organized into easy-to-navigate sections:\n\nSDTM examples like DM (Demographics), VS (Vital Signs), AE (Adverse Events).\nADaM examples including ADSL (Subject Level), ADTTE (Time-to-Event) and ADVS (Vital Signs).\nTLG examples showing how to build demographic tables, adverse event summaries, and pharmacokinetic displays.\nInteractive content such as data visualization apps built with teal.\nAutomated reporting of outputs via slides or docs.\neSubmission for submission preparation.\nand so much more! - visit the site to see all the latest articles!\n\nYou can check out Pharmaverse examples in a bunch of different ways, and also offering translation in different spoken languages!\n\nYou can follow the examples step-by-step reading the code snippets and tracing the evolution of a set of representative data from end to end.\nYou can use our interactive setup using posit cloud that takes care of any environment set up allowing you to jump straight into exploration."
+    "text": "Filtering and merging datasets is the bread and butter of statistical programming. Whether it’s on the way to an ADaM variable derivation, or in an effort to pull out a list of patients matching a specific condition for a TLG, or another task entirely, most steps in the statistical programming workflow feature some combination of these two tasks.\nThe {tidyverse} functions filter(), group_by(), and*_join() are a fantastic toolset for filtering and merging, and can often suffice to carry out these sorts of operations. Often, however, this will be a multi-step process, requiring more than one set of pipe (%&gt;%) chains if multiple datasets are involved. As such, the {admiral} package builds on this concept by offering a very practical toolset of utility functions, henceforth referred to altogether as filter_*(). These are wrappers of common combinations of {tidyverse} function calls that enable the ADaM programmer to carry out such operations “in stride” within their ADaM workflow - in typical admiral style!\nMany of the filter_*() functions feature heavily within the admiral codebase, but they can be very handy in their own right. You can learn more about them from:\n\nThe relevant section in the Reference page of the admiral documentation website;\nThe short visual explanations in the second page of the {admiral Cheat Sheet};\n\n\n\n\n\n\n\n…and the rest of this blog post!\n\n\n\nThe examples in this blog post require the following packages.\n\nlibrary(admiral)\nlibrary(pharmaversesdtm)\nlibrary(dplyr, warn.conflicts = FALSE)\nlibrary(tibble)\n\nWe also create minimally viable ADSL, ADAE and EX datasets to be used where needed in the following examples.\n\nadsl &lt;- tribble(\n  ~USUBJID,      ~AGE, ~SEX,\n  \"01-701-1015\", 63,   \"F\",\n  \"01-701-1034\", 77,   \"F\",\n  \"01-701-1115\", 84,   \"M\",\n  \"01-701-1146\", 75,   \"F\",\n  \"01-701-1444\", 63,   \"M\"\n)\n\nadae1 &lt;- tribble(\n  ~USUBJID,      ~AEDECOD,                    ~AESEV,     ~AESTDTC,\n  \"01-701-1015\", \"DIARRHOEA\",                 \"MODERATE\", \"2014-01-09\",\n  \"01-701-1034\", \"FATIGUE\",                   \"SEVERE\",   \"2014-11-02\",\n  \"01-701-1034\", \"HEADACHE\",                  \"MILD\",     \"2014-12-01\",\n  \"01-701-1034\", \"APPLICATION SITE PRURITUS\", \"MODERATE\", \"2014-08-27\",\n  \"01-701-1115\", \"FATIGUE\",                   \"MILD\",     \"2013-01-14\",\n  \"01-701-1146\", \"FATIGUE\",                   \"MODERATE\", \"2013-06-03\",\n  \"01-701-1146\", \"ANOSMIA\",                   \"MODERATE\", \"2013-08-11\"\n)\n\nadae2 &lt;- tribble(\n  ~USUBJID,      ~ADY, ~ACOVFL,     ~ADURN,\n  \"01-701-1015\",   10,     \"N\",          1,\n  \"01-701-1015\",   21,     \"N\",         50,\n  \"01-701-1015\",   23,     \"Y\",         14,\n  \"01-701-1015\",   32,     \"N\",         31,\n  \"01-701-1015\",   42,     \"N\",         20,\n  \"01-701-1034\",   11,     \"Y\",         13,\n  \"01-701-1034\",   23,     \"N\",          2,\n  \"01-701-1146\",   13,     \"Y\",         12,\n  \"01-701-1444\",   14,     \"N\",         32,\n  \"01-701-1444\",   21,     \"N\",         41\n)\n\n\nex &lt;- tribble(\n  ~USUBJID, ~EXSEQ, ~EXDOSE, ~EXTRT,\n  \"01-701-1015\", 1, 54, \"XANO\",\n  \"01-701-1015\", 2, 54, \"XANO\",\n  \"01-701-1015\", 3, 54, \"XANO\",\n  \"01-701-1034\", 1, 54, \"XANO\",\n  \"01-701-1034\", 2, 54, \"XANO\",\n  \"01-701-1115\", 1, 0, \"PLACEBO\",\n  \"01-701-1115\", 2, 0, \"PLACEBO\",\n  \"01-701-1115\", 3, 0, \"PLACEBO\",\n  \"01-701-1146\", 1, 0, \"PLACEBO\",\n  \"01-701-1146\", 2, 0, \"PLACEBO\",\n  \"01-701-1146\", 3, 0, \"PLACEBO\",\n  \"01-701-1444\", 1, 54, \"XANO\",\n  \"01-701-1444\", 2, 54, \"XANO\"\n)"
   },
   {
-    "objectID": "posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.html#last-updated",
-    "href": "posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.html#last-updated",
-    "title": "Explore the Pharmaverse Examples: Your Gateway to Clinical Reporting with Open-Source Tools",
+    "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#required-packages",
+    "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#required-packages",
+    "title": "Filter out the noise!",
+    "section": "",
+    "text": "The examples in this blog post require the following packages.\n\nlibrary(admiral)\nlibrary(pharmaversesdtm)\nlibrary(dplyr, warn.conflicts = FALSE)\nlibrary(tibble)\n\nWe also create minimally viable ADSL, ADAE and EX datasets to be used where needed in the following examples.\n\nadsl &lt;- tribble(\n  ~USUBJID,      ~AGE, ~SEX,\n  \"01-701-1015\", 63,   \"F\",\n  \"01-701-1034\", 77,   \"F\",\n  \"01-701-1115\", 84,   \"M\",\n  \"01-701-1146\", 75,   \"F\",\n  \"01-701-1444\", 63,   \"M\"\n)\n\nadae1 &lt;- tribble(\n  ~USUBJID,      ~AEDECOD,                    ~AESEV,     ~AESTDTC,\n  \"01-701-1015\", \"DIARRHOEA\",                 \"MODERATE\", \"2014-01-09\",\n  \"01-701-1034\", \"FATIGUE\",                   \"SEVERE\",   \"2014-11-02\",\n  \"01-701-1034\", \"HEADACHE\",                  \"MILD\",     \"2014-12-01\",\n  \"01-701-1034\", \"APPLICATION SITE PRURITUS\", \"MODERATE\", \"2014-08-27\",\n  \"01-701-1115\", \"FATIGUE\",                   \"MILD\",     \"2013-01-14\",\n  \"01-701-1146\", \"FATIGUE\",                   \"MODERATE\", \"2013-06-03\",\n  \"01-701-1146\", \"ANOSMIA\",                   \"MODERATE\", \"2013-08-11\"\n)\n\nadae2 &lt;- tribble(\n  ~USUBJID,      ~ADY, ~ACOVFL,     ~ADURN,\n  \"01-701-1015\",   10,     \"N\",          1,\n  \"01-701-1015\",   21,     \"N\",         50,\n  \"01-701-1015\",   23,     \"Y\",         14,\n  \"01-701-1015\",   32,     \"N\",         31,\n  \"01-701-1015\",   42,     \"N\",         20,\n  \"01-701-1034\",   11,     \"Y\",         13,\n  \"01-701-1034\",   23,     \"N\",          2,\n  \"01-701-1146\",   13,     \"Y\",         12,\n  \"01-701-1444\",   14,     \"N\",         32,\n  \"01-701-1444\",   21,     \"N\",         41\n)\n\n\nex &lt;- tribble(\n  ~USUBJID, ~EXSEQ, ~EXDOSE, ~EXTRT,\n  \"01-701-1015\", 1, 54, \"XANO\",\n  \"01-701-1015\", 2, 54, \"XANO\",\n  \"01-701-1015\", 3, 54, \"XANO\",\n  \"01-701-1034\", 1, 54, \"XANO\",\n  \"01-701-1034\", 2, 54, \"XANO\",\n  \"01-701-1115\", 1, 0, \"PLACEBO\",\n  \"01-701-1115\", 2, 0, \"PLACEBO\",\n  \"01-701-1115\", 3, 0, \"PLACEBO\",\n  \"01-701-1146\", 1, 0, \"PLACEBO\",\n  \"01-701-1146\", 2, 0, \"PLACEBO\",\n  \"01-701-1146\", 3, 0, \"PLACEBO\",\n  \"01-701-1444\", 1, 54, \"XANO\",\n  \"01-701-1444\", 2, 54, \"XANO\"\n)"
+  },
+  {
+    "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#last-updated",
+    "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#last-updated",
+    "title": "Filter out the noise!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:34.283651"
+    "text": "Last updated\n\n2025-12-18 20:47:46.315803"
   },
   {
-    "objectID": "posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.html#details",
-    "href": "posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.html#details",
-    "title": "Explore the Pharmaverse Examples: Your Gateway to Clinical Reporting with Open-Source Tools",
+    "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#details",
+    "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#details",
+    "title": "Filter out the noise!",
     "section": "Details",
     "text": "Details\n\nSource, Session info"
   },
@@ -1985,7 +1985,7 @@
     "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#last-updated",
     "title": "Cross-Industry Open Source Package Development",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:39.700487"
+    "text": "Last updated\n\n2025-12-18 20:47:51.254825"
   },
   {
     "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#details",
@@ -2034,7 +2034,7 @@
     "href": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#last-updated",
     "title": "Reproducing the R Submissions Pilot 2 Shiny Application using Rhino",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:43.306858"
+    "text": "Last updated\n\n2025-12-18 20:47:54.336742"
   },
   {
     "objectID": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#details",
@@ -2055,7 +2055,7 @@
     "href": "posts/2025-03-14_welcoming__.../welcoming__novartis_to_the__pharmaverse__council!.html#last-updated",
     "title": "Novartis joins the Pharmaverse Council!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:46.950304"
+    "text": "Last updated\n\n2025-12-18 20:47:57.456054"
   },
   {
     "objectID": "posts/2025-03-14_welcoming__.../welcoming__novartis_to_the__pharmaverse__council!.html#details",
@@ -2076,7 +2076,7 @@
     "href": "posts/2025-04-16_welcome,__a.../welcome,__ashley__tarasiewicz.html#last-updated",
     "title": "Welcome, Ashley Tarasiewicz",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:52.187477"
+    "text": "Last updated\n\n2025-12-18 20:48:01.968716"
   },
   {
     "objectID": "posts/2025-04-16_welcome,__a.../welcome,__ashley__tarasiewicz.html#details",
@@ -2125,7 +2125,7 @@
     "href": "posts/2025-01-17_1.2_admiral.../1.2_admiral_release.html#last-updated",
     "title": "{admiral} 1.2 is here!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:34:55.446273"
+    "text": "Last updated\n\n2025-12-18 20:48:04.717603"
   },
   {
     "objectID": "posts/2025-01-17_1.2_admiral.../1.2_admiral_release.html#details",
@@ -2146,7 +2146,7 @@
     "href": "posts/2024-06-07_admiral_1.1_is.../admiral_1.1_is_here.html#last-updated",
     "title": "{admiral} 1.1.1 is here!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:00.727768"
+    "text": "Last updated\n\n2025-12-18 20:48:09.278963"
   },
   {
     "objectID": "posts/2024-06-07_admiral_1.1_is.../admiral_1.1_is_here.html#details",
@@ -2216,7 +2216,7 @@
     "href": "posts/2025-02-17_data__packages/data__packages.html#last-updated",
     "title": "Collecting all the data!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:03.960405"
+    "text": "Last updated\n\n2025-12-18 20:48:12.00029"
   },
   {
     "objectID": "posts/2025-02-17_data__packages/data__packages.html#details",
@@ -2265,7 +2265,7 @@
     "href": "posts/2025-08-13_rtflite_1.0.0/rtflite.html#last-updated",
     "title": "rtflite 1.0.0: Production-Ready Clinical TLFs in Python",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:08.101668"
+    "text": "Last updated\n\n2025-12-18 20:48:15.540548"
   },
   {
     "objectID": "posts/2025-08-13_rtflite_1.0.0/rtflite.html#details",
@@ -2286,7 +2286,7 @@
     "href": "posts/2024-09-03_meet_our__divers.../meet_our__diversity__champion_–__laura__needleman.html#last-updated",
     "title": "Meet our Diversity Champion – Laura Needleman",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:11.172798"
+    "text": "Last updated\n\n2025-12-18 20:48:18.14408"
   },
   {
     "objectID": "posts/2024-09-03_meet_our__divers.../meet_our__diversity__champion_–__laura__needleman.html#details",
@@ -2335,7 +2335,7 @@
     "href": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#last-updated",
     "title": "The pharmaverse (hi)story",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:14.958405"
+    "text": "Last updated\n\n2025-12-18 20:48:21.381637"
   },
   {
     "objectID": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#details",
@@ -2356,7 +2356,7 @@
     "href": "posts/2025-06-30_did_my_eyes.../did_my_eyes_just_see__python_in_the_pharmaverse.html#last-updated",
     "title": "Did my eyes just see Python in the pharmaverse?",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:19.760955"
+    "text": "Last updated\n\n2025-12-18 20:48:25.535733"
   },
   {
     "objectID": "posts/2025-06-30_did_my_eyes.../did_my_eyes_just_see__python_in_the_pharmaverse.html#details",
@@ -2405,7 +2405,7 @@
     "href": "posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html#last-updated",
     "title": "TLG Catalog 🤝 WebR",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:22.892611"
+    "text": "Last updated\n\n2025-12-18 20:48:28.199512"
   },
   {
     "objectID": "posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html#details",
@@ -2426,7 +2426,7 @@
     "href": "posts/2025-09-15-introducing.../introducing_admiralneuro.html#last-updated",
     "title": "Introducing admiralneuro!",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:27.099977"
+    "text": "Last updated\n\n2025-12-18 20:48:31.767622"
   },
   {
     "objectID": "posts/2025-09-15-introducing.../introducing_admiralneuro.html#details",
@@ -2461,7 +2461,7 @@
     "href": "posts/2024-09-11_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html#last-updated",
     "title": "Writing my first custom CICD action for the pharmaverseblog",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:31.924239"
+    "text": "Last updated\n\n2025-12-18 20:48:35.861218"
   },
   {
     "objectID": "posts/2024-09-11_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html#details",
@@ -2545,7 +2545,7 @@
     "href": "posts/2025-09-12_faster_clinical_trial_reporting/faster_clinical_trial_reporting.html#last-updated",
     "title": "Faster Clinical Trial Reporting: A Beginner’s Guide to Implementing CDISC SDTM and ADaM Standards with Open-Source R Packages",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:36.498657"
+    "text": "Last updated\n\n2025-12-18 20:48:39.734816"
   },
   {
     "objectID": "posts/2025-09-12_faster_clinical_trial_reporting/faster_clinical_trial_reporting.html#details",
@@ -2566,7 +2566,7 @@
     "href": "posts/2024-10-24_introducing.../introducing_sdtm.oak.html#last-updated",
     "title": "Introducing sdtm.oak",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:40.547837"
+    "text": "Last updated\n\n2025-12-18 20:48:43.2114"
   },
   {
     "objectID": "posts/2024-10-24_introducing.../introducing_sdtm.oak.html#details",
@@ -2580,7 +2580,7 @@
     "href": "posts/2024-08-20_teal_submission_.../teal_submission_for__posit__shiny__contest_2024.html#last-updated",
     "title": "teal and Posit Shiny Contest 2024",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:44.346701"
+    "text": "Last updated\n\n2025-12-18 20:48:46.402775"
   },
   {
     "objectID": "posts/2024-08-20_teal_submission_.../teal_submission_for__posit__shiny__contest_2024.html#details",
@@ -2643,7 +2643,7 @@
     "href": "posts/2025-08-04_metacore_0.2.0/metacore_0.2.0.html#last-updated",
     "title": "Metacore and Metatools 0.2.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:49.018463"
+    "text": "Last updated\n\n2025-12-18 20:48:50.354524"
   },
   {
     "objectID": "posts/2025-08-04_metacore_0.2.0/metacore_0.2.0.html#details",
@@ -2671,7 +2671,7 @@
     "href": "posts/2024-07-24_working__groups_.../working__groups__updates.html#last-updated",
     "title": "Working Groups Updates",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:56.088305"
+    "text": "Last updated\n\n2025-12-18 20:48:56.264105"
   },
   {
     "objectID": "posts/2024-07-24_working__groups_.../working__groups__updates.html#details",
@@ -2720,7 +2720,7 @@
     "href": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#last-updated",
     "title": "End of Year Update from the pharmaverse Council",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:35:59.266563"
+    "text": "Last updated\n\n2025-12-18 20:48:58.978175"
   },
   {
     "objectID": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#details",
@@ -2741,7 +2741,7 @@
     "href": "posts/2024-12-13_document_yo.../document_your_universe_with_dverse.html#last-updated",
     "title": "Creating a better universe with dverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:36:13.8186"
+    "text": "Last updated\n\n2025-12-18 20:49:35.783522"
   },
   {
     "objectID": "posts/2024-12-13_document_yo.../document_your_universe_with_dverse.html#details",
@@ -2762,7 +2762,7 @@
     "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
     "title": "It’s all relative? - Calculating Relative Days using admiral",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:36:18.342504"
+    "text": "Last updated\n\n2025-12-18 20:49:39.677385"
   },
   {
     "objectID": "posts/2023-08-08_study_day/study_day.html#details",
@@ -2783,7 +2783,7 @@
     "href": "posts/2025-07-04_p_hu_se__up.../p_hu_se__update.html#last-updated",
     "title": "PHUSE Update",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:36:23.89319"
+    "text": "Last updated\n\n2025-12-18 20:49:44.457871"
   },
   {
     "objectID": "posts/2025-07-04_p_hu_se__up.../p_hu_se__update.html#details",
@@ -2825,7 +2825,7 @@
     "href": "posts/2025-05-19_logrx_0.4.0.../logrx_0_4_0_logs_for_your__r_programs.html#last-updated",
     "title": "logrx 0.4.0: logs for your R programs",
     "section": "Last updated",
-    "text": "Last updated\n\n2025-12-18 20:36:45.824326"
+    "text": "Last updated\n\n2025-12-18 20:50:03.60062"
   },
   {
     "objectID": "posts/2025-05-19_logrx_0.4.0.../logrx_0_4_0_logs_for_your__r_programs.html#details",
