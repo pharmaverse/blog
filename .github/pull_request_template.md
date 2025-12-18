@@ -11,5 +11,5 @@ Please check off each taskbox as an acknowledgment that you completed the task o
 - [ ] Add a disclaimer at the top of your post, if appropriate (example: **Disclaimer** 
 This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.)
 - [ ] Address all merge conflicts and resolve appropriately
-- [ ] Assign two of us (@bms63, @manciniedoardo, @StefanThoma, @kaz462) as reviewers in the PR.
+- [ ] Assign two of us (@aaehmann, @ashley-tarasiewicz, @chrisprice-phuse) as reviewers in the PR.
 - [ ] Pat yourself on the back for a job well done! Much love to your accomplishment!
