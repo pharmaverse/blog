@@ -6,12 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Fanny Gautier">
-<meta name="author" content="Lina Patil">
-<meta name="dcterms.date" content="2024-05-29">
-<meta name="description" content="As the first CRO having joined the {admiral} family, we are very excited to share with you our first steps and thoughts in this new adventure">
+<meta name="author" content="Becca Krouse">
+<meta name="dcterms.date" content="2025-12-15">
+<meta name="description" content="The docorator package provides a framework for production-ready outputs created from R">
 
-<title>Our experience as new admiral developers, coming from a CRO – pharmaverse blog</title>
+<title>Introducing docorator to the pharmaverse – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,6 +22,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -111,12 +145,12 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Our experience as new admiral developers, coming from a CRO – pharmaverse blog">
-<meta property="og:description" content="As the first CRO having joined the {admiral} family, we are very excited to share with you our first steps and thoughts in this new adventure">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-05-29_our_experience_a.../new_dev1.png">
+<meta property="og:title" content="Introducing docorator to the pharmaverse – pharmaverse blog">
+<meta property="og:description" content="The docorator package provides a framework for production-ready outputs created from R">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_introducing.../docorator_hex.png">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="424">
-<meta property="og:image:width" content="423">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:width" content="1024">
 </head>
 
 <body class="floating nav-fixed quarto-light">
@@ -156,15 +190,14 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Our experience as new admiral developers, coming from a CRO</h1>
+      <h1 class="title">Introducing docorator to the pharmaverse</h1>
                   <div>
         <div class="description">
-          As the first CRO having joined the {admiral} family, we are very excited to share with you our first steps and thoughts in this new adventure
+          The <code>docorator</code> package provides a framework for production-ready outputs created from R
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">Community</div>
-                <div class="quarto-category">Conferences</div>
+                <div class="quarto-category">TLG</div>
               </div>
                   </div>
   </div>
@@ -173,17 +206,16 @@ cookieconsent.run({
   <div class="quarto-title-meta">
 
       <div>
-      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Fanny Gautier </p>
-               <p>Lina Patil </p>
+               <p>Becca Krouse </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 29, 2024</p>
+        <p class="date">December 15, 2025</p>
       </div>
     </div>
     
@@ -198,11 +230,12 @@ cookieconsent.run({
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#what-experience-we-had-when-we-started" id="toc-what-experience-we-had-when-we-started" class="nav-link active" data-scroll-target="#what-experience-we-had-when-we-started">What experience we had when we started</a></li>
-  <li><a href="#how-we-upskilled" id="toc-how-we-upskilled" class="nav-link" data-scroll-target="#how-we-upskilled">How we upskilled</a></li>
-  <li><a href="#what-have-been-the-challengeslearnings" id="toc-what-have-been-the-challengeslearnings" class="nav-link" data-scroll-target="#what-have-been-the-challengeslearnings">What have been the challenges/learnings</a></li>
-  <li><a href="#reflection" id="toc-reflection" class="nav-link" data-scroll-target="#reflection">Reflection</a></li>
-  <li><a href="#what-have-we-enjoyed" id="toc-what-have-we-enjoyed" class="nav-link" data-scroll-target="#what-have-we-enjoyed">What have we enjoyed</a></li>
+  <li><a href="#what-is-docorator" id="toc-what-is-docorator" class="nav-link active" data-scroll-target="#what-is-docorator">What is <code>docorator</code>?</a></li>
+  <li><a href="#how-docorator-complements-the-pharmaverse" id="toc-how-docorator-complements-the-pharmaverse" class="nav-link" data-scroll-target="#how-docorator-complements-the-pharmaverse">How <code>docorator</code> complements the pharmaverse</a></li>
+  <li><a href="#example-pdf-render" id="toc-example-pdf-render" class="nav-link" data-scroll-target="#example-pdf-render">Example: PDF render</a></li>
+  <li><a href="#example-multiple-renders" id="toc-example-multiple-renders" class="nav-link" data-scroll-target="#example-multiple-renders">Example: multiple renders</a></li>
+  <li><a href="#a-note-on-latex-dependencies" id="toc-a-note-on-latex-dependencies" class="nav-link" data-scroll-target="#a-note-on-latex-dependencies">A note on LaTeX dependencies</a></li>
+  <li><a href="#get-in-touch" id="toc-get-in-touch" class="nav-link" data-scroll-target="#get-in-touch">Get in touch!</a></li>
   </ul>
 </nav>
 </nav>
@@ -219,73 +252,94 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="new_dev2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="300"></p>
-</figure>
-</div>
-<p>Cytel is the first CRO involved in the admiral open-source project. Having the ambition to demonstrate our skills in the open-source projects, it was with lots of excitement that we accepted the challenge to enter the admiral development team family. We are thus thrilled to share with you this new &amp; challenging experience.</p>
-<section id="what-experience-we-had-when-we-started" class="level1">
-<h1>What experience we had when we started</h1>
-<p>As a starting point, we went through the <a href="https://pharmaverse.github.io/admiraldev/articles/programming_strategy.html">{admiral} documentation</a>, and <a href="https://r-pkgs.org/">how to create a package</a> websites to get familiar with the work and processes. There is no need to memorize everything, it’s only to get an overview and know that the documentation is available and can be reviewed at any time. Then, we were encouraged to take on and resolve our first <a href="https://github.com/pharmaverse/admiral/issues/1839">dummy issue</a> which was to create an initial and easy function. This was a concrete example to proceed with the full process of creation, documentation and building site. What was amazing is that we have received so much support from the admiral Community on how to get started with this dummy issue.</p>
-<p>Moreover, weekly meetings were set up for the first few weeks between ourselves and one of the admiral team members to support our integration in the team and to address any queries or issues we may have. This helped us a lot to familiarize ourselves with the processes and requirements of this open-source project.</p>
-<p>In addition to these meetings, the full core development team meets bi-weekly to discuss and dispatch the tasks within the team, as well as issues newcomers are facing during their on-boarding. Before a new version is released, these bi-weekly meetings becomes a weekly meeting.</p>
-<p>All this support made us feel good and gave us the confidence in tackling and fixing the issues, as well as with the entire admiral process.</p>
+<p>Disclaimer: This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.</p>
+<p>We are pleased to introduce a new addition to the pharmaverse: <code>{docorator}</code>, an R package developed by GSK to facilitate the creation of production displays within pharma workflows. If you’ve ever spent hours perfecting a table or figure, only to wrestle with adding compliant headers, footers, and perfect margins for a polished product, <code>{docorator}</code> might be for you.</p>
+<p>For full documentation, visit the website here: <a href="https://gsk-biostatistics.github.io/docorator/">https://gsk-biostatistics.github.io/docorator/</a></p>
+<section id="what-is-docorator" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-docorator">What is <code>docorator</code>?</h2>
+<p>The package name, <code>{docorator}</code>, signifies its core functionality: <strong>decorate</strong> and <strong>output</strong>. The package takes TLGs generated by popular R packages such as <code>{gt}</code> (and by extension <code>{tfrmt}</code> and <code>{gtsummary}</code>) and <code>{ggplot2}</code> and “decorates” them with custom headers, footers, etc. in production-ready outputs.</p>
+<p>The <code>{docorator}</code> package is built on a foundation of reproducibility and flexibility through its multi-rendering framework. While the primary and most robust rendering engine is PDF (leveraging Rmarkdown/Quarto and LaTeX internally), basic RTF support is also available, with the underlying framework designed for expansion to other output formats in the future.</p>
 </section>
-<section id="how-we-upskilled" class="level1">
-<h1>How we upskilled</h1>
-<p>During this ongoing open-source experience, we have had the opportunity to dive into a couple of existing issues that have expanded our technical knowledge. We have worked with various packages such as <code>{devtools}</code> and <code>{pkgdown}</code> that are themselves used for the creation and maintenance of R packages. We also sharpened our problem-solving abilities. We received guidance from admiral team’s expertise on how to address the issues and improve our implementation; these helped us improve the quality of our code and broaden our understanding of best practices in development with their insights and suggestions.</p>
-<p>{admiral} is not only developing code. It is also the development of the corresponding documentation and vignettes, as well as maintaining the online user guideline. This is also a forum where colleagues and users share opinions, what they think, how they would resolve an issue or how it is handled in their own company. There’s also a lot of communication around individual topics.</p>
-<p>While completing tasks or resolving bugs which were identified in existing functions, it requires digging into the corresponding functions and learning how exactly they work. By becoming an admiral developer, we also become an admiral user.</p>
-<p>The tasks are numerous and can correspond to any programming level.</p>
+<section id="how-docorator-complements-the-pharmaverse" class="level2">
+<h2 class="anchored" data-anchor-id="how-docorator-complements-the-pharmaverse">How <code>docorator</code> complements the pharmaverse</h2>
+<p>This package can be considered complementary to the pharmaverse packages <code>{clinify}</code> and <code>{gridify}</code>. It offers an additional option for R users seeking to meet organizational requirements for specific output types, as well as standardized headers, footers, margins, and sizing. A key feature of <code>{docorator}</code> is its PDF support with embedded table values. By rendering to PDF via RMarkdown/Quarto and LaTeX, the displayed values become embedded within the PDF document, which enhance traceability. For <code>{gt}</code> tables specifically, automated table scaling (i.e.&nbsp;column resizing) is applied by default to assist with fitting the display to the available space.</p>
 </section>
-<section id="what-have-been-the-challengeslearnings" class="level1">
-<h1>What have been the challenges/learnings</h1>
-<p>In terms of challenges, setting up the environment was time consuming. Of course, the main environment is company dependent, but following the first setup, there can be challenges to make the {admiral} package work as expected.</p>
-<p>Some packages are required to run single steps. As the <code>{renv}</code> package has been deprecated for the use of {admiral} earlier this year, a single step is now necessary: <code>devtools::install_dev_deps(dependencies = TRUE)</code>. You just need to know it. Once all necessary packages are well installed and launched, it can be very easy to start developing some code or resolve some issues.</p>
-<p>Also, at the beginning, Github (where admiral is developed and discussed) can be scary and may seem complicated due to the potential for mistakes. It’s pretty hard to make a mistake that might impact the whole project as you can’t push to <code>main</code> directly. While going through the processes and learning how it exactly works, it’s most of the time a simple process, and while working on the right parallel branch, nothing serious can happen. This is the most important point of working with Github: work on the right parallel branch, never/rarely on the <code>main</code> branch directly!</p>
-<p>Another challenge is to understand the automatic CI/CD (Continuous Integration / Continuous Delivery) checks and their dependencies with other packages such as <code>{admiraldev}</code>. The CI/CD checks are used to ensure any code updates we make won’t break anything else in the codebase. These checks are implemented within the <code>{admiralci}</code> package and used in admiral when you create a Pull request. Those updates can thus have some impacts on the admiral package itself.</p>
+<section id="example-pdf-render" class="level2">
+<h2 class="anchored" data-anchor-id="example-pdf-render">Example: PDF render</h2>
+<p>The process of rendering a display involves two main steps:</p>
+<ol type="1">
+<li><p><strong>Create a <code>docorator</code> object:</strong> This step uses the <code>as_docorator()</code> function to add headers, footers, and other styling elements.</p></li>
+<li><p><strong>Render an output</strong>: A simple function call generates the final document.</p></li>
+</ol>
+<p>Below is an illustrative example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This code assumes a display object called `t_demog` has been created</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>t_demog <span class="sc">|&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_docorator</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">display_name =</span> <span class="st">"t_demog"</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">display_loc =</span> <span class="st">"path/to/output/folder"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">header =</span> <span class="fu">fancyhead</span>(</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fancyrow</span>(<span class="at">left =</span> <span class="st">"Study ABC123"</span>, <span class="at">center =</span> <span class="cn">NA</span>, <span class="at">right =</span> <span class="fu">doc_pagenum</span>()),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fancyrow</span>(<span class="at">left =</span> <span class="st">"Safety Population"</span>, <span class="at">center =</span> <span class="cn">NA</span>, <span class="at">right =</span> <span class="cn">NA</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fancyrow</span>(<span class="at">left =</span> <span class="cn">NA</span>, <span class="at">center =</span> <span class="st">"Demographic Summary"</span>, <span class="at">right =</span> <span class="cn">NA</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">footer =</span> <span class="fu">fancyfoot</span>(</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fancyrow</span>(<span class="at">left =</span> <span class="st">"path/to/t_demog.R"</span>, <span class="at">right =</span> <span class="fu">doc_datetime</span>())</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">render_pdf</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Note that headers and footers are specified via the <code>header</code> and <code>footer</code> arguments using the <code>fancyhead()</code> and <code>fancyfoot()</code> functions, respectively. These functions, inspired by (and for PDF, powered by) the <a href="https://ctan.mirrors.hoobly.com/macros/latex/contrib/fancyhdr/fancyhdr.pdf"><code>fancyhdr</code></a> LaTeX library, allow users to flexibly add multiple rows of headers and/or footers with left, center, and/or right aligned text. Rows of headers/footers are added via the <code>fancyrow()</code> function which has arguments for where the custom text should be added.</p>
+<p>Here’s the result:</p>
+<p><img src="demog_tbl.png" class="img-fluid" alt="Demographic table">.</p>
 </section>
-<section id="reflection" class="level1">
-<h1>Reflection</h1>
-<p>On reflection, we didn’t see a substantial difference when coming from a CRO rather than coming from a Pharma company. But it might actually be the exposure to R which could differ. Indeed, while coming from a CRO, the tasks and projects depend on the clients we work for. We have been lucky to work on a project using R and Github for the past two years before joining the admiral team. We have to admit that this previous experience helped us a lot during the on-boarding.</p>
+<section id="example-multiple-renders" class="level2">
+<h2 class="anchored" data-anchor-id="example-multiple-renders">Example: multiple renders</h2>
+<p>In pharma, it’s very common for displays to be utilized across multiple reports, presentations, and various downstream systems. <code>{docorator}</code> is engineered for reuse, offering several powerful features:</p>
+<ol type="1">
+<li><strong>Multi-render capability:</strong> Users can render to multiple output types using pipeable syntax.</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Continuing from the previous example:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>t_demog <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_docorator</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">display_name =</span> <span class="st">"t_demog"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">display_loc =</span> <span class="st">"path/to/output/folder"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">header =</span> <span class="fu">fancyhead</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fancyrow</span>(<span class="at">left =</span> <span class="st">"Study ABC123"</span>, <span class="at">center =</span> <span class="cn">NA</span>, <span class="at">right =</span> <span class="fu">doc_pagenum</span>()),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fancyrow</span>(<span class="at">left =</span> <span class="st">"Safety Population"</span>, <span class="at">center =</span> <span class="cn">NA</span>, <span class="at">right =</span> <span class="cn">NA</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fancyrow</span>(<span class="at">left =</span> <span class="cn">NA</span>, <span class="at">center =</span> <span class="st">"Demographic Summary"</span>, <span class="at">right =</span> <span class="cn">NA</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">footer =</span> <span class="fu">fancyfoot</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fancyrow</span>(<span class="at">left =</span> <span class="st">"path/to/t_demog.R"</span>, <span class="at">right =</span> <span class="fu">doc_datetime</span>())</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">render_pdf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">render_rtf</span>() <span class="co"># This will generate both PDF and RTF outputs</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="1">
+<li><strong>The <code>docorator</code> object artifact:</strong></li>
+</ol>
+<p>Executing <code>as_docorator()</code> does not immediately render your display. Instead, it creates a <code>docorator</code> object that stores all relevant display information in an <code>.rds</code> file. This object serves as an artifact for future rendering or other downstream requirements. For the above example, <code>t_demog.rds</code> will be saved in the folder “path/to/output/folder” alongside the “t_demog.pdf” and “t_demog.rtf” output documents.</p>
 </section>
-<section id="what-have-we-enjoyed" class="level1">
-<h1>What have we enjoyed</h1>
-<p>Becoming a co-developer and active contributor to admiral was an excellent opportunity for us to learn and to grow, and a challenge which we accepted with enthusiasm. By utilizing our backend expertise, we demonstrated our ability to adapt to new programming languages, frameworks, and tools. By working on this open-source package, we were able to expand our technical horizons and strengthen our problem-solving abilities.</p>
-<p>Overall, our experience as a developer working on open-source projects has equipped us with essential skills in teamwork, communication, conflict resolution, and leadership.</p>
-<p>What we enjoyed the most in this cross-company project is the team spirit and sharing of knowledge. You learn that there is no stupid question, and in addition to the mentoring that you receive at the beginning you are free to ask any questions and can be ensured to receive various valuable answers and suggestions. The process is also quite meticulous and painstakingly documented. You can’t really make any mistakes, and if something goes wrong, there won’t be any impact on the project: before merging your own updates to the main branch, a Pull Request with a reviewer and an approval is necessary. Some updates can be requested before being approved and merged as needed, which makes us feel more comfortable and confident.<br>
-As there is no such thing as zero risk, if such a situation occurs, it will most likely be discovered and can be fixed for the next release.</p>
-<p>Comments are always welcome, whatever it is, but our favorite one in the process is the “Well done!”: <strong>Pat yourself on the back for a job well done! Much love to your accomplishment!</strong></p>
-<p>We are looking forward to praising ourselves over and over again.</p>
-<!--------------- appendices go here ----------------->
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
+<section id="a-note-on-latex-dependencies" class="level2">
+<h2 class="anchored" data-anchor-id="a-note-on-latex-dependencies">A note on LaTeX dependencies</h2>
+<p>As noted in its README, <code>{docorator}</code> requires a LaTeX installation for PDF rendering. If using <code>{tinytex}</code>, the <code>TinyTeX</code> bundle is recommended, which can be installed via the following code:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>tinytex<span class="sc">::</span><span class="fu">install_tinytex</span>(<span class="at">bundle =</span> <span class="st">"TinyTeX"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="get-in-touch" class="level2">
+<h2 class="anchored" data-anchor-id="get-in-touch">Get in touch!</h2>
+<p>We encourage you to try <code>{docorator}</code> and provide any suggestions or report problems via the GitHub <a href="https://github.com/GSK-Biostatistics/docorator/issues">issues</a>.</p>
 
 
 </section>
 
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2025-12-19 19:46:29.590794</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-05-21_our_experience_a.../our_experience_as_new_admiral_developers.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{gautier2024,
-  author = {Gautier, Fanny and Patil, Lina},
-  title = {Our Experience as New Admiral Developers, Coming from a
-    {CRO}},
-  date = {2024-05-29},
-  url = {https://pharmaverse.github.io/blog/posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html},
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{krouse2025,
+  author = {Krouse, Becca},
+  title = {Introducing Docorator to the Pharmaverse},
+  date = {2025-12-15},
+  url = {https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_introducing.../introducing_docorator.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-gautier2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Gautier, Fanny, and Lina Patil. 2024. <span>“Our Experience as New
-Admiral Developers, Coming from a CRO.”</span> May 29, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html">https://pharmaverse.github.io/blog/posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-krouse2025" class="csl-entry quarto-appendix-citeas" role="listitem">
+Krouse, Becca. 2025. <span>“Introducing Docorator to the
+Pharmaverse.”</span> December 15, 2025. <a href="https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_introducing.../introducing_docorator.html">https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_introducing.../introducing_docorator.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
