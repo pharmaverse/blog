@@ -23,13 +23,9 @@ link::auto()
 
 <!--------------- post begins here ----------------->
 
-## TL;DR
-
-Finding and reusing clinical programming code is currently slow and scattered. The Code Search Assistant (CSA) fixes this by letting you search code by meaning, not just keywords. It breaks programs into manageable chunks, enriching each with metadata and a short AI summary. Then, when you query the CSA, it returns ranked snippets that match your plain-English question. Each result shows things like the file path, program name, study name, repository, and study description. The result is: quicker reuse of proven code, fewer duplicate implementations, and more consistent programs across studies.
-
 ## Why this matters for pharmaverse programmers
 
-Clinical reporting follows repeatable patterns—ADaM derivations, TFL layouts, and QC checks—but examples are scattered across templates and repositories. Templates cover most standard outputs; however, for non-standard requests or bespoke TFLs, keyword search often misses intent (e.g., “derive ABLFL in ADLB using a pre-dose baseline rule and analysis-visit windows”) because variable names and structures vary by study. CSA translates that intent into semantic retrieval, surfacing relevant, provenance-linked code snippets even when the wording doesn’t match exactly—so you can review, trust, and reuse.
+Clinical reporting is built on repeatable patterns for ADaM derivations, TFLs, and QC, but finding these patterns is a significant challenge. Relevant code is often scattered, and traditional keyword searches fail for non-standard logic because the underlying variable names and structural conventions differ from study to study. CSA directly addresses this root cause by using semantic retrieval to find code based on its conceptual intent, not just matching keywords (e.g: plain english query such as "derive ABLFL in ADLB using a pre-dose baseline rule and analysis-visit windows"). This means programmers can reliably discover, review, and reuse relevant patterns from across all repositories, saving substantial time and ensuring greater consistency in their work.
 
 ## What we built?
 
@@ -37,26 +33,24 @@ CSA is a focused agent inside our Clinical Analysis Assistant. A user asks a que
 
 <img width="1015" height="622" alt="Image" src="https://github.com/user-attachments/assets/254c9966-663e-4d21-950c-9dede4939b31" />
 
-Behind the scenes, we index code from our repositories, split it into coherent chunks, and generate short summaries that describe what each piece of code does, its inputs and outputs, and, for TLG programs, details such as titles and footnotes. We embed the summaries, store the vectors, and retain rich metadata such as programming language, file name, repository, and study description. The interface displays both the results and the parameters used so retrieval stays transparent and audit-friendly.
+Behind the scenes, we index code from our repositories, split it into coherent chunks, and generate short summaries that describe what each piece of code does. We then convert these summaries into numerical representations called embeddings (or vectors), which capture their semantic meaning. This allows the system to find code based on the idea of what it does, not just keyword matching. We store these vectors in a specialized database (vector database) and retain rich metadata such as programming language, file name, repository, and study description. The interface displays both the results and the parameters used so retrieval stays transparent and audit-friendly.
 
+#### Image of the vectorDB and vectors.
 
 ## How it works
 
 ### Understand the ask
-We transform user's question into a semantic search query + metadata filters.
+We transform user's question into a semantic search query + metadata filters using the openai agent SDK. 
 
 ### Retrieve with context
-We perform a semantic search over the vector database + apply substring matching based on the metadata filters. Summaries help match intent (“derive AVALC from PARAMCD”) even if the snippet uses different variable names. The metadata filters help to narrow down the results to the most relevant snippets (e.g: adsl in the program name or phase III in the study description).
+We perform a semantic search over the vector database and apply substring matching based on the metadata filters. Summaries help match intent (“derive AVALC from PARAMCD”) even if the snippet uses different variable names. The metadata filters help to narrow down the results to the most relevant snippets (e.g: adsl in the program name or phase III in the study description). The code is pulled from all the clinical programming repositories from the `devel` branch. 
 
 ### Return with provenance
 Results show snippet text, file path, repo, and any available study metadata. You can jump to source for review and reuse.
 
 *Design principle: retrieval should be fast, explainable, and reproducibles. It should be possible to trace back the code to the original source.*
 
-
 ## Example
-
-## Live demo
 
 ![Image](https://github.com/user-attachments/assets/df717c39-637a-40ae-a670-f8d9a3f26547)
 
@@ -66,11 +60,11 @@ With CSA, programmers can look up ADaM and TLG scripts by intent, such as *"aski
 
 ## Metrics and usage
 
-Over the observation window, the Code Search Assistant (CSA) handled 791 questions from 45 unique users, averaging 42 ± 14 weekly conversations and 92 ± 43 weekly questions. Satisfaction signals were positive: the broader Clinical Analysis Assistant (CAA) scored 3.39/5 for usefulness (n = 174), while the CSA specifically was rated at ~4/5, indicating strong early traction among active users.
+Over the observation window (15th of September 2025 - 19th of October 2025), the Code Search Assistant (CSA) handled 791 questions from 45 unique users, averaging 42 ± 14 weekly conversations and 92 ± 43 weekly questions. Satisfaction signals were positive: the broader Clinical Analysis Assistant (CAA) scored 3.39/5 for usefulness (n = 174), while the CSA specifically was rated at ~4/5, indicating strong early traction among active users.
 
 ## Limitations & what’s next
 
-Today, CSA focuses on fast, trustworthy discovery. We are working on tighter IDE integration via MCP so you can search directly from your editor. We also want to enable better study awareness so results are automatically filtered to the context of your study and clinical programming code. Finally, we are refining the data pipeline to continuously index changes without any manual effort and adding SDTM programs as well. These steps aim to make retrieval not only smarter but also more seamlessly woven into day-to-day programming.
+Today, CSA focuses on fast, trustworthy discovery. We are working on tighter IDE integration via MCP (Model Context Protocol - introduced by [Anthropic](https://www.anthropic.com/news/model-context-protocol)) so you can search directly from your code editor (VSCode, RStudio, etc.). We also want to enable better study awareness so results are automatically filtered to the context of your study and clinical programming code. Finally, we are refining the data pipeline to continuously index changes without any manual effort and adding SDTM programs as well. These steps aim to make retrieval not only smarter but also more seamlessly woven into day-to-day programming.
 
 
 
