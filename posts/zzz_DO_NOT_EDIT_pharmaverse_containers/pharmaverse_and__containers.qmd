@@ -1,0 +1,143 @@
+---
+title: "Pharmaverse and Containers"
+author:
+  - name: My Name
+description: ""
+# Note that the date below will be auto-updated when the post is merged.
+date: "2026-01-12"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Community, Submissions, Technical]
+# Feel free to change the image
+image: "pharmaverse.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_pharmaverse..."
+```
+
+<!--------------- post begins here ----------------->
+
+Streamlining Our Pharmaverse Blog: Reducing Publishing Time with Docker
+As an active contributor to the Pharmaverse blog, I've always appreciated the opportunity to share new insights and tools with our community. While our publishing process has been effective, we continuously seek ways to optimize our workflows. Our CI/CD pipeline for the blog, for instance, typically took about 17 minutes to deploy a new post. This duration has now seen a notable reduction, thanks to the introduction of a new container technology.
+
+I'm pleased to share how the Pharmaverse Docker Image has improved our blog's publishing workflow, bringing our deployment time down to approximately 5 minutes.
+
+The Previous Approach: Package Installation overhead
+Our prior GitHub Actions workflow for building and deploying the Pharmaverse blog, while comprehensive, included a time-consuming step. It used the rocker/tidyverse base image, which necessitated installing a range of R packages during each run.
+
+The relevant section of our old build-deploy job highlighted this:
+
+```r
+  build-deploy:
+    # ... other configurations ...
+    steps:
+      # ... checkout and setup Quarto ...
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            jsonlite
+            tidyverse
+            spelling
+            janitor
+            diffdf
+            admiral
+            admiralonco
+            # ... and many, many more packages ...
+            haven
+      # ... other steps like install tinytex and publish ...
+```
+
+This Install dependencies step, involving a substantial list of Pharmaverse packages, was a primary contributor to the 17-minute execution time. Each workflow run involved downloading and configuring these packages, extending the overall deployment duration.
+
+Adopting the Pharmaverse Docker Image: An Efficient Alternative
+The solution to this challenge came with the introduction of the Pharmaverse Docker Image: ghcr.io/pharmaverse/docker_pharmaverse:4.5.1. This Docker image is specifically designed for pharmaceutical data analysis, featuring over 40 essential Pharmaverse packages pre-installed. These packages cover various functionalities, including CDISC ADaM/SDTM, clinical trial reporting, and regulatory submissions. Built upon the rocker/tidyverse image and incorporating R 4.5.1, it provides a pre-configured environment.
+
+By integrating this image into our GitHub Actions, we could bypass the extensive package installation phase.
+
+Here's an overview of our updated build-deploy job:
+
+```r
+  build-deploy:
+    needs: Update-post-dates
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/pharmaverse/docker_pharmaverse:4.5.1"
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory /__w/blog/blog
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+            version: 1.9.12
+
+      # NOTE: Explicit R package installation is no longer required here.
+
+      - name: Install tinytex
+        run: quarto install tool tinytex
+
+      - name: Mark repo directory as safe
+        run: git config --global --add safe.directory /__w/blog/blog
+
+      - name: Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          path: . # Path to your .qmd file
+          target: gh-pages  # Target branch for GitHub Pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The outcome of this change has been a consistent reduction in publishing time. Our blog now publishes in approximately 5 minutes. This improvement contributes to a more efficient content delivery process, allowing us to share updates and news more promptly.
+
+Wider Applications of the Pharmaverse Docker Image
+While this update directly benefits our blog's publishing, the Pharmaverse Docker image offers broader utility. It is a valuable resource for:
+
+Pharmaceutical data analysis: Supporting tasks related to ADaM, SDTM, and TLFs.
+
+Clinical trial programming: Assisting with regulatory submissions.
+
+Reproducible research: Providing a consistent and verifiable environment.
+
+Training & education: Offering a ready-to-use setup for educational purposes.
+
+CI/CD pipelines: Enhancing automated testing and reporting, as observed in our own workflow.
+
+Collaborative development: Facilitating consistent environments across teams.
+
+This container technology aims to simplify dependency management, allowing users to concentrate on their primary tasks.
+
+Engaging with the Pharmaverse Community
+The Pharmaverse Docker Image represents a collaborative effort within the life sciences industry to provide open-source tools. For those working with Pharmaverse packages and R in development, research, or CI/CD contexts, exploring this image may offer practical advantages in efficiency and reproducibility.
+
+Explore the Pharmaverse Docker Image repository: pharmaverse/docker_pharmaverse Discover more about Pharmaverse: pharmaverse.org
+
+We acknowledge the contributions of the Pharmaverse community and the Rocker Project for their support in developing these resources.
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
