@@ -21,13 +21,15 @@ long_slug <- "zzz_DO_NOT_EDIT_pharmaverse..."
 
 <!--------------- post begins here ----------------->
 
-Streamlining Our Pharmaverse Blog: Reducing Publishing Time with Docker
-As an active contributor to the Pharmaverse blog, I've always appreciated the opportunity to share new insights and tools with our community. While our publishing process has been effective, we continuously seek ways to optimize our workflows. Our CI/CD pipeline for the blog, for instance, typically took about 17 minutes to deploy a new post. This duration has now seen a notable reduction, thanks to the introduction of a new container technology.
+## Streamlining Our Pharmaverse Blog: Reducing Publishing Time with Docker
+
+As an active contributor to the Pharmaverse blog, I've always appreciated the opportunity to share new insights and tools with our community. While our publishing process has been effective, we continuously seek ways to optimize our workflows. Our CI/CD pipeline for the blog, for instance, typically took about 17 minutes to deploy a new post. This duration has now seen a notable reduction, thanks to the introduction of a new container technology and the guidance of Maciej Nasinski.
 
 I'm pleased to share how the Pharmaverse Docker Image has improved our blog's publishing workflow, bringing our deployment time down to approximately 5 minutes.
 
-The Previous Approach: Package Installation overhead
-Our prior GitHub Actions workflow for building and deploying the Pharmaverse blog, while comprehensive, included a time-consuming step. It used the rocker/tidyverse base image, which necessitated installing a range of R packages during each run.
+**The Previous Approach:** Package Installation overhead
+
+Our prior GitHub Actions workflow for building and deploying the Pharmaverse blog, while comprehensive, included a time-consuming step. It used the rocker/tidyverse base image, which necessitated installing a range of pharmaverse specific R packages during each run.
 
 The relevant section of our old build-deploy job highlighted this:
 
@@ -59,8 +61,9 @@ The relevant section of our old build-deploy job highlighted this:
 
 This Install dependencies step, involving a substantial list of Pharmaverse packages, was a primary contributor to the 17-minute execution time. Each workflow run involved downloading and configuring these packages, extending the overall deployment duration.
 
-Adopting the Pharmaverse Docker Image: An Efficient Alternative
-The solution to this challenge came with the introduction of the Pharmaverse Docker Image: ghcr.io/pharmaverse/docker_pharmaverse:4.5.1. This Docker image is specifically designed for pharmaceutical data analysis, featuring over 40 essential Pharmaverse packages pre-installed. These packages cover various functionalities, including CDISC ADaM/SDTM, clinical trial reporting, and regulatory submissions. Built upon the rocker/tidyverse image and incorporating R 4.5.1, it provides a pre-configured environment.
+## Adopting the Pharmaverse Docker Image: An Efficient Alternative
+
+The solution to this challenge came with the introduction of the Pharmaverse Docker Image: `ghcr.io/pharmaverse/docker_pharmaverse:4.5.1`. This Docker image is specifically designed for pharmaceutical data analysis, featuring over 40 essential Pharmaverse packages pre-installed. These packages cover various functionalities, including CDISC ADaM/SDTM, clinical trial reporting, and regulatory submissions. Built upon the rocker/tidyverse image and incorporating R 4.5.1, it provides a pre-configured environment.
 
 By integrating this image into our GitHub Actions, we could bypass the extensive package installation phase.
 
@@ -105,27 +108,24 @@ Here's an overview of our updated build-deploy job:
 
 The outcome of this change has been a consistent reduction in publishing time. Our blog now publishes in approximately 5 minutes. This improvement contributes to a more efficient content delivery process, allowing us to share updates and news more promptly.
 
-Wider Applications of the Pharmaverse Docker Image
+## Wider Applications of the Pharmaverse Docker Image
+
 While this update directly benefits our blog's publishing, the Pharmaverse Docker image offers broader utility. It is a valuable resource for:
 
-Pharmaceutical data analysis: Supporting tasks related to ADaM, SDTM, and TLFs.
-
-Clinical trial programming: Assisting with regulatory submissions.
-
-Reproducible research: Providing a consistent and verifiable environment.
-
-Training & education: Offering a ready-to-use setup for educational purposes.
-
-CI/CD pipelines: Enhancing automated testing and reporting, as observed in our own workflow.
-
-Collaborative development: Facilitating consistent environments across teams.
+* Pharmaceutical data analysis: Supporting tasks related to ADaM, SDTM, and TLFs.
+* Clinical trial programming: Assisting with regulatory submissions.
+* Reproducible research: Providing a consistent and verifiable environment.
+* Training & education: Offering a ready-to-use setup for educational purposes.
+* CI/CD pipelines: Enhancing automated testing and reporting, as observed in our own workflow.
+* Collaborative development: Facilitating consistent environments across teams.
 
 This container technology aims to simplify dependency management, allowing users to concentrate on their primary tasks.
 
-Engaging with the Pharmaverse Community
+## Engaging with the Pharmaverse Community
+
 The Pharmaverse Docker Image represents a collaborative effort within the life sciences industry to provide open-source tools. For those working with Pharmaverse packages and R in development, research, or CI/CD contexts, exploring this image may offer practical advantages in efficiency and reproducibility.
 
-Explore the Pharmaverse Docker Image repository: pharmaverse/docker_pharmaverse Discover more about Pharmaverse: pharmaverse.org
+Explore the Pharmaverse Docker Image repository: [pharmaverse/docker_pharmaverse](https://github.com/pharmaverse/docker_pharmaverse) Discover more about Pharmaverse: [pharmaverse.org](https://pharmaverse.org/)
 
 We acknowledge the contributions of the Pharmaverse community and the Rocker Project for their support in developing these resources.
 
