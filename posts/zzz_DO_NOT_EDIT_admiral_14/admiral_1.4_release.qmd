@@ -10,7 +10,6 @@ date: "2026-01-09"
 categories: [ADaM, Community, Submissions, Technical]
 # Feel free to change the image
 image: "admiral.png"
-
 ---
 
 <!--------------- typical setup ----------------->
@@ -21,23 +20,49 @@ long_slug <- "zzz_DO_NOT_EDIT_admiral_1.4..."
 
 <!--------------- post begins here ----------------->
 
-
 # admiral 1.4 is here!
 
 ## What is in this release?
 
 This release brings the following:
 
-* Experimental functions `derive_var_nfrlt()` and `convert_xxtpt_to_hours()` to simplify time point and visit derivations. 
-* Integration of NCI-CTCAE version 6.0 lab grading criteria for both SI and US units, with all grading metadata now maintained in a more readable JSON format for improved consistency and maintainability. 
-* Experimental ADAB template script to aid in creating Anti-drug Antibody Analysis Datasets, while several existing parameter derivation functions have been updated for greater robustness. 
-* Notable breaking change involves `derive_var_atoxgr_dir()`, where the abnormal_indicator argument is replaced by low_indicator and high_indicator to support the updated CTCAE v6.0 criteria
-* `derive_var_merged_summary()` has been renamed to `derive_vars _merged_summary()` to align with programming conventions. 
-* Improvement of documentation, including the addition of an "Ask AI" widget to assist users.
+-   Experimental functions `derive_var_nfrlt()` and `convert_xxtpt_to_hours()` to simplify time point and visit derivations.
+-   Integration of NCI-CTCAE version 6.0 lab grading criteria for both SI and US units, with all grading metadata now maintained in a more readable JSON format for improved consistency and maintainability.
+-   Experimental ADAB template script to aid in creating Anti-drug Antibody Analysis Datasets, while several existing parameter derivation functions have been updated for greater robustness.
+-   Notable breaking change involves `derive_var_atoxgr_dir()`, where the abnormal_indicator argument is replaced by low_indicator and high_indicator to support the updated CTCAE v6.0 criteria
+-   `derive_var_merged_summary()` has been renamed to `derive_vars _merged_summary()` to align with programming conventions.
+-   Improvement of documentation, including the addition of an "Ask AI" widget to assist users.
 
 Let's discuss!!
 
 ## New experimental functions!
+
+The new experimental functions help derive variables for time-point analysis. One such variable is `NFRLT` (Nominal Relative Time from First Dose), which is used extensively in pharmacokinetic analysis. This is the namesake variable for `derive_var_nfrlt()`. This function can be used to directly derive `NFRLT` in the Pharmacokinetic Concentrations (`PC`) domain and in the Exposure (`EX`) domain. These domains are typically combined to form the Pharmacokinetic Concentrations Analysis Data (`ADPC`). Under the hood of this function is `convert_xxtpt_to_hours()`, which converts timepoint variables such as `PCTPT` to numeric hours using regular expressions. The hours computed from `convert_xxtpt_to_hours()` are combined with the days from a visit variable such as `VISITDY` to derive `NFRLT`. Note that the unit variable `FRLTU` can also be derived, and there are multiple output unit options (hours, days, weeks, minutes).
+
+```{r}
+adpc_nfrlt <- tribble(
+  ~USUBJID, ~VISITDY, ~PCTPT,           ~PCSTRESN,
+  "001",    1,        "Pre-dose",       0.0,
+  "001",    1,        "30M Post-dose",  5.2,
+  "001",    1,        "1H Post-dose",   8.4,
+  "001",    1,        "2H Post-dose",   12.1,
+  "001",    1,        "4H Post-dose",   10.3,
+  "001",    1,        "8H Post-dose",   6.8,
+  "001",    1,        "24H Post-dose",  2.1
+)
+
+adpc_nfrlt %>%
+  derive_var_nfrlt(
+    new_var = NFRLT,
+    new_var_unit = FRLTU,
+    out_unit = "HOURS",
+    tpt_var = PCTPT,
+    visit_day = VISITDY
+  )
+
+```
+The functions can work with any time-point variables from other domains such as `LB`, `VS` or 'EG`. There a is also a treatment duration option in the case of infusions and an option for time point ranges such as "4-8H AFTER END OF INFUSION".
+
 
 ## New template and Vignette
 
@@ -46,9 +71,6 @@ Let's discuss!!
 ## Very minimal breaking changes
 
 ## What's coming for 1.5?
-
-
-
 
 <!--------------- appendices go here ----------------->
 
