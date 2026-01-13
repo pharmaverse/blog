@@ -23,11 +23,13 @@ long_slug <- "zzz_DO_NOT_EDIT_pharmaverse..."
 
 ## Streamlining Our Pharmaverse Blog: Reducing Publishing Time with Docker
 
-As an active contributor to the Pharmaverse blog, I've always appreciated the opportunity to share new insights and tools with our community. While our publishing process has been effective, we continuously seek ways to optimize our workflows. Our CI/CD pipeline for the blog, for instance, typically took about 17 minutes to deploy a new post. This duration has now seen a notable reduction, thanks to the introduction of a new container technology and the guidance of Maciej Nasinski.
+As an active contributor to the Pharmaverse blog, I've always appreciated the opportunity to share new insights and tools with our community. While the blog publishing process has been effective, we continuously seek ways to optimize our workflows. Currently, the CI/CD pipeline for publishing the blog typically took about 17 minutes to deploy a new post. Unfortunately, I was unsure how to create a new container/image to meet my needs. Under the fabulous tutelage of Maciej Nasinski, we built a specific
+container for the publishing process. which allowed for a notable reduction in publishing time.
 
-I'm pleased to share how the Pharmaverse Docker Image has improved our blog's publishing workflow, bringing our deployment time down to approximately 5 minutes.
+Below I will discuss how the Pharmaverse Docker Image has improved our blog's publishing workflow, bringing our deployment time down to approximately 5 minutes. We are also interested in feedback on potential other uses
+of this container or builder additional containers for certain purposes. Get in touch if you have ideas!
 
-**The Previous Approach:** Package Installation overhead
+## **The Previous Approach:** Package Installation overhead
 
 Our prior GitHub Actions workflow for building and deploying the Pharmaverse blog, while comprehensive, included a time-consuming step. It used the rocker/tidyverse base image, which necessitated installing a range of pharmaverse specific R packages during each run.
 
@@ -106,7 +108,7 @@ Here's an overview of our updated build-deploy job:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-The outcome of this change has been a consistent reduction in publishing time. Our blog now publishes in approximately 5 minutes. This improvement contributes to a more efficient content delivery process, allowing us to share updates and news more promptly.
+The outcome of this change has been a consistent reduction in publishing time. Our blog now publishes in approximately 5 minutes. Yay!
 
 ## Wider Applications of the Pharmaverse Docker Image
 
