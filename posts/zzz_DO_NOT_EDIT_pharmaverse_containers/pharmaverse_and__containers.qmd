@@ -121,7 +121,42 @@ While this update directly benefits our blog's publishing, the Pharmaverse Docke
 * CI/CD pipelines: Enhancing automated testing and reporting, as observed in our own workflow.
 * Collaborative development: Facilitating consistent environments across teams.
 
-This container technology aims to simplify dependency management, allowing users to concentrate on their primary tasks.
+
+### Example: Running Reproducible RStudio Locally
+
+To spin up a local RStudio instance using the pharmaverse image, you can use a Docker "one-liner." This command condenses the entire configuration - networking, storage, and background execution - into a single execution string. It bridges your local folder to the container, allowing you to edit files "on the fly" without installing R or packages on your actual machine.
+
+Choose the command that matches your operating system:
+
+#### 1. Linux & Intel Macs (Standard)
+
+For standard architecture, we set a simple password (`rstudio`) and mount the current directory.
+
+`docker run -d --name my_pharma_rstudio --rm -p 8787:8787 -e PASSWORD=rstudio -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1`
+
+#### 2. Apple Silicon (M1/M2/M3)
+
+**Note:** We do not yet natively support ARM64 architecture (e.g., Apple Silicon). The command below uses emulation (`--platform linux/amd64`) to run the image. We also disable authentication because the slower emulation speed can sometimes cause password setup to time out.
+
+`docker run -d --name my_pharma_rstudio --rm --platform linux/amd64 -p 8787:8787 -e DISABLE_AUTH=true -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1`
+
+#### What does this command do?
+
+* **`--rm` & `-d**`: Runs the container in the background (detached) and automatically removes it when stopped, keeping your machine clean.
+* **`-v "$(pwd)":...`**: Takes your **P**resent **W**orking **D**irectory and mounts it inside the container. Any file you save in RStudio's "project" folder is instantly saved to your local computer.
+* **`--platform linux/amd64`** *(Mac only)*: Forces your computer to emulate the Intel architecture required by the image.
+* **`-e DISABLE_AUTH=true`** *(Mac only)*: Bypasses the login screen to ensure immediate access despite slower emulation speeds.
+
+#### Accessing RStudio
+
+Once the command is running:
+
+1. Open your browser to `http://localhost:8787`.
+2. **Linux/Intel:** Log in with user `rstudio` and password `rstudio`.
+3. **Apple Silicon:** You will be logged in automatically.
+
+You will see your local files mapped to the `project` folder in the Files pane, ready for analysis.
+
 
 ## Engaging with the Pharmaverse Community
 
