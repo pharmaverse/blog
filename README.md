@@ -2,14 +2,14 @@
 
 ## Purpose
 
-The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts.
+The pharmaverse blog seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts.
 These posts will be hosted on this [pharmaverse blog](https://pharmaverse.github.io/blog/) and promoted on the pharmaverse slack channels as well as on LinkedIn.
 
-As the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team.
+As the pharmaverse blog is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the pharmaverse blog team.
 
 ## Spirit of a Blog Post
 
-The CWG believes that the following 4 points will help guide the creation of Blog Posts.
+The pharmaverse blog believes that the following 4 points will help guide the creation of Blog Posts.
 
 -   **Short**
 -   **Personalized**
@@ -28,8 +28,8 @@ A bit of cheeky language is also encouraged.
 Every dependency introduced in a post adds some risk to the post longevity.
 As package dependencies change, posts should be built in a way that they can be updated to stay relevant.
 
-**Readable:** The CWG sees this site as more of introductory site rather than an advanced user site.
-Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity.
+**Readable:** The pharmaverse blog sees this site as more of introductory site rather than an advanced user site.
+Therefore, the pharmaverse blog feels that code should be introduced in a way that promotes readability over complexity.
 
 ## What types of posts are allowed on this site?
 
