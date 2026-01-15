@@ -53,6 +53,7 @@ We are thrilled to announce that {admiral} has partnered with [kapa.ai](https://
 Our first experimental functions help derive variables for time-point analysis. One such variable is `NFRLT` (Nominal Relative Time from First Dose), which is used extensively in pharmacokinetic analysis. This is the namesake variable for `derive_var_nfrlt()`. This function can be used to directly derive `NFRLT` in the Pharmacokinetic Concentrations (`PC`) domain and in the Exposure (`EX`) domain. These domains are typically combined to form the Pharmacokinetic Concentrations Analysis Data (`ADPC`). Under the hood of this function is `convert_xxtpt_to_hours()`, which converts timepoint variables such as `PCTPT` to numeric hours using regular expressions. The hours computed from `convert_xxtpt_to_hours()` are combined with the days from a visit variable such as `VISITDY` to derive `NFRLT`. Note that the unit variable `FRLTU` can also be derived, and there are multiple output unit options (hours, days, weeks, minutes).
 
 ```{r}
+install.package("admiral")
 library(admiral)
 library(tibble)
 
