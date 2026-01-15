@@ -10,7 +10,242 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Short, fun and user-driven content around the pharmaverse.</description>
 <generator>quarto-1.9.12</generator>
-<lastBuildDate>Fri, 19 Dec 2025 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 15 Jan 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>admiral 1.4 release</title>
+  <dc:creator>Jeff Dickinson</dc:creator>
+  <dc:creator>Ben Straub</dc:creator>
+  <dc:creator>Edoardo Mancini</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral_1.4_release.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p><img src="https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral.png" class="img-fluid"></p>
+<section id="admiral-1.4-is-here" class="level1">
+<h1>admiral 1.4 is here!</h1>
+<p>There’s nothing like a new {admiral} release to start the new year with a bang, and that’s exactly what we have for you with {admiral} 1.4! This release comes packed with few choice updates and some exciting new features (<strong>including our first AI integration!</strong>) that will undoubtedly improve your experience creating ADaMs in R. However, in line with our commitment to stability and maturity, we have once again reduced the number of breaking changes to an absolute minimum. Take a look at the rest of the blog post below to learn more about what to expect in <a href="https://pharmaverse.github.io/admiral/cran-release/">{admiral} 1.4</a>.</p>
+<section id="tldr-what-is-in-this-release" class="level2">
+<h2 class="anchored" data-anchor-id="tldr-what-is-in-this-release">TLDR: What is in this release?</h2>
+<ul>
+<li>{admiral} has partnered with <a href="https://www.kapa.ai/">kapa.ai</a> to introduce an AI-powered chatbot within every page of our websites.</li>
+<li>We have added our first experimental functions: <code>derive_var_nfrlt()</code> and <code>convert_xxtpt_to_hours()</code>. These simplify time point and visit derivations.</li>
+<li>There is a new ADAB template script and correspondingly new vignette. These will aid in creating Anti-drug Antibody Analysis Datasets</li>
+<li>Several existing parameter derivation functions have been updated for greater robustness.</li>
+<li>All the {admiral} templates can now be viewed directly from our website within the new <a href="https://pharmaverse.github.io/admiral/cran-release/articles/templates.html">Explore ADaM Templates</a>.</li>
+<li>{admiral} is now integrated with NCI-CTCAE version 6.0 lab grading criteria for both SI and US units, with all grading metadata now maintained in a more readable JSON format for improved consistency and maintainability.</li>
+<li><code>derive_var_atoxgr_dir()</code> received a small breaking change: the <code>abnormal_indicator</code> argument was replaced by <code>low_indicator</code> and <code>high_indicator</code> to support the updated CTCAE v6.0 criteria.</li>
+<li><code>derive_var_merged_summary()</code> has been renamed to <code>derive_vars _merged_summary()</code> to align with programming conventions.</li>
+</ul>
+<p>Please peruse the <a href="https://pharmaverse.github.io/admiral/cran-release/news/index.html">Changelog</a> to see the full set of updates in {admiral} 1.4.</p>
+<p>Let’s take a few deep-dives to explore some of these updates in more detail.</p>
+</section>
+<section id="deep-dive-1-kapa.ai-integration" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-1-kapa.ai-integration">Deep dive 1: kapa.ai integration</h2>
+<p>We are thrilled to announce that {admiral} has partnered with <a href="https://www.kapa.ai/">kapa.ai</a> under their <a href="https://docs.kapa.ai/kapa-for-open-source">Open Source Program</a> to introduce an AI-powered chatbot within every page of our website. This LLM chatbot is trained using the documentation pages of {admiral} and all our therapeutic area extension packages as well as the {pharmaversesdtm} and {pharmaverseadam} data packages and the ADaM IG. Indeed, look out for it to be added to every other package in the {admiral} ecosystem in their upcoming releases this month. To use the chatbot, simply click on the “Ask AI” button at the bottom right corner of any website page and start asking away - you may find that you get redirected to a User Guide, a function reference page or the website of another {admiral} package that you didn’t even know existed!</p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/kapa.png" class="img-fluid"></p>
+</section>
+<section id="deep-dive-2-experimental-functions" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-2-experimental-functions">Deep dive 2: Experimental functions!</h2>
+<p><em>Experimental functions are a new class of functions, tagged with the <a href="https://pharmaverse.github.io/admiral/cran-release/reference/#experimental">“Experimental” badge</a>. This is our way of adding targeted, new functionality that we can quickly improve/modify without breaking our commitment to stability. The badge will be removed once the dev team feels the function is stable, and no deprecation messages will be given to the user if breaking changes are implemented before removing the experimental badge. However, {admiral} will document the breaking change in the Changelog. Once the “Experimental” badge is removed we will proceed with the normal deprecation cycle if needed.</em></p>
+<p>Our first experimental functions help derive variables for time-point analysis. One such variable is <code>NFRLT</code> (Nominal Relative Time from First Dose), which is used extensively in pharmacokinetic analysis. This is the namesake variable for <code>derive_var_nfrlt()</code>. This function can be used to directly derive <code>NFRLT</code> in the Pharmacokinetic Concentrations (<code>PC</code>) domain and in the Exposure (<code>EX</code>) domain. These domains are typically combined to form the Pharmacokinetic Concentrations Analysis Data (<code>ADPC</code>). Under the hood of this function is <code>convert_xxtpt_to_hours()</code>, which converts timepoint variables such as <code>PCTPT</code> to numeric hours using regular expressions. The hours computed from <code>convert_xxtpt_to_hours()</code> are combined with the days from a visit variable such as <code>VISITDY</code> to derive <code>NFRLT</code>. Note that the unit variable <code>FRLTU</code> can also be derived, and there are multiple output unit options (hours, days, weeks, minutes).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">install.packages</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"admiral"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">repos =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://cloud.r-project.org"</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Installing package into '/usr/local/lib/R/site-library'
+(as 'lib' is unspecified)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>also installing the dependency 'admiraldev'</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(admiral)</span>
+<span id="cb4-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tibble)</span>
+<span id="cb4-3"></span>
+<span id="cb4-4">adpc_nfrlt <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tribble</span>(</span>
+<span id="cb4-5">  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>USUBJID, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>VISITDY, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PCTPT,           <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>PCSTRESN,</span>
+<span id="cb4-6">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Pre-dose"</span>,       <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.0</span>,</span>
+<span id="cb4-7">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"30M Post-dose"</span>,  <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5.2</span>,</span>
+<span id="cb4-8">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1H Post-dose"</span>,   <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8.4</span>,</span>
+<span id="cb4-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2H Post-dose"</span>,   <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12.1</span>,</span>
+<span id="cb4-10">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"4H Post-dose"</span>,   <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10.3</span>,</span>
+<span id="cb4-11">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"8H Post-dose"</span>,   <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6.8</span>,</span>
+<span id="cb4-12">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"24H Post-dose"</span>,  <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.1</span></span>
+<span id="cb4-13">)</span>
+<span id="cb4-14"></span>
+<span id="cb4-15">adpc_nfrlt <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">derive_var_nfrlt</span>(</span>
+<span id="cb4-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var =</span> NFRLT,</span>
+<span id="cb4-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">new_var_unit =</span> FRLTU,</span>
+<span id="cb4-19">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">out_unit =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HOURS"</span>,</span>
+<span id="cb4-20">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">tpt_var =</span> PCTPT,</span>
+<span id="cb4-21">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">visit_day =</span> VISITDY</span>
+<span id="cb4-22">  )</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 6
+  USUBJID VISITDY PCTPT         PCSTRESN NFRLT FRLTU
+  &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;
+1 001           1 Pre-dose           0     0   HOURS
+2 001           1 30M Post-dose      5.2   0.5 HOURS
+3 001           1 1H Post-dose       8.4   1   HOURS
+4 001           1 2H Post-dose      12.1   2   HOURS
+5 001           1 4H Post-dose      10.3   4   HOURS
+6 001           1 8H Post-dose       6.8   8   HOURS
+7 001           1 24H Post-dose      2.1  24   HOURS</code></pre>
+</div>
+</div>
+<p>The functions can work with any time-point variables from other domains such as <code>LB</code>, <code>VS</code> or ’EG`. There a is also a treatment duration option in the case of infusions and an option for time point ranges such as “4-8H AFTER END OF INFUSION”.</p>
+</section>
+<section id="deep-dive-3-anti-drug-antibody-template-and-vignette" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-3-anti-drug-antibody-template-and-vignette">Deep dive 3: Anti-drug-antibody template and vignette</h2>
+<p>{admiral} 1.4 introduces a new ADaM template script to aid in creating Anti-drug Antibody Analysis Datasets (<code>ADAB</code>). This template is accompanied by a detailed <a href="https://pharmaverse.github.io/admiral/cran-release/articles/adab.html">vignette</a> that walks you through the process of deriving key variables and implementing analysis strategies specific to anti-drug antibody data, including the use of one of our new experimental functions <code>derive_var_nfrlt()</code>. The template covers common scenarios encountered in immunogenicity assessments, providing a solid foundation for users to build upon and customize according to their study requirements.</p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/adab_vignette.png" class="img-fluid"></p>
+<p>As usual, to use start using the template you can run:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">use_ad_template</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"adab"</span>)</span></code></pre></div></div>
+</div>
+<p>…or you can peruse the template directly from the website from our new <a href="https://pharmaverse.github.io/admiral/cran-release/articles/templates.html">Explore ADaM Templates</a> page.</p>
+</section>
+</section>
+<section id="whats-coming-in-admiral-1.5" class="level1">
+<h1>What’s coming in admiral 1.5?</h1>
+<p>{admiral} is very much community driven, so please continue reaching out through <a href="https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A">Slack</a> or <a href="https://github.com/pharmaverse/admiral/issues">GitHub</a> if you have ideas or requests for enhancements to our package. {admiral} 1.5 is due to release in June 2026, and some current ideas for new content include improved Estimands documentation and ways to enable positive censoring within TTE derivations.</p>
+<!--------------- appendices go here ----------------->
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2026-01-15 21:08:50.200778</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.4.../admiral_1.4_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dickinson2026,
+  author = {Dickinson, Jeff and Straub, Ben and Mancini, Edoardo},
+  title = {Admiral 1.4 Release},
+  date = {2026-01-15},
+  url = {https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral_1.4_release.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dickinson2026" class="csl-entry quarto-appendix-citeas">
+Dickinson, Jeff, Ben Straub, and Edoardo Mancini. 2026. <span>“Admiral
+1.4 Release.”</span> January 15, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral_1.4_release.html">https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral_1.4_release.html</a>.
+</div></div></section></div> ]]></description>
+  <category>ADaM</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral_1.4_release.html</guid>
+  <pubDate>Thu, 15 Jan 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral.png" medium="image" type="image/png" height="152" width="144"/>
+</item>
 <item>
   <title>Introducing docorator to the pharmaverse</title>
   <dc:creator>Becca Krouse</dc:creator>
@@ -362,7 +597,7 @@ Pharmaverse.”</span> December 19, 2025. <a href="https://pharmaverse.github.io
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:43:36.439067</p>
+<p>2026-01-15 21:07:18.182323</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -434,7 +669,7 @@ Tools.”</span> December 18, 2025. <a href="https://pharmaverse.github.io/blog/
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:43:32.279709</p>
+<p>2026-01-15 21:07:14.462566</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -767,7 +1002,7 @@ font-style: inherit;">"admiralneuro"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:44:34.078075</p>
+<p>2026-01-15 21:08:11.350319</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_introducing.../introducing_admiralneuro.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1099,7 +1334,7 @@ plot</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:44:43.07334</p>
+<p>2026-01-15 21:08:19.490108</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-05-12_faster_clinical_trial_reporting.../faster_clinical_trial_reporting.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1184,7 +1419,7 @@ and ADaM Standards with Open-Source R Packages.”</span> September 12,
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:44:16.031741</p>
+<p>2026-01-15 21:07:54.514703</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-08-11_rtflite_1.0.0.../rtflite.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1749,7 +1984,7 @@ for AGEGR2. Please check your controlled terminology.</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:44:54.902252</p>
+<p>2026-01-15 21:08:30.36667</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_metacore_0.2.0/metacore_0.2.0.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1989,7 +2224,7 @@ font-style: inherit;">oak_id_vars</span>()</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:45:22.464166</p>
+<p>2026-01-15 21:09:15.875408</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverseraw__package.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2047,7 +2282,7 @@ Package.”</span> July 7, 2025. <a href="https://pharmaverse.github.io/blog/pos
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:45:29.948688</p>
+<p>2026-01-15 21:09:22.558418</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_p_hu_se__up.../p_hu_se__update.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2109,7 +2344,7 @@ council, pharmaverse. 2025. <span>“PHUSE Update.”</span> July 4, 2025.
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:44:27.111803</p>
+<p>2026-01-15 21:08:04.77827</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_did_my_eyes.../did_my_eyes_just_see__python_in_the_pharmaverse.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2398,7 +2633,7 @@ font-style: inherit;">TRUE</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:45:53.982634</p>
+<p>2026-01-15 21:09:43.628898</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.3.../admiral_1.3.0:_documentation_go!!.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -5557,7 +5792,7 @@ font-style: inherit;">Log</span> path: /cloud/project/posts/zzz_DO_NOT_EDIT_logr
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:45:51.393685</p>
+<p>2026-01-15 21:09:41.33093</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_logrx_0.4.0.../logrx_0_4_0_logs_for_your__r_programs.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -5607,7 +5842,7 @@ May 19, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-05-19_logrx
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:44:00.80487</p>
+<p>2026-01-15 21:07:40.528162</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_welcome,__a.../welcome,__ashley__tarasiewicz.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -5682,7 +5917,7 @@ April 16, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-04-16_wel
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:43:15.698158</p>
+<p>2026-01-15 21:06:59.793082</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-03-11_code_collaborati.../code_collaboration_in__ne_st.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -5738,7 +5973,7 @@ April 8, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-04-08_code
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:43:55.796333</p>
+<p>2026-01-15 21:07:35.956311</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_welcoming__.../welcoming__novartis_to_the__pharmaverse__council!.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -6556,7 +6791,7 @@ WEEK 5 DAY 36
 t_ds footnotes
 Confidential and for internal use only
 GitHub repository: NA
-Git hash: 129850ac5f66de7ffc75fa8012a46399bf964274
+Git hash: 2f0ba11a275539b4d4f3f2e20de491540aee1b76
 
 Slot "titles":
  Patient Disposition (Intent to Treat Population)
@@ -6628,7 +6863,7 @@ font-style: inherit;">outfile =</span> filepath)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:45:46.807842</p>
+<p>2026-01-15 21:09:37.454663</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_automatic_s.../automatic_slide_generation_with_%7Bautoslide_r%7D.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -6736,7 +6971,7 @@ Needleman, Laura. 2025. <span>“Diversity Champion Updates.”</span> March
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:43:07.289938</p>
+<p>2026-01-15 21:06:52.05895</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_teal_0.16.0.../teal_0.16.0_is_released.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -6787,7 +7022,7 @@ Unardi, Dony. 2025. <span>“Teal 0.16.0 Is Released!”</span> March 3,
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-12 13:43:52.904592</p>
+<p>2026-01-15 21:07:33.373156</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_council__me.../council__member_updates.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -6806,620 +7041,6 @@ February 28, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-02-28_
   <guid>https://pharmaverse.github.io/blog/posts/2025-02-28_council__me.../council__member_updates.html</guid>
   <pubDate>Fri, 28 Feb 2025 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2025-02-28_council__me.../jygn_pharmaverse.png" medium="image" type="image/png" height="167" width="144"/>
-</item>
-<item>
-  <title>Working with Clinical Trial Data? There’s a Pharmaverse Package for That</title>
-  <dc:creator>Gift Kenneth</dc:creator>
-  <dc:creator>Sunil Gupta</dc:creator>
-  <dc:creator>APPSILON </dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/managing-clinical-trial-data.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<!--------------- typical setup ----------------->
-<!--------------- post begins here ----------------->
-<p>Working with clinical trial data is no small task. It needs to be precise, compliant, and efficient. Traditionally, this meant using proprietary tools and working within siloed systems, which often made the process more complicated and expensive than necessary. But we think there’s a better way.</p>
-<p>The <a href="https://pharmaverse.org/"><strong>pharmaverse</strong></a> is an open-source ecosystem of R packages built specifically for clinical trials. These tools integrate seamlessly with the <a href="https://www.tidyverse.org/">Tidyverse</a>, making data management more flexible, efficient, and transparent.</p>
-<p>Whether you’re collecting, validating, analyzing, or preparing data for regulatory submission, there’s a pharmaverse package designed to support your workflow and help you work smarter.</p>
-<p>This post covers:</p>
-<ul>
-<li><p>Key stages of clinical trials and the R packages that support them</p></li>
-<li><p>Creating ADSL datasets and essential programming steps</p></li>
-<li><p>Key players in pharmaverse and whether you need all packages</p></li>
-<li><p>How pharmaverse compares to Tidyverse and how to learn it</p></li>
-</ul>
-<p>By the end, you’ll have a clear understanding of how pharmaverse supports clinical trial operations and how to apply these tools in your work.</p>
-<section id="key-stages-of-clinical-reporting" class="level2">
-<h2 class="anchored" data-anchor-id="key-stages-of-clinical-reporting">Key Stages of Clinical Reporting</h2>
-<p>Managing clinical trial data involves multiple stages, each with its own challenges. <strong>Pharmaverse</strong> provides a range of R packages that support different parts of the process, sometimes even offering multiple options for the same task. This flexibility allows organizations to choose the best tools for their specific needs rather than sticking to a one-size-fits-all approach.</p>
-<p>A <strong>metadata-driven approach</strong> helps ensure that clinical trial data is consistently structured and aligned with regulatory standards. The typical process follows this sequence:</p>
-<p><strong>Metadata</strong> ➝ <strong>OAK</strong> ➝ <strong>Admiral</strong> ➝ <strong>Define.xml</strong> ➝ <strong>TLGs</strong> ➝ <strong>Submissions</strong></p>
-<p>Some examples of <strong>pharmaverse</strong> packages that support clinical reporting include:</p>
-<ul>
-<li>{diffdf} – Tracking differences in datasets.</li>
-<li>{metatools} – Metadata management and transformation.</li>
-<li>{sdtm.oak} – The primary <strong>pharmaverse</strong> package for SDTM dataset creation.</li>
-<li>{datacutr} - Performing data cuts.</li>
-<li>{admiral} – Standardized data derivations.</li>
-<li>{metacore} – Metadata-driven structures.</li>
-<li>The <strong>pharmaverse</strong> provides multiple table-making packages, such as {chevron} (which builds on {rtables}), {Tplyr}, {pharmaRTF}, {gtsummary}, {cards}, {tfrmt}, and {tidytlg}. More tools are listed on the <a href="https://pharmaverse.org/e2eclinical/tlg/">TLGs page</a>.</li>
-<li>{xportr} – CDISC-compliant dataset export.</li>
-<li>{pkglite} – Package management and tracking.</li>
-<li>{metacore} and {metatools} – For standardized metadata structures and validation.</li>
-<li>{logrx} - For logging R scripts.</li>
-</ul>
-<p>Pharmaverse packages are built on top of <strong><a href="https://www.tidyverse.org/">Tidyverse</a></strong> tools and integrate seamlessly with packages like {dplyr} for data manipulation and {ggplot2} for visualization.</p>
-<blockquote class="blockquote">
-<p><strong>Note:</strong> This post highlights some key <strong>pharmaverse</strong> packages relevant to clinical reporting. For a full and up-to-date list, visit the <a href="https://pharmaverse.org/">Pharmaverse website</a>. If there’s a package we missed that should be included, let us know, and we’d be happy to update this post.</p>
-</blockquote>
-<p>By using these tools, organizations can optimize their data pipeline, ensuring clinical data is well-structured and ready for regulatory submission with ease.</p>
-</section>
-<section id="example-creating-adsl" class="level2">
-<h2 class="anchored" data-anchor-id="example-creating-adsl"><strong>Example: Creating ADSL</strong></h2>
-<p>Building an ADSL dataset involves several key steps, from reading in data to deriving treatment variables and population flags. While these steps apply regardless of the tools used, <strong>pharmaverse packages like {admiral} simplify the process</strong> with functions designed for CDISC-compliant datasets.</p>
-<p>This example is based on the <a href="https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html">ADSL template</a>, which provides a structured approach to creating an ADSL dataset.</p>
-<section id="step-1-read-in-data" class="level4">
-<h4 class="anchored" data-anchor-id="step-1-read-in-data"><strong>Step 1: Read in Data</strong></h4>
-<p>To begin, clinical trial datasets such as <strong>DM, EX, DS, AE, and LB</strong> are loaded. The {pharmaversesdtm} package provides sample CDISC SDTM datasets:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(admiral)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">warn.conflicts =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(pharmaversesdtm)</span>
-<span id="cb1-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(stringr)</span>
-<span id="cb1-5"></span>
-<span id="cb1-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load sample data</span></span>
-<span id="cb1-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dm"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pharmaversesdtm"</span>)</span>
-<span id="cb1-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ex"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pharmaversesdtm"</span>)</span>
-<span id="cb1-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ds"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pharmaversesdtm"</span>)</span></code></pre></div></div>
-</div>
-<p>ADSL is typically <strong>built from the DM dataset</strong>, removing unnecessary columns and adding treatment variables in one step:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">adsl <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> dm <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>DOMAIN) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb2-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(</span>
-<span id="cb2-4">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">TRT01P =</span> ARM,</span>
-<span id="cb2-5">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">TRT01A =</span> ACTARM</span>
-<span id="cb2-6">  )</span></code></pre></div></div>
-</div>
-</section>
-<section id="step-2-derive-treatment-variables" class="level4">
-<h4 class="anchored" data-anchor-id="step-2-derive-treatment-variables"><strong>Step 2: Derive Treatment Variables</strong></h4>
-<p>Using {admiral}, we extract and standardize treatment dates from the EX dataset:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">ex_ext <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> ex <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is.na</span>(USUBJID)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_vars_dt</span>(</span>
-<span id="cb3-4">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">dtc =</span> EXSTDTC,</span>
-<span id="cb3-5">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"EXST"</span></span>
-<span id="cb3-6">  ) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb3-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_vars_dt</span>(</span>
-<span id="cb3-8">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">dtc =</span> EXENDTC,</span>
-<span id="cb3-9">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"EXEN"</span></span>
-<span id="cb3-10">  )</span></code></pre></div></div>
-</div>
-<p>Then merge these dates into ADSL:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">adsl <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> adsl <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_vars_merged</span>(</span>
-<span id="cb4-3">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">dataset_add =</span> ex_ext,</span>
-<span id="cb4-4">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">filter_add =</span> (EXDOSE <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span></span>
-<span id="cb4-5">      (EXDOSE <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span></span>
-<span id="cb4-6">        <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str_detect</span>(EXTRT, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PLACEBO"</span>))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is.na</span>(EXSTDT),</span>
-<span id="cb4-7">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">new_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">TRTSDT =</span> EXSTDT),</span>
-<span id="cb4-8">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(EXSTDT, EXSEQ),</span>
-<span id="cb4-9">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"first"</span>,</span>
-<span id="cb4-10">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(STUDYID, USUBJID)</span>
-<span id="cb4-11">  ) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_vars_merged</span>(</span>
-<span id="cb4-13">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">dataset_add =</span> ex_ext,</span>
-<span id="cb4-14">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">filter_add =</span> (EXDOSE <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span></span>
-<span id="cb4-15">      (EXDOSE <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span></span>
-<span id="cb4-16">        <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str_detect</span>(EXTRT, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PLACEBO"</span>))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is.na</span>(EXENDT),</span>
-<span id="cb4-17">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">new_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">TRTEDT =</span> EXENDT),</span>
-<span id="cb4-18">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">order =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(EXENDT, EXSEQ),</span>
-<span id="cb4-19">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"last"</span>,</span>
-<span id="cb4-20">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(STUDYID, USUBJID)</span>
-<span id="cb4-21">  )</span></code></pre></div></div>
-</div>
-</section>
-<section id="step-3-derive-end-of-study-eos-status" class="level4">
-<h4 class="anchored" data-anchor-id="step-3-derive-end-of-study-eos-status"><strong>Step 3: Derive End of Study (EOS) Status</strong></h4>
-<p>The disposition dataset (DS) is used to determine when a patient exited the study:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">ds_ext <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> ds <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is.na</span>(DSSTDTC)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_vars_dt</span>(</span>
-<span id="cb5-4">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">dtc =</span> DSSTDTC,</span>
-<span id="cb5-5">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">new_vars_prefix =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"DSST"</span></span>
-<span id="cb5-6">  )</span>
-<span id="cb5-7"></span>
-<span id="cb5-8">adsl <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> adsl <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_vars_merged</span>(</span>
-<span id="cb5-10">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">dataset_add =</span> ds_ext,</span>
-<span id="cb5-11">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(STUDYID, USUBJID),</span>
-<span id="cb5-12">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">new_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">EOSDT =</span> DSSTDT),</span>
-<span id="cb5-13">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">filter_add =</span> DSCAT <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"DISPOSITION EVENT"</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> DSDECOD <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"SCREEN FAILURE"</span></span>
-<span id="cb5-14">  )</span></code></pre></div></div>
-</div>
-</section>
-<section id="step-4-assign-population-flags" class="level4">
-<h4 class="anchored" data-anchor-id="step-4-assign-population-flags"><strong>Step 4: Assign Population Flags</strong></h4>
-<p>For safety population (<code>SAFFL</code>), we check if the patient received a treatment dose:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">adsl <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> adsl <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb6-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_var_merged_exist_flag</span>(</span>
-<span id="cb6-3">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">dataset_add =</span> ex,</span>
-<span id="cb6-4">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(STUDYID, USUBJID),</span>
-<span id="cb6-5">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">new_var =</span> SAFFL,</span>
-<span id="cb6-6">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">condition =</span> EXDOSE <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str_detect</span>(EXTRT, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PLACEBO"</span>)</span>
-<span id="cb6-7">  )</span></code></pre></div></div>
-</div>
-</section>
-<section id="step-5-generate-and-save-results" class="level4">
-<h4 class="anchored" data-anchor-id="step-5-generate-and-save-results"><strong>Step 5: Generate and Save Results</strong></h4>
-<p>Finally, we save the dataset CSV and can view some of its columns:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Save to a CSV file</span></span>
-<span id="cb7-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write.csv</span>(adsl, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"adsl_output.csv"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">row.names =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span>
-<span id="cb7-3"></span>
-<span id="cb7-4">adsl</span></code></pre></div></div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 14%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 13%">
-<col style="width: 13%">
-<col style="width: 7%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">USUBJID</th>
-<th style="text-align: left;">TRT01P</th>
-<th style="text-align: left;">TRT01A</th>
-<th style="text-align: left;">TRTSDT</th>
-<th style="text-align: left;">TRTEDT</th>
-<th style="text-align: left;">SAFFL</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">01-701-1015</td>
-<td style="text-align: left;">Placebo</td>
-<td style="text-align: left;">Placebo</td>
-<td style="text-align: left;">2014-01-02</td>
-<td style="text-align: left;">2014-07-02</td>
-<td style="text-align: left;">Y</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">01-701-1023</td>
-<td style="text-align: left;">Placebo</td>
-<td style="text-align: left;">Placebo</td>
-<td style="text-align: left;">2012-08-05</td>
-<td style="text-align: left;">2012-09-01</td>
-<td style="text-align: left;">Y</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">01-701-1028</td>
-<td style="text-align: left;">Xanomeline High Dose</td>
-<td style="text-align: left;">Xanomeline High Dose</td>
-<td style="text-align: left;">2013-07-19</td>
-<td style="text-align: left;">2014-01-14</td>
-<td style="text-align: left;">Y</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">01-701-1033</td>
-<td style="text-align: left;">Xanomeline Low Dose</td>
-<td style="text-align: left;">Xanomeline Low Dose</td>
-<td style="text-align: left;">2014-03-18</td>
-<td style="text-align: left;">2014-03-31</td>
-<td style="text-align: left;">Y</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">01-701-1034</td>
-<td style="text-align: left;">Xanomeline High Dose</td>
-<td style="text-align: left;">Xanomeline High Dose</td>
-<td style="text-align: left;">2014-07-01</td>
-<td style="text-align: left;">2014-12-30</td>
-<td style="text-align: left;">Y</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">01-701-1047</td>
-<td style="text-align: left;">Placebo</td>
-<td style="text-align: left;">Placebo</td>
-<td style="text-align: left;">2013-02-12</td>
-<td style="text-align: left;">2013-03-09</td>
-<td style="text-align: left;">Y</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">01-701-1057</td>
-<td style="text-align: left;">Screen Failure</td>
-<td style="text-align: left;">Screen Failure</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">NA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">01-701-1097</td>
-<td style="text-align: left;">Xanomeline Low Dose</td>
-<td style="text-align: left;">Xanomeline Low Dose</td>
-<td style="text-align: left;">2014-01-01</td>
-<td style="text-align: left;">2014-07-09</td>
-<td style="text-align: left;">Y</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">01-701-1111</td>
-<td style="text-align: left;">Xanomeline Low Dose</td>
-<td style="text-align: left;">Xanomeline Low Dose</td>
-<td style="text-align: left;">2012-09-07</td>
-<td style="text-align: left;">2012-09-16</td>
-<td style="text-align: left;">Y</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">01-701-1115</td>
-<td style="text-align: left;">Xanomeline Low Dose</td>
-<td style="text-align: left;">Xanomeline Low Dose</td>
-<td style="text-align: left;">2012-11-30</td>
-<td style="text-align: left;">2013-01-23</td>
-<td style="text-align: left;">Y</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="more-details-on-adsl-creation" class="level4">
-<h4 class="anchored" data-anchor-id="more-details-on-adsl-creation"><strong>More Details on ADSL Creation</strong></h4>
-<p>This is just a <strong>high-level example</strong>; the full process includes deriving death variables, grouping populations, and applying labels. For a deeper dive, check out the <a href="https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html">ADSL Implementation Guide</a>.</p>
-</section>
-</section>
-<section id="who-are-the-key-players-in-pharmaverse-and-do-you-need-to-use-all-packages" class="level2">
-<h2 class="anchored" data-anchor-id="who-are-the-key-players-in-pharmaverse-and-do-you-need-to-use-all-packages"><strong>Who Are the Key Players in Pharmaverse, and Do You Need to Use All Packages?</strong></h2>
-<section id="key-players-in-pharmaverse" class="level3">
-<h3 class="anchored" data-anchor-id="key-players-in-pharmaverse"><strong>Key Players in pharmaverse</strong></h3>
-<ul>
-<li><strong>Pharmaverse Council and Community</strong> – A collaborative group of developers, industry experts, and contributors maintaining and expanding the ecosystem.</li>
-<li><strong>Open-Source Contributors</strong> – Individuals and organizations developing and refining <strong>pharmaverse</strong> packages.</li>
-<li><strong>Pharmaverse is part of <a href="https://phuse.global/">PHUSE</a></strong> – PHUSE plays an active role in supporting and advancing the <strong>pharmaverse</strong> initiative.</li>
-<li><strong>The pharmaverse community collaborates with organizations like the FDA, EMA, R Consortium, and CDISC</strong> to align with industry standards and best practices for clinical data reporting.</li>
-</ul>
-</section>
-<section id="do-you-need-to-use-all-pharmaverse-packages" class="level3">
-<h3 class="anchored" data-anchor-id="do-you-need-to-use-all-pharmaverse-packages"><strong>Do You Need to Use All Pharmaverse Packages?</strong></h3>
-<ul>
-<li><p>No, organizations can select only the packages that fit their needs.</p></li>
-<li><p>Many packages are modular and independent, allowing selective integration.</p></li>
-<li><p>Pharmaverse hosts multiple packages with similar aims, giving users the flexibility to choose what works best for them rather than prescribing a single approach.</p></li>
-<li><p>Pharmaverse complements <a href="https://www.tidyverse.org/">Tidyverse</a>, allowing organizations to continue using familiar R workflows.</p></li>
-</ul>
-</section>
-</section>
-<section id="how-pharmaverse-differs-from-tidyverse-how-to-learn-it-effectively" class="level2">
-<h2 class="anchored" data-anchor-id="how-pharmaverse-differs-from-tidyverse-how-to-learn-it-effectively"><strong>How Pharmaverse Differs from Tidyverse &amp; How to Learn It Effectively</strong></h2>
-<section id="differences-between-pharmaverse-and-tidyverse" class="level4">
-<h4 class="anchored" data-anchor-id="differences-between-pharmaverse-and-tidyverse"><strong>Differences Between pharmaverse and Tidyverse</strong></h4>
-<ul>
-<li><p>Tidyverse provides general-purpose data science tools such as data wrangling and visualization…</p></li>
-<li><p>… Whereas pharmaverse integrates Tidyverse functions but adds compliance, validation, and reporting features for pharma-specific clinical data structuring, reporting and regulatory submissions.</p></li>
-</ul>
-</section>
-</section>
-<section id="getting-started-with-the-pharmaverse" class="level2">
-<h2 class="anchored" data-anchor-id="getting-started-with-the-pharmaverse"><strong>Getting Started with the Pharmaverse</strong></h2>
-<p>Pharmaverse provides an open-source ecosystem for clinical reporting, extending Tidyverse with validation, compliance, and regulatory submission capabilities. By following a structured approach from raw data to ADaMs, organizations can enhance efficiency while maintaining data integrity.</p>
-<ul>
-<li><p>You can <a href="https://pharmaverse.github.io/examples/">start with Pharmaverse Examples</a> – A curated set of documentation and tutorials.</p></li>
-<li><p>Attend Pharma Industry Webinars and Conferences – Stay updated on new developments through events like <a href="https://phuse.global/Events_Calendar">PHUSE events and webinars</a>, <a href="https://rinpharma.com/">R/Pharma conferences and events</a>, <a href="https://www.cdisc.org/events">CDISC events</a>, <a href="https://www.youtube.com/playlist?list=PLexAKolMzPcpzPAXNU6KlQ_UpIFsuEPCx">Shiny Gatherings x Pharmaverse webinars</a>, etc.</p></li>
-<li><p>Engage with the Open-Source Community – Contribute to package improvements or discussions. <a href="join the pharmaverse](https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A)">You can join the pharmaverse community to get started.</a>.</p></li>
-<li><p>Explore packages on the <a href="https://pharmaverse.org">pharmaverse website</a>.</p></li>
-<li><p>Try implementing an ADSL dataset using following the <a href="https://cran.r-project.org/web/packages/admiral/vignettes/adsl.html">ADSL Implementation Guide</a>.</p></li>
-<li><p>Refer to <a href="https://r-guru.com/pharma">this grid for guidance on using Tidyverse or pharmaverse</a> to complete tasks in the submission process.&nbsp;</p></li>
-</ul>
-<section id="resources" class="level3">
-<h3 class="anchored" data-anchor-id="resources"><strong>Resources</strong></h3>
-<ul>
-<li><p>This blog post was based on this presentation by Sunil Gupta: <a href="https://phuse.s3.eu-central-1.amazonaws.com/Archive/2024/SDE/US/Mississauga/PRE_Mississauga05.pdf">R and pharmaverse: The New Frontier for Today’s Statistical Programmers</a></p></li>
-<li><p><a href="https://www.lexjansen.com/phuse-us/2024/pd/PAP_PD05.pdf">R-Guru Resource Hub for Rapid R Learning</a></p></li>
-<li><p><a href="https://pharmaverse.github.io/blog/">Explore more posts in the pharmaverse blog</a></p></li>
-<li><p><a href="https://forms.office.com/pages/responsepage.aspx?id=xeEJLj1cykuXxFc6VpX1UAPF0grflaRJu8z6VC7-hy5UMTE0M0lXR1JON1Q0MkRIRlA1TlZSNDhUSC4u&amp;route=shorturl">Subscribe to the pharmaverse newsletter</a></p></li>
-</ul>
-
-
-</section>
-</section>
-
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{kenneth2025,
-  author = {Kenneth, Gift and Gupta, Sunil and , APPSILON},
-  title = {Working with {Clinical} {Trial} {Data?} {There’s} a
-    {Pharmaverse} {Package} for {That}},
-  date = {2025-02-28},
-  url = {https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/managing-clinical-trial-data.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-kenneth2025" class="csl-entry quarto-appendix-citeas">
-Kenneth, Gift, Sunil Gupta, and APPSILON. 2025. <span>“Working with
-Clinical Trial Data? There’s a Pharmaverse Package for That.”</span>
-February 28, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/managing-clinical-trial-data.html">https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/managing-clinical-trial-data.html</a>.
-</div></div></section></div> ]]></description>
-  <category>Technical</category>
-  <category>Community</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/managing-clinical-trial-data.html</guid>
-  <pubDate>Fri, 28 Feb 2025 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2025-02-28_theres_a_pharmaverse_package_for_that/pharmaverse-post.png" medium="image" type="image/png" height="81" width="144"/>
 </item>
 </channel>
 </rss>

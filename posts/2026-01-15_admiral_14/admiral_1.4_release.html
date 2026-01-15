@@ -6,11 +6,13 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Jeff Dickinson">
 <meta name="author" content="Ben Straub">
-<meta name="dcterms.date" content="2023-06-28">
-<meta name="description" content="Short, fun and user-driven content around the pharmaverse.">
+<meta name="author" content="Edoardo Mancini">
+<meta name="dcterms.date" content="2026-01-15">
+<meta name="description" content="admiral 1.4 is here! Read this blog post to learn more about the contents of this release.">
 
-<title>Hello pharmaverse – pharmaverse blog</title>
+<title>admiral 1.4 release – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -110,10 +147,12 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hello pharmaverse – pharmaverse blog">
-<meta property="og:description" content="Short, fun and user-driven content around the pharmaverse.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/pharmaverse.PNG">
+<meta property="og:title" content="admiral 1.4 release – pharmaverse blog">
+<meta property="og:description" content="admiral 1.4 is here! Read this blog post to learn more about the contents of this release.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral.png">
 <meta property="og:site_name" content="pharmaverse blog">
+<meta property="og:image:height" content="372">
+<meta property="og:image:width" content="352">
 </head>
 
 <body class="floating nav-fixed quarto-light">
@@ -153,14 +192,14 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Hello pharmaverse</h1>
+      <h1 class="title">admiral 1.4 release</h1>
                   <div>
         <div class="description">
-          Short, fun and user-driven content around the pharmaverse.
+          admiral 1.4 is here! Read this blog post to learn more about the contents of this release.
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">Community</div>
+                <div class="quarto-category">ADaM</div>
               </div>
                   </div>
   </div>
@@ -169,16 +208,18 @@ cookieconsent.run({
   <div class="quarto-title-meta">
 
       <div>
-      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-heading">Authors</div>
       <div class="quarto-title-meta-contents">
+               <p>Jeff Dickinson </p>
                <p>Ben Straub </p>
+               <p>Edoardo Mancini </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 28, 2023</p>
+        <p class="date">January 15, 2026</p>
       </div>
     </div>
     
@@ -193,13 +234,14 @@ cookieconsent.run({
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#purpose" id="toc-purpose" class="nav-link active" data-scroll-target="#purpose">Purpose</a></li>
-  <li><a href="#spirit-of-a-blog-post" id="toc-spirit-of-a-blog-post" class="nav-link" data-scroll-target="#spirit-of-a-blog-post">Spirit of a Blog Post</a></li>
-  <li><a href="#what-types-of-posts-are-allowed-on-this-site" id="toc-what-types-of-posts-are-allowed-on-this-site" class="nav-link" data-scroll-target="#what-types-of-posts-are-allowed-on-this-site">What types of posts are allowed on this site?</a>
+  <li><a href="#admiral-1.4-is-here" id="toc-admiral-1.4-is-here" class="nav-link active" data-scroll-target="#admiral-1.4-is-here">admiral 1.4 is here!</a>
   <ul class="collapse">
-  <li><a href="#minimum-post-requirements" id="toc-minimum-post-requirements" class="nav-link" data-scroll-target="#minimum-post-requirements">Minimum Post Requirements</a></li>
+  <li><a href="#tldr-what-is-in-this-release" id="toc-tldr-what-is-in-this-release" class="nav-link" data-scroll-target="#tldr-what-is-in-this-release">TLDR: What is in this release?</a></li>
+  <li><a href="#deep-dive-1-kapa.ai-integration" id="toc-deep-dive-1-kapa.ai-integration" class="nav-link" data-scroll-target="#deep-dive-1-kapa.ai-integration">Deep dive 1: kapa.ai integration</a></li>
+  <li><a href="#deep-dive-2-experimental-functions" id="toc-deep-dive-2-experimental-functions" class="nav-link" data-scroll-target="#deep-dive-2-experimental-functions">Deep dive 2: Experimental functions!</a></li>
+  <li><a href="#deep-dive-3-anti-drug-antibody-template-and-vignette" id="toc-deep-dive-3-anti-drug-antibody-template-and-vignette" class="nav-link" data-scroll-target="#deep-dive-3-anti-drug-antibody-template-and-vignette">Deep dive 3: Anti-drug-antibody template and vignette</a></li>
   </ul></li>
-  <li><a href="#how-can-i-make-a-blog-post" id="toc-how-can-i-make-a-blog-post" class="nav-link" data-scroll-target="#how-can-i-make-a-blog-post">How can I make a Blog Post</a></li>
+  <li><a href="#whats-coming-in-admiral-1.5" id="toc-whats-coming-in-admiral-1.5" class="nav-link" data-scroll-target="#whats-coming-in-admiral-1.5">What’s coming in admiral 1.5?</a></li>
   </ul>
 </nav>
 </nav>
@@ -214,56 +256,97 @@ cookieconsent.run({
 
 
 
-<!--------------- my typical setup ----------------->
+<!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<section id="purpose" class="level2">
-<h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
-<p>The communications working group (CWG) seeks to promote and showcase how R can be used in the Clinical Reporting pipeline through short and informative blog posts. These posts will be hosted on this <a href="https://pharmaverse.github.io/blog/">pharmaverse blog</a> and promoted on the pharmaverse slack channels as well as on LinkedIn.</p>
-<p>As the CWG is a small team, we hope to make the blog development process easy enough that pharmaverse community members will be able to easily write blog posts with guidance from the CWG team.</p>
-</section>
-<section id="spirit-of-a-blog-post" class="level2">
-<h2 class="anchored" data-anchor-id="spirit-of-a-blog-post">Spirit of a Blog Post</h2>
-<p>The CWG believes that the following 4 points will help guide the creation of Blog Posts.</p>
+<p><img src="admiral.png" class="img-fluid"></p>
+<section id="admiral-1.4-is-here" class="level1">
+<h1>admiral 1.4 is here!</h1>
+<p>There’s nothing like a new {admiral} release to start the new year with a bang, and that’s exactly what we have for you with {admiral} 1.4! This release comes packed with few choice updates and some exciting new features (<strong>including our first AI integration!</strong>) that will undoubtedly improve your experience creating ADaMs in R. However, in line with our commitment to stability and maturity, we have once again reduced the number of breaking changes to an absolute minimum. Take a look at the rest of the blog post below to learn more about what to expect in <a href="https://pharmaverse.github.io/admiral/cran-release/">{admiral} 1.4</a>.</p>
+<section id="tldr-what-is-in-this-release" class="level2">
+<h2 class="anchored" data-anchor-id="tldr-what-is-in-this-release">TLDR: What is in this release?</h2>
 <ul>
-<li><strong>Short</strong></li>
-<li><strong>Personalized</strong></li>
-<li><strong>Reproducible</strong></li>
-<li><strong>Readable</strong></li>
+<li>{admiral} has partnered with <a href="https://www.kapa.ai/">kapa.ai</a> to introduce an AI-powered chatbot within every page of our websites.</li>
+<li>We have added our first experimental functions: <code>derive_var_nfrlt()</code> and <code>convert_xxtpt_to_hours()</code>. These simplify time point and visit derivations.</li>
+<li>There is a new ADAB template script and correspondingly new vignette. These will aid in creating Anti-drug Antibody Analysis Datasets</li>
+<li>Several existing parameter derivation functions have been updated for greater robustness.</li>
+<li>All the {admiral} templates can now be viewed directly from our website within the new <a href="https://pharmaverse.github.io/admiral/cran-release/articles/templates.html">Explore ADaM Templates</a>.</li>
+<li>{admiral} is now integrated with NCI-CTCAE version 6.0 lab grading criteria for both SI and US units, with all grading metadata now maintained in a more readable JSON format for improved consistency and maintainability.</li>
+<li><code>derive_var_atoxgr_dir()</code> received a small breaking change: the <code>abnormal_indicator</code> argument was replaced by <code>low_indicator</code> and <code>high_indicator</code> to support the updated CTCAE v6.0 criteria.</li>
+<li><code>derive_var_merged_summary()</code> has been renamed to <code>derive_vars _merged_summary()</code> to align with programming conventions.</li>
 </ul>
-<p><strong>Short:</strong> Posts should aim to be under a 10 minute read. We encourage longer posts to be broken up into multiple posts.</p>
-<p><strong>Personalized:</strong> Posts should have a personality! For example, a person wishing to post on a function in a package needs to differentiate the post from the documentation for function, i.e.&nbsp;we don’t want to just recycle the documentation. How can you add your voice and experience? A bit of cheeky language is also encouraged.</p>
-<p><strong>Reproducible:</strong> Posts should work with minimal dependencies with data, packages and outside sources. Every dependency introduced in a post adds some risk to the post longevity. As package dependencies change, posts should be built in a way that they can be updated to stay relevant.</p>
-<p><strong>Readable:</strong> The CWG sees this site as more of introductory site rather advanced user site. Therefore, the CWG feels that code should be introduced in a way that promotes readability over complexity.</p>
+<p>Please peruse the <a href="https://pharmaverse.github.io/admiral/cran-release/news/index.html">Changelog</a> to see the full set of updates in {admiral} 1.4.</p>
+<p>Let’s take a few deep-dives to explore some of these updates in more detail.</p>
 </section>
-<section id="what-types-of-posts-are-allowed-on-this-site" class="level2">
-<h2 class="anchored" data-anchor-id="what-types-of-posts-are-allowed-on-this-site">What types of posts are allowed on this site?</h2>
-<p>Overall, we want to stay focus on the Clinical Reporting Pipeline, which we see as the following topics:</p>
-<ol type="1">
-<li>Packages in the Clinical Reporting Pipeline</li>
-<li>Functions from packages in the Clinical Reporting Pipeline</li>
-<li>Wider experiences of using R in the Clinical Reporting Pipeline</li>
-<li>Conference experiences and the Clinical Reporting Pipeline</li>
-</ol>
-<p>However, it never hurts to ask if you topic might fit into this medium!</p>
-<section id="minimum-post-requirements" class="level3">
-<h3 class="anchored" data-anchor-id="minimum-post-requirements">Minimum Post Requirements</h3>
-<ul>
-<li>A unique image to help showcase the post.</li>
-<li>Working Code</li>
-<li>Self-contained data or package data.</li>
-<li>Documentation of package versions</li>
-</ul>
-<p>That is it! After that you can go wild, but we do ask that it is kept short!</p>
+<section id="deep-dive-1-kapa.ai-integration" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-1-kapa.ai-integration">Deep dive 1: kapa.ai integration</h2>
+<p>We are thrilled to announce that {admiral} has partnered with <a href="https://www.kapa.ai/">kapa.ai</a> under their <a href="https://docs.kapa.ai/kapa-for-open-source">Open Source Program</a> to introduce an AI-powered chatbot within every page of our website. This LLM chatbot is trained using the documentation pages of {admiral} and all our therapeutic area extension packages as well as the {pharmaversesdtm} and {pharmaverseadam} data packages and the ADaM IG. Indeed, look out for it to be added to every other package in the {admiral} ecosystem in their upcoming releases this month. To use the chatbot, simply click on the “Ask AI” button at the bottom right corner of any website page and start asking away - you may find that you get redirected to a User Guide, a function reference page or the website of another {admiral} package that you didn’t even know existed!</p>
+<p><img src="kapa.png" class="img-fluid"></p>
+</section>
+<section id="deep-dive-2-experimental-functions" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-2-experimental-functions">Deep dive 2: Experimental functions!</h2>
+<p><em>Experimental functions are a new class of functions, tagged with the <a href="https://pharmaverse.github.io/admiral/cran-release/reference/#experimental">“Experimental” badge</a>. This is our way of adding targeted, new functionality that we can quickly improve/modify without breaking our commitment to stability. The badge will be removed once the dev team feels the function is stable, and no deprecation messages will be given to the user if breaking changes are implemented before removing the experimental badge. However, {admiral} will document the breaking change in the Changelog. Once the “Experimental” badge is removed we will proceed with the normal deprecation cycle if needed.</em></p>
+<p>Our first experimental functions help derive variables for time-point analysis. One such variable is <code>NFRLT</code> (Nominal Relative Time from First Dose), which is used extensively in pharmacokinetic analysis. This is the namesake variable for <code>derive_var_nfrlt()</code>. This function can be used to directly derive <code>NFRLT</code> in the Pharmacokinetic Concentrations (<code>PC</code>) domain and in the Exposure (<code>EX</code>) domain. These domains are typically combined to form the Pharmacokinetic Concentrations Analysis Data (<code>ADPC</code>). Under the hood of this function is <code>convert_xxtpt_to_hours()</code>, which converts timepoint variables such as <code>PCTPT</code> to numeric hours using regular expressions. The hours computed from <code>convert_xxtpt_to_hours()</code> are combined with the days from a visit variable such as <code>VISITDY</code> to derive <code>NFRLT</code>. Note that the unit variable <code>FRLTU</code> can also be derived, and there are multiple output unit options (hours, days, weeks, minutes).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"admiral"</span>, <span class="at">repos =</span> <span class="st">"https://cloud.r-project.org"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Installing package into '/usr/local/lib/R/site-library'
+(as 'lib' is unspecified)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>also installing the dependency 'admiraldev'</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>adpc_nfrlt <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>USUBJID, <span class="sc">~</span>VISITDY, <span class="sc">~</span>PCTPT,           <span class="sc">~</span>PCSTRESN,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"001"</span>,    <span class="dv">1</span>,        <span class="st">"Pre-dose"</span>,       <span class="fl">0.0</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"001"</span>,    <span class="dv">1</span>,        <span class="st">"30M Post-dose"</span>,  <span class="fl">5.2</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"001"</span>,    <span class="dv">1</span>,        <span class="st">"1H Post-dose"</span>,   <span class="fl">8.4</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"001"</span>,    <span class="dv">1</span>,        <span class="st">"2H Post-dose"</span>,   <span class="fl">12.1</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"001"</span>,    <span class="dv">1</span>,        <span class="st">"4H Post-dose"</span>,   <span class="fl">10.3</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"001"</span>,    <span class="dv">1</span>,        <span class="st">"8H Post-dose"</span>,   <span class="fl">6.8</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"001"</span>,    <span class="dv">1</span>,        <span class="st">"24H Post-dose"</span>,  <span class="fl">2.1</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>adpc_nfrlt <span class="sc">%&gt;%</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">derive_var_nfrlt</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_var =</span> NFRLT,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_var_unit =</span> FRLTU,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">out_unit =</span> <span class="st">"HOURS"</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">tpt_var =</span> PCTPT,</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">visit_day =</span> VISITDY</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 6
+  USUBJID VISITDY PCTPT         PCSTRESN NFRLT FRLTU
+  &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;
+1 001           1 Pre-dose           0     0   HOURS
+2 001           1 30M Post-dose      5.2   0.5 HOURS
+3 001           1 1H Post-dose       8.4   1   HOURS
+4 001           1 2H Post-dose      12.1   2   HOURS
+5 001           1 4H Post-dose      10.3   4   HOURS
+6 001           1 8H Post-dose       6.8   8   HOURS
+7 001           1 24H Post-dose      2.1  24   HOURS</code></pre>
+</div>
+</div>
+<p>The functions can work with any time-point variables from other domains such as <code>LB</code>, <code>VS</code> or ’EG`. There a is also a treatment duration option in the case of infusions and an option for time point ranges such as “4-8H AFTER END OF INFUSION”.</p>
+</section>
+<section id="deep-dive-3-anti-drug-antibody-template-and-vignette" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-3-anti-drug-antibody-template-and-vignette">Deep dive 3: Anti-drug-antibody template and vignette</h2>
+<p>{admiral} 1.4 introduces a new ADaM template script to aid in creating Anti-drug Antibody Analysis Datasets (<code>ADAB</code>). This template is accompanied by a detailed <a href="https://pharmaverse.github.io/admiral/cran-release/articles/adab.html">vignette</a> that walks you through the process of deriving key variables and implementing analysis strategies specific to anti-drug antibody data, including the use of one of our new experimental functions <code>derive_var_nfrlt()</code>. The template covers common scenarios encountered in immunogenicity assessments, providing a solid foundation for users to build upon and customize according to their study requirements.</p>
+<p><img src="adab_vignette.png" class="img-fluid"></p>
+<p>As usual, to use start using the template you can run:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">use_ad_template</span>(<span class="st">"adab"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>…or you can peruse the template directly from the website from our new <a href="https://pharmaverse.github.io/admiral/cran-release/articles/templates.html">Explore ADaM Templates</a> page.</p>
 </section>
 </section>
-<section id="how-can-i-make-a-blog-post" class="level2">
-<h2 class="anchored" data-anchor-id="how-can-i-make-a-blog-post">How can I make a Blog Post</h2>
-<p>Step 1: Reach out to us through <a href="pharmaverse.slack.com">pharmaverse/slack</a> or make an issue on our <a href="https://github.com/pharmaverse/blog/issues">GitHub</a>.</p>
-<p>Step 2: Branch off <code>main</code></p>
-<p>Step 3: Review the Spirit of the Blog Post in the Pull Request Template</p>
-<p>Step 4: Poke us to do a review!</p>
+<section id="whats-coming-in-admiral-1.5" class="level1">
+<h1>What’s coming in admiral 1.5?</h1>
+<p>{admiral} is very much community driven, so please continue reaching out through <a href="https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A">Slack</a> or <a href="https://github.com/pharmaverse/admiral/issues">GitHub</a> if you have ideas or requests for enhancements to our package. {admiral} 1.5 is due to release in June 2026, and some current ideas for new content include improved Estimands documentation and ways to enable positive censoring within TTE derivations.</p>
 <!--------------- appendices go here ----------------->
-</section>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -272,22 +355,24 @@ cookieconsent.run({
 </div>
 
 
+</section>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:07:06.5559</p>
+<p>2026-01-15 21:08:50.200778</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2023-06-28_welcome/index.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub2023,
-  author = {Straub, Ben},
-  title = {Hello Pharmaverse},
-  date = {2023-06-28},
-  url = {https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.4.../admiral_1.4_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dickinson2026,
+  author = {Dickinson, Jeff and Straub, Ben and Mancini, Edoardo},
+  title = {Admiral 1.4 Release},
+  date = {2026-01-15},
+  url = {https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral_1.4_release.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-Straub, Ben. 2023. <span>“Hello Pharmaverse.”</span> June 28, 2023. <a href="https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/">https://pharmaverse.github.io/blog/posts/2023-06-28_welcome/</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dickinson2026" class="csl-entry quarto-appendix-citeas" role="listitem">
+Dickinson, Jeff, Ben Straub, and Edoardo Mancini. 2026. <span>“Admiral
+1.4 Release.”</span> January 15, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral_1.4_release.html">https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral_1.4_release.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
