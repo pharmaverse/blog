@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Rammprasad Ganapathy">
-<meta name="dcterms.date" content="2024-10-24">
-<meta name="description" content="An EDC &amp; Data Standards agnostic solution that enables the pharmaceutical programming community to develop SDTM datasets in R">
+<meta name="author" content="Ben Straub and Maciej Nasinski">
+<meta name="dcterms.date" content="2026-01-18">
+<meta name="description" content="Containers in the pharmaverse - exploration and potential use cases.">
 
-<title>Introducing sdtm.oak – pharmaverse blog</title>
+<title>Pharmaverse and Containers – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -145,12 +145,12 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Introducing sdtm.oak – pharmaverse blog">
-<meta property="og:description" content="An EDC &amp; Data Standards agnostic solution that enables the pharmaceutical programming community to develop SDTM datasets in R">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-10-24_introducing.../sdtmoak.png">
+<meta property="og:title" content="Pharmaverse and Containers – pharmaverse blog">
+<meta property="og:description" content="Containers in the pharmaverse - exploration and potential use cases.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/container.png">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="240">
-<meta property="og:image:width" content="233">
+<meta property="og:image:height" content="445">
+<meta property="og:image:width" content="438">
 </head>
 
 <body class="floating nav-fixed quarto-light">
@@ -190,14 +190,16 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Introducing sdtm.oak</h1>
+      <h1 class="title">Pharmaverse and Containers</h1>
                   <div>
         <div class="description">
-          An EDC &amp; Data Standards agnostic solution that enables the pharmaceutical programming community to develop SDTM datasets in R
+          Containers in the pharmaverse - exploration and potential use cases.
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">SDTM</div>
+                <div class="quarto-category">Community</div>
+                <div class="quarto-category">Submissions</div>
+                <div class="quarto-category">Technical</div>
               </div>
                   </div>
   </div>
@@ -208,14 +210,14 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Rammprasad Ganapathy </p>
+               <p>Ben Straub and Maciej Nasinski </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">October 24, 2024</p>
+        <p class="date">January 18, 2026</p>
       </div>
     </div>
     
@@ -230,15 +232,14 @@ cookieconsent.run({
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#filling-the-gap" id="toc-filling-the-gap" class="nav-link active" data-scroll-target="#filling-the-gap">Filling the Gap</a></li>
-  <li><a href="#edc-data-standards-agnostic" id="toc-edc-data-standards-agnostic" class="nav-link" data-scroll-target="#edc-data-standards-agnostic">EDC &amp; Data standards agnostic</a></li>
-  <li><a href="#algorithms" id="toc-algorithms" class="nav-link" data-scroll-target="#algorithms">Algorithms</a></li>
-  <li><a href="#functions-and-arguments" id="toc-functions-and-arguments" class="nav-link" data-scroll-target="#functions-and-arguments">Functions and Arguments</a></li>
-  <li><a href="#why-not-use-dplyr" id="toc-why-not-use-dplyr" class="nav-link" data-scroll-target="#why-not-use-dplyr">Why not use dplyr?</a></li>
-  <li><a href="#oak_id_vars" id="toc-oak_id_vars" class="nav-link" data-scroll-target="#oak_id_vars"><code>oak_id_vars</code></a></li>
-  <li><a href="#in-this-release" id="toc-in-this-release" class="nav-link" data-scroll-target="#in-this-release">In this Release</a></li>
-  <li><a href="#roadmap" id="toc-roadmap" class="nav-link" data-scroll-target="#roadmap">Roadmap</a></li>
-  <li><a href="#get-involved" id="toc-get-involved" class="nav-link" data-scroll-target="#get-involved">Get Involved</a></li>
+  <li><a href="#streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers" id="toc-streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers" class="nav-link active" data-scroll-target="#streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers">Streamlining Our Pharmaverse Blog: Reducing Publishing Time with containers</a></li>
+  <li><a href="#the-previous-approach-package-installation-overhead" id="toc-the-previous-approach-package-installation-overhead" class="nav-link" data-scroll-target="#the-previous-approach-package-installation-overhead"><strong>The Previous Approach:</strong> Package Installation overhead</a></li>
+  <li><a href="#adopting-the-pharmaverse-container-image-an-efficient-alternative" id="toc-adopting-the-pharmaverse-container-image-an-efficient-alternative" class="nav-link" data-scroll-target="#adopting-the-pharmaverse-container-image-an-efficient-alternative">Adopting the pharmaverse container image: An Efficient Alternative</a></li>
+  <li><a href="#wider-applications-of-the-pharmaverse-container-image" id="toc-wider-applications-of-the-pharmaverse-container-image" class="nav-link" data-scroll-target="#wider-applications-of-the-pharmaverse-container-image">Wider Applications of the Pharmaverse Container Image</a>
+  <ul class="collapse">
+  <li><a href="#example-running-reproducible-rstudio-locally" id="toc-example-running-reproducible-rstudio-locally" class="nav-link" data-scroll-target="#example-running-reproducible-rstudio-locally">Example: Running Reproducible RStudio Locally</a></li>
+  </ul></li>
+  <li><a href="#engaging-with-the-pharmaverse-community" id="toc-engaging-with-the-pharmaverse-community" class="nav-link" data-scroll-target="#engaging-with-the-pharmaverse-community">Engaging with the Pharmaverse Community</a></li>
   </ul>
 </nav>
 </nav>
@@ -255,199 +256,134 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p><code>{sdtm.oak}</code> v0.1 is now available on <a href="https://cran.r-project.org/web/packages/sdtm.oak/index.html">CRAN</a>. In this blog post, we will introduce the package, key concepts, and examples. <code>{sdtm.oak}</code> is developed in collaboration with volunteers from several companies, including Roche, Pfizer, GSK, Pattern Institute, Transition Technologies Science, and Atorus Research. <code>{sdtm.oak}</code> is also sponsored by <a href="https://www.cdisc.org/cosa">CDISC COSA</a> with a vision of being part of <a href="https://www.cdisc.org/cdisc-360">CDISC 360</a> to address end-to-end standards development and implementation.</p>
-<section id="filling-the-gap" class="level1">
-<h1>Filling the Gap</h1>
-<p><code>{sdtm.oak}</code> package addresses a critical gap in the pharmaverse suite by enabling study programmers to create SDTM datasets in R, complementing the existing capabilities for ADaM, TLGs, eSubmission, etc.</p>
-<p>Let’s explore the challenges with SDTM programming. Although SDTM is simpler with less complex derivations compared to ADaM, it presents unique challenges. Unlike ADaM, which uses SDTM datasets as its source with a well-defined structure, SDTM relies on raw datasets as input. These raw datasets can vary widely in structure, depending on the data collection and EDC (Electronic Data Capture) system used. Even the same eCRF (electronic Case Report Form), when designed in different EDC systems, can produce raw datasets with different structures.</p>
-<p>Another challenge is the variability in data collection standards. Although CDISC has established CDASH data collection standards, many pharmaceutical companies have their own standards, which can differ significantly from CDASH. Additionally, since CDASH is not mandated by the FDA, sponsors can choose the data collection standards that best fit their needs.</p>
-<p>There are hundreds of EDC systems available in the marketplace, and the data collection standards vary significantly. Creating a single open-source package to work with all sorts of raw data formats and data collection standards seemed impossible. But here’s the good news: not anymore! The <code>{sdtm.oak}</code> team has a solution to address this challenge.</p>
-<p><code>{sdtm.oak}</code> is designed to be highly versatile, accommodating varying raw data structures from different EDC systems and external vendors. Moreover, <code>{sdtm.oak}</code> is data standards agnostic, meaning it supports both CDISC-defined data collection standards (CDASH) and various proprietary data collection standards defined by pharmaceutical companies. The reusable algorithms concept in <code>{sdtm.oak}</code> provides a framework for modular programming, making it a valuable addition to the pharmaverse ecosystem.</p>
+<section id="streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers" class="level2">
+<h2 class="anchored" data-anchor-id="streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers">Streamlining Our Pharmaverse Blog: Reducing Publishing Time with containers</h2>
+<p>As an active contributor to the pharmaverse blog, I’ve always appreciated the opportunity to share new insights and tools with our community. The pharmaverse blog has some interesting features for publishing. While the blog publishing process has been effective, I was wondering if there was a way to optimize our workflows. Currently, the CI/CD pipeline for publishing the blog typically took about 17 minutes to deploy a new post. Containers are always batted around as solutions. Unfortunately, I was unsure how to create a new container/image to meet my needs and relied on some straight <code>install.packages()</code> in the CI/CD pipeline. Luckily, I crossed paths with the fabulous Maciej Nasinski and we built a specific container for the publishing process for the pharmaverse blog, which allowed for a notable reduction in publishing time.</p>
+<p>Below I will discuss how the pharmaverse container image has improved our blog’s publishing workflow, bringing our deployment time down to approximately 5 minutes. We are also interested in feedback on potential other uses of this container (like devcontainers) or building additional containers for certain purposes. For those interested, we would be happy to provide a tutorial on containers or get in touch if you have ideas or want to get involved!</p>
 </section>
-<section id="edc-data-standards-agnostic" class="level1">
-<h1>EDC &amp; Data standards agnostic</h1>
-<p>We adopted the following innovative approach to make <code>{sdtm.oak}</code> adaptable to various EDC systems and data collection standards:</p>
+<section id="the-previous-approach-package-installation-overhead" class="level2">
+<h2 class="anchored" data-anchor-id="the-previous-approach-package-installation-overhead"><strong>The Previous Approach:</strong> Package Installation overhead</h2>
+<p>Our prior CI/CD (GitHub Actions) workflow for building and deploying the pharmaverse blog, while comprehensive, included a time-consuming step. It used the a straight “Install dependencies” step from the r-lib actions, which necessitated installing a range of pharmaverse specific R packages during each run. As we added more packages to the pharmaverse to the blog, this became really cumbersome!</p>
+<p>The relevant section of our old build-deploy job highlighted this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>  build<span class="sc">-</span>deploy<span class="sc">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... other configurations ...</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    steps<span class="sc">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ... checkout and setup Quarto ...</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Setup R</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> r<span class="sc">-</span>lib<span class="sc">/</span>actions<span class="sc">/</span>setup<span class="sc">-</span>r<span class="sc">@</span>v2</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        with<span class="sc">:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>          use<span class="sc">-</span>public<span class="sc">-</span>rspm<span class="sc">:</span> true</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Install dependencies</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> r<span class="sc">-</span>lib<span class="sc">/</span>actions<span class="sc">/</span>setup<span class="sc">-</span>r<span class="sc">-</span>dependencies<span class="sc">@</span>v2</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        with<span class="sc">:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>          packages<span class="sc">:</span> <span class="er">|</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            jsonlite</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            tidyverse</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            spelling</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            janitor</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            diffdf</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            admiral</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>            admiralonco</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            <span class="co"># ... and many, many more packages ...</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            haven</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ... other steps like install tinytex and publish ...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This “Install dependencies” step, involving a substantial list of pharmaverse packages, was a primary contributor to the 17-minute execution time. Each workflow run involved downloading and configuring these packages, extending the overall deployment duration.</p>
+</section>
+<section id="adopting-the-pharmaverse-container-image-an-efficient-alternative" class="level2">
+<h2 class="anchored" data-anchor-id="adopting-the-pharmaverse-container-image-an-efficient-alternative">Adopting the pharmaverse container image: An Efficient Alternative</h2>
+<p>The solution to this challenge came with the introduction of the pharmaverse container image: <code>ghcr.io/pharmaverse/docker_pharmaverse:4.5.1</code>. This container image was specifically designed for pharmaceutical data analysis, featuring over 40 essential pharmaverse packages pre-installed. These packages cover various functionalities, including CDISC ADaM/SDTM, clinical trial reporting, and regulatory submissions. Built upon the rocker/tidyverse image and incorporating R 4.5.1, it provides a pre-configured environment.</p>
+<p>By integrating this image into our CI/CD pipeline (GitHub Actions), we could bypass the extensive package installation phase.</p>
+<p>Here’s an overview of our updated build-deploy job:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  build<span class="sc">-</span>deploy<span class="sc">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    needs<span class="sc">:</span> Update<span class="sc">-</span>post<span class="sc">-</span>dates</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    runs<span class="sc">-</span>on<span class="sc">:</span> ubuntu<span class="sc">-</span>latest</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    container<span class="sc">:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      image<span class="sc">:</span> <span class="st">"ghcr.io/pharmaverse/docker_pharmaverse:4.5.1"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    permissions<span class="sc">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      contents<span class="sc">:</span> write</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    steps<span class="sc">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Check out repository</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> actions<span class="sc">/</span>checkout<span class="sc">@</span>v4</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Configure Git safe directory</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        run<span class="sc">:</span> git config <span class="sc">--</span>global <span class="sc">--</span>add safe.directory <span class="sc">/</span>__w<span class="sc">/</span>blog<span class="sc">/</span>blog</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Set up Quarto</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> quarto<span class="sc">-</span>dev<span class="sc">/</span>quarto<span class="sc">-</span>actions<span class="sc">/</span>setup<span class="sc">@</span>v2</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        with<span class="sc">:</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>            version<span class="sc">:</span> <span class="dv">1</span>.<span class="fl">9.12</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="co"># </span><span class="al">NOTE</span><span class="co">: Explicit R package installation is no longer required here.</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Install tinytex</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        run<span class="sc">:</span> quarto install tool tinytex</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Mark repo directory as safe</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        run<span class="sc">:</span> git config <span class="sc">--</span>global <span class="sc">--</span>add safe.directory <span class="sc">/</span>__w<span class="sc">/</span>blog<span class="sc">/</span>blog</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Publish</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> quarto<span class="sc">-</span>dev<span class="sc">/</span>quarto<span class="sc">-</span>actions<span class="sc">/</span>publish<span class="sc">@</span>v2</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        with<span class="sc">:</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>          path<span class="sc">:</span> . <span class="co"># Path to your .qmd file</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>          target<span class="sc">:</span> gh<span class="sc">-</span>pages  <span class="co"># Target branch for GitHub Pages</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        env<span class="sc">:</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>          GITHUB_TOKEN<span class="sc">:</span> <span class="er">$</span>{{ secrets.GITHUB_TOKEN }}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The outcome of this change has been a consistent reduction in publishing time. Our blog now publishes in approximately 5 minutes. Yay!</p>
+</section>
+<section id="wider-applications-of-the-pharmaverse-container-image" class="level2">
+<h2 class="anchored" data-anchor-id="wider-applications-of-the-pharmaverse-container-image">Wider Applications of the Pharmaverse Container Image</h2>
+<p>While this update directly benefits our blog’s publishing, the pharmaverse container image offers broader utility. It is a valuable resource for:</p>
 <ul>
-<li>SDTM mappings are categorized as algorithms and developed as R functions.</li>
-<li>Used datasets and variables are specified as arguments to function calls.</li>
+<li>Pharmaceutical data analysis: Supporting tasks related to ADaM, SDTM, and TLFs.</li>
+<li>Clinical trial programming: Assisting with regulatory submissions.</li>
+<li>Reproducible research: Providing a consistent and verifiable environment.</li>
+<li>Training &amp; education: Offering a ready-to-use setup for educational purposes.</li>
+<li>CI/CD pipelines: Enhancing automated testing and reporting, as observed in our own workflow.</li>
+<li>Collaborative development: Facilitating consistent environments across teams.</li>
+</ul>
+<section id="example-running-reproducible-rstudio-locally" class="level3">
+<h3 class="anchored" data-anchor-id="example-running-reproducible-rstudio-locally">Example: Running Reproducible RStudio Locally</h3>
+<p>To spin up a local RStudio instance using the pharmaverse image, you can use a container “one-liner.” This command condenses the entire configuration - networking, storage, and background execution - into a single execution string. It bridges your local folder to the container, allowing you to edit files “on the fly” without installing R or packages on your actual machine.</p>
+<p>Choose the command that matches your operating system:</p>
+<section id="linux-intel-macs-standard" class="level4">
+<h4 class="anchored" data-anchor-id="linux-intel-macs-standard">1. Linux &amp; Intel Macs (Standard)</h4>
+<p>For standard architecture, we set a simple password (<code>rstudio</code>) and mount the current directory.</p>
+<p><code>docker run -d --name my_pharma_rstudio --rm -p 8787:8787 -e PASSWORD=rstudio -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1</code></p>
+</section>
+<section id="apple-silicon-m1m2m3" class="level4">
+<h4 class="anchored" data-anchor-id="apple-silicon-m1m2m3">2. Apple Silicon (M1/M2/M3)</h4>
+<p><strong>Note:</strong> We do not yet natively support ARM64 architecture (e.g., Apple Silicon). The command below uses emulation (<code>--platform linux/amd64</code>) to run the image. We also disable authentication because the slower emulation speed can sometimes cause password setup to time out.</p>
+<p><code>docker run -d --name my_pharma_rstudio --rm --platform linux/amd64 -p 8787:8787 -e DISABLE_AUTH=true -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1</code></p>
+</section>
+<section id="what-does-this-command-do" class="level4">
+<h4 class="anchored" data-anchor-id="what-does-this-command-do">What does this command do?</h4>
+<ul>
+<li>**<code>--rm</code> &amp; <code>-d**</code>: Runs the container in the background (detached) and automatically removes it when stopped, keeping your machine clean.</li>
+<li><strong><code>-v "$(pwd)":...</code></strong>: Takes your <strong>P</strong>resent <strong>W</strong>orking <strong>D</strong>irectory and mounts it inside the container. Any file you save in RStudio’s “project” folder is instantly saved to your local computer.</li>
+<li><strong><code>--platform linux/amd64</code></strong> <em>(Mac only)</em>: Forces your computer to emulate the Intel architecture required by the image.</li>
+<li><strong><code>-e DISABLE_AUTH=true</code></strong> <em>(Mac only)</em>: Bypasses the login screen to ensure immediate access despite slower emulation speeds.</li>
 </ul>
 </section>
-<section id="algorithms" class="level1">
-<h1>Algorithms</h1>
-<p>The SDTM mappings that transform the collected source data (eDT: External Data Transfer) into the target SDTM data model are grouped into algorithms. These mapping algorithms form the backbone of <code>{sdtm.oak}</code>.</p>
-<p>Key Points: * Algorithms can be re-used across multiple SDTM domains. * Programming language agnostic: This concept does not rely on a specific programming language for implementation.</p>
-<p>The <code>{sdtm.oak}</code> package includes R functions to handle these algorithms.</p>
-<p>Some of the basic algorithms are below, also explaining how these algorithms can be used across multiple domains.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 2%">
-<col style="width: 57%">
-<col style="width: 40%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Algorithm.Name</th>
-<th style="text-align: left;">Description</th>
-<th style="text-align: left;">Example</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">assign_no_ct</td>
-<td style="text-align: left;">One-to-one mapping between the raw source and a target SDTM variable that has no controlled terminology restrictions. Just a simple assignment statement.</td>
-<td style="text-align: left;">MH.MHTERM<br> AE.AETERM</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">assign_ct</td>
-<td style="text-align: left;">One-to-one mapping between the raw source and a target SDTM variable that is subject to controlled terminology restrictions. A simple assign statement and applying controlled terminology. This will be used only if the SDTM variable has an associated controlled terminology.</td>
-<td style="text-align: left;">VS.VSPOS<br> VS.VSLAT</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">assign_datetime</td>
-<td style="text-align: left;">One-to-one mapping between the raw source and a target that involves mapping a Date or time or datetime component. This mapping algorithm also takes care of handling unknown dates and converting them into. ISO8601 format.</td>
-<td style="text-align: left;">MH.MHSTDTC<br> AE.AEENDTC</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">hardcode_ct</td>
-<td style="text-align: left;">Mapping a hardcoded value to a target SDTM variable that is subject to terminology restrictions. This will be used only if the SDTM variable has an associated controlled terminology.</td>
-<td style="text-align: left;">MH.MHPRESP = ‘Y’<br> <br>VS.VSTEST = ‘Systolic Blood Pressure’<br> <br>VS.VSORRESU = ‘mmHg’<br></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">hardcode_no_ct</td>
-<td style="text-align: left;">Mapping a hardcoded value to a target SDTM variable that has no terminology restrictions.</td>
-<td style="text-align: left;">FA.FASCAT = ‘COVID-19 PROBABLE CASE’<br> <br>CM.CMTRT = ‘FLUIDS’</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">condition_add</td>
-<td style="text-align: left;">Algorithm that is used to filter the source data and/or target domain based on a condition. The mapping will be applied only if the condition is met. This algorithm has to be used in conjunction with other algorithms, that is if the condition is met perform the mapping using algorithms like assign_ct, assign_no_ct, hardcode_ct, hardcode_no_ct, assign_datetime.</td>
-<td style="text-align: left;">If If MDPRIOR == 1 then CM.CMSTRTPT = ‘BEFORE’.<br> <br>VS.VSMETHOD when VSTESTCD = ‘TEMP’<br> <br>If collected value in raw variable DOS is numeric then CM.CMDOSE<br> <br>If collected value in raw variable MOD is different to CMTRT then map to CM.CMMODIFY</td>
-</tr>
-</tbody>
-</table>
-<p>Here is an example of reusing an algorithm across multiple domains, variables, and also to a non-standard mapping</p>
-<p><img src="reusable_algorithms.jpg" class="img-fluid" width="600"></p>
+<section id="accessing-rstudio" class="level4">
+<h4 class="anchored" data-anchor-id="accessing-rstudio">Accessing RStudio</h4>
+<p>Once the command is running:</p>
+<ol type="1">
+<li>Open your browser to <code>http://localhost:8787</code>.</li>
+<li><strong>Linux/Intel:</strong> Log in with user <code>rstudio</code> and password <code>rstudio</code>.</li>
+<li><strong>Apple Silicon:</strong> You will be logged in automatically.</li>
+</ol>
+<p>You will see your local files mapped to the <code>project</code> folder in the Files pane, ready for analysis.</p>
 </section>
-<section id="functions-and-arguments" class="level1">
-<h1>Functions and Arguments</h1>
-<p>All the aforementioned algorithms are implemented as R functions, each accepting the raw dataset, raw variable, target SDTM dataset, and target SDTM variable as parameters.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sdtm.oak)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>cm_raw <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>oak_id, <span class="sc">~</span>raw_source, <span class="sc">~</span>patient_number, <span class="sc">~</span>MDRAW, <span class="sc">~</span>DOSU, <span class="sc">~</span>MDPRIOR,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span>L, <span class="st">"cm_raw"</span>, <span class="dv">375</span>L, <span class="st">"BABY ASPIRIN"</span>, <span class="st">"mg"</span>, <span class="dv">1</span>L,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span>L, <span class="st">"cm_raw"</span>, <span class="dv">375</span>L, <span class="st">"CORTISPORIN"</span>, <span class="st">"Gram"</span>, <span class="dv">0</span>L,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="dv">3</span>L, <span class="st">"cm_raw"</span>, <span class="dv">376</span>L, <span class="st">"ASPIRIN"</span>, <span class="cn">NA</span>, <span class="dv">0</span>L</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>study_ct <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>codelist_code, <span class="sc">~</span>term_code, <span class="sc">~</span>term_value, <span class="sc">~</span>collected_value, <span class="sc">~</span>term_preferred_term, <span class="sc">~</span>term_synonyms,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C71620"</span>, <span class="st">"C25613"</span>, <span class="st">"%"</span>, <span class="st">"%"</span>, <span class="st">"Percentage"</span>, <span class="st">"Percentage"</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C71620"</span>, <span class="st">"C28253"</span>, <span class="st">"mg"</span>, <span class="st">"mg"</span>, <span class="st">"Milligram"</span>, <span class="st">"Milligram"</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C71620"</span>, <span class="st">"C48155"</span>, <span class="st">"g"</span>, <span class="st">"g"</span>, <span class="st">"Gram"</span>, <span class="st">"Gram"</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>cm <span class="ot">&lt;-</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Derive topic variable</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># SDTM Mapping - Map the collected value to CM. CMTRT</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign_no_ct</span>(</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_dat =</span> cm_raw,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_var =</span> <span class="st">"MDRAW"</span>,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">tgt_var =</span> <span class="st">"CMTRT"</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Derive qualifier CMDOSU</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># SDTM Mapping - Map the collected value to CM. CMDOSU</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign_ct</span>(</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_dat =</span> cm_raw,</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_var =</span> <span class="st">"DOSU"</span>,</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">tgt_var =</span> <span class="st">"CMDOSU"</span>,</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">ct_spec =</span> study_ct,</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">ct_clst =</span> <span class="st">"C71620"</span>,</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_vars =</span> <span class="fu">oak_id_vars</span>()</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Derive qualifier CMSTTPT</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># SDTM mapping - If MDPRIOR == 1 then CM.CMSTTPT = 'SCREENING'</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hardcode_no_ct</span>(</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_dat =</span> <span class="fu">condition_add</span>(cm_raw, MDPRIOR <span class="sc">==</span> <span class="st">"1"</span>),</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">raw_var =</span> <span class="st">"MDPRIOR"</span>,</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">tgt_var =</span> <span class="st">"CMSTTPT"</span>,</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">tgt_val =</span> <span class="st">"SCREENING"</span>,</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_vars =</span> <span class="fu">oak_id_vars</span>()</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>As you can see in this function call, the raw dataset and variable names are passed as arguments. As long as the raw dataset and variable are present in the global environment, the function will execute the algorithm’s logic and create the target SDTM variable.</p>
-<p><code>{sdtm.oak}</code> is designed to handle any type of raw input format. It is not tied to any specific data collection standards, making it both EDC-agnostic and data standards-agnostic.</p>
 </section>
-<section id="why-not-use-dplyr" class="level1">
-<h1>Why not use dplyr?</h1>
-<p>As you can see from the definition of the algorithms, all of them are a form of <code>{dplyr::mutate()}</code> statement. However, these functions provide a way to pass dataset and variable names as arguments and the ability to merge with the previous step by id variables. This enables users to build the code in a modular and simplistic fashion, mapping one SDTM variable at a time, connected by pipes.</p>
-<p>The SDTM mappings can also be used together in a single step, such as applying a filter condition, executing a mapping, and merging the outcome with the previous step. When there is a need to apply controlled terminology, the algorithms perform additional checks, such as verifying the presence of the value in the study’s controlled terminology specification, which is passed as an argument to the function call. If the collected value is present, it applies the standard submission value.</p>
-<p>While all these functionalities can be achieved with <code>{dplyr}</code>, the functions provided by <code>{sdtm.oak}</code> simplify the process and enhance efficiency. By leveraging metadata and controlled terminology, we further minimize errors and offer a modular approach to building SDTM datasets.</p>
 </section>
-<section id="oak_id_vars" class="level1">
-<h1><code>oak_id_vars</code></h1>
-<p>The <code>oak_id_vars</code> is a crucial link between the raw datasets and the mapped SDTM domain. As the user derives each SDTM variable, it is merged with the corresponding topic variable using <code>oak_id_vars</code>. In <code>{sdtm.oak}</code>, the variables <code>oak_id</code>, <code>raw_source</code>, and <code>patient_number</code> are considered <code>oak_id_vars</code>. These three variables must be added to all raw datasets. Users can also extend this with any additional id vars.<code>oak_id_vars</code> can be added to the raw datasets using the function <code>{sdtm.oak::generate_oak_id_vars()}</code>.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 13%">
-<col style="width: 65%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Varialble</th>
-<th style="text-align: left;">Type</th>
-<th style="text-align: left;">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">oak_id</td>
-<td style="text-align: left;">Numeric</td>
-<td style="text-align: left;">The row number of the raw dataframe</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">raw_source</td>
-<td style="text-align: left;">Character</td>
-<td style="text-align: left;">The raw dataset (eCRF) name or eDT dataset name</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">patient_number</td>
-<td style="text-align: left;">Numeric</td>
-<td style="text-align: left;">Subject number in eCRF or eDT data source</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="in-this-release" class="level1">
-<h1>In this Release</h1>
-<p>The v0.1.0 release of <code>{sdtm.oak}</code> users can create the majority of the SDTM domains. Domains that are NOT in scope for the v0.1.0 release are DM (Demographics), Trial Design Domains, SV (Subject Visits), SE (Subject Elements), RELREC (Related Records), Associated Person domains, creation of SUPP domain, and EPOCH variable across all domains.</p>
-</section>
-<section id="roadmap" class="level1">
-<h1>Roadmap</h1>
-<p>We are planning to develop the below features in the subsequent releases.</p>
-<ul>
-<li>Functions required to derive reference date variables in the DM domain.<br>
-</li>
-<li>Metadata driven automation based on the standardized SDTM specification.<br>
-</li>
-<li>Functions required to program the EPOCH variable.<br>
-</li>
-<li>Functions to derive standard units and results based on metadata.<br>
-</li>
-<li>Functions required to create SUPP domains.<br>
-</li>
-<li>Making the algorithms part of the standard CDISC eCRF portal enabling automation of CDISC standard eCRFs.</li>
-</ul>
-</section>
-<section id="get-involved" class="level1">
-<h1>Get Involved</h1>
-<p>Please try the package and provide us with your feedback, or get involved in the development of new features. We can be reached through any of the following means:</p>
-<p>Slack: <a href="https://oakgarden.slack.com">https://oakgarden.slack.com</a><br>
-GitHub: <a href="https://github.com/pharmaverse/sdtm.oak">https://github.com/pharmaverse/sdtm.oak</a><br>
-CDISC Wiki: <a href="https://wiki.cdisc.org/display/oakgarden">https://wiki.cdisc.org/display/oakgarden</a></p>
+<section id="engaging-with-the-pharmaverse-community" class="level2">
+<h2 class="anchored" data-anchor-id="engaging-with-the-pharmaverse-community">Engaging with the Pharmaverse Community</h2>
+<p>The pharmaverse container image mage represents a collaborative effort within the life sciences industry to provide open-source tools. For those working with pharmaverse packages and R in development, research, or CI/CD contexts, exploring this image may offer practical advantages in efficiency and reproducibility.</p>
+<p>Explore the pharmaverse container image repository: <a href="https://github.com/pharmaverse/docker_pharmaverse">pharmaverse/docker_pharmaverse</a> Discover more about Pharmaverse: <a href="https://pharmaverse.org/">pharmaverse.org</a></p>
+<p>We acknowledge the contributions of the pharmaverse community and the Rocker Project for their support in developing these resources.</p>
 <!--------------- appendices go here ----------------->
+</section>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -456,24 +392,23 @@ CDISC Wiki: <a href="https://wiki.cdisc.org/display/oakgarden">https://wiki.cdis
 </div>
 
 
-</section>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-18 22:22:17.678777</p>
+<p>2026-01-18 22:21:19.079894</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_introducing.../introducing_sdtm.oak.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{ganapathy2024,
-  author = {Ganapathy, Rammprasad},
-  title = {Introducing Sdtm.oak},
-  date = {2024-10-24},
-  url = {https://pharmaverse.github.io/blog/posts/2024-10-24_introducing.../introducing_sdtm.oak.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse_and__containers.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub_and_maciej_nasinski2026,
+  author = {Straub and Maciej Nasinski, Ben},
+  title = {Pharmaverse and {Containers}},
+  date = {2026-01-18},
+  url = {https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-ganapathy2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Ganapathy, Rammprasad. 2024. <span>“Introducing Sdtm.oak.”</span>
-October 24, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-10-24_introducing.../introducing_sdtm.oak.html">https://pharmaverse.github.io/blog/posts/2024-10-24_introducing.../introducing_sdtm.oak.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub_and_maciej_nasinski2026" class="csl-entry quarto-appendix-citeas" role="listitem">
+Straub and Maciej Nasinski, Ben. 2026. <span>“Pharmaverse and
+Containers.”</span> January 18, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html">https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {

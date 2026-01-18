@@ -10,7 +10,382 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Short, fun and user-driven content around the pharmaverse.</description>
 <generator>quarto-1.9.12</generator>
-<lastBuildDate>Thu, 15 Jan 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 18 Jan 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Pharmaverse and Containers</title>
+  <dc:creator>Ben Straub and Maciej Nasinski</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers" class="level2">
+<h2 class="anchored" data-anchor-id="streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers">Streamlining Our Pharmaverse Blog: Reducing Publishing Time with containers</h2>
+<p>As an active contributor to the pharmaverse blog, I’ve always appreciated the opportunity to share new insights and tools with our community. The pharmaverse blog has some interesting features for publishing. While the blog publishing process has been effective, I was wondering if there was a way to optimize our workflows. Currently, the CI/CD pipeline for publishing the blog typically took about 17 minutes to deploy a new post. Containers are always batted around as solutions. Unfortunately, I was unsure how to create a new container/image to meet my needs and relied on some straight <code>install.packages()</code> in the CI/CD pipeline. Luckily, I crossed paths with the fabulous Maciej Nasinski and we built a specific container for the publishing process for the pharmaverse blog, which allowed for a notable reduction in publishing time.</p>
+<p>Below I will discuss how the pharmaverse container image has improved our blog’s publishing workflow, bringing our deployment time down to approximately 5 minutes. We are also interested in feedback on potential other uses of this container (like devcontainers) or building additional containers for certain purposes. For those interested, we would be happy to provide a tutorial on containers or get in touch if you have ideas or want to get involved!</p>
+</section>
+<section id="the-previous-approach-package-installation-overhead" class="level2">
+<h2 class="anchored" data-anchor-id="the-previous-approach-package-installation-overhead"><strong>The Previous Approach:</strong> Package Installation overhead</h2>
+<p>Our prior CI/CD (GitHub Actions) workflow for building and deploying the pharmaverse blog, while comprehensive, included a time-consuming step. It used the a straight “Install dependencies” step from the r-lib actions, which necessitated installing a range of pharmaverse specific R packages during each run. As we added more packages to the pharmaverse to the blog, this became really cumbersome!</p>
+<p>The relevant section of our old build-deploy job highlighted this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">  build<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>deploy<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb1-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ... other configurations ...</span></span>
+<span id="cb1-3">    steps<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb1-4">      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ... checkout and setup Quarto ...</span></span>
+<span id="cb1-5">      <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> name<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> Setup R</span>
+<span id="cb1-6">        uses<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> r<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>lib<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>actions<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>setup<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>r<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">@</span>v2</span>
+<span id="cb1-7">        with<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb1-8">          use<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>public<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>rspm<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> true</span>
+<span id="cb1-9"></span>
+<span id="cb1-10">      <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> name<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> Install dependencies</span>
+<span id="cb1-11">        uses<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> r<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>lib<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>actions<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>setup<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>r<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>dependencies<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">@</span>v2</span>
+<span id="cb1-12">        with<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb1-13">          packages<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">|</span></span>
+<span id="cb1-14">            jsonlite</span>
+<span id="cb1-15">            tidyverse</span>
+<span id="cb1-16">            spelling</span>
+<span id="cb1-17">            janitor</span>
+<span id="cb1-18">            diffdf</span>
+<span id="cb1-19">            admiral</span>
+<span id="cb1-20">            admiralonco</span>
+<span id="cb1-21">            <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ... and many, many more packages ...</span></span>
+<span id="cb1-22">            haven</span>
+<span id="cb1-23">      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ... other steps like install tinytex and publish ...</span></span></code></pre></div></div>
+<p>This “Install dependencies” step, involving a substantial list of pharmaverse packages, was a primary contributor to the 17-minute execution time. Each workflow run involved downloading and configuring these packages, extending the overall deployment duration.</p>
+</section>
+<section id="adopting-the-pharmaverse-container-image-an-efficient-alternative" class="level2">
+<h2 class="anchored" data-anchor-id="adopting-the-pharmaverse-container-image-an-efficient-alternative">Adopting the pharmaverse container image: An Efficient Alternative</h2>
+<p>The solution to this challenge came with the introduction of the pharmaverse container image: <code>ghcr.io/pharmaverse/docker_pharmaverse:4.5.1</code>. This container image was specifically designed for pharmaceutical data analysis, featuring over 40 essential pharmaverse packages pre-installed. These packages cover various functionalities, including CDISC ADaM/SDTM, clinical trial reporting, and regulatory submissions. Built upon the rocker/tidyverse image and incorporating R 4.5.1, it provides a pre-configured environment.</p>
+<p>By integrating this image into our CI/CD pipeline (GitHub Actions), we could bypass the extensive package installation phase.</p>
+<p>Here’s an overview of our updated build-deploy job:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">  build<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>deploy<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-2">    needs<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> Update<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>post<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>dates</span>
+<span id="cb2-3">    runs<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>on<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> ubuntu<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>latest</span>
+<span id="cb2-4">    container<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-5">      image<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ghcr.io/pharmaverse/docker_pharmaverse:4.5.1"</span></span>
+<span id="cb2-6">    permissions<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-7">      contents<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> write</span>
+<span id="cb2-8">    steps<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-9">      <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> name<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> Check out repository</span>
+<span id="cb2-10">        uses<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> actions<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>checkout<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">@</span>v4</span>
+<span id="cb2-11"></span>
+<span id="cb2-12">      <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> name<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> Configure Git safe directory</span>
+<span id="cb2-13">        run<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> git config <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">--</span>global <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">--</span>add safe.directory <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>__w<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>blog<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>blog</span>
+<span id="cb2-14"></span>
+<span id="cb2-15">      <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> name<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> Set up Quarto</span>
+<span id="cb2-16">        uses<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> quarto<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>dev<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>quarto<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>actions<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>setup<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">@</span>v2</span>
+<span id="cb2-17">        with<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-18">            version<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>.<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9.12</span></span>
+<span id="cb2-19"></span>
+<span id="cb2-20">      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: Explicit R package installation is no longer required here.</span></span>
+<span id="cb2-21"></span>
+<span id="cb2-22">      <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> name<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> Install tinytex</span>
+<span id="cb2-23">        run<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> quarto install tool tinytex</span>
+<span id="cb2-24"></span>
+<span id="cb2-25">      <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> name<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> Mark repo directory as safe</span>
+<span id="cb2-26">        run<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> git config <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">--</span>global <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">--</span>add safe.directory <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>__w<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>blog<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>blog</span>
+<span id="cb2-27"></span>
+<span id="cb2-28">      <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> name<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> Publish</span>
+<span id="cb2-29">        uses<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> quarto<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>dev<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>quarto<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>actions<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>publish<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">@</span>v2</span>
+<span id="cb2-30">        with<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-31">          path<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> . <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Path to your .qmd file</span></span>
+<span id="cb2-32">          target<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> gh<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>pages  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Target branch for GitHub Pages</span></span>
+<span id="cb2-33">        env<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-34">          GITHUB_TOKEN<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">$</span>{{ secrets.GITHUB_TOKEN }}</span></code></pre></div></div>
+<p>The outcome of this change has been a consistent reduction in publishing time. Our blog now publishes in approximately 5 minutes. Yay!</p>
+</section>
+<section id="wider-applications-of-the-pharmaverse-container-image" class="level2">
+<h2 class="anchored" data-anchor-id="wider-applications-of-the-pharmaverse-container-image">Wider Applications of the Pharmaverse Container Image</h2>
+<p>While this update directly benefits our blog’s publishing, the pharmaverse container image offers broader utility. It is a valuable resource for:</p>
+<ul>
+<li>Pharmaceutical data analysis: Supporting tasks related to ADaM, SDTM, and TLFs.</li>
+<li>Clinical trial programming: Assisting with regulatory submissions.</li>
+<li>Reproducible research: Providing a consistent and verifiable environment.</li>
+<li>Training &amp; education: Offering a ready-to-use setup for educational purposes.</li>
+<li>CI/CD pipelines: Enhancing automated testing and reporting, as observed in our own workflow.</li>
+<li>Collaborative development: Facilitating consistent environments across teams.</li>
+</ul>
+<section id="example-running-reproducible-rstudio-locally" class="level3">
+<h3 class="anchored" data-anchor-id="example-running-reproducible-rstudio-locally">Example: Running Reproducible RStudio Locally</h3>
+<p>To spin up a local RStudio instance using the pharmaverse image, you can use a container “one-liner.” This command condenses the entire configuration - networking, storage, and background execution - into a single execution string. It bridges your local folder to the container, allowing you to edit files “on the fly” without installing R or packages on your actual machine.</p>
+<p>Choose the command that matches your operating system:</p>
+<section id="linux-intel-macs-standard" class="level4">
+<h4 class="anchored" data-anchor-id="linux-intel-macs-standard">1. Linux &amp; Intel Macs (Standard)</h4>
+<p>For standard architecture, we set a simple password (<code>rstudio</code>) and mount the current directory.</p>
+<p><code>docker run -d --name my_pharma_rstudio --rm -p 8787:8787 -e PASSWORD=rstudio -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1</code></p>
+</section>
+<section id="apple-silicon-m1m2m3" class="level4">
+<h4 class="anchored" data-anchor-id="apple-silicon-m1m2m3">2. Apple Silicon (M1/M2/M3)</h4>
+<p><strong>Note:</strong> We do not yet natively support ARM64 architecture (e.g., Apple Silicon). The command below uses emulation (<code>--platform linux/amd64</code>) to run the image. We also disable authentication because the slower emulation speed can sometimes cause password setup to time out.</p>
+<p><code>docker run -d --name my_pharma_rstudio --rm --platform linux/amd64 -p 8787:8787 -e DISABLE_AUTH=true -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1</code></p>
+</section>
+<section id="what-does-this-command-do" class="level4">
+<h4 class="anchored" data-anchor-id="what-does-this-command-do">What does this command do?</h4>
+<ul>
+<li>**<code>--rm</code> &amp; <code>-d**</code>: Runs the container in the background (detached) and automatically removes it when stopped, keeping your machine clean.</li>
+<li><strong><code>-v "$(pwd)":...</code></strong>: Takes your <strong>P</strong>resent <strong>W</strong>orking <strong>D</strong>irectory and mounts it inside the container. Any file you save in RStudio’s “project” folder is instantly saved to your local computer.</li>
+<li><strong><code>--platform linux/amd64</code></strong> <em>(Mac only)</em>: Forces your computer to emulate the Intel architecture required by the image.</li>
+<li><strong><code>-e DISABLE_AUTH=true</code></strong> <em>(Mac only)</em>: Bypasses the login screen to ensure immediate access despite slower emulation speeds.</li>
+</ul>
+</section>
+<section id="accessing-rstudio" class="level4">
+<h4 class="anchored" data-anchor-id="accessing-rstudio">Accessing RStudio</h4>
+<p>Once the command is running:</p>
+<ol type="1">
+<li>Open your browser to <code>http://localhost:8787</code>.</li>
+<li><strong>Linux/Intel:</strong> Log in with user <code>rstudio</code> and password <code>rstudio</code>.</li>
+<li><strong>Apple Silicon:</strong> You will be logged in automatically.</li>
+</ol>
+<p>You will see your local files mapped to the <code>project</code> folder in the Files pane, ready for analysis.</p>
+</section>
+</section>
+</section>
+<section id="engaging-with-the-pharmaverse-community" class="level2">
+<h2 class="anchored" data-anchor-id="engaging-with-the-pharmaverse-community">Engaging with the Pharmaverse Community</h2>
+<p>The pharmaverse container image mage represents a collaborative effort within the life sciences industry to provide open-source tools. For those working with pharmaverse packages and R in development, research, or CI/CD contexts, exploring this image may offer practical advantages in efficiency and reproducibility.</p>
+<p>Explore the pharmaverse container image repository: <a href="https://github.com/pharmaverse/docker_pharmaverse">pharmaverse/docker_pharmaverse</a> Discover more about Pharmaverse: <a href="https://pharmaverse.org/">pharmaverse.org</a></p>
+<p>We acknowledge the contributions of the pharmaverse community and the Rocker Project for their support in developing these resources.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2026-01-18 22:21:19.079894</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse_and__containers.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub_and_maciej_nasinski2026,
+  author = {Straub and Maciej Nasinski, Ben},
+  title = {Pharmaverse and {Containers}},
+  date = {2026-01-18},
+  url = {https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub_and_maciej_nasinski2026" class="csl-entry quarto-appendix-citeas">
+Straub and Maciej Nasinski, Ben. 2026. <span>“Pharmaverse and
+Containers.”</span> January 18, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html">https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html</a>.
+</div></div></section></div> ]]></description>
+  <category>Community</category>
+  <category>Submissions</category>
+  <category>Technical</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html</guid>
+  <pubDate>Sun, 18 Jan 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/container.png" medium="image" type="image/png" height="146" width="144"/>
+</item>
 <item>
   <title>admiral 1.4 release</title>
   <dc:creator>Jeff Dickinson</dc:creator>
@@ -67,22 +442,19 @@ font-style: inherit;">"https://cloud.r-project.org"</span>)</span></code></pre><
 <pre><code>Installing package into '/usr/local/lib/R/site-library'
 (as 'lib' is unspecified)</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>also installing the dependency 'admiraldev'</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(admiral)</span>
-<span id="cb4-2"><span class="fu" style="color: #4758AB;
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(tibble)</span>
-<span id="cb4-3"></span>
-<span id="cb4-4">adpc_nfrlt <span class="ot" style="color: #003B4F;
+<span id="cb3-3"></span>
+<span id="cb3-4">adpc_nfrlt <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">tribble</span>(</span>
-<span id="cb4-5">  <span class="sc" style="color: #5E5E5E;
+<span id="cb3-5">  <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">~</span>USUBJID, <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -91,7 +463,7 @@ background-color: null;
 font-style: inherit;">~</span>PCTPT,           <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">~</span>PCSTRESN,</span>
-<span id="cb4-6">  <span class="st" style="color: #20794D;
+<span id="cb3-6">  <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -100,7 +472,7 @@ background-color: null;
 font-style: inherit;">"Pre-dose"</span>,       <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.0</span>,</span>
-<span id="cb4-7">  <span class="st" style="color: #20794D;
+<span id="cb3-7">  <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -109,7 +481,7 @@ background-color: null;
 font-style: inherit;">"30M Post-dose"</span>,  <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">5.2</span>,</span>
-<span id="cb4-8">  <span class="st" style="color: #20794D;
+<span id="cb3-8">  <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -118,7 +490,7 @@ background-color: null;
 font-style: inherit;">"1H Post-dose"</span>,   <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">8.4</span>,</span>
-<span id="cb4-9">  <span class="st" style="color: #20794D;
+<span id="cb3-9">  <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -127,7 +499,7 @@ background-color: null;
 font-style: inherit;">"2H Post-dose"</span>,   <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">12.1</span>,</span>
-<span id="cb4-10">  <span class="st" style="color: #20794D;
+<span id="cb3-10">  <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -136,7 +508,7 @@ background-color: null;
 font-style: inherit;">"4H Post-dose"</span>,   <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">10.3</span>,</span>
-<span id="cb4-11">  <span class="st" style="color: #20794D;
+<span id="cb3-11">  <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -145,7 +517,7 @@ background-color: null;
 font-style: inherit;">"8H Post-dose"</span>,   <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">6.8</span>,</span>
-<span id="cb4-12">  <span class="st" style="color: #20794D;
+<span id="cb3-12">  <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"001"</span>,    <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -154,32 +526,32 @@ background-color: null;
 font-style: inherit;">"24H Post-dose"</span>,  <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2.1</span></span>
-<span id="cb4-13">)</span>
-<span id="cb4-14"></span>
-<span id="cb4-15">adpc_nfrlt <span class="sc" style="color: #5E5E5E;
+<span id="cb3-13">)</span>
+<span id="cb3-14"></span>
+<span id="cb3-15">adpc_nfrlt <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-16">  <span class="fu" style="color: #4758AB;
+<span id="cb3-16">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">derive_var_nfrlt</span>(</span>
-<span id="cb4-17">    <span class="at" style="color: #657422;
+<span id="cb3-17">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">new_var =</span> NFRLT,</span>
-<span id="cb4-18">    <span class="at" style="color: #657422;
+<span id="cb3-18">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">new_var_unit =</span> FRLTU,</span>
-<span id="cb4-19">    <span class="at" style="color: #657422;
+<span id="cb3-19">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">out_unit =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"HOURS"</span>,</span>
-<span id="cb4-20">    <span class="at" style="color: #657422;
+<span id="cb3-20">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">tpt_var =</span> PCTPT,</span>
-<span id="cb4-21">    <span class="at" style="color: #657422;
+<span id="cb3-21">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">visit_day =</span> VISITDY</span>
-<span id="cb4-22">  )</span></code></pre></div></div>
+<span id="cb3-22">  )</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 7 × 6
   USUBJID VISITDY PCTPT         PCSTRESN NFRLT FRLTU
@@ -201,7 +573,7 @@ font-style: inherit;">visit_day =</span> VISITDY</span>
 <p><img src="https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/adab_vignette.png" class="img-fluid"></p>
 <p>As usual, to use start using the template you can run:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">use_ad_template</span>(<span class="st" style="color: #20794D;
 background-color: null;
@@ -226,7 +598,7 @@ font-style: inherit;">"adab"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:08:50.200778</p>
+<p>2026-01-18 22:22:44.259639</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.4.../admiral_1.4_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -597,7 +969,7 @@ Pharmaverse.”</span> December 19, 2025. <a href="https://pharmaverse.github.io
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:07:18.182323</p>
+<p>2026-01-18 22:21:04.671675</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -669,7 +1041,7 @@ Tools.”</span> December 18, 2025. <a href="https://pharmaverse.github.io/blog/
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:07:14.462566</p>
+<p>2026-01-18 22:21:00.545392</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1002,7 +1374,7 @@ font-style: inherit;">"admiralneuro"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:08:11.350319</p>
+<p>2026-01-18 22:22:04.804939</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_introducing.../introducing_admiralneuro.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1334,7 +1706,7 @@ plot</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:08:19.490108</p>
+<p>2026-01-18 22:22:13.777889</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-05-12_faster_clinical_trial_reporting.../faster_clinical_trial_reporting.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1419,7 +1791,7 @@ and ADaM Standards with Open-Source R Packages.”</span> September 12,
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:07:54.514703</p>
+<p>2026-01-18 22:21:46.307247</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-08-11_rtflite_1.0.0.../rtflite.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1984,7 +2356,7 @@ for AGEGR2. Please check your controlled terminology.</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:08:30.36667</p>
+<p>2026-01-18 22:22:25.937605</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_metacore_0.2.0/metacore_0.2.0.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2224,7 +2596,7 @@ font-style: inherit;">oak_id_vars</span>()</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:09:15.875408</p>
+<p>2026-01-18 22:24:04.100119</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverseraw__package.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2282,7 +2654,7 @@ Package.”</span> July 7, 2025. <a href="https://pharmaverse.github.io/blog/pos
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:09:22.558418</p>
+<p>2026-01-18 22:24:11.687301</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_p_hu_se__up.../p_hu_se__update.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2344,7 +2716,7 @@ council, pharmaverse. 2025. <span>“PHUSE Update.”</span> July 4, 2025.
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:08:04.77827</p>
+<p>2026-01-18 22:21:57.657691</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_did_my_eyes.../did_my_eyes_just_see__python_in_the_pharmaverse.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2633,7 +3005,7 @@ font-style: inherit;">TRUE</span>))</span>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:09:43.628898</p>
+<p>2026-01-18 22:24:35.457774</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.3.../admiral_1.3.0:_documentation_go!!.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -5792,7 +6164,7 @@ font-style: inherit;">Log</span> path: /cloud/project/posts/zzz_DO_NOT_EDIT_logr
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:09:41.33093</p>
+<p>2026-01-18 22:24:32.867099</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_logrx_0.4.0.../logrx_0_4_0_logs_for_your__r_programs.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -5842,7 +6214,7 @@ May 19, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-05-19_logrx
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:07:40.528162</p>
+<p>2026-01-18 22:21:30.856961</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_welcome,__a.../welcome,__ashley__tarasiewicz.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -5917,7 +6289,7 @@ April 16, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-04-16_wel
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:06:59.793082</p>
+<p>2026-01-18 22:20:44.025949</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-03-11_code_collaborati.../code_collaboration_in__ne_st.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -5973,7 +6345,7 @@ April 8, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-04-08_code
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:07:35.956311</p>
+<p>2026-01-18 22:21:25.78706</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_welcoming__.../welcoming__novartis_to_the__pharmaverse__council!.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -6791,7 +7163,7 @@ WEEK 5 DAY 36
 t_ds footnotes
 Confidential and for internal use only
 GitHub repository: NA
-Git hash: 2f0ba11a275539b4d4f3f2e20de491540aee1b76
+Git hash: 1a14db8e68badc82e7f0089118af1624c1ebebac
 
 Slot "titles":
  Patient Disposition (Intent to Treat Population)
@@ -6863,7 +7235,7 @@ font-style: inherit;">outfile =</span> filepath)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:09:37.454663</p>
+<p>2026-01-18 22:24:28.439991</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_automatic_s.../automatic_slide_generation_with_%7Bautoslide_r%7D.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -6971,7 +7343,7 @@ Needleman, Laura. 2025. <span>“Diversity Champion Updates.”</span> March
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-15 21:06:52.05895</p>
+<p>2026-01-18 22:20:35.566766</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_teal_0.16.0.../teal_0.16.0_is_released.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -6990,57 +7362,6 @@ Unardi, Dony. 2025. <span>“Teal 0.16.0 Is Released!”</span> March 3,
   <guid>https://pharmaverse.github.io/blog/posts/2025-03-03_teal_0.16.0.../teal_0.16.0_is_released.html</guid>
   <pubDate>Mon, 03 Mar 2025 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2025-03-03_teal_0.16.0.../teal.png" medium="image" type="image/png" height="144" width="144"/>
-</item>
-<item>
-  <title>Council Member updates</title>
-  <dc:creator>pharmaverse council</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2025-02-28_council__me.../council__member_updates.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<!--------------- typical setup ----------------->
-<!--------------- post begins here ----------------->
-<p>Hi pharmaverse community,</p>
-<p>On behalf of the council we wanted to update you on the latest council member 2-yearly renewals.</p>
-<p>Firstly, we’d like to thank Ari Siggaard Knoph, who has stepped back from his Novo Nordisk council representative role as of Jan 2025. Ari brought so much to the pharmaverse council in his 2 years with us, including amazing technical work to make our site homepage as visually appealing as it is today with our hexwall and contributor network graph, plus impactful presentations at PHUSE and beyond. He showed great passion for open source and as a user himself of many of the pharmaverse packages, he always kept us true to what people working in clinical reporting care most about.</p>
-<p>With this, we are delighted to welcome Julia Gnatek as Ari’s replacement to represent Novo Nordisk on the council. Julia has been a statistical programmer at Novo Nordisk for over 5 years. She began her career as a statistical programmer and is now a statistical programming project lead within the Rare Disease area. As an R, SAS, and Python user, Julia is dedicated to leveraging her programming skills to drive innovation within the organization. Outside of work, she enjoys participating in data science communities and attending industry conferences to stay updated with the latest trends and advancements.</p>
-<p>Please join us in thanking Ari for his contributions and welcoming Julia!</p>
-<p>We also have several other council members terms due to expire as of March 2025, and we’re happy to confirm that Michael Rimler, Mike Stackhouse, Sumesh Kalappurakal and Ross Farrugia have all agreed to renew council membership for another 2 years. As the 4 founding members of pharmaverse we all felt there was still so much more impact this initiative can achieve, and we wanted to continue to commit our time to helping open source prosper for the good of all patients across the world.</p>
-<p>If you ever want to know more about our council please check our <a href="https://pharmaverse.org/contribute/council/">site page</a>, and you can reach all of us using: pharmaverse.council@phuse.global.</p>
-<!--------------- appendices go here ----------------->
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2026-01-15 21:07:33.373156</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_council__me.../council__member_updates.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{council2025,
-  author = {council, pharmaverse},
-  title = {Council {Member} Updates},
-  date = {2025-02-28},
-  url = {https://pharmaverse.github.io/blog/posts/2025-02-28_council__me.../council__member_updates.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-council2025" class="csl-entry quarto-appendix-citeas">
-council, pharmaverse. 2025. <span>“Council Member Updates.”</span>
-February 28, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-02-28_council__me.../council__member_updates.html">https://pharmaverse.github.io/blog/posts/2025-02-28_council__me.../council__member_updates.html</a>.
-</div></div></section></div> ]]></description>
-  <category>Community</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2025-02-28_council__me.../council__member_updates.html</guid>
-  <pubDate>Fri, 28 Feb 2025 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2025-02-28_council__me.../jygn_pharmaverse.png" medium="image" type="image/png" height="167" width="144"/>
 </item>
 </channel>
 </rss>
