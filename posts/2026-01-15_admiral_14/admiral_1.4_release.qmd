@@ -1,0 +1,110 @@
+---
+title: admiral 1.4 release
+author:
+- name: Jeff Dickinson
+- name: Ben Straub
+- name: Edoardo Mancini
+description: admiral 1.4 is here! Read this blog post to learn more about the contents
+  of this release.
+date: '2026-01-15'
+categories: ADaM
+image: admiral.png
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_admiral_1.4..."
+```
+
+<!--------------- post begins here ----------------->
+
+![](admiral.png)
+
+# admiral 1.4 is here!
+
+There's nothing like a new {admiral} release to start the new year with a bang, and that's exactly what we have for you with {admiral} 1.4! This release comes packed with few choice updates and some exciting new features (__including our first AI integration!__) that will undoubtedly improve your experience creating ADaMs in R. However, in line with our commitment to stability and maturity, we have once again reduced the number of breaking changes to an absolute minimum. Take a look at the rest of the blog post below to learn more about what to expect in [{admiral} 1.4](https://pharmaverse.github.io/admiral/cran-release/).
+
+## TLDR: What is in this release?
+
+- {admiral} has partnered with [kapa.ai](https://www.kapa.ai/) to introduce an AI-powered chatbot within every page of our websites.
+- We have added our first experimental functions: `derive_var_nfrlt()` and `convert_xxtpt_to_hours()`. These simplify time point and visit derivations.
+- There is a new ADAB template script and correspondingly new vignette. These will aid in creating Anti-drug Antibody Analysis Datasets
+- Several existing parameter derivation functions have been updated for greater robustness.
+- All the {admiral} templates can now be viewed directly from our website within the new [Explore ADaM Templates](https://pharmaverse.github.io/admiral/cran-release/articles/templates.html).
+- {admiral} is now integrated with NCI-CTCAE version 6.0 lab grading criteria for both SI and US units, with all grading metadata now maintained in a more readable JSON format for improved consistency and maintainability.
+- `derive_var_atoxgr_dir()` received a small breaking change: the `abnormal_indicator` argument was replaced by `low_indicator` and `high_indicator` to support the updated CTCAE v6.0 criteria.
+- `derive_var_merged_summary()` has been renamed to `derive_vars _merged_summary()` to align with programming conventions.
+
+Please peruse the [Changelog](https://pharmaverse.github.io/admiral/cran-release/news/index.html) to see the full set of updates in {admiral} 1.4.
+
+Let's take a few deep-dives to explore some of these updates in more detail.
+
+## Deep dive 1: kapa.ai integration
+
+We are thrilled to announce that {admiral} has partnered with [kapa.ai](https://www.kapa.ai/) under their [Open Source Program](https://docs.kapa.ai/kapa-for-open-source) to introduce an AI-powered chatbot within every page of our website. This LLM chatbot is trained using the documentation pages of {admiral} and all our therapeutic area extension packages as well as the {pharmaversesdtm} and {pharmaverseadam} data packages and the ADaM IG. Indeed, look out for it to be added to every other package in the {admiral} ecosystem in their upcoming releases this month. To use the chatbot, simply click on the "Ask AI" button at the bottom right corner of any website page and start asking away - you may find that you get redirected to a User Guide, a function reference page or the website of another {admiral} package that you didn't even know existed!
+
+![](kapa.png)
+
+## Deep dive 2: Experimental functions!
+
+*Experimental functions are a new class of functions, tagged with the ["Experimental" badge](https://pharmaverse.github.io/admiral/cran-release/reference/#experimental). This is our way of adding targeted, new functionality that we can quickly improve/modify without breaking our commitment to stability. The badge will be removed once the dev team feels the function is stable, and no deprecation messages will be given to the user if breaking changes are implemented before removing the experimental badge. However, {admiral} will document the breaking change in the Changelog. Once the "Experimental" badge is removed we will proceed with the normal deprecation cycle if needed.*
+
+Our first experimental functions help derive variables for time-point analysis. One such variable is `NFRLT` (Nominal Relative Time from First Dose), which is used extensively in pharmacokinetic analysis. This is the namesake variable for `derive_var_nfrlt()`. This function can be used to directly derive `NFRLT` in the Pharmacokinetic Concentrations (`PC`) domain and in the Exposure (`EX`) domain. These domains are typically combined to form the Pharmacokinetic Concentrations Analysis Data (`ADPC`). Under the hood of this function is `convert_xxtpt_to_hours()`, which converts timepoint variables such as `PCTPT` to numeric hours using regular expressions. The hours computed from `convert_xxtpt_to_hours()` are combined with the days from a visit variable such as `VISITDY` to derive `NFRLT`. Note that the unit variable `FRLTU` can also be derived, and there are multiple output unit options (hours, days, weeks, minutes).
+
+```{r}
+install.packages("admiral", repos = "https://cloud.r-project.org")
+library(admiral)
+library(tibble)
+
+adpc_nfrlt <- tribble(
+  ~USUBJID, ~VISITDY, ~PCTPT,           ~PCSTRESN,
+  "001",    1,        "Pre-dose",       0.0,
+  "001",    1,        "30M Post-dose",  5.2,
+  "001",    1,        "1H Post-dose",   8.4,
+  "001",    1,        "2H Post-dose",   12.1,
+  "001",    1,        "4H Post-dose",   10.3,
+  "001",    1,        "8H Post-dose",   6.8,
+  "001",    1,        "24H Post-dose",  2.1
+)
+
+adpc_nfrlt %>%
+  derive_var_nfrlt(
+    new_var = NFRLT,
+    new_var_unit = FRLTU,
+    out_unit = "HOURS",
+    tpt_var = PCTPT,
+    visit_day = VISITDY
+  )
+```
+The functions can work with any time-point variables from other domains such as `LB`, `VS` or 'EG`. There a is also a treatment duration option in the case of infusions and an option for time point ranges such as "4-8H AFTER END OF INFUSION".
+
+## Deep dive 3: Anti-drug-antibody template and vignette
+
+{admiral} 1.4 introduces a new ADaM template script to aid in creating Anti-drug Antibody Analysis Datasets (`ADAB`). This template is accompanied by a detailed [vignette](https://pharmaverse.github.io/admiral/cran-release/articles/adab.html) that walks you through the process of deriving key variables and implementing analysis strategies specific to anti-drug antibody data, including the use of one of our new experimental functions `derive_var_nfrlt() `. The template covers common scenarios encountered in immunogenicity assessments, providing a solid foundation for users to build upon and customize according to their study requirements.
+
+![](adab_vignette.png)
+
+As usual, to use start using the template you can run:
+
+```{r, eval = FALSE}
+use_ad_template("adab")
+```
+
+...or you can peruse the template directly from the website from our new [Explore ADaM Templates](https://pharmaverse.github.io/admiral/cran-release/articles/templates.html) page.
+
+# What's coming in admiral 1.5?
+
+{admiral} is very much community driven, so please continue reaching out through [Slack](https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A) or [GitHub](https://github.com/pharmaverse/admiral/issues) if you have ideas or requests for enhancements to our package. {admiral} 1.5 is due to release in June 2026, and some current ideas for new content include improved Estimands documentation and ways to enable positive censoring within TTE derivations.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
