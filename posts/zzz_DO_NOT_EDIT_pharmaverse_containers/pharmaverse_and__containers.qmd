@@ -2,14 +2,14 @@
 title: "Pharmaverse and Containers"
 author:
   - name: Ben Straub and Maciej Nasinski
-description: "Containers in the pharmaverse"
+description: "Containers in the pharmaverse - exploration and potential use cases."
 # Note that the date below will be auto-updated when the post is merged.
-date: "2026-01-12"
+date: "2026-01-18"
 # Please do not use any non-default categories.
 # You can find the default categories in the repository README.md
 categories: [Community, Submissions, Technical]
 # Feel free to change the image
-image: "pharmaverse.png"
+image: "container.png"
 
 ---
 
@@ -23,16 +23,15 @@ long_slug <- "zzz_DO_NOT_EDIT_pharmaverse..."
 
 ## Streamlining Our Pharmaverse Blog: Reducing Publishing Time with containers
 
-As an active contributor to the pharmaverse blog, I've always appreciated the opportunity to share new insights and tools with our community. While the blog publishing process has been effective, we continuously seek ways to optimize our workflows. Currently, the CI/CD pipeline for publishing the blog typically took about 17 minutes to deploy a new post. Unfortunately, I was unsure how to create a new container/image to meet my needs and relied on some straight `install.packages()` in the CI/CD pipeline. Luckily, I crossed paths with the fabulous Maciej Nasinski and we built a specific
+As an active contributor to the pharmaverse blog, I've always appreciated the opportunity to share new insights and tools with our community. The pharmaverse blog has some interesting features for publishing.  While the blog publishing process has been effective, I was wondering if there was a way to optimize our workflows. Currently, the CI/CD pipeline for publishing the blog typically took about 17 minutes to deploy a new post. Containers are always batted around as solutions. Unfortunately, I was unsure how to create a new container/image to meet my needs and relied on some straight `install.packages()` in the CI/CD pipeline. Luckily, I crossed paths with the fabulous Maciej Nasinski and we built a specific
 container for the publishing process for the pharmaverse blog, which allowed for a notable reduction in publishing time.
 
 Below I will discuss how the pharmaverse container image has improved our blog's publishing workflow, bringing our deployment time down to approximately 5 minutes. We are also interested in feedback on potential other uses
-of this container (like devcontainers) or building additional containers for certain purposes. For those interested, we would be happy to provide a tutorial on containers. Get in touch if you have ideas or want to get involved!
+of this container (like devcontainers) or building additional containers for certain purposes. For those interested, we would be happy to provide a tutorial on containers or get in touch if you have ideas or want to get involved!
 
 ## **The Previous Approach:** Package Installation overhead
 
-Our prior CI/CD (GitHub Actions) workflow for building and deploying the pharmaverse blog, while comprehensive, included a time-consuming step. It used the a straight "Install dependencies" step from the r-lib actions, which necessitated installing a range of pharmaverse specific R packages during each run. As we added more packages to the pharmaverse
-and explored in the blog, this became really cumbersome!
+Our prior CI/CD (GitHub Actions) workflow for building and deploying the pharmaverse blog, while comprehensive, included a time-consuming step. It used the a straight "Install dependencies" step from the r-lib actions, which necessitated installing a range of pharmaverse specific R packages during each run. As we added more packages to the pharmaverse to the blog, this became really cumbersome!
 
 The relevant section of our old build-deploy job highlighted this:
 
@@ -111,9 +110,9 @@ Here's an overview of our updated build-deploy job:
 
 The outcome of this change has been a consistent reduction in publishing time. Our blog now publishes in approximately 5 minutes. Yay!
 
-## Wider Applications of the Pharmaverse Docker Image
+## Wider Applications of the Pharmaverse Container Image
 
-While this update directly benefits our blog's publishing, the pharmaverse Docker image offers broader utility. It is a valuable resource for:
+While this update directly benefits our blog's publishing, the pharmaverse container image offers broader utility. It is a valuable resource for:
 
 * Pharmaceutical data analysis: Supporting tasks related to ADaM, SDTM, and TLFs.
 * Clinical trial programming: Assisting with regulatory submissions.
@@ -125,7 +124,7 @@ While this update directly benefits our blog's publishing, the pharmaverse Docke
 
 ### Example: Running Reproducible RStudio Locally
 
-To spin up a local RStudio instance using the pharmaverse image, you can use a Docker "one-liner." This command condenses the entire configuration - networking, storage, and background execution - into a single execution string. It bridges your local folder to the container, allowing you to edit files "on the fly" without installing R or packages on your actual machine.
+To spin up a local RStudio instance using the pharmaverse image, you can use a container "one-liner." This command condenses the entire configuration - networking, storage, and background execution - into a single execution string. It bridges your local folder to the container, allowing you to edit files "on the fly" without installing R or packages on your actual machine.
 
 Choose the command that matches your operating system:
 
