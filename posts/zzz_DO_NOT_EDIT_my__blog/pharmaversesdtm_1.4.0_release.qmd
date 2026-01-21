@@ -1,0 +1,82 @@
+---
+title: "pharmaversesdtm 1.4.0 Release"
+author:
+  - name: Lina Patil
+description: "Announcing the 1.4.0 release of pharmaversesdtm: new neurological SDTM test data, improved demographic variables, and more."
+date: "2026-01-20"
+categories: SDTM
+image: pharmaversesdtm.png
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_my__blog"
+```
+
+<!--------------- post begins here ----------------->
+![](pharmaversesdtm.png)
+We are pleased to announce the release of **{pharmaversesdtm} 1.4.0** 🎉  
+This release expands the breadth of SDTM test data available in the package, with a particular focus on **neurology and oncology**, alongside several targeted enhancements and fixes.
+
+## ✨ What’s New in 1.4.0
+
+### 🧠 New neurological SDTM test datasets
+
+Version 1.4.0 introduces a set of **neurology-focused SDTM test datasets**, extending the package coverage of therapeutic areas:
+
+- `dm_neuro` - demographic data for neurological studies  
+- `nv_neuro` - neurological findings  
+- `suppnv_neuro` - supplemental qualifiers for neurological findings  
+- `ag_neuro` - associated groups for neurological domains  
+- `lb_neuro` - neurological laboratory test data  
+
+These datasets are intended to support development, testing, and examples for neurology-specific workflows.
+
+### 📊 New and updated variables
+
+Several existing datasets have been enhanced:
+
+- **`VISITDY`** has been added to the `pc` domain to support consistent visit day derivations.
+- **`BRTHDTC`** has been added to both `dm` and `dm_metabolic`, improving demographic completeness.
+- The `qs_ophtha` dataset now uses an updated `QSTESTCD` aligned with CDISC terminology and has been simplified for easier use in examples.
+
+### 🧬 Oncology data improvements
+
+This release also includes important updates for oncology use cases:
+
+- Corrections to `rs_onco_pcwg3`, addressing misclassified progression indicators and response records.
+- A new oncology biomarker dataset, **`lb_onco_pcwg3`**, providing PSA measurements aligned with PCWG criteria.
+
+### 🧠 Neurological dataset enhancements
+
+Neurological laboratory data includes biomarkers Alpha Synuclein Seed Amplification Assay (CSF),  Lumipulse G pTau217, Lumipulse G β-Amyloid 1-42, and the ratio of pTau217 and β-Amyloid 1-42.
+
+![](lb_neuro.png)
+
+### 📚 Documentation and developer updates
+
+To help you explore datasets by therapeutic area, the **reference pages** have been reorganized to group datasets under meaningful categories such as metabolic, neurological, and oncology. This makes navigation easier for researchers and developers alike.
+
+![](dataset_grouping.png)
+
+## 📦 Installation
+
+You can install **pharmaversesdtm 1.4.0** from CRAN:
+
+```{r, eval = FALSE}
+install.packages("pharmaversesdtm")
+```
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
