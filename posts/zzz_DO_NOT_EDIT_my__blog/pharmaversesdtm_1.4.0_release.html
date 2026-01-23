@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Sadchla Mascary">
-<meta name="dcterms.date" content="2024-03-29">
-<meta name="description" content="xportr is a tool tailor-made for clinical programmers, enabling them to generate CDISC-compliant XPT files for SDTM and/or ADaM. It streamlines the preparation on xpt files, ensuring they are primed for submission to clinical data validation applications or regulatory agencies.">
+<meta name="author" content="Lina Patil">
+<meta name="dcterms.date" content="2026-01-20">
+<meta name="description" content="Announcing the 1.4.0 release of pharmaversesdtm: new neurological SDTM test data, improved demographic variables, and more.">
 
-<title>xportr 0.4.0 – pharmaverse blog</title>
+<title>pharmaversesdtm 1.4.0 Release – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -145,12 +145,12 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="xportr 0.4.0 – pharmaverse blog">
-<meta property="og:description" content="xportr is a tool tailor-made for clinical programmers, enabling them to generate CDISC-compliant XPT files for SDTM and/or ADaM. It streamlines the preparation on xpt files, ensuring they are primed for submission to clinical data validation applications or regulatory agencies.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-03-29_xportr_0_4_0/xportr.png">
+<meta property="og:title" content="pharmaversesdtm 1.4.0 Release – pharmaverse blog">
+<meta property="og:description" content="Announcing the 1.4.0 release of pharmaversesdtm: new neurological SDTM test data, improved demographic variables, and more.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm.png">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="395">
-<meta property="og:image:width" content="397">
+<meta property="og:image:height" content="621">
+<meta property="og:image:width" content="551">
 </head>
 
 <body class="floating nav-fixed quarto-light">
@@ -190,14 +190,13 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">xportr 0.4.0</h1>
+      <h1 class="title">pharmaversesdtm 1.4.0 Release</h1>
                   <div>
         <div class="description">
-          xportr is a tool tailor-made for clinical programmers, enabling them to generate CDISC-compliant XPT files for SDTM and/or ADaM. It streamlines the preparation on xpt files, ensuring they are primed for submission to clinical data validation applications or regulatory agencies.
+          Announcing the 1.4.0 release of pharmaversesdtm: new neurological SDTM test data, improved demographic variables, and more.
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">ADaM</div>
                 <div class="quarto-category">SDTM</div>
               </div>
                   </div>
@@ -209,14 +208,14 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Sadchla Mascary </p>
+               <p>Lina Patil </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">March 29, 2024</p>
+        <p class="date">January 20, 2026</p>
       </div>
     </div>
     
@@ -231,13 +230,15 @@ cookieconsent.run({
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#xpt-meets-xportr" id="toc-xpt-meets-xportr" class="nav-link active" data-scroll-target="#xpt-meets-xportr"><code>xpt</code> Meets <code>xportr</code>!</a></li>
-  <li><a href="#what-is-xportr" id="toc-what-is-xportr" class="nav-link" data-scroll-target="#what-is-xportr">What is <code>xportr</code>?</a></li>
-  <li><a href="#why-xportr" id="toc-why-xportr" class="nav-link" data-scroll-target="#why-xportr">Why <code>xportr</code>?</a></li>
-  <li><a href="#how-does-it-work" id="toc-how-does-it-work" class="nav-link" data-scroll-target="#how-does-it-work">How does it work?</a></li>
-  <li><a href="#key-features-of-xportr" id="toc-key-features-of-xportr" class="nav-link" data-scroll-target="#key-features-of-xportr">Key Features of <code>xportr</code>:</a></li>
-  <li><a href="#about-the-other-kid-on-the-blog-json-is-the-future-xpt-or-json" id="toc-about-the-other-kid-on-the-blog-json-is-the-future-xpt-or-json" class="nav-link" data-scroll-target="#about-the-other-kid-on-the-blog-json-is-the-future-xpt-or-json">About the other kid on the blog, (<code>JSON</code>)! Is The Future <code>xpt</code> or JSON?</a></li>
-  <li><a href="#lets-recap" id="toc-lets-recap" class="nav-link" data-scroll-target="#lets-recap">Let’s Recap!</a></li>
+  <li><a href="#whats-new-in-1.4.0" id="toc-whats-new-in-1.4.0" class="nav-link active" data-scroll-target="#whats-new-in-1.4.0">✨ What’s New in 1.4.0</a>
+  <ul class="collapse">
+  <li><a href="#new-neurological-sdtm-test-datasets" id="toc-new-neurological-sdtm-test-datasets" class="nav-link" data-scroll-target="#new-neurological-sdtm-test-datasets">🧠 New neurological SDTM test datasets</a></li>
+  <li><a href="#new-and-updated-variables" id="toc-new-and-updated-variables" class="nav-link" data-scroll-target="#new-and-updated-variables">📊 New and updated variables</a></li>
+  <li><a href="#oncology-data-improvements" id="toc-oncology-data-improvements" class="nav-link" data-scroll-target="#oncology-data-improvements">🧬 Oncology data improvements</a></li>
+  <li><a href="#neurological-dataset-enhancements" id="toc-neurological-dataset-enhancements" class="nav-link" data-scroll-target="#neurological-dataset-enhancements">🧠 Neurological dataset enhancements</a></li>
+  <li><a href="#documentation-and-developer-updates" id="toc-documentation-and-developer-updates" class="nav-link" data-scroll-target="#documentation-and-developer-updates">📚 Documentation and developer updates</a></li>
+  </ul></li>
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">📦 Installation</a></li>
   </ul>
 </nav>
 </nav>
@@ -254,134 +255,63 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<section id="xpt-meets-xportr" class="level1">
-<h1><code>xpt</code> Meets <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a>!</h1>
-<p>In the pharmaceuticals and healthcare industries, it is crucial to maintain a standard structure for data exchange and regulatory submissions, enter <code>xpt</code> datasets! <code>xpt</code> datasets are binary files that are typically created by SAS software, they contain structured data, including variables, labels, and metadata. In order to develop <code>xpt</code> formatted files in R, let’s introducing you to <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a>.</p>
-</section>
-<section id="what-is-xportr" class="level1">
-<h1>What is <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a>?</h1>
-<p><a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> is the result of collaboration among developers from various domains within the pharmaceutical industry. <a href="https://atorus-research.github.io/xportr/authors.html">click here for a full list</a>. This collaborative effort ensures that <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> meets the diverse needs and requirements of users across various domains. By leveraging insights and expertise from different stakeholders, <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> continues to evolve and improve, maintaining its relevance and effectiveness in the ever-changing landscape of data management and analysis. <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> is currently on version 0.4.0 (you can keep up with all of its improvements by following the <a href="https://atorus-research.github.io/xportr/news/index.html"><code>Changelog here</code></a>) and with its meticulous design flow, users can expect to develop <code>xpt</code> files that have been vetted by many checks in the backend and which are CDISC compliant. <img src="xportr_design_flow.png" class="img-fluid quarto-figure quarto-figure-center" width="800"></p>
-</section>
-<section id="why-xportr" class="level1">
-<h1>Why <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a>?</h1>
-<p>Did I mention that <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> is an indispensable R package for creating <code>xpt</code> datasets? This toolkit offers functions to apply metadata information to your CDISC-compliant datasets created in R, conduct strict checks, and offer valuable feedbacks about formats, format lengths, etc. In this blog post, we’ll explore some high level capabilities of <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a>, and its development.</p>
-</section>
-<section id="how-does-it-work" class="level1">
-<h1>How does it work?</h1>
-<p>You too can experience some of the benefits of <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> by taking a <a href="https://atorus-research.github.io/xportr/articles/deepdive.html"><code>deep dive</code></a> at <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a>!</p>
-<p>There are data deliverables and supporting documentation needed for a successful submission to Health Authorities, while you can find a walk through on how you can use <code>xportr</code> <a href="https://atorus-research.github.io/xportr/articles/deepdive.html#what-goes-in-a-submission-to-a-health-authority"><code>here</code></a>, let’s look at a high level example:</p>
-<p>Looking at an <code>adsl</code> and the define metadata information</p>
-<div class="cell" data-warnings="false">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Subj =</span> <span class="fu">as.character</span>(<span class="dv">123</span>, <span class="dv">456</span>, <span class="dv">789</span>),</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Different =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Val =</span> <span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>),</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Param =</span> <span class="fu">c</span>(<span class="st">"param1"</span>, <span class="st">"param2"</span>, <span class="st">"param3"</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>and the define metadata information</p>
-<div class="cell" data-warnings="false">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dataset =</span> <span class="st">"test"</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"Subj"</span>, <span class="st">"Param"</span>, <span class="st">"Val"</span>, <span class="st">"NotUsed"</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"numeric"</span>, <span class="st">"character"</span>, <span class="st">"numeric"</span>, <span class="st">"character"</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="cn">NA</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Users can use the <a href="https://atorus-research.github.io/xportr/reference/metadata.html"><code>xportr_metadata()</code></a> function along with <a href="https://atorus-research.github.io/xportr/reference/xportr_type.html"><code>xportr_type()</code></a> and <a href="https://atorus-research.github.io/xportr/reference/xportr_order.html"><code>xportr_order()</code></a> to not only apply metadata attributes to your data but also receive feedback on your data based on your spec. Additionally, some of those functions performing valuable checks like:</p>
+<p><img src="pharmaversesdtm.png" class="img-fluid"></p>
+<p>We are pleased to announce the release of <strong>{pharmaversesdtm} 1.4.0</strong> 🎉<br>
+This release expands the breadth of SDTM test data available in the package, with a particular focus on <strong>neurology and oncology</strong>, alongside several targeted enhancements and fixes.</p>
+<section id="whats-new-in-1.4.0" class="level2">
+<h2 class="anchored" data-anchor-id="whats-new-in-1.4.0">✨ What’s New in 1.4.0</h2>
+<section id="new-neurological-sdtm-test-datasets" class="level3">
+<h3 class="anchored" data-anchor-id="new-neurological-sdtm-test-datasets">🧠 New neurological SDTM test datasets</h3>
+<p>Version 1.4.0 introduces a set of <strong>neurology-focused SDTM test datasets</strong>, extending the package coverage of therapeutic areas:</p>
 <ul>
-<li>Variable names must start with a letter (not an underscore), be comprised of only uppercase letters (A-Z), numerals (0-9) and be free of non-ASCII characters, symbols, and underscores.</li>
-<li>Allotted length for each column containing character (text) data should be set to the maximum length of the variable used across all data sets (≤ 200)</li>
-<li>Coerces variables to only numeric or character types</li>
-<li>Display format support for numeric float and date/time values</li>
-<li>Variables names are ≤ 8 characters.</li>
-<li>Variable labels are ≤ 40 characters.</li>
-<li>Data set labels are ≤ 40 characters.</li>
-<li>Presence of non-ASCII characters in Variable Names, Labels or data set labels.</li>
+<li><code>dm_neuro</code> - demographic data for neurological studies<br>
+</li>
+<li><code>nv_neuro</code> - neurological findings<br>
+</li>
+<li><code>suppnv_neuro</code> - supplemental qualifiers for neurological findings<br>
+</li>
+<li><code>ag_neuro</code> - associated groups for neurological domains<br>
+</li>
+<li><code>lb_neuro</code> - neurological laboratory test data</li>
 </ul>
-<p>For example:</p>
-<div class="cell" data-warnings="false">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xportr_metadata</span>(metadata, <span class="st">"test"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xportr_type</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xportr_order</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Variable type mismatches found. ──</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>✔ 2 variables coerced</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── 1 variables not in spec and moved to end ──</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── 2 reordered in dataset ──</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  Subj  Param Val Different
-1  123 param1   1         a
-2  123 param2   2         b
-3  123 param3   3         c</code></pre>
-</div>
-</div>
-<p>In addition to the functions mentioned above, users have access to other functionalities such as <a href="https://atorus-research.github.io/xportr/reference/xportr_write.html"><code>xportr_write()</code></a>, which facilitates the conversion of a local data frame into an <code>xpt</code> file. For instance, if we utilize the ADSL dataframe defined earlier, we can create a variable <code>var_spec</code> using the following syntax.</p>
+<p>These datasets are intended to support development, testing, and examples for neurology-specific workflows.</p>
+</section>
+<section id="new-and-updated-variables" class="level3">
+<h3 class="anchored" data-anchor-id="new-and-updated-variables">📊 New and updated variables</h3>
+<p>Several existing datasets have been enhanced:</p>
+<ul>
+<li><strong><code>VISITDY</code></strong> has been added to the <code>pc</code> domain to support consistent visit day derivations.</li>
+<li><strong><code>BRTHDTC</code></strong> has been added to both <code>dm</code> and <code>dm_metabolic</code>, improving demographic completeness.</li>
+<li>The <code>qs_ophtha</code> dataset now uses an updated <code>QSTESTCD</code> aligned with CDISC terminology and has been simplified for easier use in examples.</li>
+</ul>
+</section>
+<section id="oncology-data-improvements" class="level3">
+<h3 class="anchored" data-anchor-id="oncology-data-improvements">🧬 Oncology data improvements</h3>
+<p>This release also includes important updates for oncology use cases:</p>
+<ul>
+<li>Corrections to <code>rs_onco_pcwg3</code>, addressing misclassified progression indicators and response records.</li>
+<li>A new oncology biomarker dataset, <strong><code>lb_onco_pcwg3</code></strong>, providing PSA measurements aligned with PCWG criteria.</li>
+</ul>
+</section>
+<section id="neurological-dataset-enhancements" class="level3">
+<h3 class="anchored" data-anchor-id="neurological-dataset-enhancements">🧠 Neurological dataset enhancements</h3>
+<p>Neurological laboratory data includes biomarkers Alpha Synuclein Seed Amplification Assay (CSF), Lumipulse G pTau217, Lumipulse G β-Amyloid 1-42, and the ratio of pTau217 and β-Amyloid 1-42.</p>
+<p><img src="lb_neuro.png" class="img-fluid"></p>
+</section>
+<section id="documentation-and-developer-updates" class="level3">
+<h3 class="anchored" data-anchor-id="documentation-and-developer-updates">📚 Documentation and developer updates</h3>
+<p>To help you explore datasets by therapeutic area, the <strong>reference pages</strong> have been reorganized to group datasets under meaningful categories such as metabolic, neurological, and oncology. This makes navigation easier for researchers and developers alike.</p>
+<p><img src="dataset_grouping.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">📦 Installation</h2>
+<p>You can install <strong>pharmaversesdtm 1.4.0</strong> from CRAN:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>var_spec <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dataset =</span> <span class="st">"adsl"</span>,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="st">"Subject-Level Analysis Dataset"</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_label =</span> <span class="st">"ADSL"</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"pharmaversesdtm"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Users can then create their ADSL <code>xpt</code> file in the following manner:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xportr_write</span>(adsl,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> <span class="fu">paste0</span>(<span class="fu">tempdir</span>(), <span class="st">"/adsl.xpt"</span>),</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">domain =</span> <span class="st">"adsl"</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">metadata =</span> var_spec,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">strict_checks =</span> <span class="cn">FALSE</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> also includes other important functions such as:</p>
-<ul>
-<li><p><a href="https://atorus-research.github.io/xportr/reference/xportr_length.html"><code>xportr_length()</code></a> to assign the SAS length to a specified data frame.</p></li>
-<li><p><a href="https://atorus-research.github.io/xportr/reference/xportr_length.html"><code>xportr_label()</code></a> to enable users to assign variable labels from metadata at the variable level to a specified data frame.</p></li>
-<li><p><a href="https://atorus-research.github.io/xportr/reference/xportr_format.html"><code>xportr_format()</code></a>, which allow users to apply a SAS format from a variable level metadata to a given data frame Further details on all <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> functions can be found <a href="https://atorus-research.github.io/xportr/reference/index.html"><code>here</code></a>.</p></li>
-</ul>
+<!--------------- appendices go here ----------------->
 </section>
-<section id="key-features-of-xportr" class="level1">
-<h1>Key Features of <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a>:</h1>
-<ul>
-<li><strong>Efficient Handling</strong>: <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> offers efficient avenues to produce <code>xpt</code> files, allowing users to manipulate clinical datasets with ease and export in <code>xpt</code> format in R.</li>
-<li><strong>Data Integrity</strong>: <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> preserves data integrity by retaining variable labels, formats, and other metadata during data export operations.</li>
-<li><strong>User-Friendly Interface</strong>: <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> provides a user-friendly interface with intuitive functions for generating <code>xpt</code> datasets and performing data manipulation tasks.</li>
-</ul>
-</section>
-<section id="about-the-other-kid-on-the-blog-json-is-the-future-xpt-or-json" class="level1">
-<h1>About the other kid on the blog, (<code>JSON</code>)! Is The Future <code>xpt</code> or JSON?</h1>
-<p><code>xpt</code> datasets are standardized, structured files used for storing clinical trial data, making them essential for regulatory submissions and data analysis. They remain indispensable in certain industries and with advancements in data management and analysis tools, the future of <code>xpt</code> datasets lies in improved efficiency, compatibility, and ensuring seamless integration with emerging technologies and data formats.</p>
-<p>As data continues to play a central role in decision-making and innovation, the future of JavaScript Object Notation (JSON) datasets is worth exploring. JSON datasets offer flexibility, simplicity, and interoperability, making them increasingly popular for data storage and exchange. In fact, R users can refer to <a href="https://www.atorusresearch.com/datasetjson-0-0-1-release/"><code>this article</code></a> for a summary about JSON and the R package <a href="https://atorus-research.github.io/datasetjson/"><code>datasetjson</code></a> available on <a href="https://cloud.r-project.org/web/packages/datasetjson/index.html"><code>CRAN</code></a>. JSON’s lightweight and human-readable format make it suitable for a wide range of applications, including web development, APIs, IoT, and data storage. While <code>xpt</code> datasets remain prevalent in certain industries, there’s a growing interest in JSON datasets across various domains. Although we will not be exploring JSON datasets, this formatted data type was worth mentioning in this blog.</p>
-</section>
-<section id="lets-recap" class="level1">
-<h1>Let’s Recap!</h1>
-<p>This blog post highlighted the benefits of using the <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> package, showcased an example of <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> function, and discussed the growing interest of JSON datasets in the data landscape. We’ve also discussed <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a>’s development through collaborations between developers from different parts of the industry, highlighting its versatility and relevance in various domains. Which gives me a nice transition to my call to action!! If you haven’t used <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> before, then consider this blog as your official invite to test it! Reap the benefit of collaborative efforts across industries and the pharma world. If are already a user of <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> or you are experiencing some issues with a particular functions, then chances are someone else could either be experiencing a similar issue or have an answer so reach out to the team by creating an issue <a href="https://github.com/atorus-research/xportr/issues"><code>here</code></a>.</p>
-<p>As we look towards the future, embracing diverse data formats and technologies will be key to unlocking the full potential of data-driven innovation. Championing tools like <a href="https://atorus-research.github.io/xportr/"><code>xportr</code></a> and staying abreast of emerging data formats, researchers, analysts, and regulatory professionals can unlock new opportunities for insights and innovation in their respective fields.</p>
-<p><strong>Disclaimer</strong> This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations. <!--------------- appendices go here -----------------></p>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -390,23 +320,23 @@ cookieconsent.run({
 </div>
 
 
-</section>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-01-23 18:36:44.017486</p>
+<p>2026-01-23 18:35:55.05934</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{mascary2024,
-  author = {Mascary, Sadchla},
-  title = {Xportr 0.4.0},
-  date = {2024-03-29},
-  url = {https://pharmaverse.github.io/blog/posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{patil2026,
+  author = {Patil, Lina},
+  title = {Pharmaversesdtm 1.4.0 {Release}},
+  date = {2026-01-20},
+  url = {https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-mascary2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Mascary, Sadchla. 2024. <span>“Xportr 0.4.0.”</span> March 29, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html">https://pharmaverse.github.io/blog/posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-patil2026" class="csl-entry quarto-appendix-citeas" role="listitem">
+Patil, Lina. 2026. <span>“Pharmaversesdtm 1.4.0 Release.”</span> January
+20, 2026. <a href="https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html">https://pharmaverse.github.io/blog/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
