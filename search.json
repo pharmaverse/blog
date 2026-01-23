@@ -60,7 +60,7 @@
     "href": "posts/2025-06-26_admiral_1.3.../admiral_1.3.0:_documentation_go!!.html#last-updated",
     "title": "admiral 1.3.0: documentation go!!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:38:50.460122"
+    "text": "Last updated\n\n2026-01-23 20:56:22.733394"
   },
   {
     "objectID": "posts/2025-06-26_admiral_1.3.../admiral_1.3.0:_documentation_go!!.html#details",
@@ -130,14 +130,14 @@
     "href": "posts/2025-03-14_automatic_s.../automatic_slide_generation_with_{autoslide_r}.html#writing-custom-functions",
     "title": "Automatic slide generation with autoslider.core",
     "section": "Writing Custom Functions",
-    "text": "Writing Custom Functions\nFor study-specific outputs not covered by {autoslider.core} functions, you can create custom functions. Custom functions need to return either a {ggplot2} (for plots), {rtables} (for tables), or {rlistings} or data.frame objects (for listings).\nExample custom function:\n\nlbt06 &lt;- function(datasets) {\n  adsl &lt;- datasets$adsl %&gt;% tern::df_explicit_na()\n  adlb &lt;- datasets$adlb %&gt;% tern::df_explicit_na()\n\n  adlb_f &lt;- adlb %&gt;%\n    dplyr::filter(ABLFL != \"Y\") %&gt;%\n    dplyr::filter(!(AVISIT %in% c(\"SCREENING\", \"BASELINE\"))) %&gt;%\n    dplyr::mutate(AVISIT = droplevels(AVISIT)) %&gt;%\n    formatters::var_relabel(AVISIT = \"Visit\")\n\n  adlb_f_crp &lt;- adlb_f %&gt;% dplyr::filter(PARAMCD == \"CRP\")\n\n  split_fun &lt;- rtables::drop_split_levels\n\n  lyt &lt;- rtables::basic_table(show_colcounts = TRUE) %&gt;%\n    rtables::split_cols_by(\"ARM\") %&gt;%\n    rtables::split_rows_by(\"AVISIT\", split_fun = split_fun, label_pos = \"topleft\", split_label = formatters::obj_label(adlb_f_crp$AVISIT)) %&gt;%\n    tern::count_abnormal_by_baseline(\"ANRIND\", abnormal = c(Low = \"LOW\", High = \"HIGH\"), .indent_mods = 4L) %&gt;%\n    tern::append_varlabels(adlb_f_crp, \"ANRIND\", indent = 1L) %&gt;%\n    rtables::append_topleft(\"    Baseline Status\")\n\n  result &lt;- rtables::build_table(lyt = lyt, df = adlb_f_crp, alt_counts_df = adsl) %&gt;%\n    rtables::trim_rows()\n\n  result\n}\n\nTesting the custom function:\n\nlbt06(data)\n\nVisit                                                                                  \n  Analysis Reference Range Indicator     A: Drug X        B: Placebo     C: Combination\n    Baseline Status                       (N=134)          (N=134)          (N=132)    \n———————————————————————————————————————————————————————————————————————————————————————\nWEEK 1 DAY 8                                                                           \n  Low                                                                                  \n            Not low                    16/119 (13.4%)   22/113 (19.5%)   24/112 (21.4%)\n            Low                         2/15 (13.3%)     2/21 (9.5%)       7/20 (35%)  \n            Total                      18/134 (13.4%)   24/134 (17.9%)   31/132 (23.5%)\n  High                                                                                 \n            Not high                   21/114 (18.4%)   20/112 (17.9%)   17/115 (14.8%)\n            High                         2/20 (10%)      4/22 (18.2%)     3/17 (17.6%) \n            Total                      23/134 (17.2%)   24/134 (17.9%)   20/132 (15.2%)\nWEEK 2 DAY 15                                                                          \n  Low                                                                                  \n            Not low                    26/119 (21.8%)   20/113 (17.7%)   12/112 (10.7%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      4/20 (20%)  \n            Total                      28/134 (20.9%)   23/134 (17.2%)   16/132 (12.1%)\n  High                                                                                 \n            Not high                   15/114 (13.2%)   17/112 (15.2%)    15/115 (13%) \n            High                         2/20 (10%)      4/22 (18.2%)     4/17 (23.5%) \n            Total                      17/134 (12.7%)   21/134 (15.7%)   19/132 (14.4%)\nWEEK 3 DAY 22                                                                          \n  Low                                                                                  \n            Not low                    15/119 (12.6%)   21/113 (18.6%)   18/112 (16.1%)\n            Low                             0/15         3/21 (14.3%)         0/20     \n            Total                      15/134 (11.2%)   24/134 (17.9%)   18/132 (13.6%)\n  High                                                                                 \n            Not high                   22/114 (19.3%)   18/112 (16.1%)   17/115 (14.8%)\n            High                         2/20 (10%)      5/22 (22.7%)     1/17 (5.9%)  \n            Total                      24/134 (17.9%)   23/134 (17.2%)   18/132 (13.6%)\nWEEK 4 DAY 29                                                                          \n  Low                                                                                  \n            Not low                    30/119 (25.2%)   13/113 (11.5%)   16/112 (14.3%)\n            Low                          3/15 (20%)      2/21 (9.5%)       5/20 (25%)  \n            Total                      33/134 (24.6%)   15/134 (11.2%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   17/114 (14.9%)   11/112 (9.8%)    16/115 (13.9%)\n            High                         2/20 (10%)      6/22 (27.3%)     3/17 (17.6%) \n            Total                      19/134 (14.2%)   17/134 (12.7%)   19/132 (14.4%)\nWEEK 5 DAY 36                                                                          \n  Low                                                                                  \n            Not low                    17/119 (14.3%)   19/113 (16.8%)   16/112 (14.3%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      5/20 (25%)  \n            Total                      19/134 (14.2%)   22/134 (16.4%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   19/114 (16.7%)   17/112 (15.2%)   11/115 (9.6%) \n            High                         4/20 (20%)      6/22 (27.3%)     2/17 (11.8%) \n            Total                      23/134 (17.2%)   23/134 (17.2%)   13/132 (9.8%) \n\n\nTo use the custom function within the {autoslider.core} workflow, ensure it is available in the global environment:\n\nsource(\"programs/output_functions.R\")\n\nWith the correct specs.yml and filters.yml, integrate the custom function into the general workflow:\n\nfilters &lt;- \"filters.yml\"\nspec_file &lt;- \"specs.yml\"\nfilters::load_filters(filters, overwrite = TRUE)\noutputs &lt;- spec_file %&gt;%\n  read_spec() %&gt;%\n  generate_outputs(data) %&gt;%\n  decorate_outputs()\n\noutputs$lbt06_ITT_LBCRP_LBNOBAS\n\n\noutputs &lt;- spec_file %&gt;%\n  read_spec() %&gt;%\n  generate_outputs(data) %&gt;%\n  decorate_outputs()\n\n❯ Running program `t_ds_slide` with suffix 'ITT'.\n\n\nFilter 'ITT' matched target ADSL.\n\n\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\n❯ Running program `t_dm_slide` with suffix 'ITT'.\n\n\nFilter 'ITT' matched target ADSL.\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\n❯ Running program `lbt06` with suffix 'ITT_LBCRP_LBNOBAS'.\n\n\nFilter 'ITT' matched target ADSL.\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\nFilters 'LBCRP', 'LBNOBAS' matched target ADLB.\n\n\n2000/8400 records matched the filter condition `PARAMCD == 'CRP' & (ABLFL != 'Y' & !(AVISIT %in% c('SCREENING', 'BASELINE')))`.\n\noutputs$lbt06_ITT_LBCRP_LBNOBAS\n\nAn object of class \"dVTableTree\"\nSlot \"tbl\":\n\n\n Patient Disposition (Intent to Treat Population)\n\n———————————————————————————————————————————————————————————————————————————————————————\nVisit                                                                                  \n  Analysis Reference Range Indicator     A: Drug X        B: Placebo     C: Combination\n    Baseline Status                       (N=134)          (N=134)          (N=132)    \n———————————————————————————————————————————————————————————————————————————————————————\nWEEK 1 DAY 8                                                                           \n  Low                                                                                  \n            Not low                    16/119 (13.4%)   22/113 (19.5%)   24/112 (21.4%)\n            Low                         2/15 (13.3%)     2/21 (9.5%)       7/20 (35%)  \n            Total                      18/134 (13.4%)   24/134 (17.9%)   31/132 (23.5%)\n  High                                                                                 \n            Not high                   21/114 (18.4%)   20/112 (17.9%)   17/115 (14.8%)\n            High                         2/20 (10%)      4/22 (18.2%)     3/17 (17.6%) \n            Total                      23/134 (17.2%)   24/134 (17.9%)   20/132 (15.2%)\nWEEK 2 DAY 15                                                                          \n  Low                                                                                  \n            Not low                    26/119 (21.8%)   20/113 (17.7%)   12/112 (10.7%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      4/20 (20%)  \n            Total                      28/134 (20.9%)   23/134 (17.2%)   16/132 (12.1%)\n  High                                                                                 \n            Not high                   15/114 (13.2%)   17/112 (15.2%)    15/115 (13%) \n            High                         2/20 (10%)      4/22 (18.2%)     4/17 (23.5%) \n            Total                      17/134 (12.7%)   21/134 (15.7%)   19/132 (14.4%)\nWEEK 3 DAY 22                                                                          \n  Low                                                                                  \n            Not low                    15/119 (12.6%)   21/113 (18.6%)   18/112 (16.1%)\n            Low                             0/15         3/21 (14.3%)         0/20     \n            Total                      15/134 (11.2%)   24/134 (17.9%)   18/132 (13.6%)\n  High                                                                                 \n            Not high                   22/114 (19.3%)   18/112 (16.1%)   17/115 (14.8%)\n            High                         2/20 (10%)      5/22 (22.7%)     1/17 (5.9%)  \n            Total                      24/134 (17.9%)   23/134 (17.2%)   18/132 (13.6%)\nWEEK 4 DAY 29                                                                          \n  Low                                                                                  \n            Not low                    30/119 (25.2%)   13/113 (11.5%)   16/112 (14.3%)\n            Low                          3/15 (20%)      2/21 (9.5%)       5/20 (25%)  \n            Total                      33/134 (24.6%)   15/134 (11.2%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   17/114 (14.9%)   11/112 (9.8%)    16/115 (13.9%)\n            High                         2/20 (10%)      6/22 (27.3%)     3/17 (17.6%) \n            Total                      19/134 (14.2%)   17/134 (12.7%)   19/132 (14.4%)\nWEEK 5 DAY 36                                                                          \n  Low                                                                                  \n            Not low                    17/119 (14.3%)   19/113 (16.8%)   16/112 (14.3%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      5/20 (25%)  \n            Total                      19/134 (14.2%)   22/134 (16.4%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   19/114 (16.7%)   17/112 (15.2%)   11/115 (9.6%) \n            High                         4/20 (20%)      6/22 (27.3%)     2/17 (11.8%) \n            Total                      23/134 (17.2%)   23/134 (17.2%)   13/132 (9.8%) \n———————————————————————————————————————————————————————————————————————————————————————\n\nt_ds footnotes\nConfidential and for internal use only\nGitHub repository: NA\nGit hash: d406926cf530645c7ea069d0dbbb94b934f1028a\n\nSlot \"titles\":\n Patient Disposition (Intent to Treat Population)\n\nSlot \"footnotes\":\n[1] \"t_ds footnotes\"                        \n[2] \"Confidential and for internal use only\"\n\nSlot \"usernotes\":\n[1] \"\"\n\nSlot \"paper\":\n[1] \"L6\"\n\nSlot \"width\":\n[1] 36 14 14 14\n\n\nGenerate the slides:\n\nfilepath &lt;- tempfile(fileext = \".pptx\")\ngenerate_slides(outputs, outfile = filepath)\n\n[1] \" Patient Disposition (Intent to Treat Population)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n\n\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n\n\n[1] \" Patient Disposition (Intent to Treat Population)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n\n\nWe hope this guide helps you get started with {autoslider.core} in pharmaverse. Happy coding!"
+    "text": "Writing Custom Functions\nFor study-specific outputs not covered by {autoslider.core} functions, you can create custom functions. Custom functions need to return either a {ggplot2} (for plots), {rtables} (for tables), or {rlistings} or data.frame objects (for listings).\nExample custom function:\n\nlbt06 &lt;- function(datasets) {\n  adsl &lt;- datasets$adsl %&gt;% tern::df_explicit_na()\n  adlb &lt;- datasets$adlb %&gt;% tern::df_explicit_na()\n\n  adlb_f &lt;- adlb %&gt;%\n    dplyr::filter(ABLFL != \"Y\") %&gt;%\n    dplyr::filter(!(AVISIT %in% c(\"SCREENING\", \"BASELINE\"))) %&gt;%\n    dplyr::mutate(AVISIT = droplevels(AVISIT)) %&gt;%\n    formatters::var_relabel(AVISIT = \"Visit\")\n\n  adlb_f_crp &lt;- adlb_f %&gt;% dplyr::filter(PARAMCD == \"CRP\")\n\n  split_fun &lt;- rtables::drop_split_levels\n\n  lyt &lt;- rtables::basic_table(show_colcounts = TRUE) %&gt;%\n    rtables::split_cols_by(\"ARM\") %&gt;%\n    rtables::split_rows_by(\"AVISIT\", split_fun = split_fun, label_pos = \"topleft\", split_label = formatters::obj_label(adlb_f_crp$AVISIT)) %&gt;%\n    tern::count_abnormal_by_baseline(\"ANRIND\", abnormal = c(Low = \"LOW\", High = \"HIGH\"), .indent_mods = 4L) %&gt;%\n    tern::append_varlabels(adlb_f_crp, \"ANRIND\", indent = 1L) %&gt;%\n    rtables::append_topleft(\"    Baseline Status\")\n\n  result &lt;- rtables::build_table(lyt = lyt, df = adlb_f_crp, alt_counts_df = adsl) %&gt;%\n    rtables::trim_rows()\n\n  result\n}\n\nTesting the custom function:\n\nlbt06(data)\n\nVisit                                                                                  \n  Analysis Reference Range Indicator     A: Drug X        B: Placebo     C: Combination\n    Baseline Status                       (N=134)          (N=134)          (N=132)    \n———————————————————————————————————————————————————————————————————————————————————————\nWEEK 1 DAY 8                                                                           \n  Low                                                                                  \n            Not low                    16/119 (13.4%)   22/113 (19.5%)   24/112 (21.4%)\n            Low                         2/15 (13.3%)     2/21 (9.5%)       7/20 (35%)  \n            Total                      18/134 (13.4%)   24/134 (17.9%)   31/132 (23.5%)\n  High                                                                                 \n            Not high                   21/114 (18.4%)   20/112 (17.9%)   17/115 (14.8%)\n            High                         2/20 (10%)      4/22 (18.2%)     3/17 (17.6%) \n            Total                      23/134 (17.2%)   24/134 (17.9%)   20/132 (15.2%)\nWEEK 2 DAY 15                                                                          \n  Low                                                                                  \n            Not low                    26/119 (21.8%)   20/113 (17.7%)   12/112 (10.7%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      4/20 (20%)  \n            Total                      28/134 (20.9%)   23/134 (17.2%)   16/132 (12.1%)\n  High                                                                                 \n            Not high                   15/114 (13.2%)   17/112 (15.2%)    15/115 (13%) \n            High                         2/20 (10%)      4/22 (18.2%)     4/17 (23.5%) \n            Total                      17/134 (12.7%)   21/134 (15.7%)   19/132 (14.4%)\nWEEK 3 DAY 22                                                                          \n  Low                                                                                  \n            Not low                    15/119 (12.6%)   21/113 (18.6%)   18/112 (16.1%)\n            Low                             0/15         3/21 (14.3%)         0/20     \n            Total                      15/134 (11.2%)   24/134 (17.9%)   18/132 (13.6%)\n  High                                                                                 \n            Not high                   22/114 (19.3%)   18/112 (16.1%)   17/115 (14.8%)\n            High                         2/20 (10%)      5/22 (22.7%)     1/17 (5.9%)  \n            Total                      24/134 (17.9%)   23/134 (17.2%)   18/132 (13.6%)\nWEEK 4 DAY 29                                                                          \n  Low                                                                                  \n            Not low                    30/119 (25.2%)   13/113 (11.5%)   16/112 (14.3%)\n            Low                          3/15 (20%)      2/21 (9.5%)       5/20 (25%)  \n            Total                      33/134 (24.6%)   15/134 (11.2%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   17/114 (14.9%)   11/112 (9.8%)    16/115 (13.9%)\n            High                         2/20 (10%)      6/22 (27.3%)     3/17 (17.6%) \n            Total                      19/134 (14.2%)   17/134 (12.7%)   19/132 (14.4%)\nWEEK 5 DAY 36                                                                          \n  Low                                                                                  \n            Not low                    17/119 (14.3%)   19/113 (16.8%)   16/112 (14.3%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      5/20 (25%)  \n            Total                      19/134 (14.2%)   22/134 (16.4%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   19/114 (16.7%)   17/112 (15.2%)   11/115 (9.6%) \n            High                         4/20 (20%)      6/22 (27.3%)     2/17 (11.8%) \n            Total                      23/134 (17.2%)   23/134 (17.2%)   13/132 (9.8%) \n\n\nTo use the custom function within the {autoslider.core} workflow, ensure it is available in the global environment:\n\nsource(\"programs/output_functions.R\")\n\nWith the correct specs.yml and filters.yml, integrate the custom function into the general workflow:\n\nfilters &lt;- \"filters.yml\"\nspec_file &lt;- \"specs.yml\"\nfilters::load_filters(filters, overwrite = TRUE)\noutputs &lt;- spec_file %&gt;%\n  read_spec() %&gt;%\n  generate_outputs(data) %&gt;%\n  decorate_outputs()\n\noutputs$lbt06_ITT_LBCRP_LBNOBAS\n\n\noutputs &lt;- spec_file %&gt;%\n  read_spec() %&gt;%\n  generate_outputs(data) %&gt;%\n  decorate_outputs()\n\n❯ Running program `t_ds_slide` with suffix 'ITT'.\n\n\nFilter 'ITT' matched target ADSL.\n\n\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\n❯ Running program `t_dm_slide` with suffix 'ITT'.\n\n\nFilter 'ITT' matched target ADSL.\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\n❯ Running program `lbt06` with suffix 'ITT_LBCRP_LBNOBAS'.\n\n\nFilter 'ITT' matched target ADSL.\n400/400 records matched the filter condition `ITTFL == 'Y'`.\n\n\nFilters 'LBCRP', 'LBNOBAS' matched target ADLB.\n\n\n2000/8400 records matched the filter condition `PARAMCD == 'CRP' & (ABLFL != 'Y' & !(AVISIT %in% c('SCREENING', 'BASELINE')))`.\n\noutputs$lbt06_ITT_LBCRP_LBNOBAS\n\nAn object of class \"dVTableTree\"\nSlot \"tbl\":\n\n\n Patient Disposition (Intent to Treat Population)\n\n———————————————————————————————————————————————————————————————————————————————————————\nVisit                                                                                  \n  Analysis Reference Range Indicator     A: Drug X        B: Placebo     C: Combination\n    Baseline Status                       (N=134)          (N=134)          (N=132)    \n———————————————————————————————————————————————————————————————————————————————————————\nWEEK 1 DAY 8                                                                           \n  Low                                                                                  \n            Not low                    16/119 (13.4%)   22/113 (19.5%)   24/112 (21.4%)\n            Low                         2/15 (13.3%)     2/21 (9.5%)       7/20 (35%)  \n            Total                      18/134 (13.4%)   24/134 (17.9%)   31/132 (23.5%)\n  High                                                                                 \n            Not high                   21/114 (18.4%)   20/112 (17.9%)   17/115 (14.8%)\n            High                         2/20 (10%)      4/22 (18.2%)     3/17 (17.6%) \n            Total                      23/134 (17.2%)   24/134 (17.9%)   20/132 (15.2%)\nWEEK 2 DAY 15                                                                          \n  Low                                                                                  \n            Not low                    26/119 (21.8%)   20/113 (17.7%)   12/112 (10.7%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      4/20 (20%)  \n            Total                      28/134 (20.9%)   23/134 (17.2%)   16/132 (12.1%)\n  High                                                                                 \n            Not high                   15/114 (13.2%)   17/112 (15.2%)    15/115 (13%) \n            High                         2/20 (10%)      4/22 (18.2%)     4/17 (23.5%) \n            Total                      17/134 (12.7%)   21/134 (15.7%)   19/132 (14.4%)\nWEEK 3 DAY 22                                                                          \n  Low                                                                                  \n            Not low                    15/119 (12.6%)   21/113 (18.6%)   18/112 (16.1%)\n            Low                             0/15         3/21 (14.3%)         0/20     \n            Total                      15/134 (11.2%)   24/134 (17.9%)   18/132 (13.6%)\n  High                                                                                 \n            Not high                   22/114 (19.3%)   18/112 (16.1%)   17/115 (14.8%)\n            High                         2/20 (10%)      5/22 (22.7%)     1/17 (5.9%)  \n            Total                      24/134 (17.9%)   23/134 (17.2%)   18/132 (13.6%)\nWEEK 4 DAY 29                                                                          \n  Low                                                                                  \n            Not low                    30/119 (25.2%)   13/113 (11.5%)   16/112 (14.3%)\n            Low                          3/15 (20%)      2/21 (9.5%)       5/20 (25%)  \n            Total                      33/134 (24.6%)   15/134 (11.2%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   17/114 (14.9%)   11/112 (9.8%)    16/115 (13.9%)\n            High                         2/20 (10%)      6/22 (27.3%)     3/17 (17.6%) \n            Total                      19/134 (14.2%)   17/134 (12.7%)   19/132 (14.4%)\nWEEK 5 DAY 36                                                                          \n  Low                                                                                  \n            Not low                    17/119 (14.3%)   19/113 (16.8%)   16/112 (14.3%)\n            Low                         2/15 (13.3%)     3/21 (14.3%)      5/20 (25%)  \n            Total                      19/134 (14.2%)   22/134 (16.4%)   21/132 (15.9%)\n  High                                                                                 \n            Not high                   19/114 (16.7%)   17/112 (15.2%)   11/115 (9.6%) \n            High                         4/20 (20%)      6/22 (27.3%)     2/17 (11.8%) \n            Total                      23/134 (17.2%)   23/134 (17.2%)   13/132 (9.8%) \n———————————————————————————————————————————————————————————————————————————————————————\n\nt_ds footnotes\nConfidential and for internal use only\nGitHub repository: NA\nGit hash: e69bcc94a0462211cc6f8d54d2b88393a073bb52\n\nSlot \"titles\":\n Patient Disposition (Intent to Treat Population)\n\nSlot \"footnotes\":\n[1] \"t_ds footnotes\"                        \n[2] \"Confidential and for internal use only\"\n\nSlot \"usernotes\":\n[1] \"\"\n\nSlot \"paper\":\n[1] \"L6\"\n\nSlot \"width\":\n[1] 36 14 14 14\n\n\nGenerate the slides:\n\nfilepath &lt;- tempfile(fileext = \".pptx\")\ngenerate_slides(outputs, outfile = filepath)\n\n[1] \" Patient Disposition (Intent to Treat Population)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n\n\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n[1] \" Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)\"\n\n\n[1] \" Patient Disposition (Intent to Treat Population)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n[1] \" Patient Disposition (Intent to Treat Population) (cont.)\"\n\n\nWe hope this guide helps you get started with {autoslider.core} in pharmaverse. Happy coding!"
   },
   {
     "objectID": "posts/2025-03-14_automatic_s.../automatic_slide_generation_with_{autoslide_r}.html#last-updated",
     "href": "posts/2025-03-14_automatic_s.../automatic_slide_generation_with_{autoslide_r}.html#last-updated",
     "title": "Automatic slide generation with autoslider.core",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:38:43.418442"
+    "text": "Last updated\n\n2026-01-23 20:56:15.51892"
   },
   {
     "objectID": "posts/2025-03-14_automatic_s.../automatic_slide_generation_with_{autoslide_r}.html#details",
@@ -165,7 +165,7 @@
     "href": "posts/2023-11-27_higher_order/higher_order.html#last-updated",
     "title": "Believe in a higher order!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:38:24.822682"
+    "text": "Last updated\n\n2026-01-23 20:55:55.961093"
   },
   {
     "objectID": "posts/2023-11-27_higher_order/higher_order.html#details",
@@ -228,7 +228,7 @@
     "href": "posts/2025-07-07_pharmaverse.../pharmaverseraw__package.html#last-updated",
     "title": "Raw data for domains in the pharmaversesdtm package",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:38:19.255348"
+    "text": "Last updated\n\n2026-01-23 20:55:50.159308"
   },
   {
     "objectID": "posts/2025-07-07_pharmaverse.../pharmaverseraw__package.html#details",
@@ -249,7 +249,7 @@
     "href": "posts/2024-04-29_appsilon_and__sa.../appsilon_and__sanofi_joins_the_pharmaverse_council!.html#last-updated",
     "title": "Appsilon and Sanofi join the pharmaverse council!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:40.538117"
+    "text": "Last updated\n\n2026-01-23 20:55:31.384088"
   },
   {
     "objectID": "posts/2024-04-29_appsilon_and__sa.../appsilon_and__sanofi_joins_the_pharmaverse_council!.html#details",
@@ -298,7 +298,7 @@
     "href": "posts/2024-03-11_tips_for__first_.../tips_for__first__time__contributors.html#last-updated",
     "title": "Tips for First Time Contributors",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:37.466608"
+    "text": "Last updated\n\n2026-01-23 20:55:28.11155"
   },
   {
     "objectID": "posts/2024-03-11_tips_for__first_.../tips_for__first__time__contributors.html#details",
@@ -319,7 +319,7 @@
     "href": "posts/2024-07-24_working__groups_.../working__groups__updates.html#last-updated",
     "title": "Working Groups Updates",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:24.545524"
+    "text": "Last updated\n\n2026-01-23 20:55:14.56744"
   },
   {
     "objectID": "posts/2024-07-24_working__groups_.../working__groups__updates.html#details",
@@ -389,7 +389,7 @@
     "href": "posts/2025-08-04_metacore_0.2.0/metacore_0.2.0.html#last-updated",
     "title": "Metacore and Metatools 0.2.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:17.874849"
+    "text": "Last updated\n\n2026-01-23 20:55:07.425392"
   },
   {
     "objectID": "posts/2025-08-04_metacore_0.2.0/metacore_0.2.0.html#details",
@@ -403,7 +403,7 @@
     "href": "posts/2024-08-20_teal_submission_.../teal_submission_for__posit__shiny__contest_2024.html#last-updated",
     "title": "teal and Posit Shiny Contest 2024",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:13.511604"
+    "text": "Last updated\n\n2026-01-23 20:55:02.74994"
   },
   {
     "objectID": "posts/2024-08-20_teal_submission_.../teal_submission_for__posit__shiny__contest_2024.html#details",
@@ -424,7 +424,7 @@
     "href": "posts/2024-10-24_introducing.../introducing_sdtm.oak.html#last-updated",
     "title": "Introducing sdtm.oak",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:09.901835"
+    "text": "Last updated\n\n2026-01-23 20:54:58.855101"
   },
   {
     "objectID": "posts/2024-10-24_introducing.../introducing_sdtm.oak.html#details",
@@ -501,7 +501,7 @@
     "href": "posts/2025-09-12_faster_clinical_trial_reporting/faster_clinical_trial_reporting.html#last-updated",
     "title": "Faster Clinical Trial Reporting: A Beginner’s Guide to Implementing CDISC SDTM and ADaM Standards with Open-Source R Packages",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:06.026205"
+    "text": "Last updated\n\n2026-01-23 20:54:54.724819"
   },
   {
     "objectID": "posts/2025-09-12_faster_clinical_trial_reporting/faster_clinical_trial_reporting.html#details",
@@ -536,7 +536,7 @@
     "href": "posts/2024-09-11_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html#last-updated",
     "title": "Writing my first custom CICD action for the pharmaverseblog",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:01.731263"
+    "text": "Last updated\n\n2026-01-23 20:54:50.120813"
   },
   {
     "objectID": "posts/2024-09-11_writing_my_first.../writing_my_first_custom_ci_cd_action_for_the_pharmaverseblog.html#details",
@@ -557,7 +557,7 @@
     "href": "posts/2025-09-15-introducing.../introducing_admiralneuro.html#last-updated",
     "title": "Introducing admiralneuro!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:57.181208"
+    "text": "Last updated\n\n2026-01-23 20:54:45.272314"
   },
   {
     "objectID": "posts/2025-09-15-introducing.../introducing_admiralneuro.html#details",
@@ -606,7 +606,7 @@
     "href": "posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html#last-updated",
     "title": "TLG Catalog 🤝 WebR",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:53.20721"
+    "text": "Last updated\n\n2026-01-23 20:54:40.995855"
   },
   {
     "objectID": "posts/2024-05-08_tlg_catalog_webr/tlg_catalog_webr.html#details",
@@ -627,7 +627,7 @@
     "href": "posts/2025-06-30_did_my_eyes.../did_my_eyes_just_see__python_in_the_pharmaverse.html#last-updated",
     "title": "Did my eyes just see Python in the pharmaverse?",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:50.248308"
+    "text": "Last updated\n\n2026-01-23 20:54:37.843157"
   },
   {
     "objectID": "posts/2025-06-30_did_my_eyes.../did_my_eyes_just_see__python_in_the_pharmaverse.html#details",
@@ -676,7 +676,7 @@
     "href": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#last-updated",
     "title": "The pharmaverse (hi)story",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:45.775447"
+    "text": "Last updated\n\n2026-01-23 20:54:33.051425"
   },
   {
     "objectID": "posts/2023-10-10_pharmaverse_story/pharmaverse_story.html#details",
@@ -697,7 +697,7 @@
     "href": "posts/2024-09-03_meet_our__divers.../meet_our__diversity__champion_–__laura__needleman.html#last-updated",
     "title": "Meet our Diversity Champion – Laura Needleman",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:42.18111"
+    "text": "Last updated\n\n2026-01-23 20:54:29.25455"
   },
   {
     "objectID": "posts/2024-09-03_meet_our__divers.../meet_our__diversity__champion_–__laura__needleman.html#details",
@@ -746,7 +746,7 @@
     "href": "posts/2025-08-13_rtflite_1.0.0/rtflite.html#last-updated",
     "title": "rtflite 1.0.0: Production-Ready Clinical TLFs in Python",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:39.222971"
+    "text": "Last updated\n\n2026-01-23 20:54:26.156765"
   },
   {
     "objectID": "posts/2025-08-13_rtflite_1.0.0/rtflite.html#details",
@@ -816,7 +816,7 @@
     "href": "posts/2025-02-17_data__packages/data__packages.html#last-updated",
     "title": "Collecting all the data!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:35.22889"
+    "text": "Last updated\n\n2026-01-23 20:54:21.955855"
   },
   {
     "objectID": "posts/2025-02-17_data__packages/data__packages.html#details",
@@ -837,7 +837,7 @@
     "href": "posts/2024-06-07_admiral_1.1_is.../admiral_1.1_is_here.html#last-updated",
     "title": "{admiral} 1.1.1 is here!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:32.171488"
+    "text": "Last updated\n\n2026-01-23 20:54:18.713897"
   },
   {
     "objectID": "posts/2024-06-07_admiral_1.1_is.../admiral_1.1_is_here.html#details",
@@ -886,7 +886,7 @@
     "href": "posts/2025-01-17_1.2_admiral.../1.2_admiral_release.html#last-updated",
     "title": "{admiral} 1.2 is here!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:27.122955"
+    "text": "Last updated\n\n2026-01-23 20:54:13.449898"
   },
   {
     "objectID": "posts/2025-01-17_1.2_admiral.../1.2_admiral_release.html#details",
@@ -907,7 +907,7 @@
     "href": "posts/2025-04-16_welcome,__a.../welcome,__ashley__tarasiewicz.html#last-updated",
     "title": "Welcome, Ashley Tarasiewicz",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:23.981532"
+    "text": "Last updated\n\n2026-01-23 20:54:10.174594"
   },
   {
     "objectID": "posts/2025-04-16_welcome,__a.../welcome,__ashley__tarasiewicz.html#details",
@@ -928,7 +928,7 @@
     "href": "posts/2025-03-14_welcoming__.../welcoming__novartis_to_the__pharmaverse__council!.html#last-updated",
     "title": "Novartis joins the Pharmaverse Council!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:18.913784"
+    "text": "Last updated\n\n2026-01-23 20:54:04.983611"
   },
   {
     "objectID": "posts/2025-03-14_welcoming__.../welcoming__novartis_to_the__pharmaverse__council!.html#details",
@@ -949,7 +949,7 @@
     "href": "posts/2025-02-28_council__me.../council__member_updates.html#last-updated",
     "title": "Council Member updates",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:16.022051"
+    "text": "Last updated\n\n2026-01-23 20:54:02.035954"
   },
   {
     "objectID": "posts/2025-02-28_council__me.../council__member_updates.html#details",
@@ -1005,7 +1005,7 @@
     "href": "posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html#last-updated",
     "title": "Pharmaverse and Containers",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:12.21801"
+    "text": "Last updated\n\n2026-01-23 20:53:58.065319"
   },
   {
     "objectID": "posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html#details",
@@ -1054,7 +1054,7 @@
     "href": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#last-updated",
     "title": "Cross-Industry Open Source Package Development",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:08.932125"
+    "text": "Last updated\n\n2026-01-23 20:53:54.552781"
   },
   {
     "objectID": "posts/2023-07-20_cross_company_dev/cross_industry_dev.html#details",
@@ -1082,7 +1082,7 @@
     "href": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#last-updated",
     "title": "Filter out the noise!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:03.412302"
+    "text": "Last updated\n\n2026-01-23 20:53:48.841575"
   },
   {
     "objectID": "posts/2024-03-01_admiral_filter_functions/admiral_filter_functions.html#details",
@@ -1138,7 +1138,7 @@
     "href": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#last-updated",
     "title": "Rhino: A Step Forward in Validating Shiny Apps",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:59.487942"
+    "text": "Last updated\n\n2026-01-23 20:53:44.732331"
   },
   {
     "objectID": "posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html#details",
@@ -1204,25 +1204,39 @@
     "text": "Conclusion\nThe pharmaverse offers a rich ecosystem of tools designed to streamline clinical research workflows, ensuring high-quality data management and reporting. By leveraging packages like {rtables}, {admiral}, {teal}, {riskmetric}, {tidyCDISC}, and {xportr}, pharmaceutical companies can enhance their data analysis capabilities, ensure regulatory compliance, and drive innovation in clinical research. Remember to give the packages that you use and value a star on GitHub. ⭐\n\nTo receive the latest updates on what’s new in the pharmaverse, subscribe to the periodic newsletter!"
   },
   {
-    "objectID": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html",
-    "href": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html",
-    "title": "Simplifying Clinical Data Dashboards with {teal} and {pharmaverseadam}",
+    "objectID": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html",
+    "href": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html",
+    "title": "pharmaversesdtm 1.4.0 Release",
     "section": "",
-    "text": "Every developer must solve two difficult problems when creating a Shiny application (in fact, any application) from the ground up: software architecture and data design. In the world of clinical data analysis, however, much development has been aimed at providing a jump-start approach to creating R/Shiny applications that would take away most of the pain caused by these two problems.\nThis blog should help you get an idea of how easy it is to get started with the pharmaverse ecosystem. We will create an interactive clinical data dashboard using {teal} and will use {pharmaverseadam} as the data source.\nFirst, you would need to install the two packages. It is recommended to use {pak} to take advantage of parallel downloads and builds (note that you can use it together with {renv} for locking dependencies)."
+    "text": "We are pleased to announce the release of {pharmaversesdtm} 1.4.0 🎉\nThis release expands the breadth of SDTM test data available in the package, with a particular focus on neurology and oncology, alongside several targeted enhancements and fixes."
   },
   {
-    "objectID": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html#building-a-simple-teal-app",
-    "href": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html#building-a-simple-teal-app",
-    "title": "Simplifying Clinical Data Dashboards with {teal} and {pharmaverseadam}",
-    "section": "Building a Simple Teal App",
-    "text": "Building a Simple Teal App\nNext, we would create a simple app - basically following the official teal guide, but we will use datasets from the {pharmaverseadam} package.\n# Step 1: import packages\nlibrary(teal)\nlibrary(pharmaverseadam)\n\n# Step 2: create a teal data object\ndata &lt;- cdisc_data(\n  ADAE = pharmaverseadam::adae,\n  ADSL = pharmaverseadam::adsl\n)\n\n# Step 3: initialize teal app\napp &lt;- init(\n  data = data,\n  modules = example_module()\n)\n\n# Step 4: run shiny app\nshinyApp(app$ui, app$server)\n\nLet’s Take a Closer Look at Each Step:\n\nIn step 1, we import libraries to use functions and datasets exported by those.\nIn step 2, we create a {teal} data object that can be used in a {teal} app. There are a couple of subtle details here: instead of the default teal_data() function, we use a special wrapper around it, designed specifically for clinical trial data - cdisc_data(). Its advantage is that it will automatically generate join_keys() for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking data names and join_keys slots:\n\nr$&gt; data@datanames\n[1] \"ADAE\" \"ADSL\"\n\nr$&gt; data@join_keys\nA join_keys object containing foreign keys between 2 datasets:\nADSL: [STUDYID, USUBJID]\n  &lt;-- ADAE: [STUDYID, USUBJID]\nADAE: [STUDYID, USUBJID, ASTDTM, AETERM, AESEQ]\n  --&gt; ADSL: [STUDYID, USUBJID]\n\nIn step 3, we initialize the {teal} app by passing it a data object and adding an example module—it’s not much, but it will let us verify that the app works. The output app object is just a list with UI and server functions.\nFinally step 4 should be familiar to all Shiny users - we need to pass the UI and server function from the app object generated at step 3.\n\nWhen we run the app, this is what we will see in the web browser:\n\nAs you can see, with just a few lines of code, we were able to create a working app with some interesting capabilities. We have two datasets that we can switch between. For each dataset, we have keys defined (marked with a special key icon in the variable drop-down). When we filter one dataset, the other one gets filtered as well because they are connected with a key.\nThis is truly impressive, but there is just one problem… If we click the “Show R code” button, we will notice that the data used in the app is not “reproducible.” This simply means that the app currently does not have information about where the data comes from, so it cannot instruct users on how to obtain the same data.\n\nLet’s fix this. We will have to make the code slightly more verbose:\ndata &lt;- within(teal_data(), {\n  ADAE &lt;- pharmaverseadam::adae\n  ADSL &lt;- pharmaverseadam::adsl\n})\ndatanames(data) &lt;- c(\"ADAE\", \"ADSL\")\njoin_keys(data) &lt;- default_cdisc_join_keys[datanames(data)]\nThe recommended method is to generate the data using a within function. However, this method requires manually providing databases using a helper function. We also need to provide join_keys ourselves, but given that the data names are standard ADaM names, we can take advantage of a special default_cdisc_join_keys object.\nIt is also worth noting that {teal} has its implementation of within generic.\nThis is what we will see now when running the application:\n\nNow we have reproducible data. But what about the app itself? Surely, {teal} features don’t end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:\npak::pkg_install(\n  c(\"sparkline\", \"teal.modules.general\", \"teal.modules.clinical\")\n)\nFirst, we suggest exploring the “general” modules that are applicable to any kind of data. The only (!) thing we need to do, is to add two more modules to the app initializer:\napp &lt;- init(\n  data = data,\n  modules = modules(\n    example_module(),\n    tm_data_table(\"Table View\"),\n    tm_variable_browser(\"Variables\")\n  )\n)\nThis is possible thanks to the magic that {teal} is doing under the hood - passing the data object to each module. And now we will have access to a nice tabular view of the data, and a tool to explore each variable in greater detail.\n\nThis is great on its own, but as a bonus, we even get the ability to build a report based on some of the modules that we have. For example, we can generate some plots in the variable browser, add them to the report and preview it. Some modules would also add a block of R code showing how to get the exact same data that was used to generate a report card.\nFinally, let’s add a simple barchart module that comes from the clinical modules package. We will use an example from the {teal.modules.clinical} documentation:\nbarchart_module &lt;- tm_g_barchart_simple(\n  label = \"ADAE Analysis\",\n  x = data_extract_spec(\n    dataname = \"ADAE\",\n    select = select_spec(\n      choices = variable_choices(\n        pharmaverseadam::adae,\n        c(\"ARM\", \"ACTARM\", \"SEX\")\n      ),\n      selected = \"ACTARM\",\n      multiple = FALSE\n    )\n  )\n)\n\nThe best part about this module is that when a card is added to the report, it has R code that will reproduce exactly the same output that we see in the app.\nHere is the entire code for the application. In just 40 lines of code we were able to create a feature-rich application with the ability to interact with ADaM data, create visualizations and generate reproducible reports.\nlibrary(sparkline)\nlibrary(teal)\nlibrary(teal.data)\nlibrary(teal.modules.clinical)\nlibrary(teal.modules.general)\n\ndata &lt;- within(teal_data(), {\n  ADAE &lt;- pharmaverseadam::adae\n  ADSL &lt;- pharmaverseadam::adsl\n  # nolint end\n})\ndatanames(data) &lt;- c(\"ADAE\", \"ADSL\")\njoin_keys(data) &lt;- default_cdisc_join_keys[datanames(data)]\n\nbarchart_module &lt;- tm_g_barchart_simple(\n  label = \"ADAE Analysis\",\n  x = data_extract_spec(\n    dataname = \"ADAE\",\n    select = select_spec(\n      choices = variable_choices(\n        pharmaverseadam::adae,\n        c(\"ARM\", \"ACTARM\", \"SEX\")\n      ),\n      selected = \"ACTARM\",\n      multiple = FALSE\n    )\n  )\n)\n\napp &lt;- init(\n  data = data,\n  modules = modules(\n    example_module(),\n    tm_data_table(\"Table View\"),\n    tm_variable_browser(\"Variables\"),\n    barchart_module\n  )\n)\n\nshinyApp(app$ui, app$server)"
+    "objectID": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html#whats-new-in-1.4.0",
+    "href": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html#whats-new-in-1.4.0",
+    "title": "pharmaversesdtm 1.4.0 Release",
+    "section": "✨ What’s New in 1.4.0",
+    "text": "✨ What’s New in 1.4.0\n\n🧠 New neurological SDTM test datasets\nVersion 1.4.0 introduces a set of neurology-focused SDTM test datasets, extending the package coverage of therapeutic areas:\n\ndm_neuro - demographic data for neurological studies\n\nnv_neuro - neurological findings\n\nsuppnv_neuro - supplemental qualifiers for neurological findings\n\nag_neuro - associated groups for neurological domains\n\nlb_neuro - neurological laboratory test data\n\nThese datasets are intended to support development, testing, and examples for neurology-specific workflows.\n\n\n📊 New and updated variables\nSeveral existing datasets have been enhanced:\n\nVISITDY has been added to the pc domain to support consistent visit day derivations.\nBRTHDTC has been added to both dm and dm_metabolic, improving demographic completeness.\nThe qs_ophtha dataset now uses an updated QSTESTCD aligned with CDISC terminology and has been simplified for easier use in examples.\n\n\n\n🧬 Oncology data improvements\nThis release also includes important updates for oncology use cases:\n\nCorrections to rs_onco_pcwg3, addressing misclassified progression indicators and response records.\nA new oncology biomarker dataset, lb_onco_pcwg3, providing PSA measurements aligned with PCWG criteria.\n\n\n\n🧠 Neurological dataset enhancements\nNeurological laboratory data includes biomarkers Alpha Synuclein Seed Amplification Assay (CSF), Lumipulse G pTau217, Lumipulse G β-Amyloid 1-42, and the ratio of pTau217 and β-Amyloid 1-42.\n\n\n\n📚 Documentation and developer updates\nTo help you explore datasets by therapeutic area, the reference pages have been reorganized to group datasets under meaningful categories such as metabolic, neurological, and oncology. This makes navigation easier for researchers and developers alike."
   },
   {
-    "objectID": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html#conclusion",
-    "href": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html#conclusion",
-    "title": "Simplifying Clinical Data Dashboards with {teal} and {pharmaverseadam}",
-    "section": "Conclusion ",
-    "text": "Conclusion \nIn conclusion, {teal} and {pharmaverseadam} make it much easier to create interactive and reproducible clinical data dashboards. By following this guide, you can quickly build a Shiny app that not only visualizes your data but also maintains reproducibility and customization options. \nGet the latest updates from the pharmaverse delivered to your inbox. Subscribe to our newsletter today."
+    "objectID": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html#installation",
+    "href": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html#installation",
+    "title": "pharmaversesdtm 1.4.0 Release",
+    "section": "📦 Installation",
+    "text": "📦 Installation\nYou can install pharmaversesdtm 1.4.0 from CRAN:\n\ninstall.packages(\"pharmaversesdtm\")"
+  },
+  {
+    "objectID": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html#last-updated",
+    "href": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html#last-updated",
+    "title": "pharmaversesdtm 1.4.0 Release",
+    "section": "Last updated",
+    "text": "Last updated\n\n2026-01-23 20:53:38.784517"
+  },
+  {
+    "objectID": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html#details",
+    "href": "posts/2026-01-23_pharmaversesdtm14/pharmaversesdtm_1.4.0_release.html#details",
+    "title": "pharmaversesdtm 1.4.0 Release",
+    "section": "Details",
+    "text": "Details\n\nSource, Session info"
   },
   {
     "objectID": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html",
@@ -1264,7 +1278,7 @@
     "href": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html#last-updated",
     "title": "Testing Containers and WebAssembly in Submissions to the FDA",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:50.481976"
+    "text": "Last updated\n\n2026-01-23 20:53:35.400241"
   },
   {
     "objectID": "posts/2024-02-01_containers_webassembly_submission/containers_and_webassembly_submissions.html#details",
@@ -1334,7 +1348,7 @@
     "href": "posts/2023-06-27__hackathon_app/index.html#last-updated",
     "title": "Hackathon Feedback Application",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:46.975132"
+    "text": "Last updated\n\n2026-01-23 20:53:31.870388"
   },
   {
     "objectID": "posts/2023-06-27__hackathon_app/index.html#details",
@@ -1383,7 +1397,7 @@
     "href": "posts/2023-06-28_welcome/index.html#last-updated",
     "title": "Hello pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:43.320896"
+    "text": "Last updated\n\n2026-01-23 20:53:28.0177"
   },
   {
     "objectID": "posts/2023-06-28_welcome/index.html#details",
@@ -1404,7 +1418,7 @@
     "href": "posts/2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.html#last-updated",
     "title": "New {admiral} extension packages: {admiralpeds} & more coming soon!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:40.313832"
+    "text": "Last updated\n\n2026-01-23 20:53:24.912529"
   },
   {
     "objectID": "posts/2024-06-17_new_admiral_ex.../new_admiral_extension_packages_admiralpeds_coming_soon.html#details",
@@ -1425,7 +1439,7 @@
     "href": "posts/2025-04-08_code_collab.../code_collaboration_in__ne_st.html#last-updated",
     "title": "Code collaboration in NEST",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:35.975494"
+    "text": "Last updated\n\n2026-01-23 20:53:20.376724"
   },
   {
     "objectID": "posts/2025-04-08_code_collab.../code_collaboration_in__ne_st.html#details",
@@ -1495,7 +1509,7 @@
     "href": "posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html#last-updated",
     "title": "De-Mystifying R Programming in Clinical Trials",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:32.533901"
+    "text": "Last updated\n\n2026-01-23 20:53:16.856617"
   },
   {
     "objectID": "posts/2024-04-15_de-_mystifying__.../de-_mystifying__r__programming_in__clinical__trials.html#details",
@@ -1551,7 +1565,7 @@
     "href": "posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html#last-updated",
     "title": "Unix versus SAS Time",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:29.04536"
+    "text": "Last updated\n\n2026-01-23 20:53:13.260465"
   },
   {
     "objectID": "posts/2024-07-08_unix_vs_sas_date.../unix_vs_sas_datetime.html#details",
@@ -1565,7 +1579,7 @@
     "href": "index.html",
     "title": "Welcome to the pharmaverse blog!",
     "section": "",
-    "text": "Order By\n      Default\n      \n        Title\n      \n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Author\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\npharmaversesdtm 1.4.0 Release\n\n\n\nSDTM\n\n\n\nAnnouncing the 1.4.0 release of pharmaversesdtm: new neurological SDTM test data, improved demographic variables, and more.\n\n\n\n\n\nJan 20, 2026\n\n\nLina Patil\n\n\n\n\n\n\n\n\n\n\n\n\nPharmaverse and Containers\n\n\n\nCommunity\n\nSubmissions\n\nTechnical\n\n\n\nContainers in the pharmaverse - exploration and potential use cases.\n\n\n\n\n\nJan 18, 2026\n\n\nBen Straub and Maciej Nasinski\n\n\n\n\n\n\n\n\n\n\n\n\nadmiral 1.4 release\n\n\n\nADaM\n\n\n\nadmiral 1.4 is here! Read this blog post to learn more about the contents of this release.\n\n\n\n\n\nJan 15, 2026\n\n\nJeff Dickinson, Ben Straub, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing docorator to the pharmaverse\n\n\n\nTLG\n\n\n\nThe docorator package provides a framework for production-ready outputs created from R\n\n\n\n\n\nDec 19, 2025\n\n\nBecca Krouse\n\n\n\n\n\n\n\n\n\n\n\n\nExplore the Pharmaverse Examples: Your Gateway to Clinical Reporting with Open-Source Tools\n\n\n\nSubmissions\n\nTechnical\n\n\n\n\n\n\n\n\n\nDec 18, 2025\n\n\nOrla Doyle and Ross Farrugia\n\n\n\n\n\n\n\n\n\n\n\n\nNew Council Members\n\n\n\nCommunity\n\n\n\nWelcome to 2 new council members and thank you message for those handing over\n\n\n\n\n\nOct 31, 2025\n\n\nRoss Farrugia\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing admiralneuro!\n\n\n\nADaM\n\nCommunity\n\nTechnical\n\n\n\nAnnouncing the addition of {admiralneuro} to the {admiral} family!\n\n\n\n\n\nSep 15, 2025\n\n\nMiles Almond\n\n\n\n\n\n\n\n\n\n\n\n\nFaster Clinical Trial Reporting: A Beginner’s Guide to Implementing CDISC SDTM and ADaM Standards with Open-Source R Packages\n\n\n\nTechnical\n\nCommunity\n\n\n\nExplore how R and Pharmaverse tools simplify clinical trial reporting with CDISC standards, improving transparency, reproducibility, and regulatory compliance.\n\n\n\n\n\nSep 12, 2025\n\n\nFabian Hee, Alexandros Kouretsis, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nrtflite 1.0.0: Production-Ready Clinical TLFs in Python\n\n\n\nTLG\n\nPython\n\n\n\nDo you need to deliver and submit clinical study reports using Python? We have a solution.\n\n\n\n\n\nAug 13, 2025\n\n\nYilong Zhang, Nan Xiao\n\n\n\n\n\n\n\n\n\n\n\n\nMetacore and Metatools 0.2.0\n\n\n\nMetadata\n\nADaM\n\nCommunity\n\n\n\nmetacore and metatools 0.2.0 are live. Read package release information and hear from the new maintainer.\n\n\n\n\n\nAug 4, 2025\n\n\nLiam Hobby\n\n\n\n\n\n\n\n\n\n\n\n\nRaw data for domains in the pharmaversesdtm package\n\n\n\nSDTM\n\n\n\npharmaverseraw package provides raw data for domains in the pharmaversesdtm package.\n\n\n\n\n\nJul 7, 2025\n\n\nShiyu Chen\n\n\n\n\n\n\n\n\n\n\n\n\nPHUSE Update\n\n\n\nCommunity\n\n\n\nPharmaverse has become a PHUSE Working Group\n\n\n\n\n\nJul 4, 2025\n\n\npharmaverse council\n\n\n\n\n\n\n\n\n\n\n\n\nDid my eyes just see Python in the pharmaverse?\n\n\n\nCommunity\n\nPython\n\n\n\nLifting up more open source efforts than just R\n\n\n\n\n\nJun 30, 2025\n\n\nRoss Farrugia\n\n\n\n\n\n\n\n\n\n\n\n\nadmiral 1.3.0: documentation go!!\n\n\n\nADaM\n\n\n\n{admiral} 1.3 is here - say hello to supercharged examples, bug fixes and more!\n\n\n\n\n\nJun 26, 2025\n\n\nBen Straub, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nlogrx 0.4.0: logs for your R programs\n\n\n\nLogging\n\nTechnical\n\n\n\nAre you in need of a log to ensure traceability and reproducibility for your Clinical Reporting R programs?\n\n\n\n\n\nMay 19, 2025\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome, Ashley Tarasiewicz\n\n\n\nCommunity\n\n\n\nAshley Tarasiewicz joins the pharmaverse council as the Atorus Council representative.\n\n\n\n\n\nApr 16, 2025\n\n\nMike Stackhouse\n\n\n\n\n\n\n\n\n\n\n\n\nCode collaboration in NEST\n\n\n\nTLG\n\nCommunity\n\n\n\nAnnouncement on code collaboration for the NEST framework between Roche and Clinical & Statistical Programming, Johnson & Johnson Innovative Medicine\n\n\n\n\n\nApr 8, 2025\n\n\nIlse Augustyns, Nicholas Masel, Tad Lewandowski, Gabriel Becker, Clinical & Statistical Programming, IDAR, Johnson & Johnson, Innovative Medicine\n\n\n\n\n\n\n\n\n\n\n\n\nNovartis joins the Pharmaverse Council!\n\n\n\nCommunity\n\n\n\nPharmaverse Council membership update\n\n\n\n\n\nMar 14, 2025\n\n\nDamian Rodziewicz\n\n\n\n\n\n\n\n\n\n\n\n\nAutomatic slide generation with autoslider.core\n\n\n\nTLG\n\n\n\n{autoslider.core} is a newly open-sourced package for automatically creating standard study outputs and adding them to PowerPoint slides.\n\n\n\n\n\nMar 14, 2025\n\n\nStefan P. Thoma, Joe Zhu\n\n\n\n\n\n\n\n\n\n\n\n\nDiversity Champion Updates\n\n\n\nCommunity\n\nDEI\n\n\n\nCouncil company new DEI requirements and other news!\n\n\n\n\n\nMar 13, 2025\n\n\nLaura Needleman\n\n\n\n\n\n\n\n\n\n\n\n\nteal 0.16.0 is released!\n\n\n\nShiny\n\n\n\nAnnouncing the release of teal v0.16.0!\n\n\n\n\n\nMar 3, 2025\n\n\nDony Unardi\n\n\n\n\n\n\n\n\n\n\n\n\nCouncil Member updates\n\n\n\nCommunity\n\n\n\nNotification of latest council member renewals and welcoming Julia!\n\n\n\n\n\nFeb 28, 2025\n\n\npharmaverse council\n\n\n\n\n\n\n\n\n\n\n\n\nWorking with Clinical Trial Data? There’s a Pharmaverse Package for That\n\n\n\nTechnical\n\nCommunity\n\n\n\nLooking for R packages to manage clinical trial data? Pharmaverse has tools for every stage from data collection to submission!\n\n\n\n\n\nFeb 28, 2025\n\n\nGift Kenneth, Sunil Gupta, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nCollecting all the data!\n\n\n\nSDTM\n\nADaM\n\nCommunity\n\nTechnical\n\n\n\nWhere is all the data? An intermittent attempt to continuously compile, collate, consolidate, and curate publicly available CDISC data useful for Clinical Reporting in R\n\n\n\n\n\nFeb 17, 2025\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nHello admiralmetabolic!\n\n\n\nADaM\n\nCommunity\n\nTechnical\n\n\n\nWe are happy to announce the release of the newest member of the {admiral} family - {admiralmetabolic}!\n\n\n\n\n\nJan 21, 2025\n\n\nAnders Askeland, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\n{admiral} 1.2 is here!\n\n\n\nADaM\n\nCommunity\n\nTechnical\n\n\n\nWhat to expect from the 1.2 release of {admiral}? New functions, crisper documentation, upcoming plans and more!\n\n\n\n\n\nJan 17, 2025\n\n\nBen Straub, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nA collaborative triumph: Re-using test data between the NEST and admiral teams\n\n\n\nADaM\n\nTLG\n\nCommunity\n\n\n\nThis post describes one of the first joint efforts between the NEST and admiral teams, where test data from the pharmaverseadam package was used within the NEST framework.\n\n\n\n\n\nJan 15, 2025\n\n\nJoe Zhu, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nCreating a better universe with dverse\n\n\n\nTechnical\n\n\n\nHow to create a global search across an entire collection of R packages: A use case for the toy ‘admiralverse’\n\n\n\n\n\nDec 13, 2024\n\n\nMauro Lepore\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing the aNCA Package for Automated Non-Compartmental Analysis\n\n\n\nShiny\n\nADaM\n\nTLG\n\nSubmissions\n\n\n\nA Roche x Appsilon x Human Predictions Collaboration\n\n\n\n\n\nDec 2, 2024\n\n\nErcan Suekuer, Jana Spinner, Gerardo R\n\n\n\n\n\n\n\n\n\n\n\n\nHow I Rebuilt a Lost ECG Data Script in R\n\n\n\nSDTM\n\nTechnical\n\n\n\nDuring my Data Science placement, I faced the challenge of recreating an ECG dataset for the {pharmaversesdtm} project after the original R script was lost. I explored the existing data, identified key parameters, and experimented with R packages to replicate the dataset structure and ensure SDTM compliance. Despite challenges with ensuring accurate ECG measurements, I eventually regenerated the dataset, learning valuable lessons in problem-solving and resilience.\n\n\n\n\n\nOct 31, 2024\n\n\nVladyslav Shuliar\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing sdtm.oak\n\n\n\nSDTM\n\n\n\nAn EDC & Data Standards agnostic solution that enables the pharmaceutical programming community to develop SDTM datasets in R\n\n\n\n\n\nOct 24, 2024\n\n\nRammprasad Ganapathy\n\n\n\n\n\n\n\n\n\n\n\n\nThe Tension of High-Performance Computing: Reproducibility vs. Parallelization\n\n\n\nSubmissions\n\nTechnical\n\n\n\nDiscover how to manage parallel processing and ensure reproducibility in drug development using the {mirai} package and other HPC tools.\n\n\n\n\n\nOct 16, 2024\n\n\nAlexandros Kouretsis, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nroxy.shinylive - shinylive applications in roxygen documentation\n\n\n\nShiny\n\nTechnical\n\n\n\nIntroducing a roxy.shinylive - a new tool for Shiny package developers\n\n\n\n\n\nOct 11, 2024\n\n\nPawel Rucki\n\n\n\n\n\n\n\n\n\n\n\n\nUndergraduate University Statistics Report using pharmaverseadam data\n\n\n\nADaM\n\nCommunity\n\n\n\nA short journal highlighting how I was able to use {pharmaverseadam} for my university work\n\n\n\n\n\nSep 16, 2024\n\n\nSyon Parashar\n\n\n\n\n\n\n\n\n\n\n\n\nWriting my first custom CICD action for the pharmaverseblog\n\n\n\nTechnical\n\n\n\nI recently wrote my first custom CICD pipeline for the pharmaverseblog, in an effort to police the use of post tags within the blog. These are my learnings and experiences!\n\n\n\n\n\nSep 11, 2024\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nMeet our Diversity Champion – Laura Needleman\n\n\n\nCommunity\n\n\n\nOn behalf of the pharmaverse council, we’d like to introduce you to Laura Needleman – an active member of our community who has volunteered to support us as a champion around DE&I.\n\n\n\n\n\nSep 3, 2024\n\n\nLaura Needleman\n\n\n\n\n\n\n\n\n\n\n\n\nteal and Posit Shiny Contest 2024\n\n\n\nShiny\n\nCommunity\n\n\n\nIntroducing the {teal} category in the Post Shiny Contest 2024 and informing users on resources to make their teal app for the submission.\n\n\n\n\n\nAug 20, 2024\n\n\nDony Unardi, Pawel Rucki\n\n\n\n\n\n\n\n\n\n\n\n\nExploring the Top 5 pharmaverse Packages\n\n\n\nTechnical\n\nCommunity\n\nShiny\n\n\n\nThis blog explores the top 5 popular pharmaverse packages for clinical reporting featuring {rtables}, {admiral}, {teal}, {riskmetric}, and {tidyCDISC} for improving data analysis and to ensure compliance.\n\n\n\n\n\nAug 15, 2024\n\n\nGift Kenneth, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nWorking Groups Updates\n\n\n\nCommunity\n\n\n\nAn update from pharmaverse council around how packages will get included in pharmaverse in future.\n\n\n\n\n\nJul 24, 2024\n\n\npharmaverse council\n\n\n\n\n\n\n\n\n\n\n\n\nSimplifying Clinical Data Dashboards with {teal} and {pharmaverseadam}\n\n\n\nTechnical\n\nShiny\n\nCommunity\n\n\n\nLearn how to quickly develop interactive and reproducible clinical data dashboards using {teal} and {pharmaverseadam}.\n\n\n\n\n\nJul 22, 2024\n\n\nPavel Demin, Dror Berel, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nUnix versus SAS Time\n\n\n\nTechnical\n\n\n\nThis blog explores SAS and R date handling differences, focusing on epoch discrepancies and data types, and provides key tips for accurate date conversions to prevent a 10-year date shift.\n\n\n\n\n\nJul 16, 2024\n\n\nCéline Piraux\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing a new Coursera course for hands-on clinical data science using R.\n\n\n\nCommunity\n\n\n\nReleasing our second (hands-on) Coursera course, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.\n\n\n\n\n\nJul 3, 2024\n\n\nJoel Laxamana, Stefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\n{admiral} 1.1.1 is here!\n\n\n\nADaM\n\n\n\nGet to know what awaits you with the new release of the {admiral} package, including enhanced error messaging, improved documentation and much more!\n\n\n\n\n\nJun 20, 2024\n\n\nEdoardo Mancini, Ben Straub\n\n\n\n\n\n\n\n\n\n\n\n\nNew {admiral} extension packages: {admiralpeds} & more coming soon!\n\n\n\nMetadata\n\nADaM\n\nCommunity\n\n\n\nWe are very excited to announce that new extension packages are expected very soon in the {admiral} family: {admiralpeds}, a pediatrics extension, and another extension (name TBC) for obesity in clinical trials\n\n\n\n\n\nJun 17, 2024\n\n\nFanny Gautier, Lina Patil\n\n\n\n\n\n\n\n\n\n\n\n\nDiversity & Inclusion in pharmaverse\n\n\n\nCommunity\n\n\n\nAn update from pharmaverse council regarding diversity and inclusion within our community.\n\n\n\n\n\nMay 31, 2024\n\n\npharmaverse council\n\n\n\n\n\n\n\n\n\n\n\n\nOur experience as new admiral developers, coming from a CRO\n\n\n\nCommunity\n\nConferences\n\n\n\nAs the first CRO having joined the {admiral} family, we are very excited to share with you our first steps and thoughts in this new adventure\n\n\n\n\n\nMay 29, 2024\n\n\nFanny Gautier, Lina Patil\n\n\n\n\n\n\n\n\n\n\n\n\nTLG Catalog 🤝 WebR\n\n\n\nTLG\n\nShiny\n\n\n\nIntroducing WebR to TLG Catalog: A Game Changer for Interactive Learning\n\n\n\n\n\nMay 8, 2024\n\n\nPawel Rucki\n\n\n\n\n\n\n\n\n\n\n\n\nDe-Mystifying R Programming in Clinical Trials\n\n\n\nCommunity\n\n\n\nA blog highlighting the benefits/limitations of using R Programming and using the right tools to create value\n\n\n\n\n\nMay 2, 2024\n\n\nVenkatesan Balu\n\n\n\n\n\n\n\n\n\n\n\n\nAppsilon and Sanofi join the pharmaverse council!\n\n\n\nCommunity\n\n\n\nUpdates to the pharmaverse council\n\n\n\n\n\nApr 29, 2024\n\n\nAri Siggaard Knoph\n\n\n\n\n\n\n\n\n\n\n\n\nteal.modules.clinical v0.9.0 is now on CRAN!\n\n\n\nTLG\n\nShiny\n\n\n\nThis package release now completes the suite of {teal} family of packages recently released to CRAN.\n\n\n\n\n\nApr 8, 2024\n\n\nLeena Khatri\n\n\n\n\n\n\n\n\n\n\n\n\nxportr 0.4.0\n\n\n\nADaM\n\nSDTM\n\n\n\nxportr is a tool tailor-made for clinical programmers, enabling them to generate CDISC-compliant XPT files for SDTM and/or ADaM. It streamlines the preparation on xpt files, ensuring they are primed for submission to clinical data validation applications or regulatory agencies.\n\n\n\n\n\nMar 29, 2024\n\n\nSadchla Mascary\n\n\n\n\n\n\n\n\n\n\n\n\nTips for First Time Contributors\n\n\n\nCommunity\n\n\n\nOpen source can be daunting the first time you dive in - this blog will help you get started!\n\n\n\n\n\nMar 11, 2024\n\n\nRoss Farrugia\n\n\n\n\n\n\n\n\n\n\n\n\nInside the pharmaverse\n\n\n\nCommunity\n\n\n\nA short blog to help the Pharmaverse community understand how Pharmaverse is governed.\n\n\n\n\n\nMar 4, 2024\n\n\nMichael Rimler\n\n\n\n\n\n\n\n\n\n\n\n\nRhino: A Step Forward in Validating Shiny Apps\n\n\n\nSubmissions\n\nCommunity\n\n\n\nIn this post, we explore the importance of validation in the pharmaceutical industry and how Rhino framework aids in ensuring reliability and accuracy of Shiny applications.\n\n\n\n\n\nMar 1, 2024\n\n\nKamil Żyła, Ege Can Taşlıçukur, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nISCR 17th Annual Conference 2024\n\n\n\nConferences\n\n\n\nThis blog highlights my experience of presenting at Indian Society for Clinical Research (ISCR) 17th Annual Conference 2024.\n\n\n\n\n\nFeb 26, 2024\n\n\nPooja Kumari\n\n\n\n\n\n\n\n\n\n\n\n\nFilter out the noise!\n\n\n\nADaM\n\nTechnical\n\n\n\nA brief exposition of the filter_* functions in {admiral} - what they do and how to use them.\n\n\n\n\n\nFeb 26, 2024\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nteal is now available on CRAN 🎉\n\n\n\nTLG\n\nShiny\n\n\n\nAnnouncing the release of teal v0.15.0 on CRAN!\n\n\n\n\n\nFeb 14, 2024\n\n\nDony Unardi\n\n\n\n\n\n\n\n\n\n\n\n\nTesting Containers and WebAssembly in Submissions to the FDA\n\n\n\nSubmissions\n\n\n\nIn this post, we dig into the ongoing efforts undertaken to evaluate new technologies for submissions to the Food and Drug Administration (FDA). These transformative approaches, including WebAssembly and containers, hold immense potential to transform the regulatory landscape and streamline the submission process.\n\n\n\n\n\nFeb 1, 2024\n\n\nAndré Veríssimo, Tymoteusz Makowski, Pedro Silva, Vedha Viyash, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nPK Examples\n\n\n\nCommunity\n\nADaM\n\nMetadata\n\n\n\nExplore PK ADaM Examples on Pharmaverse Examples Page\n\n\n\n\n\nJan 26, 2024\n\n\nJeff Dickinson\n\n\n\n\n\n\n\n\n\n\n\n\nadmiral 1.0.0\n\n\n\nADaM\n\n\n\n1.0.0 brings a commitment to stability, new features, a few bug fixes, argument alignment and onboarding resources!\n\n\n\n\n\nJan 4, 2024\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nEnd of Year Update from the pharmaverse Council\n\n\n\nCommunity\n\n\n\n2023 Was a big year - let’s talk about it!\n\n\n\n\n\nJan 4, 2024\n\n\nMike Stackhouse\n\n\n\n\n\n\n\n\n\n\n\n\nBelieve in a higher order!\n\n\n\nADaM\n\nTechnical\n\n\n\nA brief foray into the higher order functions in the {admiral} package.\n\n\n\n\n\nNov 27, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nFloating point\n\n\n\nADaM\n\nTechnical\n\n\n\nThe untold story of how admiral deals with floating points.\n\n\n\n\n\nOct 30, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\nReproducing the R Submissions Pilot 2 Shiny Application using Rhino\n\n\n\nSubmissions\n\nCommunity\n\n\n\nA short blog post about a Rhino pilot submission.\n\n\n\n\n\nOct 10, 2023\n\n\nIsmael Rodriguez, Vedha Viyash, André Veríssimo, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nDate/Time Functions and Imputation in {admiral}\n\n\n\nADaM\n\nTechnical\n\n\n\nDates, times and imputation can be a frustrating facet of any programming language. Here’s how {admiral} makes all of this easy!\n\n\n\n\n\nSep 26, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nThe pharmaverse (hi)story\n\n\n\nCommunity\n\n\n\n\n\n\n\n\n\nAug 30, 2023\n\n\nNicholas Eugenio\n\n\n\n\n\n\n\n\n\n\n\n\nRounding\n\n\n\nTechnical\n\n\n\nExploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges.\n\n\n\n\n\nAug 22, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nIt’s all relative? - Calculating Relative Days using admiral\n\n\n\nADaM\n\n\n\n\n\n\n\n\n\nAug 8, 2023\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nCross-Industry Open Source Package Development\n\n\n\nCommunity\n\nConferences\n\nADaM\n\n\n\nThis post is based on a talk given at the regional useR! conference on July 21st 2023 in Basel.\n\n\n\n\n\nJul 25, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\nHow to use Code Sections\n\n\n\nADaM\n\nTechnical\n\n\n\nCode sections - are you using them right?\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nBlanks and NAs\n\n\n\nADaM\n\nTechnical\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\ncardinal\n\n\n\nTLG\n\n\n\nThe {cardinal} initiative is an industry collaborative effort under pharmaversewith the aspiration of building and open-sourcing a comprehensive catalog of harmonized TLGs for clinical study reporting.\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n\n\n\n\n\n\nHello pharmaverse\n\n\n\nCommunity\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nHackathon Feedback Application\n\n\n\nShiny\n\nCommunity\n\nADaM\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\nCommunity\n\nADaM\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\nADaM\n\n\n\nUse derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n      Default\n      \n        Title\n      \n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Author\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\npharmaversesdtm 1.4.0 Release\n\n\n\nSDTM\n\n\n\nAnnouncing the 1.4.0 release of pharmaversesdtm: new neurological SDTM test data, improved demographic variables, and more.\n\n\n\n\n\nJan 23, 2026\n\n\nLina Patil\n\n\n\n\n\n\n\n\n\n\n\n\nPharmaverse and Containers\n\n\n\nCommunity\n\nSubmissions\n\nTechnical\n\n\n\nContainers in the pharmaverse - exploration and potential use cases.\n\n\n\n\n\nJan 18, 2026\n\n\nBen Straub and Maciej Nasinski\n\n\n\n\n\n\n\n\n\n\n\n\nadmiral 1.4 release\n\n\n\nADaM\n\n\n\nadmiral 1.4 is here! Read this blog post to learn more about the contents of this release.\n\n\n\n\n\nJan 15, 2026\n\n\nJeff Dickinson, Ben Straub, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing docorator to the pharmaverse\n\n\n\nTLG\n\n\n\nThe docorator package provides a framework for production-ready outputs created from R\n\n\n\n\n\nDec 19, 2025\n\n\nBecca Krouse\n\n\n\n\n\n\n\n\n\n\n\n\nExplore the Pharmaverse Examples: Your Gateway to Clinical Reporting with Open-Source Tools\n\n\n\nSubmissions\n\nTechnical\n\n\n\n\n\n\n\n\n\nDec 18, 2025\n\n\nOrla Doyle and Ross Farrugia\n\n\n\n\n\n\n\n\n\n\n\n\nNew Council Members\n\n\n\nCommunity\n\n\n\nWelcome to 2 new council members and thank you message for those handing over\n\n\n\n\n\nOct 31, 2025\n\n\nRoss Farrugia\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing admiralneuro!\n\n\n\nADaM\n\nCommunity\n\nTechnical\n\n\n\nAnnouncing the addition of {admiralneuro} to the {admiral} family!\n\n\n\n\n\nSep 15, 2025\n\n\nMiles Almond\n\n\n\n\n\n\n\n\n\n\n\n\nFaster Clinical Trial Reporting: A Beginner’s Guide to Implementing CDISC SDTM and ADaM Standards with Open-Source R Packages\n\n\n\nTechnical\n\nCommunity\n\n\n\nExplore how R and Pharmaverse tools simplify clinical trial reporting with CDISC standards, improving transparency, reproducibility, and regulatory compliance.\n\n\n\n\n\nSep 12, 2025\n\n\nFabian Hee, Alexandros Kouretsis, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nrtflite 1.0.0: Production-Ready Clinical TLFs in Python\n\n\n\nTLG\n\nPython\n\n\n\nDo you need to deliver and submit clinical study reports using Python? We have a solution.\n\n\n\n\n\nAug 13, 2025\n\n\nYilong Zhang, Nan Xiao\n\n\n\n\n\n\n\n\n\n\n\n\nMetacore and Metatools 0.2.0\n\n\n\nMetadata\n\nADaM\n\nCommunity\n\n\n\nmetacore and metatools 0.2.0 are live. Read package release information and hear from the new maintainer.\n\n\n\n\n\nAug 4, 2025\n\n\nLiam Hobby\n\n\n\n\n\n\n\n\n\n\n\n\nRaw data for domains in the pharmaversesdtm package\n\n\n\nSDTM\n\n\n\npharmaverseraw package provides raw data for domains in the pharmaversesdtm package.\n\n\n\n\n\nJul 7, 2025\n\n\nShiyu Chen\n\n\n\n\n\n\n\n\n\n\n\n\nPHUSE Update\n\n\n\nCommunity\n\n\n\nPharmaverse has become a PHUSE Working Group\n\n\n\n\n\nJul 4, 2025\n\n\npharmaverse council\n\n\n\n\n\n\n\n\n\n\n\n\nDid my eyes just see Python in the pharmaverse?\n\n\n\nCommunity\n\nPython\n\n\n\nLifting up more open source efforts than just R\n\n\n\n\n\nJun 30, 2025\n\n\nRoss Farrugia\n\n\n\n\n\n\n\n\n\n\n\n\nadmiral 1.3.0: documentation go!!\n\n\n\nADaM\n\n\n\n{admiral} 1.3 is here - say hello to supercharged examples, bug fixes and more!\n\n\n\n\n\nJun 26, 2025\n\n\nBen Straub, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nlogrx 0.4.0: logs for your R programs\n\n\n\nLogging\n\nTechnical\n\n\n\nAre you in need of a log to ensure traceability and reproducibility for your Clinical Reporting R programs?\n\n\n\n\n\nMay 19, 2025\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome, Ashley Tarasiewicz\n\n\n\nCommunity\n\n\n\nAshley Tarasiewicz joins the pharmaverse council as the Atorus Council representative.\n\n\n\n\n\nApr 16, 2025\n\n\nMike Stackhouse\n\n\n\n\n\n\n\n\n\n\n\n\nCode collaboration in NEST\n\n\n\nTLG\n\nCommunity\n\n\n\nAnnouncement on code collaboration for the NEST framework between Roche and Clinical & Statistical Programming, Johnson & Johnson Innovative Medicine\n\n\n\n\n\nApr 8, 2025\n\n\nIlse Augustyns, Nicholas Masel, Tad Lewandowski, Gabriel Becker, Clinical & Statistical Programming, IDAR, Johnson & Johnson, Innovative Medicine\n\n\n\n\n\n\n\n\n\n\n\n\nNovartis joins the Pharmaverse Council!\n\n\n\nCommunity\n\n\n\nPharmaverse Council membership update\n\n\n\n\n\nMar 14, 2025\n\n\nDamian Rodziewicz\n\n\n\n\n\n\n\n\n\n\n\n\nAutomatic slide generation with autoslider.core\n\n\n\nTLG\n\n\n\n{autoslider.core} is a newly open-sourced package for automatically creating standard study outputs and adding them to PowerPoint slides.\n\n\n\n\n\nMar 14, 2025\n\n\nStefan P. Thoma, Joe Zhu\n\n\n\n\n\n\n\n\n\n\n\n\nDiversity Champion Updates\n\n\n\nCommunity\n\nDEI\n\n\n\nCouncil company new DEI requirements and other news!\n\n\n\n\n\nMar 13, 2025\n\n\nLaura Needleman\n\n\n\n\n\n\n\n\n\n\n\n\nteal 0.16.0 is released!\n\n\n\nShiny\n\n\n\nAnnouncing the release of teal v0.16.0!\n\n\n\n\n\nMar 3, 2025\n\n\nDony Unardi\n\n\n\n\n\n\n\n\n\n\n\n\nCouncil Member updates\n\n\n\nCommunity\n\n\n\nNotification of latest council member renewals and welcoming Julia!\n\n\n\n\n\nFeb 28, 2025\n\n\npharmaverse council\n\n\n\n\n\n\n\n\n\n\n\n\nWorking with Clinical Trial Data? There’s a Pharmaverse Package for That\n\n\n\nTechnical\n\nCommunity\n\n\n\nLooking for R packages to manage clinical trial data? Pharmaverse has tools for every stage from data collection to submission!\n\n\n\n\n\nFeb 28, 2025\n\n\nGift Kenneth, Sunil Gupta, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nCollecting all the data!\n\n\n\nSDTM\n\nADaM\n\nCommunity\n\nTechnical\n\n\n\nWhere is all the data? An intermittent attempt to continuously compile, collate, consolidate, and curate publicly available CDISC data useful for Clinical Reporting in R\n\n\n\n\n\nFeb 17, 2025\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nHello admiralmetabolic!\n\n\n\nADaM\n\nCommunity\n\nTechnical\n\n\n\nWe are happy to announce the release of the newest member of the {admiral} family - {admiralmetabolic}!\n\n\n\n\n\nJan 21, 2025\n\n\nAnders Askeland, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\n{admiral} 1.2 is here!\n\n\n\nADaM\n\nCommunity\n\nTechnical\n\n\n\nWhat to expect from the 1.2 release of {admiral}? New functions, crisper documentation, upcoming plans and more!\n\n\n\n\n\nJan 17, 2025\n\n\nBen Straub, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nA collaborative triumph: Re-using test data between the NEST and admiral teams\n\n\n\nADaM\n\nTLG\n\nCommunity\n\n\n\nThis post describes one of the first joint efforts between the NEST and admiral teams, where test data from the pharmaverseadam package was used within the NEST framework.\n\n\n\n\n\nJan 15, 2025\n\n\nJoe Zhu, Edoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nCreating a better universe with dverse\n\n\n\nTechnical\n\n\n\nHow to create a global search across an entire collection of R packages: A use case for the toy ‘admiralverse’\n\n\n\n\n\nDec 13, 2024\n\n\nMauro Lepore\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing the aNCA Package for Automated Non-Compartmental Analysis\n\n\n\nShiny\n\nADaM\n\nTLG\n\nSubmissions\n\n\n\nA Roche x Appsilon x Human Predictions Collaboration\n\n\n\n\n\nDec 2, 2024\n\n\nErcan Suekuer, Jana Spinner, Gerardo R\n\n\n\n\n\n\n\n\n\n\n\n\nHow I Rebuilt a Lost ECG Data Script in R\n\n\n\nSDTM\n\nTechnical\n\n\n\nDuring my Data Science placement, I faced the challenge of recreating an ECG dataset for the {pharmaversesdtm} project after the original R script was lost. I explored the existing data, identified key parameters, and experimented with R packages to replicate the dataset structure and ensure SDTM compliance. Despite challenges with ensuring accurate ECG measurements, I eventually regenerated the dataset, learning valuable lessons in problem-solving and resilience.\n\n\n\n\n\nOct 31, 2024\n\n\nVladyslav Shuliar\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing sdtm.oak\n\n\n\nSDTM\n\n\n\nAn EDC & Data Standards agnostic solution that enables the pharmaceutical programming community to develop SDTM datasets in R\n\n\n\n\n\nOct 24, 2024\n\n\nRammprasad Ganapathy\n\n\n\n\n\n\n\n\n\n\n\n\nThe Tension of High-Performance Computing: Reproducibility vs. Parallelization\n\n\n\nSubmissions\n\nTechnical\n\n\n\nDiscover how to manage parallel processing and ensure reproducibility in drug development using the {mirai} package and other HPC tools.\n\n\n\n\n\nOct 16, 2024\n\n\nAlexandros Kouretsis, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nroxy.shinylive - shinylive applications in roxygen documentation\n\n\n\nShiny\n\nTechnical\n\n\n\nIntroducing a roxy.shinylive - a new tool for Shiny package developers\n\n\n\n\n\nOct 11, 2024\n\n\nPawel Rucki\n\n\n\n\n\n\n\n\n\n\n\n\nUndergraduate University Statistics Report using pharmaverseadam data\n\n\n\nADaM\n\nCommunity\n\n\n\nA short journal highlighting how I was able to use {pharmaverseadam} for my university work\n\n\n\n\n\nSep 16, 2024\n\n\nSyon Parashar\n\n\n\n\n\n\n\n\n\n\n\n\nWriting my first custom CICD action for the pharmaverseblog\n\n\n\nTechnical\n\n\n\nI recently wrote my first custom CICD pipeline for the pharmaverseblog, in an effort to police the use of post tags within the blog. These are my learnings and experiences!\n\n\n\n\n\nSep 11, 2024\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nMeet our Diversity Champion – Laura Needleman\n\n\n\nCommunity\n\n\n\nOn behalf of the pharmaverse council, we’d like to introduce you to Laura Needleman – an active member of our community who has volunteered to support us as a champion around DE&I.\n\n\n\n\n\nSep 3, 2024\n\n\nLaura Needleman\n\n\n\n\n\n\n\n\n\n\n\n\nteal and Posit Shiny Contest 2024\n\n\n\nShiny\n\nCommunity\n\n\n\nIntroducing the {teal} category in the Post Shiny Contest 2024 and informing users on resources to make their teal app for the submission.\n\n\n\n\n\nAug 20, 2024\n\n\nDony Unardi, Pawel Rucki\n\n\n\n\n\n\n\n\n\n\n\n\nExploring the Top 5 pharmaverse Packages\n\n\n\nTechnical\n\nCommunity\n\nShiny\n\n\n\nThis blog explores the top 5 popular pharmaverse packages for clinical reporting featuring {rtables}, {admiral}, {teal}, {riskmetric}, and {tidyCDISC} for improving data analysis and to ensure compliance.\n\n\n\n\n\nAug 15, 2024\n\n\nGift Kenneth, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nWorking Groups Updates\n\n\n\nCommunity\n\n\n\nAn update from pharmaverse council around how packages will get included in pharmaverse in future.\n\n\n\n\n\nJul 24, 2024\n\n\npharmaverse council\n\n\n\n\n\n\n\n\n\n\n\n\nSimplifying Clinical Data Dashboards with {teal} and {pharmaverseadam}\n\n\n\nTechnical\n\nShiny\n\nCommunity\n\n\n\nLearn how to quickly develop interactive and reproducible clinical data dashboards using {teal} and {pharmaverseadam}.\n\n\n\n\n\nJul 22, 2024\n\n\nPavel Demin, Dror Berel, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nUnix versus SAS Time\n\n\n\nTechnical\n\n\n\nThis blog explores SAS and R date handling differences, focusing on epoch discrepancies and data types, and provides key tips for accurate date conversions to prevent a 10-year date shift.\n\n\n\n\n\nJul 16, 2024\n\n\nCéline Piraux\n\n\n\n\n\n\n\n\n\n\n\n\nIntroducing a new Coursera course for hands-on clinical data science using R.\n\n\n\nCommunity\n\n\n\nReleasing our second (hands-on) Coursera course, aimed at enhancing the skills of data scientists and shedding light on the impact of R open-source software within the industry.\n\n\n\n\n\nJul 3, 2024\n\n\nJoel Laxamana, Stefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\n{admiral} 1.1.1 is here!\n\n\n\nADaM\n\n\n\nGet to know what awaits you with the new release of the {admiral} package, including enhanced error messaging, improved documentation and much more!\n\n\n\n\n\nJun 20, 2024\n\n\nEdoardo Mancini, Ben Straub\n\n\n\n\n\n\n\n\n\n\n\n\nNew {admiral} extension packages: {admiralpeds} & more coming soon!\n\n\n\nMetadata\n\nADaM\n\nCommunity\n\n\n\nWe are very excited to announce that new extension packages are expected very soon in the {admiral} family: {admiralpeds}, a pediatrics extension, and another extension (name TBC) for obesity in clinical trials\n\n\n\n\n\nJun 17, 2024\n\n\nFanny Gautier, Lina Patil\n\n\n\n\n\n\n\n\n\n\n\n\nDiversity & Inclusion in pharmaverse\n\n\n\nCommunity\n\n\n\nAn update from pharmaverse council regarding diversity and inclusion within our community.\n\n\n\n\n\nMay 31, 2024\n\n\npharmaverse council\n\n\n\n\n\n\n\n\n\n\n\n\nOur experience as new admiral developers, coming from a CRO\n\n\n\nCommunity\n\nConferences\n\n\n\nAs the first CRO having joined the {admiral} family, we are very excited to share with you our first steps and thoughts in this new adventure\n\n\n\n\n\nMay 29, 2024\n\n\nFanny Gautier, Lina Patil\n\n\n\n\n\n\n\n\n\n\n\n\nTLG Catalog 🤝 WebR\n\n\n\nTLG\n\nShiny\n\n\n\nIntroducing WebR to TLG Catalog: A Game Changer for Interactive Learning\n\n\n\n\n\nMay 8, 2024\n\n\nPawel Rucki\n\n\n\n\n\n\n\n\n\n\n\n\nDe-Mystifying R Programming in Clinical Trials\n\n\n\nCommunity\n\n\n\nA blog highlighting the benefits/limitations of using R Programming and using the right tools to create value\n\n\n\n\n\nMay 2, 2024\n\n\nVenkatesan Balu\n\n\n\n\n\n\n\n\n\n\n\n\nAppsilon and Sanofi join the pharmaverse council!\n\n\n\nCommunity\n\n\n\nUpdates to the pharmaverse council\n\n\n\n\n\nApr 29, 2024\n\n\nAri Siggaard Knoph\n\n\n\n\n\n\n\n\n\n\n\n\nteal.modules.clinical v0.9.0 is now on CRAN!\n\n\n\nTLG\n\nShiny\n\n\n\nThis package release now completes the suite of {teal} family of packages recently released to CRAN.\n\n\n\n\n\nApr 8, 2024\n\n\nLeena Khatri\n\n\n\n\n\n\n\n\n\n\n\n\nxportr 0.4.0\n\n\n\nADaM\n\nSDTM\n\n\n\nxportr is a tool tailor-made for clinical programmers, enabling them to generate CDISC-compliant XPT files for SDTM and/or ADaM. It streamlines the preparation on xpt files, ensuring they are primed for submission to clinical data validation applications or regulatory agencies.\n\n\n\n\n\nMar 29, 2024\n\n\nSadchla Mascary\n\n\n\n\n\n\n\n\n\n\n\n\nTips for First Time Contributors\n\n\n\nCommunity\n\n\n\nOpen source can be daunting the first time you dive in - this blog will help you get started!\n\n\n\n\n\nMar 11, 2024\n\n\nRoss Farrugia\n\n\n\n\n\n\n\n\n\n\n\n\nInside the pharmaverse\n\n\n\nCommunity\n\n\n\nA short blog to help the Pharmaverse community understand how Pharmaverse is governed.\n\n\n\n\n\nMar 4, 2024\n\n\nMichael Rimler\n\n\n\n\n\n\n\n\n\n\n\n\nRhino: A Step Forward in Validating Shiny Apps\n\n\n\nSubmissions\n\nCommunity\n\n\n\nIn this post, we explore the importance of validation in the pharmaceutical industry and how Rhino framework aids in ensuring reliability and accuracy of Shiny applications.\n\n\n\n\n\nMar 1, 2024\n\n\nKamil Żyła, Ege Can Taşlıçukur, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nISCR 17th Annual Conference 2024\n\n\n\nConferences\n\n\n\nThis blog highlights my experience of presenting at Indian Society for Clinical Research (ISCR) 17th Annual Conference 2024.\n\n\n\n\n\nFeb 26, 2024\n\n\nPooja Kumari\n\n\n\n\n\n\n\n\n\n\n\n\nFilter out the noise!\n\n\n\nADaM\n\nTechnical\n\n\n\nA brief exposition of the filter_* functions in {admiral} - what they do and how to use them.\n\n\n\n\n\nFeb 26, 2024\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nteal is now available on CRAN 🎉\n\n\n\nTLG\n\nShiny\n\n\n\nAnnouncing the release of teal v0.15.0 on CRAN!\n\n\n\n\n\nFeb 14, 2024\n\n\nDony Unardi\n\n\n\n\n\n\n\n\n\n\n\n\nTesting Containers and WebAssembly in Submissions to the FDA\n\n\n\nSubmissions\n\n\n\nIn this post, we dig into the ongoing efforts undertaken to evaluate new technologies for submissions to the Food and Drug Administration (FDA). These transformative approaches, including WebAssembly and containers, hold immense potential to transform the regulatory landscape and streamline the submission process.\n\n\n\n\n\nFeb 1, 2024\n\n\nAndré Veríssimo, Tymoteusz Makowski, Pedro Silva, Vedha Viyash, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nPK Examples\n\n\n\nCommunity\n\nADaM\n\nMetadata\n\n\n\nExplore PK ADaM Examples on Pharmaverse Examples Page\n\n\n\n\n\nJan 26, 2024\n\n\nJeff Dickinson\n\n\n\n\n\n\n\n\n\n\n\n\nadmiral 1.0.0\n\n\n\nADaM\n\n\n\n1.0.0 brings a commitment to stability, new features, a few bug fixes, argument alignment and onboarding resources!\n\n\n\n\n\nJan 4, 2024\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nEnd of Year Update from the pharmaverse Council\n\n\n\nCommunity\n\n\n\n2023 Was a big year - let’s talk about it!\n\n\n\n\n\nJan 4, 2024\n\n\nMike Stackhouse\n\n\n\n\n\n\n\n\n\n\n\n\nBelieve in a higher order!\n\n\n\nADaM\n\nTechnical\n\n\n\nA brief foray into the higher order functions in the {admiral} package.\n\n\n\n\n\nNov 27, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nFloating point\n\n\n\nADaM\n\nTechnical\n\n\n\nThe untold story of how admiral deals with floating points.\n\n\n\n\n\nOct 30, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\nReproducing the R Submissions Pilot 2 Shiny Application using Rhino\n\n\n\nSubmissions\n\nCommunity\n\n\n\nA short blog post about a Rhino pilot submission.\n\n\n\n\n\nOct 10, 2023\n\n\nIsmael Rodriguez, Vedha Viyash, André Veríssimo, APPSILON\n\n\n\n\n\n\n\n\n\n\n\n\nDate/Time Functions and Imputation in {admiral}\n\n\n\nADaM\n\nTechnical\n\n\n\nDates, times and imputation can be a frustrating facet of any programming language. Here’s how {admiral} makes all of this easy!\n\n\n\n\n\nSep 26, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nThe pharmaverse (hi)story\n\n\n\nCommunity\n\n\n\n\n\n\n\n\n\nAug 30, 2023\n\n\nNicholas Eugenio\n\n\n\n\n\n\n\n\n\n\n\n\nRounding\n\n\n\nTechnical\n\n\n\nExploration of some commonly used rounding methods and their corresponding functions in SAS and R, with a focus on ‘round half up’ and reliable solutions for numerical precision challenges.\n\n\n\n\n\nAug 22, 2023\n\n\nKangjie Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nIt’s all relative? - Calculating Relative Days using admiral\n\n\n\nADaM\n\n\n\n\n\n\n\n\n\nAug 8, 2023\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nCross-Industry Open Source Package Development\n\n\n\nCommunity\n\nConferences\n\nADaM\n\n\n\nThis post is based on a talk given at the regional useR! conference on July 21st 2023 in Basel.\n\n\n\n\n\nJul 25, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\nHow to use Code Sections\n\n\n\nADaM\n\nTechnical\n\n\n\nCode sections - are you using them right?\n\n\n\n\n\nJul 14, 2023\n\n\nEdoardo Mancini\n\n\n\n\n\n\n\n\n\n\n\n\nBlanks and NAs\n\n\n\nADaM\n\nTechnical\n\n\n\nReading SAS datasets into R. The data is not always as it seems!\n\n\n\n\n\nJul 10, 2023\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\ncardinal\n\n\n\nTLG\n\n\n\nThe {cardinal} initiative is an industry collaborative effort under pharmaversewith the aspiration of building and open-sourcing a comprehensive catalog of harmonized TLGs for clinical study reporting.\n\n\n\n\n\nJul 9, 2023\n\n\nVincent Shen\n\n\n\n\n\n\n\n\n\n\n\n\nHello pharmaverse\n\n\n\nCommunity\n\n\n\nShort, fun and user-driven content around the pharmaverse.\n\n\n\n\n\nJun 28, 2023\n\n\nBen Straub\n\n\n\n\n\n\n\n\n\n\n\n\nHackathon Feedback Application\n\n\n\nShiny\n\nCommunity\n\nADaM\n\n\n\nGoing through the process of creating a shiny app for the admiral hackathon. The shiny app allows users to check their solutions autonomously, gives feedback, and rates their results.\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\nAdmiral Hackathon 2023 Revisited\n\n\n\nCommunity\n\nADaM\n\n\n\nLet’s have a look at the Admiral Hackathon 2023 together.\n\n\n\n\n\nJun 27, 2023\n\n\nStefan Thoma\n\n\n\n\n\n\n\n\n\n\n\n\nDerive a new parameter computed from the value of other parameters\n\n\n\nADaM\n\n\n\nUse derive_param_computed() like a calculator to derive new parameters/rows based on existing ones\n\n\n\n\n\nJun 27, 2023\n\n\nKangjie Zhang\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/2025-03-03_teal_0.16.0.../teal_0.16.0_is_released.html",
@@ -1579,7 +1593,7 @@
     "href": "posts/2025-03-03_teal_0.16.0.../teal_0.16.0_is_released.html#last-updated",
     "title": "teal 0.16.0 is released!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:27.579212"
+    "text": "Last updated\n\n2026-01-23 20:53:11.766256"
   },
   {
     "objectID": "posts/2025-03-03_teal_0.16.0.../teal_0.16.0_is_released.html#details",
@@ -1621,7 +1635,7 @@
     "href": "posts/2024-10-16_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.html#last-updated",
     "title": "The Tension of High-Performance Computing: Reproducibility vs. Parallelization",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:30.706847"
+    "text": "Last updated\n\n2026-01-23 20:53:14.994333"
   },
   {
     "objectID": "posts/2024-10-16_the__tensio.../the__tension_of__high-_performance__computing:__reproducibility_vs.__parallelization.html#details",
@@ -1663,7 +1677,7 @@
     "href": "posts/2023-07-14_code_sections/code_sections.html#last-updated",
     "title": "How to use Code Sections",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:34.295738"
+    "text": "Last updated\n\n2026-01-23 20:53:18.646897"
   },
   {
     "objectID": "posts/2023-07-14_code_sections/code_sections.html#details",
@@ -1740,7 +1754,7 @@
     "href": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#last-updated",
     "title": "admiral 1.0.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:38.495548"
+    "text": "Last updated\n\n2026-01-23 20:53:23.012528"
   },
   {
     "objectID": "posts/2023-12-18_admiral_1_0/admiral_1_0.html#details",
@@ -1789,7 +1803,7 @@
     "href": "posts/2024-02-14_iscr_conference/iscr_conference.html#last-updated",
     "title": "ISCR 17th Annual Conference 2024",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:41.789893"
+    "text": "Last updated\n\n2026-01-23 20:53:26.442109"
   },
   {
     "objectID": "posts/2024-02-14_iscr_conference/iscr_conference.html#details",
@@ -1831,7 +1845,7 @@
     "href": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#last-updated",
     "title": "Blanks and NAs",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:45.132287"
+    "text": "Last updated\n\n2026-01-23 20:53:29.90655"
   },
   {
     "objectID": "posts/2023-07-10_blanks_and_nas/blanks_and_nas.html#details",
@@ -1852,7 +1866,7 @@
     "href": "posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html#last-updated",
     "title": "Our experience as new admiral developers, coming from a CRO",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:48.9413"
+    "text": "Last updated\n\n2026-01-23 20:53:33.824584"
   },
   {
     "objectID": "posts/2024-05-29_our_experience_a.../our_experience_as_new_admiral_developers.html#details",
@@ -1873,7 +1887,7 @@
     "href": "posts/2025-10-31_new__counci.../new__council__members.html#last-updated",
     "title": "New Council Members",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:52.140187"
+    "text": "Last updated\n\n2026-01-23 20:53:37.106044"
   },
   {
     "objectID": "posts/2025-10-31_new__counci.../new__council__members.html#details",
@@ -1883,39 +1897,25 @@
     "text": "Details\n\nSource, Session info"
   },
   {
-    "objectID": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html",
-    "href": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html",
-    "title": "pharmaversesdtm 1.4.0 Release",
+    "objectID": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html",
+    "href": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html",
+    "title": "Simplifying Clinical Data Dashboards with {teal} and {pharmaverseadam}",
     "section": "",
-    "text": "We are pleased to announce the release of {pharmaversesdtm} 1.4.0 🎉\nThis release expands the breadth of SDTM test data available in the package, with a particular focus on neurology and oncology, alongside several targeted enhancements and fixes."
+    "text": "Every developer must solve two difficult problems when creating a Shiny application (in fact, any application) from the ground up: software architecture and data design. In the world of clinical data analysis, however, much development has been aimed at providing a jump-start approach to creating R/Shiny applications that would take away most of the pain caused by these two problems.\nThis blog should help you get an idea of how easy it is to get started with the pharmaverse ecosystem. We will create an interactive clinical data dashboard using {teal} and will use {pharmaverseadam} as the data source.\nFirst, you would need to install the two packages. It is recommended to use {pak} to take advantage of parallel downloads and builds (note that you can use it together with {renv} for locking dependencies)."
   },
   {
-    "objectID": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html#whats-new-in-1.4.0",
-    "href": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html#whats-new-in-1.4.0",
-    "title": "pharmaversesdtm 1.4.0 Release",
-    "section": "✨ What’s New in 1.4.0",
-    "text": "✨ What’s New in 1.4.0\n\n🧠 New neurological SDTM test datasets\nVersion 1.4.0 introduces a set of neurology-focused SDTM test datasets, extending the package coverage of therapeutic areas:\n\ndm_neuro - demographic data for neurological studies\n\nnv_neuro - neurological findings\n\nsuppnv_neuro - supplemental qualifiers for neurological findings\n\nag_neuro - associated groups for neurological domains\n\nlb_neuro - neurological laboratory test data\n\nThese datasets are intended to support development, testing, and examples for neurology-specific workflows.\n\n\n📊 New and updated variables\nSeveral existing datasets have been enhanced:\n\nVISITDY has been added to the pc domain to support consistent visit day derivations.\nBRTHDTC has been added to both dm and dm_metabolic, improving demographic completeness.\nThe qs_ophtha dataset now uses an updated QSTESTCD aligned with CDISC terminology and has been simplified for easier use in examples.\n\n\n\n🧬 Oncology data improvements\nThis release also includes important updates for oncology use cases:\n\nCorrections to rs_onco_pcwg3, addressing misclassified progression indicators and response records.\nA new oncology biomarker dataset, lb_onco_pcwg3, providing PSA measurements aligned with PCWG criteria.\n\n\n\n🧠 Neurological dataset enhancements\nNeurological laboratory data includes biomarkers Alpha Synuclein Seed Amplification Assay (CSF), Lumipulse G pTau217, Lumipulse G β-Amyloid 1-42, and the ratio of pTau217 and β-Amyloid 1-42.\n\n\n\n📚 Documentation and developer updates\nTo help you explore datasets by therapeutic area, the reference pages have been reorganized to group datasets under meaningful categories such as metabolic, neurological, and oncology. This makes navigation easier for researchers and developers alike."
+    "objectID": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html#building-a-simple-teal-app",
+    "href": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html#building-a-simple-teal-app",
+    "title": "Simplifying Clinical Data Dashboards with {teal} and {pharmaverseadam}",
+    "section": "Building a Simple Teal App",
+    "text": "Building a Simple Teal App\nNext, we would create a simple app - basically following the official teal guide, but we will use datasets from the {pharmaverseadam} package.\n# Step 1: import packages\nlibrary(teal)\nlibrary(pharmaverseadam)\n\n# Step 2: create a teal data object\ndata &lt;- cdisc_data(\n  ADAE = pharmaverseadam::adae,\n  ADSL = pharmaverseadam::adsl\n)\n\n# Step 3: initialize teal app\napp &lt;- init(\n  data = data,\n  modules = example_module()\n)\n\n# Step 4: run shiny app\nshinyApp(app$ui, app$server)\n\nLet’s Take a Closer Look at Each Step:\n\nIn step 1, we import libraries to use functions and datasets exported by those.\nIn step 2, we create a {teal} data object that can be used in a {teal} app. There are a couple of subtle details here: instead of the default teal_data() function, we use a special wrapper around it, designed specifically for clinical trial data - cdisc_data(). Its advantage is that it will automatically generate join_keys() for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking data names and join_keys slots:\n\nr$&gt; data@datanames\n[1] \"ADAE\" \"ADSL\"\n\nr$&gt; data@join_keys\nA join_keys object containing foreign keys between 2 datasets:\nADSL: [STUDYID, USUBJID]\n  &lt;-- ADAE: [STUDYID, USUBJID]\nADAE: [STUDYID, USUBJID, ASTDTM, AETERM, AESEQ]\n  --&gt; ADSL: [STUDYID, USUBJID]\n\nIn step 3, we initialize the {teal} app by passing it a data object and adding an example module—it’s not much, but it will let us verify that the app works. The output app object is just a list with UI and server functions.\nFinally step 4 should be familiar to all Shiny users - we need to pass the UI and server function from the app object generated at step 3.\n\nWhen we run the app, this is what we will see in the web browser:\n\nAs you can see, with just a few lines of code, we were able to create a working app with some interesting capabilities. We have two datasets that we can switch between. For each dataset, we have keys defined (marked with a special key icon in the variable drop-down). When we filter one dataset, the other one gets filtered as well because they are connected with a key.\nThis is truly impressive, but there is just one problem… If we click the “Show R code” button, we will notice that the data used in the app is not “reproducible.” This simply means that the app currently does not have information about where the data comes from, so it cannot instruct users on how to obtain the same data.\n\nLet’s fix this. We will have to make the code slightly more verbose:\ndata &lt;- within(teal_data(), {\n  ADAE &lt;- pharmaverseadam::adae\n  ADSL &lt;- pharmaverseadam::adsl\n})\ndatanames(data) &lt;- c(\"ADAE\", \"ADSL\")\njoin_keys(data) &lt;- default_cdisc_join_keys[datanames(data)]\nThe recommended method is to generate the data using a within function. However, this method requires manually providing databases using a helper function. We also need to provide join_keys ourselves, but given that the data names are standard ADaM names, we can take advantage of a special default_cdisc_join_keys object.\nIt is also worth noting that {teal} has its implementation of within generic.\nThis is what we will see now when running the application:\n\nNow we have reproducible data. But what about the app itself? Surely, {teal} features don’t end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:\npak::pkg_install(\n  c(\"sparkline\", \"teal.modules.general\", \"teal.modules.clinical\")\n)\nFirst, we suggest exploring the “general” modules that are applicable to any kind of data. The only (!) thing we need to do, is to add two more modules to the app initializer:\napp &lt;- init(\n  data = data,\n  modules = modules(\n    example_module(),\n    tm_data_table(\"Table View\"),\n    tm_variable_browser(\"Variables\")\n  )\n)\nThis is possible thanks to the magic that {teal} is doing under the hood - passing the data object to each module. And now we will have access to a nice tabular view of the data, and a tool to explore each variable in greater detail.\n\nThis is great on its own, but as a bonus, we even get the ability to build a report based on some of the modules that we have. For example, we can generate some plots in the variable browser, add them to the report and preview it. Some modules would also add a block of R code showing how to get the exact same data that was used to generate a report card.\nFinally, let’s add a simple barchart module that comes from the clinical modules package. We will use an example from the {teal.modules.clinical} documentation:\nbarchart_module &lt;- tm_g_barchart_simple(\n  label = \"ADAE Analysis\",\n  x = data_extract_spec(\n    dataname = \"ADAE\",\n    select = select_spec(\n      choices = variable_choices(\n        pharmaverseadam::adae,\n        c(\"ARM\", \"ACTARM\", \"SEX\")\n      ),\n      selected = \"ACTARM\",\n      multiple = FALSE\n    )\n  )\n)\n\nThe best part about this module is that when a card is added to the report, it has R code that will reproduce exactly the same output that we see in the app.\nHere is the entire code for the application. In just 40 lines of code we were able to create a feature-rich application with the ability to interact with ADaM data, create visualizations and generate reproducible reports.\nlibrary(sparkline)\nlibrary(teal)\nlibrary(teal.data)\nlibrary(teal.modules.clinical)\nlibrary(teal.modules.general)\n\ndata &lt;- within(teal_data(), {\n  ADAE &lt;- pharmaverseadam::adae\n  ADSL &lt;- pharmaverseadam::adsl\n  # nolint end\n})\ndatanames(data) &lt;- c(\"ADAE\", \"ADSL\")\njoin_keys(data) &lt;- default_cdisc_join_keys[datanames(data)]\n\nbarchart_module &lt;- tm_g_barchart_simple(\n  label = \"ADAE Analysis\",\n  x = data_extract_spec(\n    dataname = \"ADAE\",\n    select = select_spec(\n      choices = variable_choices(\n        pharmaverseadam::adae,\n        c(\"ARM\", \"ACTARM\", \"SEX\")\n      ),\n      selected = \"ACTARM\",\n      multiple = FALSE\n    )\n  )\n)\n\napp &lt;- init(\n  data = data,\n  modules = modules(\n    example_module(),\n    tm_data_table(\"Table View\"),\n    tm_variable_browser(\"Variables\"),\n    barchart_module\n  )\n)\n\nshinyApp(app$ui, app$server)"
   },
   {
-    "objectID": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html#installation",
-    "href": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html#installation",
-    "title": "pharmaversesdtm 1.4.0 Release",
-    "section": "📦 Installation",
-    "text": "📦 Installation\nYou can install pharmaversesdtm 1.4.0 from CRAN:\n\ninstall.packages(\"pharmaversesdtm\")"
-  },
-  {
-    "objectID": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html#last-updated",
-    "href": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html#last-updated",
-    "title": "pharmaversesdtm 1.4.0 Release",
-    "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:55.05934"
-  },
-  {
-    "objectID": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html#details",
-    "href": "posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_1.4.0_release.html#details",
-    "title": "pharmaversesdtm 1.4.0 Release",
-    "section": "Details",
-    "text": "Details\n\nSource, Session info"
+    "objectID": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html#conclusion",
+    "href": "posts/2024-07-22_teal_app_development_pharmaverseadam/teal-app-development.html#conclusion",
+    "title": "Simplifying Clinical Data Dashboards with {teal} and {pharmaverseadam}",
+    "section": "Conclusion ",
+    "text": "Conclusion \nIn conclusion, {teal} and {pharmaverseadam} make it much easier to create interactive and reproducible clinical data dashboards. By following this guide, you can quickly build a Shiny app that not only visualizes your data but also maintains reproducibility and customization options. \nGet the latest updates from the pharmaverse delivered to your inbox. Subscribe to our newsletter today."
   },
   {
     "objectID": "posts/2025-12-18_pharmaverse/pharmaverse__examples.html",
@@ -1929,7 +1929,7 @@
     "href": "posts/2025-12-18_pharmaverse/pharmaverse__examples.html#last-updated",
     "title": "Explore the Pharmaverse Examples: Your Gateway to Clinical Reporting with Open-Source Tools",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:35:57.972118"
+    "text": "Last updated\n\n2026-01-23 20:53:43.149182"
   },
   {
     "objectID": "posts/2025-12-18_pharmaverse/pharmaverse__examples.html#details",
@@ -1950,7 +1950,7 @@
     "href": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#last-updated",
     "title": "Introducing a new Coursera course for hands-on clinical data science using R.",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:01.047016"
+    "text": "Last updated\n\n2026-01-23 20:53:46.379844"
   },
   {
     "objectID": "posts/2024-07-03_introducing_a_ne.../introducing_a_new_coursera_course_for_hands_on_clinical_data_science_using__r..html#details",
@@ -1999,7 +1999,7 @@
     "href": "posts/2023-12-20_p_k__examples/p_k__examples.html#last-updated",
     "title": "PK Examples",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:07.118138"
+    "text": "Last updated\n\n2026-01-23 20:53:52.647153"
   },
   {
     "objectID": "posts/2023-12-20_p_k__examples/p_k__examples.html#details",
@@ -2069,7 +2069,7 @@
     "href": "posts/2024-03-04_inside_the__phar.../inside_the__pharmaverse.html#last-updated",
     "title": "Inside the pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:10.688222"
+    "text": "Last updated\n\n2026-01-23 20:53:56.434339"
   },
   {
     "objectID": "posts/2024-03-04_inside_the__phar.../inside_the__pharmaverse.html#details",
@@ -2118,7 +2118,7 @@
     "href": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#last-updated",
     "title": "Reproducing the R Submissions Pilot 2 Shiny Application using Rhino",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:14.145571"
+    "text": "Last updated\n\n2026-01-23 20:54:00.080841"
   },
   {
     "objectID": "posts/2023-08-14_rhino_submission_2/rhino_submission_2.html#details",
@@ -2209,7 +2209,7 @@
     "href": "posts/2023-06-27_hackathon_writeup/index.html#last-updated",
     "title": "Admiral Hackathon 2023 Revisited",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:22.516625"
+    "text": "Last updated\n\n2026-01-23 20:54:08.639904"
   },
   {
     "objectID": "posts/2023-06-27_hackathon_writeup/index.html#details",
@@ -2279,7 +2279,7 @@
     "href": "posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html#last-updated",
     "title": "A collaborative triumph: Re-using test data between the NEST and admiral teams",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:25.475342"
+    "text": "Last updated\n\n2026-01-23 20:54:11.722809"
   },
   {
     "objectID": "posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html#details",
@@ -2321,7 +2321,7 @@
     "href": "posts/2023-07-24_rounding/rounding.html#last-updated",
     "title": "Rounding",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:29.167637"
+    "text": "Last updated\n\n2026-01-23 20:54:15.567487"
   },
   {
     "objectID": "posts/2023-07-24_rounding/rounding.html#details",
@@ -2342,7 +2342,7 @@
     "href": "posts/2024-05-31_diversity_&__inc.../diversity_&__inclusion_in_pharmaverse.html#last-updated",
     "title": "Diversity & Inclusion in pharmaverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:33.787589"
+    "text": "Last updated\n\n2026-01-23 20:54:20.412331"
   },
   {
     "objectID": "posts/2024-05-31_diversity_&__inc.../diversity_&__inclusion_in_pharmaverse.html#details",
@@ -2370,7 +2370,7 @@
     "href": "posts/2025-01-21_hello_admiralmetabolic/hello_admiralmetabolic.html#last-updated",
     "title": "Hello admiralmetabolic!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:37.507068"
+    "text": "Last updated\n\n2026-01-23 20:54:24.344372"
   },
   {
     "objectID": "posts/2025-01-21_hello_admiralmetabolic/hello_admiralmetabolic.html#details",
@@ -2384,7 +2384,7 @@
     "href": "posts/2024-12-02_a_nca/a_nca.html#last-updated",
     "title": "Introducing the aNCA Package for Automated Non-Compartmental Analysis",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:40.727805"
+    "text": "Last updated\n\n2026-01-23 20:54:27.711648"
   },
   {
     "objectID": "posts/2024-12-02_a_nca/a_nca.html#details",
@@ -2405,7 +2405,7 @@
     "href": "posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html#last-updated",
     "title": "xportr 0.4.0",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:44.017486"
+    "text": "Last updated\n\n2026-01-23 20:54:31.194753"
   },
   {
     "objectID": "posts/2024-03-29_xportr_0_4_0/xportr_0_4_0.html#details",
@@ -2489,7 +2489,7 @@
     "href": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#last-updated",
     "title": "Date/Time Functions and Imputation in {admiral}",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:48.329489"
+    "text": "Last updated\n\n2026-01-23 20:54:35.74424"
   },
   {
     "objectID": "posts/2023-09-26_date_functions_and_imputation/date_functions_and_imputation.html#details",
@@ -2538,7 +2538,7 @@
     "href": "posts/2024-04-08_tmc_cran/tmc_cran.html#last-updated",
     "title": "teal.modules.clinical v0.9.0 is now on CRAN!",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:51.713905"
+    "text": "Last updated\n\n2026-01-23 20:54:39.392668"
   },
   {
     "objectID": "posts/2024-04-08_tmc_cran/tmc_cran.html#details",
@@ -2573,7 +2573,7 @@
     "href": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#last-updated",
     "title": "Derive a new parameter computed from the value of other parameters",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:36:55.108136"
+    "text": "Last updated\n\n2026-01-23 20:54:43.062355"
   },
   {
     "objectID": "posts/2023-06-27_admiral/valuelevel/derive_param_computed.html#details",
@@ -2664,7 +2664,7 @@
     "href": "posts/2023-10-30_floating_point/floating_point.html#last-updated",
     "title": "Floating point",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:04.0259"
+    "text": "Last updated\n\n2026-01-23 20:54:52.575475"
   },
   {
     "objectID": "posts/2023-10-30_floating_point/floating_point.html#details",
@@ -2685,7 +2685,7 @@
     "href": "posts/2024-02-13_teal_on_cran/teal_on_cran.html#last-updated",
     "title": "teal is now available on CRAN 🎉",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:07.636353"
+    "text": "Last updated\n\n2026-01-23 20:54:56.430767"
   },
   {
     "objectID": "posts/2024-02-13_teal_on_cran/teal_on_cran.html#details",
@@ -2706,7 +2706,7 @@
     "href": "posts/2024-10-11_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.html#last-updated",
     "title": "roxy.shinylive - shinylive applications in roxygen documentation",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:11.816234"
+    "text": "Last updated\n\n2026-01-23 20:55:00.913193"
   },
   {
     "objectID": "posts/2024-10-11_roxy.shinyl.../roxy.shinylive_-_shinylive_applications_in_roxygen_documentation.html#details",
@@ -2727,7 +2727,7 @@
     "href": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html#last-updated",
     "title": "Undergraduate University Statistics Report using pharmaverseadam data",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:15.117645"
+    "text": "Last updated\n\n2026-01-23 20:55:04.49483"
   },
   {
     "objectID": "posts/2024-09-16_university_undergraduate_report/university_undergraduate_report.html#details",
@@ -2755,7 +2755,7 @@
     "href": "posts/2024-10-31_how__i__reb.../how__i__rebuilt_a__lost__ec_g__data__script_in__r.html#last-updated",
     "title": "How I Rebuilt a Lost ECG Data Script in R",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:20.13905"
+    "text": "Last updated\n\n2026-01-23 20:55:09.866262"
   },
   {
     "objectID": "posts/2024-10-31_how__i__reb.../how__i__rebuilt_a__lost__ec_g__data__script_in__r.html#details",
@@ -2804,7 +2804,7 @@
     "href": "posts/2023-07-09_cardinal/falcon.html#last-updated",
     "title": "cardinal",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:23.05223"
+    "text": "Last updated\n\n2026-01-23 20:55:12.979337"
   },
   {
     "objectID": "posts/2023-07-09_cardinal/falcon.html#details",
@@ -2846,7 +2846,7 @@
     "href": "posts/2026-01-15_admiral_14/admiral_1.4_release.html#last-updated",
     "title": "admiral 1.4 release",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:35.774667"
+    "text": "Last updated\n\n2026-01-23 20:55:26.3117"
   },
   {
     "objectID": "posts/2026-01-15_admiral_14/admiral_1.4_release.html#details",
@@ -2895,7 +2895,7 @@
     "href": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#last-updated",
     "title": "End of Year Update from the pharmaverse Council",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:37:39.026315"
+    "text": "Last updated\n\n2026-01-23 20:55:29.823122"
   },
   {
     "objectID": "posts/2024-01-04_end_of__year__up.../end_of__year__update_from_the__pharmaverse__council.html#details",
@@ -2916,7 +2916,7 @@
     "href": "posts/2024-12-13_document_yo.../document_your_universe_with_dverse.html#last-updated",
     "title": "Creating a better universe with dverse",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:38:16.949897"
+    "text": "Last updated\n\n2026-01-23 20:55:47.832431"
   },
   {
     "objectID": "posts/2024-12-13_document_yo.../document_your_universe_with_dverse.html#details",
@@ -2937,7 +2937,7 @@
     "href": "posts/2023-08-08_study_day/study_day.html#last-updated",
     "title": "It’s all relative? - Calculating Relative Days using admiral",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:38:21.432164"
+    "text": "Last updated\n\n2026-01-23 20:55:52.400863"
   },
   {
     "objectID": "posts/2023-08-08_study_day/study_day.html#details",
@@ -2958,7 +2958,7 @@
     "href": "posts/2025-07-04_p_hu_se__up.../p_hu_se__update.html#last-updated",
     "title": "PHUSE Update",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:38:26.847107"
+    "text": "Last updated\n\n2026-01-23 20:55:57.992218"
   },
   {
     "objectID": "posts/2025-07-04_p_hu_se__up.../p_hu_se__update.html#details",
@@ -3000,7 +3000,7 @@
     "href": "posts/2025-05-19_logrx_0.4.0.../logrx_0_4_0_logs_for_your__r_programs.html#last-updated",
     "title": "logrx 0.4.0: logs for your R programs",
     "section": "Last updated",
-    "text": "Last updated\n\n2026-01-23 18:38:47.857997"
+    "text": "Last updated\n\n2026-01-23 20:56:20.036573"
   },
   {
     "objectID": "posts/2025-05-19_logrx_0.4.0.../logrx_0_4_0_logs_for_your__r_programs.html#details",
