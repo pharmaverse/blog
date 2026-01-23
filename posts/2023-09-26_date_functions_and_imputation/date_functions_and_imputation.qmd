@@ -301,13 +301,17 @@ vs <- tribble(
     ),
     derivation_slice(
       filter = VSTPT == "PRE-DOSE",
-      args = params(time_imputation = "first",
-                    ignore_seconds_flag = FALSE)
+      args = params(
+        time_imputation = "first",
+        ignore_seconds_flag = FALSE
+      )
     ),
     derivation_slice(
       filter = TRUE,
-      args = params(time_imputation = "last",
-                    ignore_seconds_flag = FALSE)
+      args = params(
+        time_imputation = "last",
+        ignore_seconds_flag = FALSE
+      )
     )
   )
 ```
