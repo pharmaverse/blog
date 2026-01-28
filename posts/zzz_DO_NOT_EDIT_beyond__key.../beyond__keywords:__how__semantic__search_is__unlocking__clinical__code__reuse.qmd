@@ -29,21 +29,32 @@ Clinical reporting is built on repeatable patterns for ADaM derivations, TFLs, a
 
 ## What we built?
 
-CSA is a focused agent inside our Clinical Analysis Assistant. A user asks a question; we create an embedding of that query, apply optional metadata filters, search the vector database, and return the most relevant code chunks alongside their origins.
+CSA is a focused agent inside our Clinical Analysis Assistant. A user asks a question; we create an embedding of that query, apply optional metadata filters, search the vector database, and return the most relevant code chunks alongside their origins. CSA supports both SAS and R programs.
 
-<img width="1015" height="622" alt="Image" src="https://github.com/user-attachments/assets/254c9966-663e-4d21-950c-9dede4939b31" />
+![Code Search Agent - High level overview](csa_agent.png){fig-align="center"}
 
 Behind the scenes, we index code from our repositories, split it into coherent chunks, and generate short summaries that describe what each piece of code does. We then convert these summaries into numerical representations called embeddings (or vectors), which capture their semantic meaning. This allows the system to find code based on the idea of what it does, not just keyword matching. We store these vectors in a specialized database (vector database) and retain rich metadata such as programming language, file name, repository, and study description. The interface displays both the results and the parameters used so retrieval stays transparent and audit-friendly.
+
+Here is an example of chunk and its metadata stored in the vector database.
+
+| Field | Content |
+|-------|---------|
+| **Metadata: Program Name** | t_vs_orth.R |
+| **Metadata: TLG Title** | Summary of Orthostatic Change |
+| **Metadata: TLG Footnote** | Result (Orthostatic Change) = Standing Vital Sign - Supine Vital Sign \| The All Placebo column includes participants administered placebo from all cohorts. |
+| **Code (truncated)** | `library(magrittr)`<br>`library(citril)`<br>`library(chevron)`<br>...<br>`adam_db <- read_adam(parquet = arrow::read_parquet, select = c("adsl", "advs"))`<br>...<br>`adam_db[[dataset]] <- adam_db[[dataset]] %>%`<br>`  filter(.data$ANL01FL == "Y" & .data$AVISIT != "UNSCHEDULED" & .data$DTYPE == "AVERAGE"...)`<br>`  mutate(AVISIT = str_replace(.data$AVISIT, "BASELINE", "Baseline"), ...)`<br>...<br>`final_tlg <- citril::decorate_tlg(tlg_output, ...)`<br>`export_tlg(final_tlg, file = output)` |
+| **Semantic Summary** | The R script `t_vs_orth.R` analyzes orthostatic changes in vital signs by calculating the difference between standing and supine measurements. It uses `adam_db$adsl` and `adam_db$advs` datasets, filters for relevant records (ANL01FL = "Y", AVISIT not "UNSCHEDULED", DTYPE = "AVERAGE"), calculates the CHG variable (change from baseline), standardizes visit labels, and creates a pooled "All" treatment category... The output table is exported in multiple formats with decorated titles and footnotes. |
+| **Embeddings (sample)** | `[0.023, -0.145, 0.089, 0.234, -0.067, 0.178, -0.023, 0.145, 0.312, -0.089, 0.156, -0.234, 0.067, 0.298, -0.178, 0.045, ...]`<br>*(768-dimensional vector - truncated for display)* |
 
 #### Image of the vectorDB and vectors.
 
 ## How it works
 
 ### Understand the ask
-We transform user's question into a semantic search query + metadata filters using the openai agent SDK. 
+We transform user's question into a semantic search query + metadata filters using the [Openai agents SDK](https://openai.github.io/openai-agents-python/).
 
 ### Retrieve with context
-We perform a semantic search over the vector database and apply substring matching based on the metadata filters. Summaries help match intent (“derive AVALC from PARAMCD”) even if the snippet uses different variable names. The metadata filters help to narrow down the results to the most relevant snippets (e.g: adsl in the program name or phase III in the study description). The code is pulled from all the clinical programming repositories from the `devel` branch. 
+We perform a semantic search over the vector database and apply substring matching based on the metadata filters. Summaries help match intent (“derive AVALC from PARAMCD”) even if the snippet uses different variable names. The metadata filters help to narrow down the results to the most relevant snippets (e.g: adsl in the program name or phase III in the study description). Code on the 'devel' branch has generally been QC'ed in our setup, which is a nice feature for code reuse.
 
 ### Return with provenance
 Results show snippet text, file path, repo, and any available study metadata. You can jump to source for review and reuse.
@@ -52,7 +63,7 @@ Results show snippet text, file path, repo, and any available study metadata. Yo
 
 ## Example
 
-![Image](https://github.com/user-attachments/assets/df717c39-637a-40ae-a670-f8d9a3f26547)
+![Code Search Assistant](caa_csa.gif){fig-align="center"}
 
 ## What programmers can do today
 
