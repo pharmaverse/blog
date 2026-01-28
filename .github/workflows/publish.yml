@@ -9,13 +9,13 @@ jobs:
   Update-post-dates:
     runs-on: ubuntu-latest
     container:
-      image: "rocker/tidyverse:4.2.1"
+      image: "ghcr.io/pharmaverse/docker_pharmaverse:4.5.1"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: main
-          token: ${{ secrets.PHARMAVERSE_BOT }}
+          token: ${{ secrets.PAT }}
 
       - name: Run update_post_dates
         run: Rscript R/update_post_dates.R  # running the R script with Rscript
@@ -36,66 +36,50 @@ jobs:
   build-deploy:
     needs: Update-post-dates
     runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/pharmaverse/docker_pharmaverse:4.5.1"
     permissions:
       contents: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory /__w/blog/blog
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
-
-      - name: Setup R
-        uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
+            version: 1.9.12
 
-      - name: Install dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: |
-            jsonlite
-            tidyverse
-            spelling
-            janitor
-            diffdf
-            admiral
-            admiralonco
-            admiralophtha
-            admiralpeds
-            admiralvaccine
-            admiralmetabolic
-            admiralneuro
-            patchwork
-            here
-            reactable
-            pharmaversesdtm
-            metacore
-            metatools
-            xportr
-            pharmaverseadam
-            link
-            sessioninfo
-            rtables
-            teal
-            riskmetric
-            tidyCDISC
-            mirai
-            sdtm.oak
-            dverse
-            autoslider.core
-            logrx
-            pharmaverseraw
-            random.cdisc.data
-            tern
-            haven
+      - name: Install R Packages
+        run: |
+          R -e "install.packages(c(
+            'admiral',
+            'diffdf',
+            'patchwork',
+            'here',
+            'filters',
+            'janitor',
+            'link',
+            'sessioninfo',
+            'renv',
+            'riskmetric', 
+            'sdtm.oak',
+            'mirai',            
+            'dverse',
+            'autoslider.core'))"
 
       - name: Install tinytex
         run: quarto install tool tinytex
 
+      - name: Mark repo directory as safe
+        run: git config --global --add safe.directory /__w/blog/blog
+
       - name: Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
-          target: gh-pages
+          path: . # Path to your .qmd file
+          target: gh-pages  # Target branch for GitHub Pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

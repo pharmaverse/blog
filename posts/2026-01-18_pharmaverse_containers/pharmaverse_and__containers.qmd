@@ -1,0 +1,178 @@
+---
+title: Pharmaverse and Containers
+author:
+- name: Ben Straub and Maciej Nasinski
+description: Containers in the pharmaverse - exploration and potential use cases.
+date: '2026-01-18'
+categories:
+- Community
+- Submissions
+- Technical
+image: container.png
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "zzz_DO_NOT_EDIT_pharmaverse..."
+```
+
+<!--------------- post begins here ----------------->
+
+## Streamlining Our Pharmaverse Blog: Reducing Publishing Time with containers
+
+As an active contributor to the pharmaverse blog, I've always appreciated the opportunity to share new insights and tools with our community. The pharmaverse blog has some interesting features for publishing.  While the blog publishing process has been effective, I was wondering if there was a way to optimize our workflows. Currently, the CI/CD pipeline for publishing the blog typically took about 17 minutes to deploy a new post. Containers are always batted around as solutions. Unfortunately, I was unsure how to create a new container/image to meet my needs and relied on some straight `install.packages()` in the CI/CD pipeline. Luckily, I crossed paths with the fabulous Maciej Nasinski and we built a specific
+container for the publishing process for the pharmaverse blog, which allowed for a notable reduction in publishing time.
+
+Below I will discuss how the pharmaverse container image has improved our blog's publishing workflow, bringing our deployment time down to approximately 5 minutes. We are also interested in feedback on potential other uses
+of this container (like devcontainers) or building additional containers for certain purposes. For those interested, we would be happy to provide a tutorial on containers or get in touch if you have ideas or want to get involved!
+
+## **The Previous Approach:** Package Installation overhead
+
+Our prior CI/CD (GitHub Actions) workflow for building and deploying the pharmaverse blog, while comprehensive, included a time-consuming step. It used the a straight "Install dependencies" step from the r-lib actions, which necessitated installing a range of pharmaverse specific R packages during each run. As we added more packages to the pharmaverse to the blog, this became really cumbersome!
+
+The relevant section of our old build-deploy job highlighted this:
+
+```r
+  build-deploy:
+    # ... other configurations ...
+    steps:
+      # ... checkout and setup Quarto ...
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            jsonlite
+            tidyverse
+            spelling
+            janitor
+            diffdf
+            admiral
+            admiralonco
+            # ... and many, many more packages ...
+            haven
+      # ... other steps like install tinytex and publish ...
+```
+
+This "Install dependencies" step, involving a substantial list of pharmaverse packages, was a primary contributor to the 17-minute execution time. Each workflow run involved downloading and configuring these packages, extending the overall deployment duration.
+
+## Adopting the pharmaverse container image: An Efficient Alternative
+
+The solution to this challenge came with the introduction of the pharmaverse container image: `ghcr.io/pharmaverse/docker_pharmaverse:4.5.1`. This container image was specifically designed for pharmaceutical data analysis, featuring over 40 essential pharmaverse packages pre-installed. These packages cover various functionalities, including CDISC ADaM/SDTM, clinical trial reporting, and regulatory submissions. Built upon the rocker/tidyverse image and incorporating R 4.5.1, it provides a pre-configured environment.
+
+By integrating this image into our CI/CD pipeline (GitHub Actions), we could bypass the extensive package installation phase.
+
+Here's an overview of our updated build-deploy job:
+
+```r
+  build-deploy:
+    needs: Update-post-dates
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/pharmaverse/docker_pharmaverse:4.5.1"
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory /__w/blog/blog
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+            version: 1.9.12
+
+      # NOTE: Explicit R package installation is no longer required here.
+
+      - name: Install tinytex
+        run: quarto install tool tinytex
+
+      - name: Mark repo directory as safe
+        run: git config --global --add safe.directory /__w/blog/blog
+
+      - name: Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          path: . # Path to your .qmd file
+          target: gh-pages  # Target branch for GitHub Pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The outcome of this change has been a consistent reduction in publishing time. Our blog now publishes in approximately 5 minutes. Yay!
+
+## Wider Applications of the Pharmaverse Container Image
+
+While this update directly benefits our blog's publishing, the pharmaverse container image offers broader utility. It is a valuable resource for:
+
+* Pharmaceutical data analysis: Supporting tasks related to ADaM, SDTM, and TLFs.
+* Clinical trial programming: Assisting with regulatory submissions.
+* Reproducible research: Providing a consistent and verifiable environment.
+* Training & education: Offering a ready-to-use setup for educational purposes.
+* CI/CD pipelines: Enhancing automated testing and reporting, as observed in our own workflow.
+* Collaborative development: Facilitating consistent environments across teams.
+
+
+### Example: Running Reproducible RStudio Locally
+
+To spin up a local RStudio instance using the pharmaverse image, you can use a container "one-liner." This command condenses the entire configuration - networking, storage, and background execution - into a single execution string. It bridges your local folder to the container, allowing you to edit files "on the fly" without installing R or packages on your actual machine.
+
+Choose the command that matches your operating system:
+
+#### 1. Linux & Intel Macs (Standard)
+
+For standard architecture, we set a simple password (`rstudio`) and mount the current directory.
+
+`docker run -d --name my_pharma_rstudio --rm -p 8787:8787 -e PASSWORD=rstudio -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1`
+
+#### 2. Apple Silicon (M1/M2/M3)
+
+**Note:** We do not yet natively support ARM64 architecture (e.g., Apple Silicon). The command below uses emulation (`--platform linux/amd64`) to run the image. We also disable authentication because the slower emulation speed can sometimes cause password setup to time out.
+
+`docker run -d --name my_pharma_rstudio --rm --platform linux/amd64 -p 8787:8787 -e DISABLE_AUTH=true -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1`
+
+#### What does this command do?
+
+* **`--rm` & `-d**`: Runs the container in the background (detached) and automatically removes it when stopped, keeping your machine clean.
+* **`-v "$(pwd)":...`**: Takes your **P**resent **W**orking **D**irectory and mounts it inside the container. Any file you save in RStudio's "project" folder is instantly saved to your local computer.
+* **`--platform linux/amd64`** *(Mac only)*: Forces your computer to emulate the Intel architecture required by the image.
+* **`-e DISABLE_AUTH=true`** *(Mac only)*: Bypasses the login screen to ensure immediate access despite slower emulation speeds.
+
+#### Accessing RStudio
+
+Once the command is running:
+
+1. Open your browser to `http://localhost:8787`.
+2. **Linux/Intel:** Log in with user `rstudio` and password `rstudio`.
+3. **Apple Silicon:** You will be logged in automatically.
+
+You will see your local files mapped to the `project` folder in the Files pane, ready for analysis.
+
+
+## Engaging with the Pharmaverse Community
+
+The pharmaverse container image mage represents a collaborative effort within the life sciences industry to provide open-source tools. For those working with pharmaverse packages and R in development, research, or CI/CD contexts, exploring this image may offer practical advantages in efficiency and reproducibility.
+
+Explore the pharmaverse container image repository: [pharmaverse/docker_pharmaverse](https://github.com/pharmaverse/docker_pharmaverse) Discover more about Pharmaverse: [pharmaverse.org](https://pharmaverse.org/)
+
+We acknowledge the contributions of the pharmaverse community and the Rocker Project for their support in developing these resources.
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```

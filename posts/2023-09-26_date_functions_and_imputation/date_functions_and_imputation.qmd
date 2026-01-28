@@ -147,7 +147,8 @@ ae <- tribble(
     new_vars_prefix = "AST",
     highest_imputation = "M",
     date_imputation = "first",
-    time_imputation = "first"
+    time_imputation = "first",
+    ignore_seconds_flag = FALSE
   ) %>%
   derive_vars_dtm_to_dt(exprs(ASTDTM))
 ```
@@ -194,7 +195,8 @@ ae <- tribble(
     dtc = AESTDTC,
     new_vars_prefix = "AST",
     highest_imputation = "h",
-    time_imputation = "first"
+    time_imputation = "first",
+    ignore_seconds_flag = FALSE
   )
 ```
 ```{r, echo=FALSE}
@@ -220,7 +222,8 @@ ae <- tribble(
     highest_imputation = "M",
     date_imputation = "first",
     time_imputation = "first",
-    min_dates = exprs(TRTSDTM)
+    min_dates = exprs(TRTSDTM),
+    ignore_seconds_flag = FALSE
   )
 ```
 ```{r, echo=FALSE}
@@ -246,7 +249,8 @@ ae <- tribble(
     highest_imputation = "M",
     date_imputation = "last",
     time_imputation = "last",
-    max_dates = exprs(DTHDT, DCUTDT)
+    max_dates = exprs(DTHDT, DCUTDT),
+    ignore_seconds_flag = FALSE
   )
 ```
 ```{r, echo=FALSE}
@@ -297,11 +301,17 @@ vs <- tribble(
     ),
     derivation_slice(
       filter = VSTPT == "PRE-DOSE",
-      args = params(time_imputation = "first")
+      args = params(
+        time_imputation = "first",
+        ignore_seconds_flag = FALSE
+      )
     ),
     derivation_slice(
       filter = TRUE,
-      args = params(time_imputation = "last")
+      args = params(
+        time_imputation = "last",
+        ignore_seconds_flag = FALSE
+      )
     )
   )
 ```

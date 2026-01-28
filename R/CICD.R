@@ -23,7 +23,8 @@ clean_text_for_spellcheck <- function(file) {
 
 # Get all .qmd files
 qmd_files <- list.files(pattern = ".*\\.qmd$", recursive = TRUE)
-file <- qmd_files[63]
+# Get specific file to check
+file <- qmd_files[75]
 # Run spell check per file while ignoring code chunks
 
 spell_check_results <- lapply(qmd_files, function(file) {
