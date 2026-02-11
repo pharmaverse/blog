@@ -19,6 +19,7 @@ library(rlang)
 #'
 #' @examples
 #' create_post(post_name = "this is my new example post", author = "Stefan Thoma", cover_image = "admiral", tags = "ADaM")
+#' create_post(post_name = "My Blog Post... with special chars!", author = "Jules", cover_image = "admiral", tags = "Community")
 #'
 create_post <- function(post_name,
                         author = Sys.info()["user"],
@@ -27,6 +28,7 @@ create_post <- function(post_name,
                         cover_image = available_images,
                         tags = c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical")) {
   path_to_img <- "media"
+  # Define available_images here so it's always accessible when 'cover_image' is evaluated
   available_images <- list.files(path_to_img) %>% tools::file_path_sans_ext()
 
   # Assert inputs
@@ -43,16 +45,41 @@ create_post <- function(post_name,
     stop('`post_date` has to be in the format "%Y-%m-%d", e.g. "2023-06-15"')
   }
 
-  # Prepare values
-  snake_name <- gsub(" ", "_", tolower(gsub("(.)([A-Z])", "\\1 \\2", post_name)))
-  short_name <- paste("zzz_DO_NOT_EDIT", snake_name, sep = "_")
-
-  if (short_name != short_name %>% stringr::str_trunc(30)) {
-    message("For the folder creation:")
-    message(paste(short_name, "has been shortened to", short_name %>% stringr::str_trunc(30), sep = " ") %>% str_wrap())
-    short_name <- paste(short_name %>% stringr::str_trunc(30), sep = " ")
+  # Helper function to sanitize names for file/folder creation
+  clean_filename <- function(text) {
+    text <- tolower(text)
+    # Replace any character that is NOT a lowercase letter (a-z), digit (0-9), or hyphen (-) with a hyphen.
+    text <- gsub("[^a-z0-9-]+", "-", text)
+    # Replace sequences of multiple hyphens with a single hyphen.
+    text <- gsub("-+", "-", text)
+    # Remove any leading or trailing hyphens.
+    text <- gsub("^-|-$", "", text)
+    return(text)
   }
 
+  # Sanitize the post_name for the .qmd file name (e.g., my-blog-post-with-special-chars)
+  sanitized_post_name <- clean_filename(post_name)
+
+  # For the .qmd filename, we only need the sanitized post_name part
+  snake_name <- sanitized_post_name
+
+  # For the folder name, combine the post_date with the sanitized post_name
+  date_for_folder <- clean_filename(post_date)
+  base_short_name_for_dir <- paste(date_for_folder, sanitized_post_name, sep = "-")
+
+  # Handle truncation for the directory name, applying the original length limit
+  final_short_name_for_dir <- base_short_name_for_dir
+  if (nchar(base_short_name_for_dir) > 30) {
+    message("For the folder creation:")
+    # Truncate the name to 30 characters without adding an ellipsis.
+    truncated_version <- stringr::str_trunc(base_short_name_for_dir, 30, side = "right", ellipsis = "")
+    # Remove any trailing hyphen that might have resulted from truncation.
+    final_short_name_for_dir <- gsub("-$", "", truncated_version)
+    message(paste(base_short_name_for_dir, "has been shortened to", final_short_name_for_dir, sep = " ") %>% str_wrap())
+  }
+
+  # 'short_name' will be used for the directory name
+  short_name <- final_short_name_for_dir
 
   # Create dir for blogpost
   new_dir <- paste("posts", short_name, sep = "/")
@@ -69,14 +96,15 @@ create_post <- function(post_name,
   # Read template
   lines_read <- readLines("inst/template/template.txt")
 
+  # --- MODIFICATION: Calls to 'replace' are now calls to 'blogpost_replace' ---
   result <- lines_read %>%
-    replace(key = "TITLE", replacement = post_name) %>%
-    replace(key = "AUTHOR", replacement = author) %>%
-    replace(key = "DESCR", replacement = description) %>%
-    replace(key = "DATE", replacement = post_date) %>%
-    replace(key = "IMG", replacement = cover_image) %>%
-    replace(key = "TAG", replacement = tags) %>%
-    replace(key = "SLUG", replacement = short_name)
+    blogpost_replace(key = "TITLE", replacement = post_name) %>%
+    blogpost_replace(key = "AUTHOR", replacement = author) %>%
+    blogpost_replace(key = "DESCR", replacement = description) %>%
+    blogpost_replace(key = "DATE", replacement = post_date) %>%
+    blogpost_replace(key = "IMG", replacement = cover_image) %>%
+    blogpost_replace(key = "TAG", replacement = tags) %>%
+    blogpost_replace(key = "SLUG", replacement = short_name)
 
 
   # Write new .qmd file
@@ -99,7 +127,8 @@ create_post <- function(post_name,
 #' @param replacement what to replace it with, mostly user input forwarded, slightly formatted
 #'
 #' @return modified text
-replace <- function(text, key = c("TITLE", "AUTHOR", "DESCR", "DATE", "TAG", "IMG", "SLUG"), replacement) {
+# --- MODIFICATION: Renamed function from 'replace' to 'blogpost_replace' ---
+blogpost_replace <- function(text, key = c("TITLE", "AUTHOR", "DESCR", "DATE", "TAG", "IMG", "SLUG"), replacement) {
   rlang::arg_match(key)
 
   if (key == "IMG") {
@@ -113,7 +142,7 @@ replace <- function(text, key = c("TITLE", "AUTHOR", "DESCR", "DATE", "TAG", "IM
   replacement <- ifelse(
     key == "AUTHOR", paste("  - name: ", replacement, sep = ""),
     ifelse(key == "TAG", paste(replacement, collapse = ", "),
-      paste('"', replacement, '"', sep = "")
+           paste('"', replacement, '"', sep = "")
     )
   )
 
