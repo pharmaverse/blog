@@ -9,7 +9,6 @@ markdown_link <- function(text, path) {
 }
 
 
-
 # worker functions --------------------------------------------------------
 
 insert_source <- function(repo_spec, name,
@@ -46,7 +45,6 @@ insert_lockfile <- function(repo_spec, name,
 
   return(markdown_link(text, path))
 }
-
 
 
 # top level function ------------------------------------------------------

@@ -142,7 +142,7 @@ blogpost_replace <- function(text, key = c("TITLE", "AUTHOR", "DESCR", "DATE", "
   replacement <- ifelse(
     key == "AUTHOR", paste("  - name: ", replacement, sep = ""),
     ifelse(key == "TAG", paste(replacement, collapse = ", "),
-           paste('"', replacement, '"', sep = "")
+      paste('"', replacement, '"', sep = "")
     )
   )
 
