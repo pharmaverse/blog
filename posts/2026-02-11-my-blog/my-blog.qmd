@@ -1,0 +1,36 @@
+---
+title: "My Blog"
+author:
+  - name: My Name
+description: ""
+# Note that the date below will be auto-updated when the post is merged.
+date: "2026-02-11"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Metadata]
+# Feel free to change the image
+image: "pharmaverse.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2026-02-11-my-blog"
+```
+
+<!--------------- post begins here ----------------->
+
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
