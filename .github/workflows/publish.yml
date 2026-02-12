@@ -6,33 +6,6 @@ on:
     branches: [main]
 
 jobs:
-  Update-post-dates:
-    runs-on: ubuntu-latest
-    container:
-      image: "ghcr.io/pharmaverse/docker_pharmaverse:4.5.1"
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          token: ${{ secrets.PAT }}
-
-      - name: Run update_post_dates
-        run: Rscript R/update_post_dates.R  # running the R script with Rscript
-
-      - name: Configure Git safe directory
-        run: git config --global --add safe.directory /__w/blog/blog
-
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "[skip actions] Auto-update blog post date"
-          file_pattern: "."
-          commit_user_name: github-actions
-          commit_user_email: >-
-            41898282+github-actions[bot]@users.noreply.github.com
-        continue-on-error: true
-
   build-deploy:
     needs: Update-post-dates
     runs-on: ubuntu-latest
@@ -64,9 +37,9 @@ jobs:
             'link',
             'sessioninfo',
             'renv',
-            'riskmetric', 
+            'riskmetric',
             'sdtm.oak',
-            'mirai',            
+            'mirai',
             'dverse',
             'autoslider.core'))"
 
