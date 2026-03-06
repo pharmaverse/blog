@@ -1,4 +1,3 @@
-suppressMessages(library(dplyr))
 # markdown helpers --------------------------------------------------------
 
 markdown_appendix <- function(name, content) {
@@ -9,14 +8,14 @@ markdown_link <- function(text, path) {
 }
 
 
+
 # worker functions --------------------------------------------------------
 
 insert_source <- function(repo_spec, name,
                           collection = "posts",
                           branch = "main",
                           host = "https://github.com",
-                          text = "Source",
-                          file_name) {
+                          text = "source code") {
   path <- paste(
     host,
     repo_spec,
@@ -24,7 +23,7 @@ insert_source <- function(repo_spec, name,
     branch,
     collection,
     name,
-    file_name,
+    "code_sections.qmd",
     sep = "/"
   )
   return(markdown_link(text, path))
@@ -40,16 +39,24 @@ insert_lockfile <- function(repo_spec, name,
                             collection = "posts",
                             branch = "main",
                             host = "https://github.com",
-                            text = "Session info") {
-  path <- path <- "https://pharmaverse.github.io/blog/session_info.html"
-
+                            text = "R environment") {
+  path <- paste(
+    host,
+    repo_spec,
+    "tree",
+    branch,
+    collection,
+    name,
+    "renv.lock",
+    sep = "/"
+  )
   return(markdown_link(text, path))
 }
 
 
 # top level function ------------------------------------------------------
 
-insert_appendix <- function(repo_spec, name, collection = "posts", file_name) {
+insert_appendix <- function(repo_spec, name, collection = "posts") {
   appendices <- paste(
     markdown_appendix(
       name = "Last updated",
@@ -59,8 +66,7 @@ insert_appendix <- function(repo_spec, name, collection = "posts", file_name) {
     markdown_appendix(
       name = "Details",
       content = paste(
-        insert_source(repo_spec, name, collection, file_name = file_name),
-        # get renv information,
+        insert_source(repo_spec, name, collection),
         insert_lockfile(repo_spec, name, collection),
         sep = ", "
       )
