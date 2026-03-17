@@ -24,7 +24,7 @@ clean_text_for_spellcheck <- function(file) {
 # Get all .qmd files
 qmd_files <- list.files(pattern = ".*\\.qmd$", recursive = TRUE)
 # Get specific file to check
-file <- qmd_files[75]
+file <- qmd_files[83]
 # Run spell check per file while ignoring code chunks
 
 spell_check_results <- lapply(qmd_files, function(file) {
@@ -51,9 +51,9 @@ if (nrow(all_typos) > 0) {
 #-------------------------- Add Words to Wordlist (If Needed) --------------------------
 
 # Uncomment if you want to manually add words to the wordlist
-# write(all_typos$word, file = "inst/WORDLIST.txt", append = TRUE)
-# sort_words <- sort(read_lines("inst/WORDLIST.txt")) %>% unique()
-# write_lines(sort_words, "inst/WORDLIST.txt")
+write(all_typos$word, file = "inst/WORDLIST.txt", append = TRUE)
+sort_words <- sort(read_lines("inst/WORDLIST.txt")) %>% unique()
+write_lines(sort_words, "inst/WORDLIST.txt")
 
 #-------------------------- Style-check ----------------------------------------
 
