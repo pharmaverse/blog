@@ -42,11 +42,21 @@ An `AGENTS.md` in an admiral-family repository can communicate all of this befor
 
 ## A First Step in the pharmaverse AI Strategy
 
-This isn't hypothetical. In March 2026, the admiral team reviewed [PR #2996](https://github.com/pharmaverse/admiral/pull/2996) from a new contributor, `maxthecat2024`, fixing poorly formatted warning messages in `derive_param_computed()`. The PR was thorough and well-structured — detailed before/after examples, snapshot test conversions, a fully completed checklist. It was also the kind of contribution that made the team wonder: was this an AI bot? We don't know for certain, and ultimately it didn't matter — the code was good and it got merged. But the question itself was telling.
+The admiral team is actively discussing how to formalize its approach to AI-assisted development — what tools to encourage, what guardrails to put in place, and how to document AI's role in the programming strategy. That conversation is still early, and deliberately so: the consensus is to gain real experience before locking in formal guidance.
 
-The admiral team is now actively discussing how to formalize its approach to AI-assisted development — what tools to encourage, what guardrails to put in place, and how to document AI's role in the programming strategy. That conversation is still early, and deliberately so: the consensus is to gain real experience before locking in formal guidance.
+The good news is that experience is already arriving, fast.
 
-`AGENTS.md` represents the first tangible infrastructure to come out of that thinking. Rather than waiting for a complete strategy, it solves an immediate, concrete problem: giving AI coding agents the context they need to work correctly in a CDISC-regulated codebase. Whether a contributor is a human using an AI assistant, an autonomous agent, or something in between — the code still needs to follow ADaM conventions and pharmaverse standards. `AGENTS.md` helps ensure it does.
+**March 7, 2026 — the question arrives.** [PR #2996](https://github.com/pharmaverse/admiral/pull/2996) landed from a new contributor, `maxthecat2024`, fixing poorly formatted warning messages in `derive_param_computed()`. The PR was thorough and well-structured — detailed before/after examples, snapshot test conversions, a fully completed checklist. It was also the kind of contribution that made the team wonder: was this an AI bot? We don't know for certain, and ultimately it didn't matter — the code was good and it got merged. But the question itself was telling.
+
+**March 17, 2026 — the reality arrives.** [PR #3010](https://github.com/pharmaverse/admiral/pull/3010) was opened not by a human contributor, but by GitHub Copilot itself — the branch named `copilot/enhance-examples-derive-vars-merged-summary`, the author listed as `Copilot`. The PR enhanced documentation examples for `derive_vars_merged_summary()`, correctly picking up the admiral-specific `@examplesx` structured example pattern from the existing codebase — context that came directly from `AGENTS.md`.
+
+But the PR also revealed an important limitation. Rather than running `devtools::document()` to regenerate the `.Rd` file, Copilot manually edited `man/derive_vars_merged_summary.Rd` directly — and its own PR description acknowledged this: *"Manually updated to match `roxygen2::roxygenize()` output."* When a reviewer pointed this out, Copilot responded candidly: *"R is not available in my sandbox environment, so I can't execute `devtools::document()` directly. For future sessions, I understand the correct workflow."* A human reviewer ran `devtools::document()` outside the sandbox and pushed the correctly generated `.Rd` file in commit `c855860`.
+
+This is an important nuance: the issue wasn't that `AGENTS.md` was unclear — it was that Copilot's execution environment simply didn't have R available. No instruction, however well-written, can make an agent run a command it physically cannot execute. `AGENTS.md` can teach an agent the correct workflow; ensuring the environment supports that workflow is a separate, human-owned responsibility. That distinction matters as the community develops its AI strategy.
+
+This two-week window tells the whole story. AI-assisted contributions are already arriving in the admiral repository. `AGENTS.md` is already helping agents understand project-specific conventions. And the gaps it exposes are already informing improvements. This is the feedback loop the community needs to build a thoughtful AI strategy — not speculation, but evidence.
+
+`AGENTS.md` represents the first tangible infrastructure to come out of that thinking. Whether a contributor is a human using an AI assistant, an autonomous agent, or something in between — the code still needs to follow ADaM conventions and pharmaverse standards. `AGENTS.md` helps ensure it does.
 
 If you have thoughts on what the broader strategy should look like, the discussion is open — join the conversation at [admiraldev issue #547](https://github.com/pharmaverse/admiraldev/issues/547).
 
@@ -83,6 +93,10 @@ following CDISC ADaM standards and pharmaverse conventions.
 ## Unit Testing
 - Use {testthat} with expect_dfs_equal() for dataset comparisons
 - Every new function requires tests for typical use, edge cases, and errors
+
+## Documentation
+- Run devtools::document() to regenerate .Rd files — never edit man/ directly
+- Update NEWS.md for any user-facing function changes
 ```
 
 One practical note: `AGENTS.md` at the repository root triggers a NOTE in R CMD check, so the file is added to `.Rbuildignore`. It also lives in `tests/testthat/` where testing-specific guidance is scoped closest to where it's needed. Extension packages like `{admiralonco}`, `{admiralvaccine}`, and `{admiralpeds}` can layer their own context on top, adding therapeutic area-specific conventions without duplicating shared infrastructure content.
