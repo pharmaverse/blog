@@ -3,7 +3,7 @@ title: "AGENTS.md, {admiral}, and the AI-Assisted Programmer"
 author:
   - name: Arianna Cascone
   - name: Jeff Dickinson
-description: ""
+description: "AI coding agents are increasingly part of how we develop clinical R code — but they don't automatically understand CDISC standards, ADaM conventions, or the pharmaverse ecosystem. AGENTS.md changes that."
 # Note that the date below will be auto-updated when the post is merged.
 date: "2026-03-20"
 # Please do not use any non-default categories.
@@ -24,31 +24,86 @@ long_slug <- "2026-03-20-agents-md-admiral-a"
 
 ## Introduction
 
-<!-- Introduce the concept of AGENTS.md and how it fits into AI-assisted development workflows. -->
+AI coding assistants are becoming a natural part of how clinical R programmers work — autocompleting functions, suggesting test cases, drafting derivations. But out of the box, these agents know nothing about ADaM conventions, CDISC standards, or how the pharmaverse ecosystem fits together. They don't know that flag variables take `"Y"` or `NA` — never `"N"`. They don't know that `{pharmaversesdtm}` is the canonical source of test SDTM data, or that `{xportr}` is waiting downstream to turn your dataset into a submission-ready XPT file. `AGENTS.md` is a simple, open standard that changes that — and the admiral ecosystem now has infrastructure to generate and maintain these files automatically across every package in the family.
 
-## What is AGENTS.md?
+## What Is AGENTS.md?
 
-<!-- Explain what AGENTS.md is: a plain-text file that gives AI coding agents (like GitHub Copilot, Cursor, etc.) project-specific instructions — where to find tests, coding conventions, which functions to prefer, etc. -->
+`AGENTS.md` is a plain markdown file you commit to your repository that gives AI coding agents the context they need to work correctly in your project. Think of it as a README for agents — while `README.md` tells a new developer what the project is, `AGENTS.md` tells an AI assistant how to work in it correctly.
 
-## Why admiral?
+The format is supported across the growing ecosystem of AI coding tools: OpenAI Codex, GitHub Copilot, Google's Jules, Cursor, Aider, Gemini CLI, and more. One file, version-controlled alongside your code, works everywhere.
 
-<!-- Describe the admiral package and why it is a good fit for this kind of AI-guided workflow: consistent API, well-documented functions, pharmaverse conventions. -->
+## Why This Matters for the pharmaverse
 
-## Writing an AGENTS.md for admiral
+ADaM derivations encode decades of CDISC regulatory expectations that don't appear anywhere in the R syntax. The fact that `ANL01FL` is an analysis flag with specific derivation logic, that `DTYPE = "LLOQ"` imputation records follow specific rules, or that the admiral programming strategy mandates `dplyr` verbs and discourages base R — none of this is inferrable from the code alone.
 
-<!-- Walk through what to include in an AGENTS.md tailored to an admiral-based ADaM project: preferred functions, test setup, style requirements, CDISC naming conventions, etc. -->
+The `{admiral}` package also doesn't exist in isolation. It operates in a pipeline that flows from `{pharmaversesdtm}` test data through admiral derivations, often guided by `{metacore}` specifications, and ultimately out through `{xportr}` to submission-ready XPT files. An agent writing admiral code without that context is like a new programmer who only knows the function they're editing — not the system it belongs to.
 
-## The AI-Assisted Programming Experience
+An `AGENTS.md` in an admiral-family repository can communicate all of this before the agent writes a single line of code.
 
-<!-- Share the experience of using an AI agent (e.g. GitHub Copilot / Claude) with the AGENTS.md in place. What worked well? Where did the agent need guiding? -->
+## A First Step in the pharmaverse AI Strategy
 
-## Lessons Learned
+This isn't hypothetical. In March 2026, the admiral team reviewed [PR #2996](https://github.com/pharmaverse/admiral/pull/2996) from a new contributor, `maxthecat2024`, fixing poorly formatted warning messages in `derive_param_computed()`. The PR was thorough and well-structured — detailed before/after examples, snapshot test conversions, a fully completed checklist. It was also the kind of contribution that made the team wonder: was this an AI bot? We don't know for certain, and ultimately it didn't matter — the code was good and it got merged. But the question itself was telling.
 
-<!-- Key takeaways: what made the AGENTS.md effective, what to avoid, and recommendations for other pharmaverse developers. -->
+The admiral team is now actively discussing how to formalize its approach to AI-assisted development — what tools to encourage, what guardrails to put in place, and how to document AI's role in the programming strategy. That conversation is still early, and deliberately so: the consensus is to gain real experience before locking in formal guidance.
 
-## Conclusion
+`AGENTS.md` represents the first tangible infrastructure to come out of that thinking. Rather than waiting for a complete strategy, it solves an immediate, concrete problem: giving AI coding agents the context they need to work correctly in a CDISC-regulated codebase. Whether a contributor is a human using an AI assistant, an autonomous agent, or something in between — the code still needs to follow ADaM conventions and pharmaverse standards. `AGENTS.md` helps ensure it does.
 
-<!-- Wrap up and point readers to the admiral documentation and pharmaverse resources. -->
+If you have thoughts on what the broader strategy should look like, the discussion is open — join the conversation at [admiraldev issue #547](https://github.com/pharmaverse/admiraldev/issues/547).
+
+## The Admiral Ecosystem Implementation
+
+Rather than each package maintaining its own file by hand, the generation logic is centralized in `{admiralci}` and delivers a consistent, up-to-date file to every package that opts in. The workflow pulls together content from several sources:
+
+- **Programming strategy and unit testing guidelines** from `{admiraldev}`
+- **Package-specific context** from a YAML file in each repository (therapeutic area, related packages, relevant CDISC IGs)
+- **Ecosystem context** describing how admiral-family packages fit into the broader pharmaverse pipeline
+- **ADaM fundamentals** covering key variable conventions and controlled terminology patterns
+
+The admiral `AGENTS.md` is substantial — 1,385 lines of auto-generated context pulled directly from the `{admiraldev}` programming strategy, git usage, and R CMD check vignettes. It even includes a built-in verification mechanism: agents are instructed to add the comment `# admiral guidelines loaded` to the first line of every new R file they create, confirming the guidelines were actually read. It's a small but clever way to make agent compliance observable during code review.
+
+Here's a simplified illustration of the kind of content the file contains:
+
+```markdown
+# AGENTS.md — admiral
+
+## Package Overview
+{admiral} provides a toolbox for ADaM dataset construction in R,
+following CDISC ADaM standards and pharmaverse conventions.
+
+## ADaM Conventions
+- Flag variables (ANL01FL, SAFFL, etc.) take values "Y" or NA — never "N"
+- PARAM/PARAMCD pairs must align with CDISC controlled terminology
+- ASEQ must be derived as the last step before dataset finalization
+
+## Ecosystem Context
+- Test SDTM data: use {pharmaversesdtm} (CDISC pilot data)
+- Downstream: datasets consumed by {xportr} for XPT transport files
+- Metadata: {metacore}/{metatools} provide spec-driven variable control
+
+## Unit Testing
+- Use {testthat} with expect_dfs_equal() for dataset comparisons
+- Every new function requires tests for typical use, edge cases, and errors
+```
+
+One practical note: `AGENTS.md` at the repository root triggers a NOTE in R CMD check, so the file is added to `.Rbuildignore`. It also lives in `tests/testthat/` where testing-specific guidance is scoped closest to where it's needed. Extension packages like `{admiralonco}`, `{admiralvaccine}`, and `{admiralpeds}` can layer their own context on top, adding therapeutic area-specific conventions without duplicating shared infrastructure content.
+
+## How to Adopt This in Your Package
+
+If you maintain an admiral-family package, adoption is three steps:
+
+1. Add a YAML configuration file to your repository with package-specific context (therapeutic area, related packages, relevant CDISC IGs)
+2. Reference the reusable workflow from `{admiralci}` in your `.github/workflows/` directory
+3. Add `^AGENTS\.md$` to your `.Rbuildignore`
+
+The workflow then runs on a schedule, pulling the latest content from `{admiraldev}` and your package YAML and committing an updated `AGENTS.md` automatically.
+
+## Getting Started
+
+- `AGENTS.md` standard: <https://agents.md>
+- admiral `AGENTS.md` (live): <https://github.com/pharmaverse/admiral/blob/main/AGENTS.md>
+- admiral `sync-admiralci-agents` workflow (live): <https://github.com/pharmaverse/admiral/blob/main/.github/workflows/sync-admiralci-agents.yml>
+- pharmaverse AI strategy discussion: <https://github.com/pharmaverse/admiraldev/issues/547>
+- pharmaverse examples site: <https://pharmaverse.github.io/examples/>
 
 <!--------------- appendices go here ----------------->
 
