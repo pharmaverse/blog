@@ -1,0 +1,88 @@
+name: PR Preview
+# Builds and deploys a preview of the blog site for every PR targeting main.
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-preview:
+    name: Build & Deploy PR Preview
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/pharmaverse/docker_pharmaverse:4.5.1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory /__w/blog/blog
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.9.12
+
+      - name: Install R Packages
+        run: |
+          R -e "install.packages(c(
+            'admiral',
+            'diffdf',
+            'patchwork',
+            'here',
+            'filters',
+            'janitor',
+            'link',
+            'sessioninfo',
+            'renv',
+            'riskmetric',
+            'sdtm.oak',
+            'mirai',
+            'dverse',
+            'autoslider.core'))"
+
+      - name: Install tinytex
+        run: quarto install tool tinytex
+
+      - name: Sanitize branch name for use as directory/URL slug
+        id: branch
+        run: |
+          SAFE_BRANCH=$(echo "${{ github.head_ref }}" | sed 's|[^a-zA-Z0-9._-]|-|g')
+          echo "safe=${SAFE_BRANCH}" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Render Quarto Project
+        uses: quarto-dev/quarto-actions/render@v2
+        with:
+          to: html
+
+      - name: Publish PR preview to gh-pages subdirectory
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          destination_dir: ${{ steps.branch.outputs.safe }}
+
+      - name: Post preview URL comment on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: "PR Preview"
+          message: |
+            :eyes: **Preview available!**
+
+            The preview website for this PR is available at:
+            https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ steps.branch.outputs.safe }}
+
+            _The preview is updated every time a new commit is pushed to this PR._
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
