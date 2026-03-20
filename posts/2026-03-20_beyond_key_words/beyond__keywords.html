@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Mike Stackhouse">
-<meta name="dcterms.date" content="2025-04-16">
-<meta name="description" content="Ashley Tarasiewicz joins the pharmaverse council as the Atorus Council representative.">
+<meta name="author" content="Mathieu Cayssol">
+<meta name="dcterms.date" content="2026-03-20">
+<meta name="description" content="Finding and reusing clinical programming code is currently slow and scattered. The Code Search Assistant (CSA) fixes this by letting you search code by meaning, not just keywords. It breaks programs into manageable chunks, enriching each with metadata and a short AI summary. Then, when you query the CSA, it returns ranked snippets that match your plain English question. Each result shows things like the file path, program name, study name, repository, and study description. The result is: quicker reuse of proven code, fewer duplicate implementations, and more consistent programs across studies.">
 
-<title>Welcome, Ashley Tarasiewicz – pharmaverse blog</title>
+<title>Beyond Keywords: How Semantic Search is Unlocking Clinical Code Reuse – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -110,12 +110,12 @@ cookieconsent.run({
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Welcome, Ashley Tarasiewicz – pharmaverse blog">
-<meta property="og:description" content="Ashley Tarasiewicz joins the pharmaverse council as the Atorus Council representative.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2025-04-16_welcome,__a/ashley_tarasiewicz.png">
+<meta property="og:title" content="Beyond Keywords: How Semantic Search is Unlocking Clinical Code Reuse – pharmaverse blog">
+<meta property="og:description" content="Finding and reusing clinical programming code is currently slow and scattered. The Code Search Assistant (CSA) fixes this by letting you search code by meaning, not just keywords. It breaks programs into manageable chunks, enriching each with metadata and a short AI summary. Then, when you query the CSA, it returns ranked snippets that match your plain English question. Each result shows things like the file path, program name, study name, repository, and study description. The result is: quicker reuse of proven code, fewer duplicate implementations, and more consistent programs across studies.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2026-03-20_beyond_key_words/pharmaverse.png">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="800">
-<meta property="og:image:width" content="800">
+<meta property="og:image:height" content="284">
+<meta property="og:image:width" content="320">
 </head>
 
 <body class="floating nav-fixed quarto-light">
@@ -155,14 +155,19 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Welcome, Ashley Tarasiewicz</h1>
+      <h1 class="title">Beyond Keywords: How Semantic Search is Unlocking Clinical Code Reuse</h1>
                   <div>
         <div class="description">
-          Ashley Tarasiewicz joins the pharmaverse council as the Atorus Council representative.
+          Finding and reusing clinical programming code is currently slow and scattered. The Code Search Assistant (CSA) fixes this by letting you search code by meaning, not just keywords. It breaks programs into manageable chunks, enriching each with metadata and a short AI summary. Then, when you query the CSA, it returns ranked snippets that match your plain English question. Each result shows things like the file path, program name, study name, repository, and study description. The result is: quicker reuse of proven code, fewer duplicate implementations, and more consistent programs across studies.
         </div>
       </div>
                           <div class="quarto-categories">
+                <div class="quarto-category">Metadata</div>
+                <div class="quarto-category">ADaM</div>
+                <div class="quarto-category">TLG</div>
                 <div class="quarto-category">Community</div>
+                <div class="quarto-category">Conferences</div>
+                <div class="quarto-category">Technical</div>
               </div>
                   </div>
   </div>
@@ -173,14 +178,14 @@ cookieconsent.run({
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Mike Stackhouse </p>
+               <p>Mathieu Cayssol </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">April 16, 2025</p>
+        <p class="date">March 20, 2026</p>
       </div>
     </div>
     
@@ -191,7 +196,24 @@ cookieconsent.run({
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-this-matters-for-pharmaverse-programmers" id="toc-why-this-matters-for-pharmaverse-programmers" class="nav-link active" data-scroll-target="#why-this-matters-for-pharmaverse-programmers">Why this matters for pharmaverse programmers</a></li>
+  <li><a href="#what-we-built" id="toc-what-we-built" class="nav-link" data-scroll-target="#what-we-built">What we built?</a></li>
+  <li><a href="#how-it-works" id="toc-how-it-works" class="nav-link" data-scroll-target="#how-it-works">How it works</a>
+  <ul class="collapse">
+  <li><a href="#understand-the-ask" id="toc-understand-the-ask" class="nav-link" data-scroll-target="#understand-the-ask">Understand the ask</a></li>
+  <li><a href="#retrieve-with-context" id="toc-retrieve-with-context" class="nav-link" data-scroll-target="#retrieve-with-context">Retrieve with context</a></li>
+  <li><a href="#return-with-provenance" id="toc-return-with-provenance" class="nav-link" data-scroll-target="#return-with-provenance">Return with provenance</a></li>
+  </ul></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
+  <li><a href="#what-programmers-can-do-today" id="toc-what-programmers-can-do-today" class="nav-link" data-scroll-target="#what-programmers-can-do-today">What programmers can do today</a></li>
+  <li><a href="#metrics-and-usage" id="toc-metrics-and-usage" class="nav-link" data-scroll-target="#metrics-and-usage">Metrics and usage</a></li>
+  <li><a href="#limitations-whats-next" id="toc-limitations-whats-next" class="nav-link" data-scroll-target="#limitations-whats-next">Limitations &amp; what’s next</a></li>
+  </ul>
+</nav>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -206,12 +228,102 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>Hello pharmaverse community!</p>
-<p>I’m thrilled to announce that Ashley Tarasiewicz will be taking over the Atorus seat from me on the Pharmaverse council.</p>
-<p>Ashley has been a contributor to the pharmaverse since the early days of its inception, contributing to packages such as <code>{Tplyr}</code>, <code>{pharmaRTF}</code>, and <code>{metacore}</code>. One of Ashley’s biggest strengths is being a voice of the user, calling on her history working through clinical reporting and submissions. In the time since Ashley joined Atorus, she built Atorus Academy to help with the up-skilling of SAS programmers to learn R. Ashley has now transitioned to the product owner OpenVal, a validated R distribution.</p>
-<p>It was a no-brainer for me to have Ashley take over my council seat. For me personally, Ashley is an individual that I’ve leaned on since the very beginning of my career. As a sounding board and trusted confidant, having her at Atorus has been critical to our success. As such, I’m confident that her voice in the pharmaverse council will continue to help steer the community and drive progress for the industry overall.</p>
-<p>Welcome, Ashley!</p>
+<p><strong>Disclaimer:</strong> This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.</p>
+<section id="why-this-matters-for-pharmaverse-programmers" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-matters-for-pharmaverse-programmers">Why this matters for pharmaverse programmers</h2>
+<p>Clinical reporting is built on repeatable patterns for ADaM derivations, TLGs, and QC, but finding these patterns is a significant challenge. Relevant code is often scattered, and traditional keyword searches fail for non-standard logic because the underlying variable names and structural conventions differ from study to study. CSA directly addresses this root cause by using semantic retrieval to find code based on its conceptual intent, not just matching keywords (e.g: plain English query such as “derive ABLFL in ADLB using a pre-dose baseline rule and analysis-visit windows”). This means programmers can reliably discover, review, and reuse relevant patterns from across all repositories, saving substantial time and ensuring greater consistency in their work.</p>
+</section>
+<section id="what-we-built" class="level2">
+<h2 class="anchored" data-anchor-id="what-we-built">What we built?</h2>
+<p>CSA is a focused agent inside our Clinical Analysis Assistant. A user asks a question; we create an embedding of that query, apply optional metadata filters, search the vector database, and return the most relevant code chunks alongside their origins. CSA supports both SAS and R programs.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="csa_agent.png" class="img-fluid figure-img"></p>
+<figcaption>Code Search Agent - High level overview</figcaption>
+</figure>
+</div>
+<p>Behind the scenes, we index code from our repositories, split it into coherent chunks, and generate short summaries that describe what each piece of code does. We then convert these summaries into numerical representations called embeddings (or vectors), which capture their semantic meaning. This allows the system to find code based on the idea of what it does, not just keyword matching. We store these vectors in a specialized database (vector database) and retain rich metadata such as programming language, file name, repository, and study description. The interface displays both the results and the parameters used so retrieval stays transparent and audit-friendly.</p>
+<p>Here is an example of chunk and its metadata stored in the vector database.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Metadata: Program Name</strong></td>
+<td>t_vs_orth.R</td>
+</tr>
+<tr class="even">
+<td><strong>Metadata: TLG Title</strong></td>
+<td>Summary of Orthostatic Change</td>
+</tr>
+<tr class="odd">
+<td><strong>Metadata: TLG Footnote</strong></td>
+<td>Result (Orthostatic Change) = Standing Vital Sign - Supine Vital Sign | The All Placebo column includes participants administered placebo from all cohorts.</td>
+</tr>
+<tr class="even">
+<td><strong>Code (truncated)</strong></td>
+<td><code>library(magrittr)</code><br><code>library(citril)</code><br><code>library(chevron)</code><br>…<br><code>adam_db &lt;- read_adam(parquet = arrow::read_parquet, select = c("adsl", "advs"))</code><br>…<br><code>adam_db[[dataset]] &lt;- adam_db[[dataset]] %&gt;%</code><br><code>filter(.data$ANL01FL == "Y" &amp; .data$AVISIT != "UNSCHEDULED" &amp; .data$DTYPE == "AVERAGE"...)</code><br><code>mutate(AVISIT = str_replace(.data$AVISIT, "BASELINE", "Baseline"), ...)</code><br>…<br><code>final_tlg &lt;- citril::decorate_tlg(tlg_output, ...)</code><br><code>export_tlg(final_tlg, file = output)</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Semantic Summary</strong></td>
+<td>The R script <code>t_vs_orth.R</code> analyzes orthostatic changes in vital signs by calculating the difference between standing and supine measurements. It uses <code>adam_db$adsl</code> and <code>adam_db$advs</code> datasets, filters for relevant records (<code>ANL01FL == "Y"</code>, <code>AVISIT != "UNSCHEDULED"</code>, <code>DTYPE == "AVERAGE"</code>), calculates the CHG variable (change from baseline), standardizes visit labels, and creates a pooled “All” treatment category… The output table is exported in multiple formats with decorated titles and footnotes.</td>
+</tr>
+<tr class="even">
+<td><strong>Embeddings (sample)</strong></td>
+<td><code>[0.023, -0.145, 0.089, 0.234, -0.067, 0.178, -0.023, 0.145, 0.312, -0.089, 0.156, -0.234, 0.067, 0.298, -0.178, 0.045, ...]</code><br><em>(768-dimensional vector - truncated for display)</em></td>
+</tr>
+</tbody>
+</table>
+<section id="image-of-the-vectordb-and-vectors." class="level4">
+<h4 class="anchored" data-anchor-id="image-of-the-vectordb-and-vectors.">Image of the VectorDB and vectors.</h4>
+</section>
+</section>
+<section id="how-it-works" class="level2">
+<h2 class="anchored" data-anchor-id="how-it-works">How it works</h2>
+<section id="understand-the-ask" class="level3">
+<h3 class="anchored" data-anchor-id="understand-the-ask">Understand the ask</h3>
+<p>We transform user’s question into a semantic search query + metadata filters using the <a href="https://openai.github.io/openai-agents-python/">OpenAI agents software development kit</a>.</p>
+</section>
+<section id="retrieve-with-context" class="level3">
+<h3 class="anchored" data-anchor-id="retrieve-with-context">Retrieve with context</h3>
+<p>We perform a semantic search over the vector database and apply substring matching based on the metadata filters. Summaries help match intent (“derive <code>AVALC</code> from PARAMCD”) even if the snippet uses different variable names. The metadata filters help to narrow down the results to the most relevant snippets (e.g: adsl in the program name or phase III in the study description). Code on the ‘devel’ branch has generally been QC’d in our setup, which is a nice feature for code reuse.</p>
+</section>
+<section id="return-with-provenance" class="level3">
+<h3 class="anchored" data-anchor-id="return-with-provenance">Return with provenance</h3>
+<p>Results show snippet text, file path, repo, and any available study metadata. You can jump to source for review and reuse.</p>
+<p><em>Design principle: retrieval should be fast, explainable, and reproducible. It should be possible to trace back the code to the original source.</em></p>
+</section>
+</section>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="caa_csa.gif" class="img-fluid figure-img"></p>
+<figcaption>Code Search Assistant</figcaption>
+</figure>
+</div>
+</section>
+<section id="what-programmers-can-do-today" class="level2">
+<h2 class="anchored" data-anchor-id="what-programmers-can-do-today">What programmers can do today</h2>
+<p>With CSA, programmers can look up ADaM and TLG scripts by intent, such as <em>“asking for an ADSL baseline flag with visit windowing”</em> or <em>“an <code>AVALC</code> mapping that treats missing values explicitly”</em>. They can locate TLG programs described in plain English. For instance, a table that splits columns by treatment arm and summarizes AVAL with mean and standard deviation and then adapt a proven layout. They can also compare similar implementations across repositories to converge on a standard approach while maintaining confidence through clear provenance back to source.</p>
+</section>
+<section id="metrics-and-usage" class="level2">
+<h2 class="anchored" data-anchor-id="metrics-and-usage">Metrics and usage</h2>
+<p>Over the observation window (15th of September 2025 - 19th of October 2025), the Code Search Assistant (CSA) handled 791 questions from 45 unique users, averaging 42 ± 14 weekly conversations and 92 ± 43 weekly questions. Satisfaction signals were positive: the broader Clinical Analysis Assistant (CAA) scored 3.39/5 for usefulness (n = 174), while the CSA specifically was rated at ~4/5, indicating strong early traction among active users.</p>
+</section>
+<section id="limitations-whats-next" class="level2">
+<h2 class="anchored" data-anchor-id="limitations-whats-next">Limitations &amp; what’s next</h2>
+<p>Today, CSA focuses on fast, trustworthy discovery. We are working on tighter IDE integration via MCP (Model Context Protocol - introduced by <a href="https://www.anthropic.com/news/model-context-protocol">Anthropic</a>) so you can search directly from your code editor (VSCode, RStudio, etc.). We also want to enable better study awareness so results are automatically filtered to the context of your study and clinical programming code. Finally, we are refining the data pipeline to continuously index changes without any manual effort and adding SDTM programs as well. These steps aim to make retrieval not only smarter but also more seamlessly woven into day-to-day programming.</p>
 <!--------------- appendices go here ----------------->
+</section>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -223,20 +335,21 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-03-20 18:32:31.202226</p>
+<p>2026-03-20 18:34:22.238493</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_welcome,__a.../welcome,__ashley__tarasiewicz.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{stackhouse2025,
-  author = {Stackhouse, Mike},
-  title = {Welcome, {Ashley} {Tarasiewicz}},
-  date = {2025-04-16},
-  url = {https://pharmaverse.github.io/blog/posts/2025-04-16_welcome,__a/welcome,__ashley__tarasiewicz.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/beyond_key/beyond__keywords.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{cayssol2026,
+  author = {Cayssol, Mathieu},
+  title = {Beyond {Keywords:} {How} {Semantic} {Search} Is {Unlocking}
+    {Clinical} {Code} {Reuse}},
+  date = {2026-03-20},
+  url = {https://pharmaverse.github.io/blog/posts/2026-03-20_beyond_key_words/beyond__keywords.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-stackhouse2025" class="csl-entry quarto-appendix-citeas" role="listitem">
-Stackhouse, Mike. 2025. <span>“Welcome, Ashley Tarasiewicz.”</span>
-April 16, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-04-16_welcome,__a/welcome,__ashley__tarasiewicz.html">https://pharmaverse.github.io/blog/posts/2025-04-16_welcome,__a/welcome,__ashley__tarasiewicz.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-cayssol2026" class="csl-entry quarto-appendix-citeas" role="listitem">
+Cayssol, Mathieu. 2026. <span>“Beyond Keywords: How Semantic Search Is
+Unlocking Clinical Code Reuse.”</span> March 20, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-03-20_beyond_key_words/beyond__keywords.html">https://pharmaverse.github.io/blog/posts/2026-03-20_beyond_key_words/beyond__keywords.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
