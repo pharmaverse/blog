@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.12">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Straub and Maciej Nasinski">
+<meta name="dcterms.date" content="2026-01-18">
+<meta name="description" content="Containers in the pharmaverse - exploration and potential use cases.">
+
+<title>Pharmaverse and Containers – pharmaverse blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../media/pharmaverseblog.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-cdaacfc258cb6f151192107f105ac881.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-a46c61b50e845150414bf9f38ba74221.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6ZDR80SCKG"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-6ZDR80SCKG', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: #eeeeee;
+      }
+</style>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Pharmaverse and Containers – pharmaverse blog">
+<meta property="og:description" content="Containers in the pharmaverse - exploration and potential use cases.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/container.png">
+<meta property="og:site_name" content="pharmaverse blog">
+<meta property="og:image:height" content="445">
+<meta property="og:image:width" content="438">
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">pharmaverse blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/pharmaverse/blog"> <i class="bi bi-github" role="img" aria-label="github">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../session_info.html"> 
+<span class="menu-text">Session Info</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Pharmaverse and Containers</h1>
+                  <div>
+        <div class="description">
+          Containers in the pharmaverse - exploration and potential use cases.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Community</div>
+                <div class="quarto-category">Submissions</div>
+                <div class="quarto-category">Technical</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Ben Straub and Maciej Nasinski </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 18, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers" id="toc-streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers" class="nav-link active" data-scroll-target="#streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers">Streamlining Our Pharmaverse Blog: Reducing Publishing Time with containers</a></li>
+  <li><a href="#the-previous-approach-package-installation-overhead" id="toc-the-previous-approach-package-installation-overhead" class="nav-link" data-scroll-target="#the-previous-approach-package-installation-overhead"><strong>The Previous Approach:</strong> Package Installation overhead</a></li>
+  <li><a href="#adopting-the-pharmaverse-container-image-an-efficient-alternative" id="toc-adopting-the-pharmaverse-container-image-an-efficient-alternative" class="nav-link" data-scroll-target="#adopting-the-pharmaverse-container-image-an-efficient-alternative">Adopting the pharmaverse container image: An Efficient Alternative</a></li>
+  <li><a href="#wider-applications-of-the-pharmaverse-container-image" id="toc-wider-applications-of-the-pharmaverse-container-image" class="nav-link" data-scroll-target="#wider-applications-of-the-pharmaverse-container-image">Wider Applications of the Pharmaverse Container Image</a>
+  <ul class="collapse">
+  <li><a href="#example-running-reproducible-rstudio-locally" id="toc-example-running-reproducible-rstudio-locally" class="nav-link" data-scroll-target="#example-running-reproducible-rstudio-locally">Example: Running Reproducible RStudio Locally</a></li>
+  </ul></li>
+  <li><a href="#engaging-with-the-pharmaverse-community" id="toc-engaging-with-the-pharmaverse-community" class="nav-link" data-scroll-target="#engaging-with-the-pharmaverse-community">Engaging with the Pharmaverse Community</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<section id="streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers" class="level2">
+<h2 class="anchored" data-anchor-id="streamlining-our-pharmaverse-blog-reducing-publishing-time-with-containers">Streamlining Our Pharmaverse Blog: Reducing Publishing Time with containers</h2>
+<p>As an active contributor to the pharmaverse blog, I’ve always appreciated the opportunity to share new insights and tools with our community. The pharmaverse blog has some interesting features for publishing. While the blog publishing process has been effective, I was wondering if there was a way to optimize our workflows. Currently, the CI/CD pipeline for publishing the blog typically took about 17 minutes to deploy a new post. Containers are always batted around as solutions. Unfortunately, I was unsure how to create a new container/image to meet my needs and relied on some straight <code>install.packages()</code> in the CI/CD pipeline. Luckily, I crossed paths with the fabulous Maciej Nasinski and we built a specific container for the publishing process for the pharmaverse blog, which allowed for a notable reduction in publishing time.</p>
+<p>Below I will discuss how the pharmaverse container image has improved our blog’s publishing workflow, bringing our deployment time down to approximately 5 minutes. We are also interested in feedback on potential other uses of this container (like devcontainers) or building additional containers for certain purposes. For those interested, we would be happy to provide a tutorial on containers or get in touch if you have ideas or want to get involved!</p>
+</section>
+<section id="the-previous-approach-package-installation-overhead" class="level2">
+<h2 class="anchored" data-anchor-id="the-previous-approach-package-installation-overhead"><strong>The Previous Approach:</strong> Package Installation overhead</h2>
+<p>Our prior CI/CD (GitHub Actions) workflow for building and deploying the pharmaverse blog, while comprehensive, included a time-consuming step. It used the a straight “Install dependencies” step from the r-lib actions, which necessitated installing a range of pharmaverse specific R packages during each run. As we added more packages to the pharmaverse to the blog, this became really cumbersome!</p>
+<p>The relevant section of our old build-deploy job highlighted this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>  build<span class="sc">-</span>deploy<span class="sc">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... other configurations ...</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    steps<span class="sc">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ... checkout and setup Quarto ...</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Setup R</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> r<span class="sc">-</span>lib<span class="sc">/</span>actions<span class="sc">/</span>setup<span class="sc">-</span>r<span class="sc">@</span>v2</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        with<span class="sc">:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>          use<span class="sc">-</span>public<span class="sc">-</span>rspm<span class="sc">:</span> true</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Install dependencies</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> r<span class="sc">-</span>lib<span class="sc">/</span>actions<span class="sc">/</span>setup<span class="sc">-</span>r<span class="sc">-</span>dependencies<span class="sc">@</span>v2</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        with<span class="sc">:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>          packages<span class="sc">:</span> <span class="er">|</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            jsonlite</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            tidyverse</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            spelling</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            janitor</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            diffdf</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            admiral</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>            admiralonco</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            <span class="co"># ... and many, many more packages ...</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            haven</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ... other steps like install tinytex and publish ...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This “Install dependencies” step, involving a substantial list of pharmaverse packages, was a primary contributor to the 17-minute execution time. Each workflow run involved downloading and configuring these packages, extending the overall deployment duration.</p>
+</section>
+<section id="adopting-the-pharmaverse-container-image-an-efficient-alternative" class="level2">
+<h2 class="anchored" data-anchor-id="adopting-the-pharmaverse-container-image-an-efficient-alternative">Adopting the pharmaverse container image: An Efficient Alternative</h2>
+<p>The solution to this challenge came with the introduction of the pharmaverse container image: <code>ghcr.io/pharmaverse/docker_pharmaverse:4.5.1</code>. This container image was specifically designed for pharmaceutical data analysis, featuring over 40 essential pharmaverse packages pre-installed. These packages cover various functionalities, including CDISC ADaM/SDTM, clinical trial reporting, and regulatory submissions. Built upon the rocker/tidyverse image and incorporating R 4.5.1, it provides a pre-configured environment.</p>
+<p>By integrating this image into our CI/CD pipeline (GitHub Actions), we could bypass the extensive package installation phase.</p>
+<p>Here’s an overview of our updated build-deploy job:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  build<span class="sc">-</span>deploy<span class="sc">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    needs<span class="sc">:</span> Update<span class="sc">-</span>post<span class="sc">-</span>dates</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    runs<span class="sc">-</span>on<span class="sc">:</span> ubuntu<span class="sc">-</span>latest</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    container<span class="sc">:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      image<span class="sc">:</span> <span class="st">"ghcr.io/pharmaverse/docker_pharmaverse:4.5.1"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    permissions<span class="sc">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      contents<span class="sc">:</span> write</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    steps<span class="sc">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Check out repository</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> actions<span class="sc">/</span>checkout<span class="sc">@</span>v4</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Configure Git safe directory</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        run<span class="sc">:</span> git config <span class="sc">--</span>global <span class="sc">--</span>add safe.directory <span class="sc">/</span>__w<span class="sc">/</span>blog<span class="sc">/</span>blog</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Set up Quarto</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> quarto<span class="sc">-</span>dev<span class="sc">/</span>quarto<span class="sc">-</span>actions<span class="sc">/</span>setup<span class="sc">@</span>v2</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        with<span class="sc">:</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>            version<span class="sc">:</span> <span class="dv">1</span>.<span class="fl">9.12</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="co"># </span><span class="al">NOTE</span><span class="co">: Explicit R package installation is no longer required here.</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Install tinytex</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        run<span class="sc">:</span> quarto install tool tinytex</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Mark repo directory as safe</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        run<span class="sc">:</span> git config <span class="sc">--</span>global <span class="sc">--</span>add safe.directory <span class="sc">/</span>__w<span class="sc">/</span>blog<span class="sc">/</span>blog</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>      <span class="sc">-</span> name<span class="sc">:</span> Publish</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        uses<span class="sc">:</span> quarto<span class="sc">-</span>dev<span class="sc">/</span>quarto<span class="sc">-</span>actions<span class="sc">/</span>publish<span class="sc">@</span>v2</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        with<span class="sc">:</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>          path<span class="sc">:</span> . <span class="co"># Path to your .qmd file</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>          target<span class="sc">:</span> gh<span class="sc">-</span>pages  <span class="co"># Target branch for GitHub Pages</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        env<span class="sc">:</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>          GITHUB_TOKEN<span class="sc">:</span> <span class="er">$</span>{{ secrets.GITHUB_TOKEN }}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The outcome of this change has been a consistent reduction in publishing time. Our blog now publishes in approximately 5 minutes. Yay!</p>
+</section>
+<section id="wider-applications-of-the-pharmaverse-container-image" class="level2">
+<h2 class="anchored" data-anchor-id="wider-applications-of-the-pharmaverse-container-image">Wider Applications of the Pharmaverse Container Image</h2>
+<p>While this update directly benefits our blog’s publishing, the pharmaverse container image offers broader utility. It is a valuable resource for:</p>
+<ul>
+<li>Pharmaceutical data analysis: Supporting tasks related to ADaM, SDTM, and TLFs.</li>
+<li>Clinical trial programming: Assisting with regulatory submissions.</li>
+<li>Reproducible research: Providing a consistent and verifiable environment.</li>
+<li>Training &amp; education: Offering a ready-to-use setup for educational purposes.</li>
+<li>CI/CD pipelines: Enhancing automated testing and reporting, as observed in our own workflow.</li>
+<li>Collaborative development: Facilitating consistent environments across teams.</li>
+</ul>
+<section id="example-running-reproducible-rstudio-locally" class="level3">
+<h3 class="anchored" data-anchor-id="example-running-reproducible-rstudio-locally">Example: Running Reproducible RStudio Locally</h3>
+<p>To spin up a local RStudio instance using the pharmaverse image, you can use a container “one-liner.” This command condenses the entire configuration - networking, storage, and background execution - into a single execution string. It bridges your local folder to the container, allowing you to edit files “on the fly” without installing R or packages on your actual machine.</p>
+<p>Choose the command that matches your operating system:</p>
+<section id="linux-intel-macs-standard" class="level4">
+<h4 class="anchored" data-anchor-id="linux-intel-macs-standard">1. Linux &amp; Intel Macs (Standard)</h4>
+<p>For standard architecture, we set a simple password (<code>rstudio</code>) and mount the current directory.</p>
+<p><code>docker run -d --name my_pharma_rstudio --rm -p 8787:8787 -e PASSWORD=rstudio -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1</code></p>
+</section>
+<section id="apple-silicon-m1m2m3" class="level4">
+<h4 class="anchored" data-anchor-id="apple-silicon-m1m2m3">2. Apple Silicon (M1/M2/M3)</h4>
+<p><strong>Note:</strong> We do not yet natively support ARM64 architecture (e.g., Apple Silicon). The command below uses emulation (<code>--platform linux/amd64</code>) to run the image. We also disable authentication because the slower emulation speed can sometimes cause password setup to time out.</p>
+<p><code>docker run -d --name my_pharma_rstudio --rm --platform linux/amd64 -p 8787:8787 -e DISABLE_AUTH=true -v "$(pwd)":/home/rstudio/project ghcr.io/pharmaverse/docker_pharmaverse:4.5.1</code></p>
+</section>
+<section id="what-does-this-command-do" class="level4">
+<h4 class="anchored" data-anchor-id="what-does-this-command-do">What does this command do?</h4>
+<ul>
+<li>**<code>--rm</code> &amp; <code>-d**</code>: Runs the container in the background (detached) and automatically removes it when stopped, keeping your machine clean.</li>
+<li><strong><code>-v "$(pwd)":...</code></strong>: Takes your <strong>P</strong>resent <strong>W</strong>orking <strong>D</strong>irectory and mounts it inside the container. Any file you save in RStudio’s “project” folder is instantly saved to your local computer.</li>
+<li><strong><code>--platform linux/amd64</code></strong> <em>(Mac only)</em>: Forces your computer to emulate the Intel architecture required by the image.</li>
+<li><strong><code>-e DISABLE_AUTH=true</code></strong> <em>(Mac only)</em>: Bypasses the login screen to ensure immediate access despite slower emulation speeds.</li>
+</ul>
+</section>
+<section id="accessing-rstudio" class="level4">
+<h4 class="anchored" data-anchor-id="accessing-rstudio">Accessing RStudio</h4>
+<p>Once the command is running:</p>
+<ol type="1">
+<li>Open your browser to <code>http://localhost:8787</code>.</li>
+<li><strong>Linux/Intel:</strong> Log in with user <code>rstudio</code> and password <code>rstudio</code>.</li>
+<li><strong>Apple Silicon:</strong> You will be logged in automatically.</li>
+</ol>
+<p>You will see your local files mapped to the <code>project</code> folder in the Files pane, ready for analysis.</p>
+</section>
+</section>
+</section>
+<section id="engaging-with-the-pharmaverse-community" class="level2">
+<h2 class="anchored" data-anchor-id="engaging-with-the-pharmaverse-community">Engaging with the Pharmaverse Community</h2>
+<p>The pharmaverse container image mage represents a collaborative effort within the life sciences industry to provide open-source tools. For those working with pharmaverse packages and R in development, research, or CI/CD contexts, exploring this image may offer practical advantages in efficiency and reproducibility.</p>
+<p>Explore the pharmaverse container image repository: <a href="https://github.com/pharmaverse/docker_pharmaverse">pharmaverse/docker_pharmaverse</a> Discover more about Pharmaverse: <a href="https://pharmaverse.org/">pharmaverse.org</a></p>
+<p>We acknowledge the contributions of the pharmaverse community and the Rocker Project for their support in developing these resources.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2026-03-30 18:16:00.351973</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse_and__containers.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{straub_and_maciej_nasinski2026,
+  author = {Straub and Maciej Nasinski, Ben},
+  title = {Pharmaverse and {Containers}},
+  date = {2026-01-18},
+  url = {https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-straub_and_maciej_nasinski2026" class="csl-entry quarto-appendix-citeas" role="listitem">
+Straub and Maciej Nasinski, Ben. 2026. <span>“Pharmaverse and
+Containers.”</span> January 18, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html">https://pharmaverse.github.io/blog/posts/2026-01-18_pharmaverse_containers/pharmaverse_and__containers.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/pharmaverse\.github\.io\/blog");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
