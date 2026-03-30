@@ -1,0 +1,80 @@
+name: Remove PR Preview
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  delete-preview:
+    name: Remove PR Preview from gh-pages
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Sanitize branch name for use as directory slug
+        id: branch
+        run: |
+          SAFE_BRANCH=$(echo "${BRANCH}" | sed 's|[^a-zA-Z0-9._-]|-|g')
+          echo "safe=${SAFE_BRANCH}" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Ensure gh-pages exists and check it out
+        run: |
+          set -euo pipefail
+          if git ls-remote --heads origin gh-pages | grep -q 'refs/heads/gh-pages'; then
+            git fetch origin gh-pages:gh-pages
+            git checkout gh-pages
+          else
+            echo "gh-pages branch not found. Nothing to do."
+            exit 0
+          fi
+        shell: bash
+
+      - name: Remove preview subdirectory for closed PR
+        run: |
+          set -euo pipefail
+          SUBDIR="${{ steps.branch.outputs.safe }}"
+          echo "SUBDIR: ${SUBDIR}"
+          if [ -z "$SUBDIR" ]; then
+            echo "Branch name empty. Nothing to do."
+            exit 0
+          fi
+
+          if [ -d "$SUBDIR" ]; then
+            git rm -r --ignore-unmatch -- "$SUBDIR"
+            if [ -n "$(git status --porcelain)" ]; then
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git commit -m "ci: remove gh-pages preview for closed PR branch ${{ steps.branch.outputs.safe }}"
+              git push origin gh-pages
+            else
+              echo "No changes to commit after removal."
+            fi
+          else
+            echo "Subfolder '$SUBDIR' does not exist on gh-pages. Nothing to do."
+          fi
+        shell: bash
+
+      - name: Update PR comment to reflect removal
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: "PR Preview"
+          message: |
+            :x: **Preview removed.**
+
+            This PR has been closed and the preview website has been removed.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
