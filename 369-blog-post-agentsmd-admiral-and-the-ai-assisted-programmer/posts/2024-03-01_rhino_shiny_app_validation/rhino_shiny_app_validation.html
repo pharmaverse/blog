@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.12">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Kamil Żyła">
+<meta name="author" content="Ege Can Taşlıçukur">
+<meta name="author" content="APPSILON">
+<meta name="dcterms.date" content="2024-03-01">
+<meta name="description" content="In this post, we explore the importance of validation in the pharmaceutical industry and how Rhino framework aids in ensuring reliability and accuracy of Shiny applications.">
+
+<title>Rhino: A Step Forward in Validating Shiny Apps – pharmaverse blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../media/pharmaverseblog.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-cdaacfc258cb6f151192107f105ac881.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-a46c61b50e845150414bf9f38ba74221.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6ZDR80SCKG"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-6ZDR80SCKG', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: #eeeeee;
+      }
+</style>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Rhino: A Step Forward in Validating Shiny Apps – pharmaverse blog">
+<meta property="og:description" content="In this post, we explore the importance of validation in the pharmaceutical industry and how Rhino framework aids in ensuring reliability and accuracy of Shiny applications.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2024-03-01_rhino_shiny_app_validation/Rhino.webp">
+<meta property="og:site_name" content="pharmaverse blog">
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">pharmaverse blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/pharmaverse/blog"> <i class="bi bi-github" role="img" aria-label="github">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../session_info.html"> 
+<span class="menu-text">Session Info</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Rhino: A Step Forward in Validating Shiny Apps</h1>
+                  <div>
+        <div class="description">
+          In this post, we explore the importance of validation in the pharmaceutical industry and how Rhino framework aids in ensuring reliability and accuracy of Shiny applications.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Submissions</div>
+                <div class="quarto-category">Community</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-contents">
+               <p>Kamil Żyła </p>
+               <p>Ege Can Taşlıçukur </p>
+               <p>APPSILON </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 1, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-is-validation" id="toc-what-is-validation" class="nav-link active" data-scroll-target="#what-is-validation">What is Validation?</a></li>
+  <li><a href="#how-rhino-helps-in-validating-r-shiny-apps" id="toc-how-rhino-helps-in-validating-r-shiny-apps" class="nav-link" data-scroll-target="#how-rhino-helps-in-validating-r-shiny-apps">How Rhino Helps in Validating R Shiny Apps</a>
+  <ul class="collapse">
+  <li><a href="#testing" id="toc-testing" class="nav-link" data-scroll-target="#testing">Testing</a></li>
+  <li><a href="#standardization-of-good-practices" id="toc-standardization-of-good-practices" class="nav-link" data-scroll-target="#standardization-of-good-practices">Standardization of Good Practices</a></li>
+  </ul></li>
+  <li><a href="#wider-picture" id="toc-wider-picture" class="nav-link" data-scroll-target="#wider-picture">Wider picture</a>
+  <ul class="collapse">
+  <li><a href="#bare-bones-approach" id="toc-bare-bones-approach" class="nav-link" data-scroll-target="#bare-bones-approach">Bare Bones Approach</a></li>
+  <li><a href="#other-shiny-frameworks" id="toc-other-shiny-frameworks" class="nav-link" data-scroll-target="#other-shiny-frameworks">Other Shiny Frameworks</a></li>
+  <li><a href="#validation-theater" id="toc-validation-theater" class="nav-link" data-scroll-target="#validation-theater">Validation Theater</a></li>
+  </ul></li>
+  <li><a href="#summing-up-rhino-for-r-shiny-app-validation" id="toc-summing-up-rhino-for-r-shiny-app-validation" class="nav-link" data-scroll-target="#summing-up-rhino-for-r-shiny-app-validation">Summing up Rhino for R Shiny App Validation</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>The importance of reliable and accurate software in the pharmaceutical industry cannot be overstated. As you grapple with the complexities of developing Shiny applications that not only meet requirements but also remain free of defects, the conversation inevitably turns to the topic of <strong>validation</strong>. This is where the <a href="https://appsilon.github.io/rhino/?utm_source=referral&amp;utm_medium=pharmaverse&amp;utm_campaign=blog&amp;utm_term=appsilon-account">Rhino</a> framework comes into play. It provides a validation environment through a set of tools that not only ensure the thorough testing of your Shiny Application but also enforce good software practices for producing quality code.</p>
+<section id="what-is-validation" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-validation">What is Validation?</h2>
+<p>At its core, validation is about generating objective evidence that the software consistently fulfills the users’ needs and requirements. It is closely intertwined with concepts such as verification, testing, quality assurance, and quality control. However, it is not a one-time activity. Validation is an ongoing aspect of the entire development process for assessing whether an application meets requirements and is free of defects. (<a href="https://phuse.s3.eu-central-1.amazonaws.com/Deliverables/Data+Visualisation+%26+Open+Source+Technology/WP059.pdf">phuse, 2021</a>)</p>
+<p>The foundational aspect of validation lies in the clarity and precision of the requirements set upfront. Projects often encounter challenges not due to technical constraints but unclear requirements. This clear definition of needs is the first and most critical step in the validation process, setting the stage for effective and meaningful software evaluation.</p>
+<p>Testing in some form is indispensable in any software engineering project. However, writing automated tests costs time and effort. Therefore, the approach to testing can vary widely depending on the project’s scope, complexity, and purpose.</p>
+<p>For instance, manual testing, which involves checking the software by hand for bugs or other issues, might suffice for a Proof of Concept (PoC) application. On the other hand, in applications performing critical functions, such as those involved in clinical trial data analysis, the cost of failure could be extremely high, necessitating more rigorous and comprehensive automated testing.</p>
+<p>The key is to strike a <strong>balance</strong>, ensuring the software is thoroughly validated without exhausting resources.</p>
+</section>
+<section id="how-rhino-helps-in-validating-r-shiny-apps" class="level2">
+<h2 class="anchored" data-anchor-id="how-rhino-helps-in-validating-r-shiny-apps">How Rhino Helps in Validating R Shiny Apps</h2>
+<p><a href="https://appsilon.github.io/rhino/?utm_source=referral&amp;utm_medium=pharmaverse&amp;utm_campaign=blog&amp;utm_term=appsilon-account">Rhino</a> automates the steps for creating the validation environment so you can spend your time and effort on writing the actual tests.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/rhino-ci.png" class="img-fluid figure-img" width="454"></p>
+<figcaption>Validation with Rhino</figcaption>
+</figure>
+</div>
+<p>When you first run <code>rhino::init()</code> inside your project’s root directory, <a href="https://appsilon.github.io/rhino/?utm_source=referral&amp;utm_medium=pharmaverse&amp;utm_campaign=blog&amp;utm_term=appsilon-account">Rhino</a> introduces a suite of tools that will help you validate your Shiny application and a robust file structure to modularize your code into meaningful parts. With Rhino initialized, validating your Shiny application becomes an integral and seamless part of your development workflow.</p>
+<section id="testing" class="level3">
+<h3 class="anchored" data-anchor-id="testing">Testing</h3>
+<p>Rhino comes with <a href="https://testthat.r-lib.org/">testthat</a> installed and introduces the <code>tests/</code> directory in your project. As part of the validation process, you want to test your requirements. With Rhino, all you need to do is create your test-*.R files in tests/testthat directory and run <a href="https://appsilon.github.io/rhino/reference/init.html"><code>rhino::test_r()</code></a>.</p>
+<p>Although <a href="https://rstudio.github.io/shinytest2/">shinytest2</a> tests can also be added with minimal effort (<a href="https://appsilon.github.io/rhino/articles/how-to/use-shinytest2.html">How to use shinytest2</a>), one of the distinct features of Rhino is the ability to write end-to-end tests with Cypress out of the box. To learn more about how to write Cypress tests via Rhino, you can read more on <a href="https://appsilon.github.io/rhino/articles/tutorial/write-end-to-end-tests-with-cypress.html">Write end-to-end tests with Cypress tutorial</a> in the documentation.</p>
+<section id="continuous-integration-via-github" class="level4">
+<h4 class="anchored" data-anchor-id="continuous-integration-via-github">Continuous Integration via GitHub</h4>
+<p>As discussed in the “What is validation?” section, validation is a continuous process. To accomplish this, Rhino uses a GitHub Actions workflow. This file enables the automatic running of tests and linting checks every time the code is pushed to the Github repository.</p>
+<p>You can further configure your repository to require these checks to pass before a pull request can be merged, ensuring only validated code makes it into your project.</p>
+</section>
+</section>
+<section id="standardization-of-good-practices" class="level3">
+<h3 class="anchored" data-anchor-id="standardization-of-good-practices">Standardization of Good Practices</h3>
+<p>Rhino also provides tools for good software development practices. These standardization tools don’t directly address requirements or defects, but they raise the overall code quality.</p>
+<section id="rhinolint_-functions" class="level4">
+<h4 class="anchored" data-anchor-id="rhinolint_-functions">rhino::lint_* Functions</h4>
+<p>Rhino provides linters for R (<a href="https://appsilon.github.io/rhino/reference/lint_r.html"><code>rhino::lint_r</code></a>), Javascript (<a href="https://appsilon.github.io/rhino/reference/lint_js.html"><code>rhino::lint_js</code></a>), and Sass (<a href="https://appsilon.github.io/rhino/reference/lint_sass.html"><code>rhino::lint_sass</code></a>) code. These linters ensure that the code style is consistent. This consistency might not be visible to the end-users, but it significantly enhances code readability and maintainability, which are crucial for reducing bugs and errors in the application. The cleaner and more readable the code, the easier it is for you to spot and rectify issues.</p>
+</section>
+<section id="modularization-with-box" class="level4">
+<h4 class="anchored" data-anchor-id="modularization-with-box">Modularization with <code>box</code></h4>
+<p>Modularization allows developers to compartmentalize different aspects of the application, making each part easier to understand, develop, and validate individually.</p>
+<p>Rhino leverages the <a href="https://klmr.me/box/reference/index.html">box</a> package for effective modularization. This approach to structuring the app makes the codebase more manageable and navigable and significantly enhances the ease of testing and maintenance.</p>
+</section>
+<section id="reproducibility-with-renv" class="level4">
+<h4 class="anchored" data-anchor-id="reproducibility-with-renv">Reproducibility with <code>renv</code></h4>
+<p><a href="https://rstudio.github.io/renv/index.html">renv</a> is currently the best tool for ensuring reproducibility and consistency across different development environments. Each Rhino project comes with <code>renv</code> activated. It further automatizes managing dependencies with <a href="https://appsilon.github.io/rhino/reference/dependencies.html"><code>rhino::pkg_install()</code> and <code>rhino::pkg_remove()</code></a> functions to install, update or remove a package with just one call. Check out this <a href="https://appsilon.github.io/rhino/articles/explanation/renv-configuration.html">explanation on Renv configuration</a> to learn more!</p>
+</section>
+</section>
+</section>
+<section id="wider-picture" class="level2">
+<h2 class="anchored" data-anchor-id="wider-picture">Wider picture</h2>
+<section id="bare-bones-approach" class="level3">
+<h3 class="anchored" data-anchor-id="bare-bones-approach">Bare Bones Approach</h3>
+<p>A minimal Shiny app can be as simple as a single file. This ‘bare bones’ approach is the most straightforward, requiring minimal setup. However, it places the workload on the developer to establish everything from scratch.</p>
+<p>This method may be suitable for quick prototypes or small-scale projects but it lacks the robustness needed for complex, large-scale applications, especially in a field as critical as pharmaceuticals.</p>
+</section>
+<section id="other-shiny-frameworks" class="level3">
+<h3 class="anchored" data-anchor-id="other-shiny-frameworks">Other Shiny Frameworks</h3>
+<p>Frameworks like <a href="https://thinkr-open.github.io/golem/">Golem</a> and <a href="https://leprechaun.opifex.org/#/">Leprechaun</a> adopt R package structure for Shiny apps. This method allows developers to leverage standard R package testing tools like R CMD check.</p>
+<p>While this approach brings the benefits of R’s package development ecosystem, it does not offer extra state-of-the-art tools such as linters, Cypress tests, and GitHub Actions that Rhino provides out of the box. Leaving the burden of manually setting them up on the developers.</p>
+<p>Read our <a href="https://appsilon.com/rhino-vs-golem-vs-leprechaun/?utm_source=referral&amp;utm_medium=pharmaverse&amp;utm_campaign=blog&amp;utm_term=appsilon-account">{rhino} vs {golem} vs {leprechaun}: Which R/Shiny Library is Right for You?</a> blog post to learn more about the differences.</p>
+</section>
+<section id="validation-theater" class="level3">
+<h3 class="anchored" data-anchor-id="validation-theater">Validation Theater</h3>
+<p>Test coverage is often cited as a key metric for assessing the reliability of an application. While high test coverage is beneficial, it is not a definitive guarantee of software quality. The quality of the tests themselves matters significantly more. A common pitfall is the overreliance on achieving 100% test coverage, which may give a false sense of security about the application’s robustness.</p>
+<p>Additionally, R CMD checks provide reassurance with their green check marks. However, many of these automated validations are not directly applicable or relevant to Shiny apps. This is one of the reasons why Rhino does not use these checks. While they are useful, they do not encompass the full spectrum of what needs to be tested in a Shiny application.</p>
+<p><strong>The key takeaway is that no automated check can substitute for a thorough and well-thought-out development process.</strong> The quality of a Shiny application hinges not just on the tests it passes but on the entirety of its development lifecycle, from initial design to final deployment.</p>
+</section>
+</section>
+<section id="summing-up-rhino-for-r-shiny-app-validation" class="level2">
+<h2 class="anchored" data-anchor-id="summing-up-rhino-for-r-shiny-app-validation">Summing up Rhino for R Shiny App Validation</h2>
+<p>Rhino adopts a software engineering perspective, focusing primarily on the technical facets of validation. It provides a comprehensive suite of tools that streamline the process of creating Shiny applications that are not only functionally sound but also robust and maintainable.</p>
+<p>However, it’s crucial to recognize that Rhino’s contribution is a piece of a much larger puzzle. Validation, as emphasized throughout this post, is not a standalone activity but a continuous process that intertwines with every phase of software development.</p>
+<p>From the initial requirement gathering to the final deployment, each step plays a vital role in shaping the overall quality and effectiveness of the application.</p>
+<p>If you’d like to learn more about Rhino, especially within the context of building Shiny apps for regulatory submissions you can check out this blogpost, <a href="https://appsilon.com/reproducible-and-reliable-shiny-apps-for-regulatory-submissions/?utm_source=referral&amp;utm_medium=pharmaverse&amp;utm_campaign=blog&amp;utm_term=appsilon-account"><strong>Reproducible and Reliable Shiny Apps for Regulatory Submissions</strong></a> or visit <a href="Appsilon.com?utm_source=referral&amp;utm_medium=pharmaverse&amp;utm_campaign=blog&amp;utm_term=appsilon-account">Appsilon’s website</a>.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>phuse. (2021). R Package Validation Framework. R Package Validation Framework. https://phuse.s3.eu-central-1.amazonaws.com/Deliverables/Data+Visualisation+%26+Open+Source+Technology/WP059.pdf</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2026-03-30 16:25:07.198746</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{żyła2024,
+  author = {Żyła, Kamil and Can Taşlıçukur, Ege and , APPSILON},
+  title = {Rhino: {A} {Step} {Forward} in {Validating} {Shiny} {Apps}},
+  date = {2024-03-01},
+  url = {https://pharmaverse.github.io/blog/posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-żyła2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Żyła, Kamil, Ege Can Taşlıçukur, and APPSILON. 2024. <span>“Rhino: A
+Step Forward in Validating Shiny Apps.”</span> March 1, 2024. <a href="https://pharmaverse.github.io/blog/posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html">https://pharmaverse.github.io/blog/posts/2024-03-01_rhino_shiny_app_validation/rhino_shiny_app_validation.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/pharmaverse\.github\.io\/blog");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
