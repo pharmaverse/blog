@@ -1,0 +1,127 @@
+---
+title: "Meet dataviewR: The View() You Always Wanted"
+author:
+  - name: Siddhesh Pujari
+  - name: Madhan Kumar N
+  - name: Gomathi S
+  - name: Mackenzie Haight
+description: "A Shiny-based interactive data viewer that joins the pharmaverse to explore your clinical data in R"
+date: "2026-03-31"
+categories: [SDTM, ADaM, Shiny]
+image: dataviewR-logo.png
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2026-03-29-meet-dataviewr-the"
+```
+
+<!--------------- post begins here ----------------->
+
+Disclaimer: This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.
+
+## The humble `View()` and its limits
+
+`View()` has served R programmers well for a long time — pass it a data
+frame, get a spreadsheet-style window. It even has a basic search bar
+for checking whether a value exists in your data. But the moment you
+need something more precise — filter by a specific column or combine
+conditions — you are back in your script.
+
+Add to that: no side-by-side dataset comparison, no metadata inspection,
+and no way to carry your exploration into reproducible code. For
+day-to-day clinical data work — reviewing your clinical datasets, let's
+say `ADSL`, cross-checking subject demographics against lab data in
+`ADLB`, doing a QC pass before analysis — these gaps add up.
+
+## What is dataviewR?
+
+[`dataviewR`](https://madhankumarnagaraji.github.io/dataviewR/) is a
+Shiny-based interactive data viewer that works alongside `View()` as a
+companion — not a replacement. It launches directly in your RStudio
+Viewer pane, requires no Shiny code, and never modifies the datasets
+passed to it.
+
+``` r
+install.packages("dataviewR")
+```
+
+## Features
+
+`dataviewR` offers the following capabilities:
+
+-   **Interactive Filtering** — apply `dplyr`-style expressions directly
+    in the app, no script changes needed. Supports `%in%`, `is.na()`,
+    `grepl()`, and compound conditions — the same syntax you already
+    write every day.
+
+``` r
+SEX == "F" & AGE > 65 & TRT01P == "Xanomeline High Dose"
+```
+
+-   **Reproducible Code Generation** — hit "Generate R Code" and walk
+    away with ready-to-use `dplyr` code from your interactions. Your
+    exploration session feeds directly into your scripted workflow.
+
+![Auto-generated dplyr code from interactive filter and column
+selections.](dataview_codegen.png){width="60%" fig-align="center"}
+
+-   **Variable Metadata** — inspect variable classes, labels and
+    attributes without writing `str()` or `attr()` calls. Particularly
+    useful for clinical datasets where CDISC-style labels are carried as
+    R attributes.
+
+See all of this in action:
+
+<video width="100%" controls playbackRate="2" onloadedmetadata="this.playbackRate = 2;">
+
+<source src="dataview_explore.mp4" type="video/mp4">
+
+</video>
+
+## Cross-Checking Multiple Datasets
+
+But what if you need to look at more than one dataset at the same time?
+`dataviewR` handles that too — pass multiple datasets in a single call
+and each opens in its own tab within the same session. Switch between
+them, filter independently, and track a specific subject across datasets
+— the kind of check that comes up in every safety review.
+
+``` r
+library(dataviewR)
+library(pharmaverseadam)
+
+dataviewer(adsl, adlb)
+```
+
+<video width="100%" controls onloadedmetadata="this.playbackRate = 1.5;">
+
+<source src="dataview_multidata.mp4" type="video/mp4">
+
+</video>
+
+## Final Thoughts
+
+That is dataviewR in a nutshell. Try it out and share your thoughts on
+[GitHub](https://github.com/madhankumarnagaraji/dataviewR) or
+[pharmaverse Slack](https://pharmaverse.slack.com)!
+
+Full documentation, vignettes, and clinical dataset examples are
+available at
+[madhankumarnagaraji.github.io/dataviewR](https://madhankumarnagaraji.github.io/dataviewR/).
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
