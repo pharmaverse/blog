@@ -1,13 +1,12 @@
 ---
 title: "Closing the Gap in Exposure-Response Data: A Pharmaverse Framework"
-author:
-  - name: "Jeff Dickinson"
-description: ""
+author: "Jeff Dickinson"
+description: "Exposure-Response datasets have never had a shared structural standard — until now. A four-dataset ADaM framework built with the pharmaverse ecosystem is now available on the pharmaverse examples site, and we're looking for feedback from ER modelers."
 # Note that the date below will be auto-updated when the post is merged.
 date: "2026-04-17"
 # Please do not use any non-default categories.
 # You can find the default categories in the repository README.md
-categories: [Technical]
+categories: [ADaM, CDISC, Community, Technical]
 # Feel free to change the image
 image: "pharmaverse_examples.png"
 
@@ -21,7 +20,61 @@ long_slug <- "2026-04-17-closing-the-gap-in"
 
 <!--------------- post begins here ----------------->
 
+## The Missing Standard
 
+CDISC released the Population Pharmacokinetic (PopPK) Implementation Guide in 2023, giving the clinical programming community a clear structural blueprint for PK analysis datasets. But Exposure-Response (ER) modeling — which builds directly on PopPK outputs to characterize relationships between drug exposure, safety, and efficacy — has no equivalent standard.
+
+The result is predictable: different studies, different variable names, different exposure metrics, different dataset structures. Every ER analysis team starts more or less from scratch. That makes pooling across studies harder, automation harder, and programming harder than it needs to be, particularly with ever-quickening turnaround times in drug development.
+
+## A Framework Built on What We Already Have
+
+ER datasets share a lot of structural DNA with PopPK datasets — numeric covariates, relative time variables, pharmacokinetic exposure metrics. That overlap is the starting point for this framework: extending CDISC ADaM principles already established for PopPK into the ER space.
+
+The result is four specialized datasets, each targeting a different aspect of ER analysis:
+
+| Dataset | Purpose |
+|---------|---------|
+| **`ADER`** | Exposure foundation — comprehensive PK metrics, transformations, and baseline covariates |
+| **`ADEE`** | Exposure-Efficacy — time-to-event efficacy outcomes linked to drug exposure |
+| **`ADES`** | Exposure-Safety — adverse event occurrence, severity, and time-to-onset by exposure |
+| **`ADTRR`** | Exposure-Tumor Response Rate — categorical tumor response (CR, PR, SD, PD) by exposure |
+
+Each dataset builds on standard ADaM datasets (`ADSL`, `ADRS`, `ADTTE`, `ADAE`, `ADLB`, `ADVS`) and incorporates PK parameters from `ADPC`/`ADPP`, producing analysis-ready datasets without additional data wrangling.
+
+The framework was presented as paper DS12 at PHUSE US Connect 2026 in Austin, TX. The [paper](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2026/Connect/US/Austin/PAP_DS12.pdf) and [slides](https://phuse.s3.eu-central-1.amazonaws.com/Archive/2026/Connect/US/Austin/PRE_DS12.pdf) are now available in the PHUSE archive.
+
+## Why the Pharmaverse Ecosystem?
+
+The framework is implemented using `{admiral}`, `{metacore}`, and `{xportr}` — the same toolchain used across the pharmaverse for ADaM dataset development. That choice was intentional.
+
+`{admiral}`'s modular derivation functions map naturally onto how ER datasets are built incrementally. Its `assert_*` functions catch errors at the point of derivation rather than burying them downstream. `{metacore}` keeps specs and code in sync. `{xportr}` handles CDISC compliance at the point of export.
+
+The pharmaverse ecosystem didn't just make implementation easier — it made the framework more trustworthy and maintainable. And because it's open-source, every improvement feeds back to the community.
+
+## The Examples Page
+
+The working R code is now live on the [pharmaverse examples site](https://pharmaverse.github.io/examples/adam/ader.html).
+
+The ADER+ page covers all four datasets in a single tabbed page, with:
+
+- A shared introduction explaining the ER framework and its relationship to the PopPK Implementation Guide
+- Common derivations used across all four datasets
+- Dataset-specific derivation code for ADER, ADEE, ADES, and ADTRR
+- Full variable listings and metadata
+
+The code uses `{pharmaverseadam}` as source data, making it immediately reproducible. Think of it as a template — a starting point you can adapt for your own studies.
+
+## We Need Your Feedback
+
+This framework is a proposal, not a finished standard. The path to a formal CDISC ER ADaM standard runs through the community — through pilot testing across therapeutic areas, working group discussion, and real-world use.
+
+That means we need two kinds of input:
+
+**Clinical programmers** — try the code. Does the derivation logic hold up? What edge cases are we missing? Open an issue or PR on the [pharmaverse examples repository](https://github.com/pharmaverse/examples).
+
+**ER modelers and pharmacometricians** — this one is especially for you. Does this dataset structure actually serve your modeling needs? Are the exposure metrics the right ones? Is the dataset grain appropriate for the analyses you run? You are the end users of these datasets, and your perspective is exactly what's needed to make this framework scientifically sound, not just technically compliant.
+
+The discussion is open. Let's keep it going.
 
 <!--------------- appendices go here ----------------->
 
