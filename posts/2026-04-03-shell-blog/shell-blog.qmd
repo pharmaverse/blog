@@ -1,0 +1,36 @@
+---
+title: "Shell Blog Post"
+author:
+  - name: "Your Name"
+description: ""
+# Note that the date below will be auto-updated when the post is merged.
+date: "2026-04-03"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Technical]
+# Feel free to change the image
+image: "pharmaverseblog.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2026-04-03-shell-blog"
+```
+
+<!--------------- post begins here ----------------->
+
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
