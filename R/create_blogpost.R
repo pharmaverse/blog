@@ -1,6 +1,10 @@
 # You can easily create a new blog post skeleton using the create_post() function.
 # First, we load the helping function and the allowed post tags:
 
+# If you have not already installed the blog's dependencies, you can do so using pak:
+# install.packages("pak")
+# pak::pak() # installs all packages listed in the DESCRIPTION file
+
 source("R/help_create_blogpost.R")
 source("R/allowed_tags.R")
 
