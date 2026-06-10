@@ -42,7 +42,7 @@ insert_lockfile <- function(repo_spec, name,
                             branch = "main",
                             host = "https://github.com",
                             text = "Session info") {
-  path <- path <- "https://pharmaverse.github.io/blog/session_info.html"
+  path <- "https://pharmaverse.github.io/blog/session_info.html"
 
   return(markdown_link(text, path))
 }
