@@ -23,18 +23,18 @@
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p>There is a version of the AI-in-pharma story that goes like this: LLMs are trained on vast amounts of R code, so they can write ADaM programs on demand. Packages like <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> become optional — a style preference rather than a requirement. Just describe what you need and let the model figure it out.</p>
+<p>There is a version of the AI-in-pharma story that goes like this: LLMs are trained on vast amounts of R code, so they can write ADaM programs on demand. Packages like <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> become optional — a style preference rather than a requirement. Just describe what you need and let the model figure it out.</p>
 <p>The benchmark data from <a href="https://github.com/RConsortium/pharma-skills">pharma-skills</a> tells a different story.</p>
 <section id="what-an-unskilled-agent-actually-does" class="level2">
 <h2 class="anchored" data-anchor-id="what-an-unskilled-agent-actually-does">What an Unskilled Agent Actually Does</h2>
-<p>When an AI coding agent is asked to derive an ADAE dataset without access to <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> skill guidance, it does not reach for <code>derive_var_trtemfl()</code> or <code>derive_vars_merged()</code> with the correct parameters. Across multiple benchmark runs, unskilled agents fell into two consistent failure modes: either generating synthetic data rather than using pharmaverse reference datasets, or writing bespoke <code>dplyr</code> pipelines that reimplemented logic <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> already provides — incorrectly.</p>
-<p>One example from BDS benchmarking is particularly telling. Without skill guidance, agents consistently used <code>derive_vars_merged()</code> where <code>derive_vars_merged_lookup()</code> was required for parameter code assignment. Both functions exist in <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code>. Both execute without error. But <code>derive_vars_merged()</code> drops unmatched records silently, producing a dataset with the wrong row count. No warning. No crash. Just wrong output that passes a casual review.</p>
+<p>When an AI coding agent is asked to derive an ADAE dataset without access to <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> skill guidance, it does not reach for <code>derive_var_trtemfl()</code> or <code>derive_vars_merged()</code> with the correct parameters. Across multiple benchmark runs, unskilled agents fell into two consistent failure modes: either generating synthetic data rather than using pharmaverse reference datasets, or writing bespoke <code>dplyr</code> pipelines that reimplemented logic <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> already provides — incorrectly.</p>
+<p>One example from BDS benchmarking is particularly telling. Without skill guidance, agents consistently used <code>derive_vars_merged()</code> where <code>derive_vars_merged_lookup()</code> was required for parameter code assignment. Both functions exist in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>. Both execute without error. But <code>derive_vars_merged()</code> drops unmatched records silently, producing a dataset with the wrong row count. No warning. No crash. Just wrong output that passes a casual review.</p>
 <p>This is not a model quality problem. It is a knowledge problem. The model does not know what the pharmaverse community knows.</p>
 </section>
 <section id="the-package-as-specification" class="level2">
 <h2 class="anchored" data-anchor-id="the-package-as-specification">The Package as Specification</h2>
-<p><code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> is more than a collection of R functions. It is a community-maintained encoding of CDISC ADaM logic — accumulated through years of collaboration across sponsors, CROs, and regulators, tested against real submissions, and versioned for traceability. When a programmer calls <code>derive_vars_dtm()</code> with the correct imputation flags, they are not just writing R code. They are implementing a specification that has been reviewed, validated, and documented.</p>
-<p>An LLM trained on general R code does not reliably inherit that specification. It has seen <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> in its training data, but not with the depth or precision needed to apply it correctly across the full range of ADaM derivation scenarios. The unskilled agent that wrote a custom <code>parse_dtc_datetime()</code> function using <code>substr()</code> and <code>as.POSIXct()</code> — rather than calling <code>derive_vars_dtm()</code> — was not being lazy. It was doing its best with what it knew. Its best was not good enough, and the errors it introduced were in the edge cases that matter most in a clinical submission.</p>
+<p><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> is more than a collection of R functions. It is a community-maintained encoding of CDISC ADaM logic — accumulated through years of collaboration across sponsors, CROs, and regulators, tested against real submissions, and versioned for traceability. When a programmer calls <code>derive_vars_dtm()</code> with the correct imputation flags, they are not just writing R code. They are implementing a specification that has been reviewed, validated, and documented.</p>
+<p>An LLM trained on general R code does not reliably inherit that specification. It has seen <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> in its training data, but not with the depth or precision needed to apply it correctly across the full range of ADaM derivation scenarios. The unskilled agent that wrote a custom <code>parse_dtc_datetime()</code> function using <code>substr()</code> and <code>as.POSIXct()</code> — rather than calling <code>derive_vars_dtm()</code> — was not being lazy. It was doing its best with what it knew. Its best was not good enough, and the errors it introduced were in the edge cases that matter most in a clinical submission.</p>
 </section>
 <section id="what-the-skill-does" class="level2">
 <h2 class="anchored" data-anchor-id="what-the-skill-does">What the Skill Does</h2>
@@ -44,13 +44,13 @@
 <li><strong>With skill: 88–100%</strong> pass rates across domains</li>
 <li><strong>Without skill: 17–59%</strong> pass rates, with high variance</li>
 </ul>
-<p>That variance in the unskilled condition matters as much as the mean. Inconsistent output is not a defensible process in a GxP context. A skill-guided agent produces consistent, traceable, <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code>-anchored code. An unskilled agent produces something different every time.</p>
+<p>That variance in the unskilled condition matters as much as the mean. Inconsistent output is not a defensible process in a GxP context. A skill-guided agent produces consistent, traceable, <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>-anchored code. An unskilled agent produces something different every time.</p>
 </section>
 <section id="the-accountability-anchor" class="level2">
 <h2 class="anchored" data-anchor-id="the-accountability-anchor">The Accountability Anchor</h2>
-<p>There is a regulatory dimension here that goes beyond code quality. A clinical submission needs to trace its derivations to validated, versioned, documented methods. A bespoke LLM-generated pipeline — however functional — has no such anchor. <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> provides it. When a submission uses <code>derive_var_trtemfl()</code> from a pinned version of <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code>, the derivation logic is documented, community-reviewed, and reproducible. The AI is most useful when it is writing code that inherits those properties, not when it is improvising around them.</p>
-<p>This is why the pharma-skills project frames skills not as prompt templates, but as domain knowledge artifacts. The goal is not to make AI write more R code. It is to make AI write <code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> code — correctly, consistently, and in a form that a human reviewer can audit and a regulatory submission can defend.</p>
-<p><code>&lt;bslib-tooltip placement="auto" bsOptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"&gt;   &lt;template&gt;admiral&lt;/template&gt;   &lt;a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank"&gt;{admiral}&lt;/a&gt; &lt;/bslib-tooltip&gt;</code> was built for exactly this moment. The community just needs to make sure AI knows how to use it.</p>
+<p>There is a regulatory dimension here that goes beyond code quality. A clinical submission needs to trace its derivations to validated, versioned, documented methods. A bespoke LLM-generated pipeline — however functional — has no such anchor. <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> provides it. When a submission uses <code>derive_var_trtemfl()</code> from a pinned version of <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>, the derivation logic is documented, community-reviewed, and reproducible. The AI is most useful when it is writing code that inherits those properties, not when it is improvising around them.</p>
+<p>This is why the pharma-skills project frames skills not as prompt templates, but as domain knowledge artifacts. The goal is not to make AI write more R code. It is to make AI write <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> code — correctly, consistently, and in a form that a human reviewer can audit and a regulatory submission can defend.</p>
+<p><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> was built for exactly this moment. The community just needs to make sure AI knows how to use it.</p>
 <!--------------- appendices go here ----------------->
 </section>
 <div class="cell">
@@ -64,7 +64,7 @@
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:54:16.262158</p>
+<p>2026-06-10 19:11:10.943826</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -125,7 +125,7 @@ AI.”</span> June 14, 2026. <a href="https://pharmaverse.github.io/blog/posts/2
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:55:10.135672</p>
+<p>2026-06-10 19:12:02.776607</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-05-welcome-joe-zhu/welcome-joe-zhu.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -237,7 +237,7 @@ Farrugia, Ross. 2026. <span>“Welcome Joe Zhu.”</span> June 4, 2026. <a href=
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:53:18.537842</p>
+<p>2026-06-10 19:10:17.557424</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-04-17-closing-the-gap-in/closing-the-gap-in-exposure-response-data-a-pharmaverse-framework.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -364,7 +364,7 @@ font-style: inherit;">dataviewer</span>(adsl, adlb)</span></code></pre></div></d
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:53:22.138766</p>
+<p>2026-06-10 19:10:20.925325</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -532,7 +532,7 @@ font-style: inherit;">- </span>Update NEWS.md for any user-facing function chang
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:55:39.658385</p>
+<p>2026-06-10 19:13:13.496861</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-31-agents-md-admiral-a/agents-md-admiral-and-the-ai-assisted-programmer.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -673,7 +673,7 @@ Programmer.”</span> March 31, 2026. <a href="https://pharmaverse.github.io/blo
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:53:13.027357</p>
+<p>2026-06-10 19:10:12.450675</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/beyond_key/beyond__keywords.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -813,7 +813,7 @@ Unlocking Clinical Code Reuse.”</span> March 20, 2026. <a href="https://pharma
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:53:34.12382</p>
+<p>2026-06-10 19:10:31.919341</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-06-pharmaverse-pillar/pharmaverse-pillar-oss.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -887,7 +887,7 @@ Our 2026 Hackathon Calendar.”</span> March 6, 2026. <a href="https://pharmaver
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:55:55.971656</p>
+<p>2026-06-10 19:13:29.196985</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-26-pharmaverse-pillars/pharmaverse-pillars.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -942,7 +942,7 @@ Council, Pharmaverse. 2026. <span>“Pharmaverse Pillars.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:53:04.551897</p>
+<p>2026-06-10 19:10:04.119196</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1149,7 +1149,7 @@ council, pharmaverse. 2026. <span>“Welcome, Nick Masel.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:55:05.057929</p>
+<p>2026-06-10 19:11:57.935549</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-17-a-star-is-born/a-star-is-born.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1208,7 +1208,7 @@ to the Pharmaverse.”</span> February 17, 2026. <a href="https://pharmaverse.gi
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:55:38.166146</p>
+<p>2026-06-10 19:13:12.081525</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-16-get-ready-for-the-p/get-ready-for-the-phuse-us-connect-pavilions.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1313,7 +1313,7 @@ font-style: inherit;">"pharmaversesdtm"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:54:00.87725</p>
+<p>2026-06-10 19:10:56.703763</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_140_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1686,7 +1686,7 @@ font-style: inherit;">$</span>{{ secrets.GITHUB_TOKEN }}</span></code></pre></di
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:55:06.689186</p>
+<p>2026-06-10 19:11:59.494143</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse_and__containers.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1920,7 +1920,7 @@ font-style: inherit;">"adab"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:55:01.826464</p>
+<p>2026-06-10 19:11:54.834966</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.4.../admiral_14_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2291,7 +2291,7 @@ Pharmaverse.”</span> December 19, 2025. <a href="https://pharmaverse.github.io
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:53:14.744381</p>
+<p>2026-06-10 19:10:14.040775</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2363,7 +2363,7 @@ Tools.”</span> December 18, 2025. <a href="https://pharmaverse.github.io/blog/
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:54:44.245227</p>
+<p>2026-06-10 19:11:37.403453</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2696,7 +2696,7 @@ font-style: inherit;">"admiralneuro"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:53:51.531044</p>
+<p>2026-06-10 19:10:48.104732</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_introducing.../introducing_admiralneuro.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -3028,7 +3028,7 @@ plot</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:53:39.4487</p>
+<p>2026-06-10 19:10:36.893167</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-05-12_faster_clinical_trial_reporting.../faster_clinical_trial_reporting.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -3113,7 +3113,7 @@ and ADaM Standards with Open-Source R Packages.”</span> September 12,
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-10 18:54:36.532044</p>
+<p>2026-06-10 19:11:29.997216</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-08-11_rtflite_1.0.0.../rtflite.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
