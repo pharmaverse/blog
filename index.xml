@@ -10,7 +10,82 @@
 <atom:link href="https://pharmaverse.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Short, fun and user-driven content around the pharmaverse.</description>
 <generator>quarto-1.9.12</generator>
-<lastBuildDate>Thu, 04 Jun 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 14 Jun 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Why we still need {admiral} in an age of AI</title>
+  <dc:creator>Jeff Dickinson</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>There is a version of the AI-in-pharma story that goes like this: LLMs are trained on vast amounts of R code, so they can write ADaM programs on demand. Packages like <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> become optional — a style preference rather than a requirement. Just describe what you need and let the model figure it out.</p>
+<p>The benchmark data from <a href="https://github.com/RConsortium/pharma-skills">pharma-skills</a> tells a different story.</p>
+<section id="what-an-unskilled-agent-actually-does" class="level2">
+<h2 class="anchored" data-anchor-id="what-an-unskilled-agent-actually-does">What an Unskilled Agent Actually Does</h2>
+<p>When an AI coding agent is asked to derive an ADAE dataset without access to <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> skill guidance, it does not reach for <code>derive_var_trtemfl()</code> or <code>derive_vars_merged()</code> with the correct parameters. Across multiple benchmark runs, unskilled agents fell into two consistent failure modes: either generating synthetic data rather than using pharmaverse reference datasets, or writing bespoke <code>dplyr</code> pipelines that reimplemented logic <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> already provides — incorrectly.</p>
+<p>One example from BDS benchmarking is particularly telling. Without skill guidance, agents consistently used <code>derive_vars_merged()</code> where <code>derive_vars_merged_lookup()</code> was required for parameter code assignment. Both functions exist in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>. Both execute without error. But <code>derive_vars_merged()</code> drops unmatched records silently, producing a dataset with the wrong row count. No warning. No crash. Just wrong output that passes a casual review.</p>
+<p>This is not a model quality problem. It is a knowledge problem. The model does not know what the pharmaverse community knows.</p>
+</section>
+<section id="the-package-as-specification" class="level2">
+<h2 class="anchored" data-anchor-id="the-package-as-specification">The Package as Specification</h2>
+<p><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> is more than a collection of R functions. It is a community-maintained encoding of CDISC ADaM logic — accumulated through years of collaboration across sponsors, CROs, and regulators, tested against real submissions, and versioned for traceability. When a programmer calls <code>derive_vars_dtm()</code> with the correct imputation flags, they are not just writing R code. They are implementing a specification that has been reviewed, validated, and documented.</p>
+<p>An LLM trained on general R code does not reliably inherit that specification. It has seen <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> in its training data, but not with the depth or precision needed to apply it correctly across the full range of ADaM derivation scenarios. The unskilled agent that wrote a custom <code>parse_dtc_datetime()</code> function using <code>substr()</code> and <code>as.POSIXct()</code> — rather than calling <code>derive_vars_dtm()</code> — was not being lazy. It was doing its best with what it knew. Its best was not good enough, and the errors it introduced were in the edge cases that matter most in a clinical submission.</p>
+</section>
+<section id="what-the-skill-does" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-skill-does">What the Skill Does</h2>
+<p>The <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> skills in pharma-skills do not replace <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>. They connect the AI agent to it. A skill provides curated, domain-aware guidance: which functions to use for which derivations, how to structure the program for QC readability, which variables require special handling, and what assertions to include. The skill is the bridge between a capable general-purpose model and the specific, validated logic the pharmaverse community has built.</p>
+<p>The benchmark results reflect this directly. Across ADSL, ADAE, ADVS, and ADLB:</p>
+<ul>
+<li><strong>With skill: 88–100%</strong> pass rates across domains</li>
+<li><strong>Without skill: 17–59%</strong> pass rates, with high variance</li>
+</ul>
+<p>That variance in the unskilled condition matters as much as the mean. Inconsistent output is not a defensible process in a GxP context. A skill-guided agent produces consistent, traceable, <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>-anchored code. An unskilled agent produces something different every time.</p>
+</section>
+<section id="the-accountability-anchor" class="level2">
+<h2 class="anchored" data-anchor-id="the-accountability-anchor">The Accountability Anchor</h2>
+<p>There is a regulatory dimension here that goes beyond code quality. A clinical submission needs to trace its derivations to validated, versioned, documented methods. A bespoke LLM-generated pipeline — however functional — has no such anchor. <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> provides it. When a submission uses <code>derive_var_trtemfl()</code> from a pinned version of <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>, the derivation logic is documented, community-reviewed, and reproducible. The AI is most useful when it is writing code that inherits those properties, not when it is improvising around them.</p>
+<p>This is why the pharma-skills project frames skills not as prompt templates, but as domain knowledge artifacts. The goal is not to make AI write more R code. It is to make AI write <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> code — correctly, consistently, and in a form that a human reviewer can audit and a regulatory submission can defend.</p>
+<p><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> was built for exactly this moment. The community just needs to make sure AI knows how to use it.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2026-06-14 18:52:36.863336</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dickinson2026,
+  author = {Dickinson, Jeff},
+  title = {Why We Still Need \{Admiral\} in an Age of {AI}},
+  date = {2026-06-14},
+  url = {https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dickinson2026" class="csl-entry quarto-appendix-citeas">
+Dickinson, Jeff. 2026. <span>“Why We Still Need {Admiral} in an Age of
+AI.”</span> June 14, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.html">https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.html</a>.
+</div></div></section></div> ]]></description>
+  <category>Technical</category>
+  <category>ADaM</category>
+  <category>Community</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.html</guid>
+  <pubDate>Sun, 14 Jun 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral.png" medium="image" type="image/png" height="152" width="144"/>
+</item>
 <item>
   <title>Welcome Joe Zhu</title>
   <dc:creator>Ross Farrugia</dc:creator>
@@ -50,7 +125,7 @@
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:19:08.001299</p>
+<p>2026-06-14 18:53:31.152228</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-05-welcome-joe-zhu/welcome-joe-zhu.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -162,7 +237,7 @@ Farrugia, Ross. 2026. <span>“Welcome Joe Zhu.”</span> June 4, 2026. <a href=
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:18:18.400712</p>
+<p>2026-06-14 18:51:41.564492</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-04-17-closing-the-gap-in/closing-the-gap-in-exposure-response-data-a-pharmaverse-framework.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -289,7 +364,7 @@ font-style: inherit;">dataviewer</span>(adsl, adlb)</span></code></pre></div></d
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:18:44.223169</p>
+<p>2026-06-14 18:51:45.102545</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -457,7 +532,7 @@ font-style: inherit;">- </span>Update NEWS.md for any user-facing function chang
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:18:55.638065</p>
+<p>2026-06-14 18:54:05.91958</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-31-agents-md-admiral-a/agents-md-admiral-and-the-ai-assisted-programmer.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -598,7 +673,7 @@ Programmer.”</span> March 31, 2026. <a href="https://pharmaverse.github.io/blo
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:19:11.953029</p>
+<p>2026-06-14 18:51:36.195256</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/beyond_key/beyond__keywords.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -738,7 +813,7 @@ Unlocking Clinical Code Reuse.”</span> March 20, 2026. <a href="https://pharma
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:21:13.861271</p>
+<p>2026-06-14 18:51:56.644981</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-06-pharmaverse-pillar/pharmaverse-pillar-oss.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -812,7 +887,7 @@ Our 2026 Hackathon Calendar.”</span> March 6, 2026. <a href="https://pharmaver
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:19:14.967937</p>
+<p>2026-06-14 18:54:22.288527</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-26-pharmaverse-pillars/pharmaverse-pillars.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -867,7 +942,7 @@ Council, Pharmaverse. 2026. <span>“Pharmaverse Pillars.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:20:56.760796</p>
+<p>2026-06-14 18:51:27.614139</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1074,7 +1149,7 @@ council, pharmaverse. 2026. <span>“Welcome, Nick Masel.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:18:54.12771</p>
+<p>2026-06-14 18:53:26.007165</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-17-a-star-is-born/a-star-is-born.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1133,7 +1208,7 @@ to the Pharmaverse.”</span> February 17, 2026. <a href="https://pharmaverse.gi
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:21:00.025314</p>
+<p>2026-06-14 18:54:04.404994</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-16-get-ready-for-the-p/get-ready-for-the-phuse-us-connect-pavilions.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1238,7 +1313,7 @@ font-style: inherit;">"pharmaversesdtm"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:21:37.998945</p>
+<p>2026-06-14 18:52:22.276541</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_140_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1611,7 +1686,7 @@ font-style: inherit;">$</span>{{ secrets.GITHUB_TOKEN }}</span></code></pre></di
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:21:39.538239</p>
+<p>2026-06-14 18:53:27.663502</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse_and__containers.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1845,7 +1920,7 @@ font-style: inherit;">"adab"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:19:34.264907</p>
+<p>2026-06-14 18:53:22.751977</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.4.../admiral_14_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2216,7 +2291,7 @@ Pharmaverse.”</span> December 19, 2025. <a href="https://pharmaverse.github.io
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:20:50.499374</p>
+<p>2026-06-14 18:51:37.883955</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2288,7 +2363,7 @@ Tools.”</span> December 18, 2025. <a href="https://pharmaverse.github.io/blog/
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:21:25.104189</p>
+<p>2026-06-14 18:53:04.579782</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2621,7 +2696,7 @@ font-style: inherit;">"admiralneuro"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:21:15.730895</p>
+<p>2026-06-14 18:52:13.392456</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_introducing.../introducing_admiralneuro.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2953,7 +3028,7 @@ plot</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:18:36.392156</p>
+<p>2026-06-14 18:52:01.802313</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-05-12_faster_clinical_trial_reporting.../faster_clinical_trial_reporting.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -3038,7 +3113,7 @@ and ADaM Standards with Open-Source R Packages.”</span> September 12,
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-04 07:18:08.416106</p>
+<p>2026-06-14 18:52:56.830777</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-08-11_rtflite_1.0.0.../rtflite.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -3059,571 +3134,6 @@ Production-Ready Clinical TLFs in Python.”</span> August 13, 2025. <a href="ht
   <guid>https://pharmaverse.github.io/blog/posts/2025-08-13_rtflite_100/rtflite.html</guid>
   <pubDate>Wed, 13 Aug 2025 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2025-08-13_rtflite_100/logo.png" medium="image" type="image/png" height="144" width="144"/>
-</item>
-<item>
-  <title>Metacore and Metatools 0.2.0</title>
-  <dc:creator>Liam Hobby</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2025-08-04_metacore_020/metacore_020.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<!--------------- typical setup ----------------->
-<!--------------- post begins here ----------------->
-<section id="metacore-and-metatools-have-a-new-package-maintainer" class="level2">
-<h2 class="anchored" data-anchor-id="metacore-and-metatools-have-a-new-package-maintainer"><code>{metacore}</code> and <code>{metatools}</code> have a new package maintainer</h2>
-<p>Hi, everyone! I’m <a href="https://www.linkedin.com/in/liam-hobby/" title="Liam Hobby">Liam</a> and I’m excited to announce that I have taken over as package maintainer for both <code>{metacore}</code> and <code>{metatools}</code> from Christina Fillmore. I work at GSK as a clinical programmer and I am coming to the end of my second year in the industry. This is my first experience working within the open-source world, but I am a regular user of pharmaverse packages and am keen to get more involved with the community.</p>
-<p>Christina remains on-hand as a mentor and I’d like to thank both her and Ben Straub for the continued support before we dive into the details of <code>{metacore}</code>/<code>{metatools}</code> 0.2.0.</p>
-</section>
-<section id="whats-new-in-metacore" class="level2">
-<h2 class="anchored" data-anchor-id="whats-new-in-metacore">What’s new in metacore?</h2>
-<p>The goal of version 0.2.0 was to clarify the distinction between an imported Metacore spec, containing information about multiple datasets, and a subsetted spec containing information about just a single dataset (as achieved via metacore::select_dataset()).</p>
-<p>We received a number of questions and issues raised where users were attempting to use a Metacore object containing metadata for multiple datasets in functions from <code>{metatools}</code> that were designed to take a single, subsetted specification. When developing datasets, the typical workflow is to be working on a single dataset at a time - so subsetting the Metacore object is the logical thing to do. The issue was that the approach to functions in <code>{metatools}</code> was inconsistent, with some functions permitting multiple specification metadata and others not.</p>
-<p>Now, a Metacore object which has multiple datasets or one with a single dataset have been redesigned to be programmatically distinct, with the single dataset implemented as a subclass of Metacore called “DatasetMeta”.</p>
-<p>From the users’ perspective there is one key change. <strong>A metadata object about a single dataset will be required for users to work with <code>{metatools}</code> functions</strong>, which have had their API harmonised to accept only subsetted Metacore objects (via <code>metacore::select_dataset()</code>).</p>
-<p>The print statements of both combined and subsetted Metacore objects have been refined to better illustrate the differences between them and provide more helpful information to the user.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr)</span></code></pre></div></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'dplyr'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stats':
-
-    filter, lag</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    intersect, setdiff, setequal, union</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(metacore)</span>
-<span id="cb5-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(metatools)</span>
-<span id="cb5-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tibble)</span>
-<span id="cb5-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(haven)</span>
-<span id="cb5-5"></span>
-<span id="cb5-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">load</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">metacore_example</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pilot_ADaM.rda"</span>))</span>
-<span id="cb5-7">metacore</span></code></pre></div></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Metacore object contains metadata for 5 datasets ────────────────────────────</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ ADSL (Subject-Level Analysis Dataset)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ ADADAS (ADAS-Cog Analysis)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ ADLBC (Analysis Dataset Lab Blood Chemistry)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ ADTTE (AE Time To 1st Derm. Event Analysis)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ ADAE (Adverse Events Analysis Dataset)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>ℹ To use the Metacore object with metatools package, first subset a dataset using `metacore::select_dataset()`</code></pre>
-</div>
-</div>
-<p>The <code>metacore::select_dataset()</code> function is now explicit about what is being selected:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">adsl_spec <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select_dataset</span>(metacore, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADSL"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">quiet =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>✔ ADSL dataset successfully selected</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>ℹ Dataset metadata specification subsetted with suppressed warnings</code></pre>
-</div>
-</div>
-<p>Printing the subsetted object now provides more detailed information:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1">adsl_spec</span></code></pre></div></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Dataset specification object for ADSL (Subject-Level Analysis Dataset) ──────</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The dataset contains 51 variables</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Dataset key: USUBJID</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The structure of the specification object is:</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ codelist: character [16 x 4] code_id, name, type, codes</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ derivations: character [50 x 2] derivation_id derivation</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ ds_spec: character [1 x 3] dataset, structure, label</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ ds_vars: character [51 x 7] dataset, variable, key_seq, order, keep, core,
-  supp_flag</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ supp: character [0 x 4] dataset, variable, idvar, qeval</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ value_spec: character [51 x 8] dataset, variable, code_id, derivation_id,
-  type, origin, where, sig_dig</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ var_spec: character [51 x 6] variable, type, length, label, format, common</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>To inspect the specification object use `View()` in the console.</code></pre>
-</div>
-</div>
-<p>Functions that take a Metacore object as input will emit a helpful message if a subsetted object is not supplied.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1">ds_list <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">DM =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">read_xpt</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">metatools_example</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dm.xpt"</span>)))</span>
-<span id="cb32-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">create_var_from_codelist</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(), metacore)</span></code></pre></div></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `verify_DatasetMeta()`:
-! The object supplied to the argument `metacore` is not a subsetted
-  Metacore object. Use `metacore::select_dataset()` to subset metadata for the
-  required dataset.</code></pre>
-</div>
-</div>
-<section id="related-soft-deprecation-of-dataset_name-in-metatools" class="level4">
-<h4 class="anchored" data-anchor-id="related-soft-deprecation-of-dataset_name-in-metatools">Related: soft deprecation of <code>dataset_name</code> in metatools</h4>
-<p>Additionally, the argument <code>dataset_name</code> has been <strong>soft-deprecated</strong> across all functions in <code>{metatools}</code>. While the argument is still available and will not break existing code, using it will now issue a warning. This change encourages users to adopt the preferred workflow, creating a subsetted Metacore object, and improves performance by avoiding repeated subsetting operations each time these functions are called.</p>
-<p>The full list of affected functions is included below. The <code>dataset_name</code> argument will remain available for <strong>at least one year</strong> from the release date of 0.2.0 before being fully removed.</p>
-<p><a href="https://pharmaverse.github.io/metatools/reference/build_from_derived.html" title="Build a dataset from derived"><code>build_from_derived</code></a>, <a href="https://pharmaverse.github.io/metatools/reference/check_variables.html" title="Check Variable Names"><code>check_variables</code></a>, <a href="https://pharmaverse.github.io/metatools/reference/check_unique_keys.html" title="Check Uniqueness of Records by Key"><code>check_unique_keys</code></a>, <a href="https://pharmaverse.github.io/metatools/reference/make_supp_qual.html" title="Make Supplemental Qualifier"><code>make_supp_qual</code></a>, <a href="https://pharmaverse.github.io/metatools/reference/drop_unspec_vars.html" title="Drop Unspecified Variables"><code>drop_unspec_vars</code></a>, <a href="https://pharmaverse.github.io/metatools/reference/add_variables.html" title="Add Missing Variables"><code>add_variables</code></a>, <a href="https://pharmaverse.github.io/metatools/reference/order_cols.html" title="Sort Columns by Order"><code>order_cols</code></a>, <a href="https://pharmaverse.github.io/metatools/reference/sort_by_key.html" title="Sort Rows by Key Sequence"><code>sort_by_key</code></a>.</p>
-</section>
-</section>
-<section id="create_var_from_codelist" class="level2">
-<h2 class="anchored" data-anchor-id="create_var_from_codelist"><code>create_var_from_codelist()</code></h2>
-<p>metatools::create_var_from_codelist() now optionally allows the user to specify a codelist from which the new column should be generated. This is useful in situations like the one below where the user is trying to derive <code>PARAM</code> from <code>PARAMCD</code> but the codelist for the <code>out_var</code> (<code>PARAM</code>) does not contain the values of <code>PARAMCD</code>.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>ID</th>
-<th>Order</th>
-<th>Code</th>
-<th>Decode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>PARAM</td>
-<td>1</td>
-<td>Alanine Aminotransferase</td>
-<td>Alanine Aminotransferase</td>
-</tr>
-<tr class="even">
-<td>PARAM</td>
-<td>2</td>
-<td>Bilirubin</td>
-<td>Bilirubin</td>
-</tr>
-<tr class="odd">
-<td>PARAM</td>
-<td>3</td>
-<td>Creatine</td>
-<td>Creatine</td>
-</tr>
-</tbody>
-</table>
-<p>Example of default usage not providing the correct result:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1">adlbc_spec <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">suppressMessages</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select_dataset</span>(metacore, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADLBC"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">quiet =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>))</span>
-<span id="cb34-2">data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAMCD =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ALB"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ALP"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ALT"</span>))</span>
-<span id="cb34-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">create_var_from_codelist</span>(data, adlbc_spec, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">input_var =</span> PARAMCD, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">out_var =</span> PARAM, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">strict =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 2
-  PARAMCD PARAM
-  &lt;chr&gt;   &lt;chr&gt;
-1 ALB     &lt;NA&gt; 
-2 ALP     &lt;NA&gt; 
-3 ALT     &lt;NA&gt; </code></pre>
-</div>
-</div>
-<p>By default, metatools::create_var_from_codelist() takes the codelist of the <code>out_var</code> as input. The user can now overwrite this default with a specific codelist (in this case <code>PARAMCD</code> below) to achieve the desired result.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>ID</th>
-<th>Order</th>
-<th>Code</th>
-<th>Decode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>PARAMCD</td>
-<td>1</td>
-<td>ALT</td>
-<td>Alanine Aminotransferase</td>
-</tr>
-<tr class="even">
-<td>PARAMCD</td>
-<td>2</td>
-<td>BILI</td>
-<td>Bilirubin</td>
-</tr>
-<tr class="odd">
-<td>PARAMCD</td>
-<td>3</td>
-<td>CREAT</td>
-<td>Creatine</td>
-</tr>
-</tbody>
-</table>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">create_var_from_codelist</span>(data, adlbc_spec, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">input_var =</span> PARAMCD, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">out_var =</span> PARAM, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">codelist =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">get_control_term</span>(adlbc_spec, PARAMCD), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">decode_to_code =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 2
-  PARAMCD PARAM                         
-  &lt;chr&gt;   &lt;chr&gt;                         
-1 ALB     Albumin (g/L)                 
-2 ALP     Alkaline Phosphatase (U/L)    
-3 ALT     Alanine Aminotransferase (U/L)</code></pre>
-</div>
-</div>
-<p>This function also provides a new option <code>strict</code>, which when set to <code>TRUE</code> (default) will issue a warning indicating any values in your input column that do not appear in the codelist.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1">data <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAMCD =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ALB"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ALP"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ALT"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"DUMMY1"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"DUMMY2"</span>))</span>
-<span id="cb38-2">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">create_var_from_codelist</span>(data, adlbc_spec, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">input_var =</span> PARAMCD, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">out_var =</span> PARAM, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">codelist =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">get_control_term</span>(adlbc_spec, PARAMCD), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">decode_to_code =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">strict =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: In `create_var_from_codelist()`: The following values present in the input
-dataset are not present in the codelist: DUMMY1 and DUMMY2</code></pre>
-</div>
-</div>
-</section>
-<section id="create_cat_var" class="level2">
-<h2 class="anchored" data-anchor-id="create_cat_var">create_cat_var()</h2>
-<p>metatools::create_cat_var() has been updated so that users can now specify to create a new variable from either the <code>code</code> or <code>decode</code> column of the controlled terminology. Previously, a codelist set-up like the one below would be evaluated from the <code>code</code> column only, leaving out the “years” text from the new variable.</p>
-<table class="caption-top table">
-<caption>Example of a codelist for AGEGR2</caption>
-<colgroup>
-<col style="width: 11%">
-<col style="width: 29%">
-<col style="width: 16%">
-<col style="width: 10%">
-<col style="width: 11%">
-<col style="width: 20%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>ID</th>
-<th>Name</th>
-<th>Data Type</th>
-<th>Order</th>
-<th>Code</th>
-<th>Decode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>AGEGR2</td>
-<td>Pooled Age Group 2</td>
-<td>text</td>
-<td>1</td>
-<td>&lt;35</td>
-<td>&lt;35 years</td>
-</tr>
-<tr class="even">
-<td>AGEGR2</td>
-<td>Pooled Age Group 2</td>
-<td>text</td>
-<td>2</td>
-<td>35-49</td>
-<td>35-49 years</td>
-</tr>
-<tr class="odd">
-<td>AGEGR2</td>
-<td>Pooled Age Group 2</td>
-<td>text</td>
-<td>3</td>
-<td>&gt;= 50</td>
-<td>&gt;= 50 years</td>
-</tr>
-</tbody>
-</table>
-<p>Now, specifying the option <code>create_from_decode = TRUE</code> will allow you to create the variable based on the text in the <code>decode</code> column. If you are using this option to also create a numeric coded variable (in this case <code>AGEGR2N</code>), ensure your CT is set up so that the <code>decode</code> columns match.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1">dm <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">read_xpt</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">metatools_example</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dm.xpt"</span>))</span>
-<span id="cb40-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">create_cat_var</span>(dm, adsl_spec, AGE, AGEGR2, AGEGR2N, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">create_from_decode =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb40-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(USUBJID, AGE, AGEGR2, AGEGR2N) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb40-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 4
-  USUBJID       AGE AGEGR2      AGEGR2N
-  &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;
-1 01-701-1015    63 18-64 years       1
-2 01-701-1023    64 18-64 years       1
-3 01-701-1028    71 65-80 years       2
-4 01-701-1033    74 65-80 years       2
-5 01-701-1034    77 65-80 years       2</code></pre>
-</div>
-</div>
-<p>This function now also provides a default <code>strict = TRUE</code> option, that issues a warning message if there are values in the reference column that do not fit into the categories in the controlled terminology. This can be disabled with <code>strict = FALSE</code>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1">dm2 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> dm <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb42-2">  tibble<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">add_row</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">AGE =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">15</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb42-3">  tibble<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">add_row</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">AGE =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>)</span>
-<span id="cb42-4">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">create_cat_var</span>(dm2, adsl_spec, AGE, AGEGR2, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">create_from_decode =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: There are 2 observations in AGE that do not fit into the provided categories
-for AGEGR2. Please check your controlled terminology.</code></pre>
-</div>
-</div>
-</section>
-<section id="summary-of-other-changes" class="level2">
-<h2 class="anchored" data-anchor-id="summary-of-other-changes">Summary of Other Changes</h2>
-<ul>
-<li><p>Fixed a bug where the presence of variables with VLM in the <code>value_spec</code> table would prevent variables of the same name in different datasets being populated in the <code>value_spec</code> table.</p></li>
-<li><p>metatools::build_from_derived() adds new options for the <code>keep</code> parameter that allow users to derive either <code>all</code> or only <code>prerequisite</code> columns from source datasets. Thanks to Matt Bearham for this amendment!</p></li>
-<li><p>metatools::combine_supp() now adds the label found in <code>QLABEL</code> to the <code>QNAM</code> columns that are derived from supplementary datasets. Thanks to Bill Denney for this amendment!</p></li>
-<li><p>metatools::check_variables() now provides a <code>strict</code> option that will issue a warning rather than throw an error when <code>strict = FALSE</code>.</p></li>
-<li><p><code>{cli}</code> output is now used across both packages and messaging for various functions has been improved.</p></li>
-</ul>
-</section>
-<section id="whats-next" class="level2">
-<h2 class="anchored" data-anchor-id="whats-next">What’s next?</h2>
-<p>The next step for both packages will be working through and closing out issues from the backlog, updating the examples and vignettes, and improving the user experience via more informative messaging.</p>
-<p>For <code>{metacore}</code>, there has been some interest in a UI to help users write custom specification readers for specs not in the standard P21 format. So this will be explored as well.</p>
-<p>I hope to release the next update towards the end of the year, looking at an approximately 6-monthly release schedule going forward. Until then I encourage people to explore some of the new features and provide feedback on the changes through GitHub at the links below:</p>
-<ul>
-<li><p><a href="https://github.com/atorus-research/metacore" title="GitHub - Metacore">Metacore</a></p></li>
-<li><p><a href="https://github.com/pharmaverse/metatools" title="GitHub - Metatools">Metatools</a></p></li>
-</ul>
-<p>Thanks for reading!</p>
-<!--------------- appendices go here ----------------->
-</section>
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2026-06-04 07:20:53.037414</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_metacore_0.2.0/metacore_020.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{hobby2025,
-  author = {Hobby, Liam},
-  title = {Metacore and {Metatools} 0.2.0},
-  date = {2025-08-04},
-  url = {https://pharmaverse.github.io/blog/posts/2025-08-04_metacore_020/metacore_020.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-hobby2025" class="csl-entry quarto-appendix-citeas">
-Hobby, Liam. 2025. <span>“Metacore and Metatools 0.2.0.”</span> August
-4, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-08-04_metacore_020/metacore_020.html">https://pharmaverse.github.io/blog/posts/2025-08-04_metacore_020/metacore_020.html</a>.
-</div></div></section></div> ]]></description>
-  <category>Metadata</category>
-  <category>ADaM</category>
-  <category>Community</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2025-08-04_metacore_020/metacore_020.html</guid>
-  <pubDate>Mon, 04 Aug 2025 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2025-08-04_metacore_020/metacore.png" medium="image" type="image/png" height="135" width="144"/>
 </item>
 </channel>
 </rss>

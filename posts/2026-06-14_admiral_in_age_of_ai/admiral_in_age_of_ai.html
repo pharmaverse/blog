@@ -6,12 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Joe Zhu">
-<meta name="author" content="Edoardo Mancini">
-<meta name="dcterms.date" content="2025-01-15">
-<meta name="description" content="This post describes one of the first joint efforts between the NEST and admiral teams, where test data from the pharmaverseadam package was used within the NEST framework.">
+<meta name="author" content="Jeff Dickinson">
+<meta name="dcterms.date" content="2026-06-14">
+<meta name="description" content="LLMs can write R code, but can they write reliable and readable ADaM code? Benchmark data from the R Consortium pharma-skills initiative shows that without structured {admiral} skill guidance, AI agents produce inconsistent error-prone derivations. Here’s what the data shows and why the pharmaverse package ecosystem matters more than ever.">
 
-<title>A collaborative triumph: Re-using test data between the NEST and admiral teams – pharmaverse blog</title>
+<title>Why we still need {admiral} in an age of AI – pharmaverse blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,15 +107,19 @@ cookieconsent.run({
         background: #eeeeee;
       }
 </style>
+<script src="../../site_libs/bslib-component-js-0.9.0/components.min.js"></script>
+<script src="../../site_libs/bslib-component-js-0.9.0/web-components.min.js" type="module"></script>
+<link href="../../site_libs/bslib-component-css-0.9.0/components.css" rel="stylesheet">
+<script src="../../site_libs/bslib-tag-require-0.9.0/tag-require.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="A collaborative triumph: Re-using test data between the NEST and admiral teams – pharmaverse blog">
-<meta property="og:description" content="This post describes one of the first joint efforts between the NEST and admiral teams, where test data from the pharmaverseadam package was used within the NEST framework.">
-<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.png">
+<meta property="og:title" content="Why we still need {admiral} in an age of AI – pharmaverse blog">
+<meta property="og:description" content="LLMs can write R code, but can they write reliable and readable ADaM code? Benchmark data from the R Consortium pharma-skills initiative shows that without structured {admiral} skill guidance, AI agents produce inconsistent error-prone derivations. Here’s what the data shows and why the pharmaverse package ecosystem matters more than ever.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral.png">
 <meta property="og:site_name" content="pharmaverse blog">
-<meta property="og:image:height" content="647">
-<meta property="og:image:width" content="1027">
+<meta property="og:image:height" content="372">
+<meta property="og:image:width" content="352">
 </head>
 
 <body class="floating nav-fixed quarto-light">
@@ -156,15 +159,15 @@ cookieconsent.run({
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">A collaborative triumph: Re-using test data between the NEST and admiral teams</h1>
+      <h1 class="title">Why we still need {admiral} in an age of AI</h1>
                   <div>
         <div class="description">
-          This post describes one of the first joint efforts between the NEST and admiral teams, where test data from the pharmaverseadam package was used within the NEST framework.
+          LLMs can write R code, but can they write reliable and readable ADaM code? Benchmark data from the R Consortium pharma-skills initiative shows that without structured {admiral} skill guidance, AI agents produce inconsistent error-prone derivations. Here’s what the data shows and why the pharmaverse package ecosystem matters more than ever.
         </div>
       </div>
                           <div class="quarto-categories">
+                <div class="quarto-category">Technical</div>
                 <div class="quarto-category">ADaM</div>
-                <div class="quarto-category">TLG</div>
                 <div class="quarto-category">Community</div>
               </div>
                   </div>
@@ -174,17 +177,16 @@ cookieconsent.run({
   <div class="quarto-title-meta">
 
       <div>
-      <div class="quarto-title-meta-heading">Authors</div>
+      <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Joe Zhu </p>
-               <p>Edoardo Mancini </p>
+               <p>Jeff Dickinson </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">January 15, 2025</p>
+        <p class="date">June 14, 2026</p>
       </div>
     </div>
     
@@ -199,14 +201,10 @@ cookieconsent.run({
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#who-are-the-nest-team" id="toc-who-are-the-nest-team" class="nav-link" data-scroll-target="#who-are-the-nest-team">Who are the NEST Team?</a></li>
-  <li><a href="#who-are-the-admiral-team" id="toc-who-are-the-admiral-team" class="nav-link" data-scroll-target="#who-are-the-admiral-team">Who are the admiral team?</a></li>
-  <li><a href="#setting-the-stage-for-collaboration" id="toc-setting-the-stage-for-collaboration" class="nav-link" data-scroll-target="#setting-the-stage-for-collaboration">Setting the Stage for Collaboration</a></li>
-  <li><a href="#key-achievements" id="toc-key-achievements" class="nav-link" data-scroll-target="#key-achievements">Key Achievements</a></li>
-  <li><a href="#recent-developments" id="toc-recent-developments" class="nav-link" data-scroll-target="#recent-developments">Recent Developments</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
-  <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
+  <li><a href="#what-an-unskilled-agent-actually-does" id="toc-what-an-unskilled-agent-actually-does" class="nav-link active" data-scroll-target="#what-an-unskilled-agent-actually-does">What an Unskilled Agent Actually Does</a></li>
+  <li><a href="#the-package-as-specification" id="toc-the-package-as-specification" class="nav-link" data-scroll-target="#the-package-as-specification">The Package as Specification</a></li>
+  <li><a href="#what-the-skill-does" id="toc-what-the-skill-does" class="nav-link" data-scroll-target="#what-the-skill-does">What the Skill Does</a></li>
+  <li><a href="#the-accountability-anchor" id="toc-the-accountability-anchor" class="nav-link" data-scroll-target="#the-accountability-anchor">The Accountability Anchor</a></li>
   </ul>
 </nav>
 </nav>
@@ -223,51 +221,34 @@ cookieconsent.run({
 
 <!--------------- typical setup ----------------->
 <!--------------- post begins here ----------------->
-<p><img src="nest_and_pharmaverseadam.png" align="center" style="float:right" width="100%"></p>
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>In the dynamic world of clinical research, innovation and collaboration are key drivers of success. The <a href="https://insightsengineering.github.io/nest/">NEST</a> and {admiral} teams exemplify this through their groundbreaking packages. By leveraging open-source tools and fostering a community-driven approach, they have significantly advanced data integration and reporting methodologies in the clinical research setting. This story celebrates one of the first occasions in which the <a href="https://insightsengineering.github.io/nest/">NEST</a> and {admiral} were able to join forces and collaborate.</p>
+<p>There is a version of the AI-in-pharma story that goes like this: LLMs are trained on vast amounts of R code, so they can write ADaM programs on demand. Packages like <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> become optional — a style preference rather than a requirement. Just describe what you need and let the model figure it out.</p>
+<p>The benchmark data from <a href="https://github.com/RConsortium/pharma-skills">pharma-skills</a> tells a different story.</p>
+<section id="what-an-unskilled-agent-actually-does" class="level2">
+<h2 class="anchored" data-anchor-id="what-an-unskilled-agent-actually-does">What an Unskilled Agent Actually Does</h2>
+<p>When an AI coding agent is asked to derive an ADAE dataset without access to <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> skill guidance, it does not reach for <code>derive_var_trtemfl()</code> or <code>derive_vars_merged()</code> with the correct parameters. Across multiple benchmark runs, unskilled agents fell into two consistent failure modes: either generating synthetic data rather than using pharmaverse reference datasets, or writing bespoke <code>dplyr</code> pipelines that reimplemented logic <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> already provides — incorrectly.</p>
+<p>One example from BDS benchmarking is particularly telling. Without skill guidance, agents consistently used <code>derive_vars_merged()</code> where <code>derive_vars_merged_lookup()</code> was required for parameter code assignment. Both functions exist in <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>. Both execute without error. But <code>derive_vars_merged()</code> drops unmatched records silently, producing a dataset with the wrong row count. No warning. No crash. Just wrong output that passes a casual review.</p>
+<p>This is not a model quality problem. It is a knowledge problem. The model does not know what the pharmaverse community knows.</p>
 </section>
-<section id="who-are-the-nest-team" class="level2">
-<h2 class="anchored" data-anchor-id="who-are-the-nest-team">Who are the NEST Team?</h2>
-<p>The <a href="https://insightsengineering.github.io/nest/">NEST</a> team, an acronym for Next-Generation Exploratory and Standardized Tools, has pioneered a collection of open-sourced R packages designed to expedite insight generation under clinical research settings. Originating at Roche, <a href="https://insightsengineering.github.io/nest/">NEST</a> has attracted a diverse array of collaborators from academia, the pharmaceutical industry, and clinical research institutes, largely due to efforts like pharmaverse. Their mission is to accelerate clinical reporting and welcome contributions from the broader scientific community.</p>
+<section id="the-package-as-specification" class="level2">
+<h2 class="anchored" data-anchor-id="the-package-as-specification">The Package as Specification</h2>
+<p><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> is more than a collection of R functions. It is a community-maintained encoding of CDISC ADaM logic — accumulated through years of collaboration across sponsors, CROs, and regulators, tested against real submissions, and versioned for traceability. When a programmer calls <code>derive_vars_dtm()</code> with the correct imputation flags, they are not just writing R code. They are implementing a specification that has been reviewed, validated, and documented.</p>
+<p>An LLM trained on general R code does not reliably inherit that specification. It has seen <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> in its training data, but not with the depth or precision needed to apply it correctly across the full range of ADaM derivation scenarios. The unskilled agent that wrote a custom <code>parse_dtc_datetime()</code> function using <code>substr()</code> and <code>as.POSIXct()</code> — rather than calling <code>derive_vars_dtm()</code> — was not being lazy. It was doing its best with what it knew. Its best was not good enough, and the errors it introduced were in the edge cases that matter most in a clinical submission.</p>
 </section>
-<section id="who-are-the-admiral-team" class="level2">
-<h2 class="anchored" data-anchor-id="who-are-the-admiral-team">Who are the admiral team?</h2>
-<p>Focused on a complementary goal, the <code>{admiral}</code> team is dedicated to providing an open-source, modularized toolbox for creating ADaM datasets in R. Their approach is transparent and collaborative, empowering users to co-create and refine a harmonized methodology for ADaM development across the pharmaceutical industry. The <code>{admiral}</code> team designs their tools to be user-friendly and versatile, capable of addressing a wide range of data requirements.</p>
-</section>
-<section id="setting-the-stage-for-collaboration" class="level2">
-<h2 class="anchored" data-anchor-id="setting-the-stage-for-collaboration">Setting the Stage for Collaboration</h2>
-<p>Over a year ago, an opportunity for collaboration was identified within <a href="https://insightsengineering.github.io/nest/">NEST</a> and <code>{admiral}</code>. Indeed, the <a href="https://insightsengineering.github.io/nest/">NEST</a> team was reliant on simulated data for integration testing and powering of its <a href="https://insightsengineering.github.io/tlg-catalog/stable/">TLG Catalog</a>, which often lacked realism and failed to cover edge cases or expose software limitations. Through conversations within the pharmaverse, it was realized that some of these challenges could be addressed by switching to using the more realistic test data offered by the <code>{pharmaverseadam}</code> package (maintained by the <code>{admiral}</code> team). The source of the data within <code>{pharmaverseadam}</code> is the is real SDTM data published through the <a href="https://github.com/cdisc-org/sdtm-adam-pilot-project">CDISC Test Data pilot</a>, converted into ADaM by running the <code>{admiral}</code> template programs on it.</p>
-<p>This potential pivot would beneficial for both teams. For one thing, it would allow the <a href="https://insightsengineering.github.io/nest/">NEST</a> team to achieve more realistic and comprehensive testing, thus enhancing the robustness of their development work. Simultaneously, it would mean that the <code>{admiral}</code> team would receive feedback from <a href="https://insightsengineering.github.io/nest/">NEST</a> about the robustness of both the <code>{pharmaverseadam}</code> datasets and the templates used to generate them.</p>
-</section>
-<section id="key-achievements" class="level2">
-<h2 class="anchored" data-anchor-id="key-achievements">Key Achievements</h2>
-<p>The following months were a period of collaboration for the two teams as this switch was enacted. Numerous achievements were identified:</p>
+<section id="what-the-skill-does" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-skill-does">What the Skill Does</h2>
+<p>The <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> skills in pharma-skills do not replace <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>. They connect the AI agent to it. A skill provides curated, domain-aware guidance: which functions to use for which derivations, how to structure the program for QC readability, which variables require special handling, and what assertions to include. The skill is the bridge between a capable general-purpose model and the specific, validated logic the pharmaverse community has built.</p>
+<p>The benchmark results reflect this directly. Across ADSL, ADAE, ADVS, and ADLB:</p>
 <ul>
-<li><p><strong>Realistic Data Integration</strong>: Transitioning from simulated to more realistic data provided the <a href="https://insightsengineering.github.io/nest/">NEST</a> team with more accurate and relevant testing conditions. This change was crucial in identifying and rectifying potential software limitations.</p></li>
-<li><p><strong>Scope and Dependency Management</strong>: Both teams agreed to avoid creating strong interdependencies that could extend release cycles. <a href="https://insightsengineering.github.io/nest/">NEST</a> packages maintained minimal data for documentation purposes, while <code>{admiral}</code> preserved extensive datasets separately.</p></li>
-<li><p><strong>CI Integration and Automation</strong>: On the <a href="https://insightsengineering.github.io/nest/">NEST</a> side, new CI integration tests ensured that template updates were automatically verified against stored <code>{pharmaverseadam}</code> datasets. This maintained consistency and allowed developers to identify intended changes promptly.</p></li>
-<li><p><strong>Strategic Pipelines</strong>: A pipeline was established in <code>{pharmaverseadam}</code> so that any updates to the <code>{pharmaversesdtm}</code> source datasets and/or the <code>{admiral}</code> template scripts can trigger an update to <code>{pharmaverseadam}</code>.</p></li>
+<li><strong>With skill: 88–100%</strong> pass rates across domains</li>
+<li><strong>Without skill: 17–59%</strong> pass rates, with high variance</li>
 </ul>
+<p>That variance in the unskilled condition matters as much as the mean. Inconsistent output is not a defensible process in a GxP context. A skill-guided agent produces consistent, traceable, <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>-anchored code. An unskilled agent produces something different every time.</p>
 </section>
-<section id="recent-developments" class="level2">
-<h2 class="anchored" data-anchor-id="recent-developments">Recent Developments</h2>
-<p>The collaboration bore fruit as the teams uncovered critical insights and improvements. For instance, using the <code>{pharmaverseadam}</code> data in the <code>{scda.test}</code> package helped the <a href="https://insightsengineering.github.io/nest/">NEST</a> team identify and correct issues in their table template development, specifically in calculating denominator values. The realistic test data also revealed minor inconsistencies in the derivation of ECG data within the <code>{admiral}</code> templates, which were promptly addressed, enhancing data quality.</p>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>The collaboration between the <a href="https://insightsengineering.github.io/nest/">NEST</a> and <code>{admiral}</code> teams showcases the power of open-source initiatives and community-driven efforts such as the pharmaverse in advancing clinical research. By integrating realistic data and refining their testing processes, they have significantly enhanced the robustness and reliability of their tools. This partnership not only accelerates insight generation but also cultivates a culture of collaboration and innovation, benefiting the broader pharmaverse community.</p>
-<p>The success of this collaboration highlights the profound impact of shared goals and collective innovation, paving the way for future advancements in clinical research methodologies and outcomes.</p>
-</section>
-<section id="acknowledgements" class="level2">
-<h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
-<p>We would like to thank the following people for their support during this project:</p>
-<ul>
-<li><p>Daphne Grasselly for establishing the automated CI refresh pipeline in <code>{pharmaverseadam}</code>, and Kangjie Zhang for leading the <code>{pharmaverseadam}</code> team in 2024.</p></li>
-<li><p>Ben Straub, Stefan Bundfuss, Zelos Zhu, Ross Farrugia and Jeff Dickinson for their support from the <code>{admiral}</code> side.</p></li>
-<li><p>Leena Khatri and Emily de la Rua for support from the <a href="https://insightsengineering.github.io/nest/">NEST</a> side.</p></li>
-</ul>
+<section id="the-accountability-anchor" class="level2">
+<h2 class="anchored" data-anchor-id="the-accountability-anchor">The Accountability Anchor</h2>
+<p>There is a regulatory dimension here that goes beyond code quality. A clinical submission needs to trace its derivations to validated, versioned, documented methods. A bespoke LLM-generated pipeline — however functional — has no such anchor. <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> provides it. When a submission uses <code>derive_var_trtemfl()</code> from a pinned version of <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip>, the derivation logic is documented, community-reviewed, and reproducible. The AI is most useful when it is writing code that inherits those properties, not when it is improvising around them.</p>
+<p>This is why the pharma-skills project frames skills not as prompt templates, but as domain knowledge artifacts. The goal is not to make AI write more R code. It is to make AI write <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> code — correctly, consistently, and in a form that a human reviewer can audit and a regulatory submission can defend.</p>
+<p><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()"> <template>admiral</template> <a href="https://pharmaverse.github.io/admiral/" class="r-link-pkg" target="_blank">{admiral}</a> </bslib-tooltip> was built for exactly this moment. The community just needs to make sure AI knows how to use it.</p>
 <!--------------- appendices go here ----------------->
 </section>
 <div class="cell">
@@ -281,22 +262,20 @@ cookieconsent.run({
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-06-14 18:52:55.217834</p>
+<p>2026-06-14 18:52:36.863336</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_nest_and_pharmaverseadam/nest_and_pharmaverseadam.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhu2025,
-  author = {Zhu, Joe and Mancini, Edoardo},
-  title = {A Collaborative Triumph: {Re-using} Test Data Between the
-    {NEST} and Admiral Teams},
-  date = {2025-01-15},
-  url = {https://pharmaverse.github.io/blog/posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html},
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{dickinson2026,
+  author = {Dickinson, Jeff},
+  title = {Why We Still Need \{Admiral\} in an Age of {AI}},
+  date = {2026-06-14},
+  url = {https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.html},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhu2025" class="csl-entry quarto-appendix-citeas" role="listitem">
-Zhu, Joe, and Edoardo Mancini. 2025. <span>“A Collaborative Triumph:
-Re-Using Test Data Between the NEST and Admiral Teams.”</span> January
-15, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html">https://pharmaverse.github.io/blog/posts/2025-01-15_nest_and_pharmaverseadam/nest_and_pharmaverseadam.html</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-dickinson2026" class="csl-entry quarto-appendix-citeas" role="listitem">
+Dickinson, Jeff. 2026. <span>“Why We Still Need {Admiral} in an Age of
+AI.”</span> June 14, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.html">https://pharmaverse.github.io/blog/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.html</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
