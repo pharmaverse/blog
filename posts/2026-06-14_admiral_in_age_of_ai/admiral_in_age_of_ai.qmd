@@ -1,0 +1,68 @@
+---
+title: "Why we still need {admiral} in an age of AI"
+author: 
+- name: Jeff Dickinson
+description: "LLMs can write R code, but can they write reliable and readable ADaM code? Benchmark data from the R Consortium pharma-skills initiative shows that without structured {admiral} skill guidance, AI agents produce inconsistent error-prone derivations. Here's what the data shows and why the pharmaverse package ecosystem matters more than ever."
+date: "2026-06-14"
+categories:  [Technical, ADaM, Community]
+image: admiral.png
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2026-06-14_admiral_in_age_of_ai"
+library(link)
+link::auto()
+```
+
+<!--------------- post begins here ----------------->
+
+There is a version of the AI-in-pharma story that goes like this: LLMs are trained on vast amounts of R code, so they can write ADaM programs on demand. Packages like {admiral} become optional — a style preference rather than a requirement. Just describe what you need and let the model figure it out.
+
+The benchmark data from [pharma-skills](https://github.com/RConsortium/pharma-skills) tells a different story.
+
+## What an Unskilled Agent Actually Does
+
+When an AI coding agent is asked to derive an ADAE dataset without access to {admiral} skill guidance, it does not reach for `derive_var_trtemfl()` or `derive_vars_merged()` with the correct parameters. Across multiple benchmark runs, unskilled agents fell into two consistent failure modes: either generating synthetic data rather than using pharmaverse reference datasets, or writing bespoke `dplyr` pipelines that reimplemented logic {admiral} already provides — incorrectly.
+
+One example from BDS benchmarking is particularly telling. Without skill guidance, agents consistently used `derive_vars_merged()` where `derive_vars_merged_lookup()` was required for parameter code assignment. Both functions exist in {admiral}. Both execute without error. But `derive_vars_merged()` drops unmatched records silently, producing a dataset with the wrong row count. No warning. No crash. Just wrong output that passes a casual review.
+
+This is not a model quality problem. It is a knowledge problem. The model does not know what the pharmaverse community knows.
+
+## The Package as Specification
+
+{admiral} is more than a collection of R functions. It is a community-maintained encoding of CDISC ADaM logic — accumulated through years of collaboration across sponsors, CROs, and regulators, tested against real submissions, and versioned for traceability. When a programmer calls `derive_vars_dtm()` with the correct imputation flags, they are not just writing R code. They are implementing a specification that has been reviewed, validated, and documented.
+
+An LLM trained on general R code does not reliably inherit that specification. It has seen {admiral} in its training data, but not with the depth or precision needed to apply it correctly across the full range of ADaM derivation scenarios. The unskilled agent that wrote a custom `parse_dtc_datetime()` function using `substr()` and `as.POSIXct()` — rather than calling `derive_vars_dtm()` — was not being lazy. It was doing its best with what it knew. Its best was not good enough, and the errors it introduced were in the edge cases that matter most in a clinical submission.
+
+## What the Skill Does
+
+The {admiral} skills in pharma-skills do not replace {admiral}. They connect the AI agent to it. A skill provides curated, domain-aware guidance: which functions to use for which derivations, how to structure the program for QC readability, which variables require special handling, and what assertions to include. The skill is the bridge between a capable general-purpose model and the specific, validated logic the pharmaverse community has built.
+
+The benchmark results reflect this directly. Across ADSL, ADAE, ADVS, and ADLB:
+
+- **With skill: 88–100%** pass rates across domains
+- **Without skill: 17–59%** pass rates, with high variance
+
+That variance in the unskilled condition matters as much as the mean. Inconsistent output is not a defensible process in a GxP context. A skill-guided agent produces consistent, traceable, {admiral}-anchored code. An unskilled agent produces something different every time.
+
+## The Accountability Anchor
+
+There is a regulatory dimension here that goes beyond code quality. A clinical submission needs to trace its derivations to validated, versioned, documented methods. A bespoke LLM-generated pipeline — however functional — has no such anchor. {admiral} provides it. When a submission uses `derive_var_trtemfl()` from a pinned version of {admiral}, the derivation logic is documented, community-reviewed, and reproducible. The AI is most useful when it is writing code that inherits those properties, not when it is improvising around them.
+
+This is why the pharma-skills project frames skills not as prompt templates, but as domain knowledge artifacts. The goal is not to make AI write more R code. It is to make AI write {admiral} code — correctly, consistently, and in a form that a human reviewer can audit and a regulatory submission can defend.
+
+{admiral} was built for exactly this moment. The community just needs to make sure AI knows how to use it.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
