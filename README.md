@@ -86,49 +86,18 @@ Most importantly:
 
 ## Tips and Tricks
 
-* You can use this code snippet to install all packages needed for the blog site or use the docker image cited below.
+* All packages needed for the blog site are declared in the [`DESCRIPTION`](DESCRIPTION) file at the root of the repository. You can install them all at once using `pak` (recommended for speed, as it uses binary packages and caching):
+
+```r
+# Install pak if you don't have it
+install.packages("pak")
+
+# Install all blog dependencies from the DESCRIPTION file
+pak::pak()
 ```
-install.packages(
-  c(
-    "jsonlite",
-    "tidyverse",
-    "spelling",
-    "janitor",
-    "diffdf",
-    "admiral",
-    "patchwork",
-    "here",
-    "reactable",
-    "pharmaversesdtm",
-    "metacore",
-    "metatools",
-    "xportr",
-    "pharmaverseadam",
-    "link",
-    "sessioninfo",
-    "rtables",
-    "teal",
-    "riskmetric",
-    "tidyCDISC",
-    "mirai",
-    "dverse",
-    "DT",
-    "xportr",
-    "sdtm.oak",
-    "teal",
-    "riskmetric",
-    "tidyCDISC",
-    "admiralonco",
-    "admiralophtha",
-    "admiralpeds",
-    "admiralvaccine",
-    "admiralmetabolic",
-    "autoslider.core",
-    "filters"
-    "logrx"
-  )
-)
-```
+
+Alternatively, you can use the Docker image described below.
+
 ## How to Use the `blog` Docker Image for Local Development
 
 Contributors can benefit from using the [`blog` Docker image](https://github.com/pharmaverse/blog/pkgs/container/blog) when creating their blog posts.

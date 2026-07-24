@@ -5,18 +5,20 @@ on:
 jobs:
   Spelling:
     runs-on: ubuntu-latest
-    container:
-      image: "rocker/tidyverse:4.3.1"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+
       - name: Install packages
-        run: |
-          if (!require("roxygen2")) install.packages("roxygen2")
-          if (!require("spelling")) install.packages("spelling")
-          if (!require("testthat")) install.packages("testthat")
-        shell: Rscript {0}
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::spelling
+            any::testthat
+            any::readr
 
       - name: Remove links from .qmd files (Bash)
         run: |
