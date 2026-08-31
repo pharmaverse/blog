@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.12">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Edward Gillian Hugo Bottois">
+<meta name="dcterms.date" content="2026-06-23">
+<meta name="description" content="In pharmaceutical development, the reliability of statistical and TLF software is a regulatory requirement. This post introduces {risk.assessr}, an open-source, risk-based package assessment tool, and takes a deep dive into how it scores elements of R packages for use in validated environments.">
+
+<title>risk.assessr: A Data-Driven Workflow for R Package Validation in Regulated Environments – pharmaverse blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../media/pharmaverseblog.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-cdaacfc258cb6f151192107f105ac881.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-ef3ce4b6ef109bc3f31310f59354927d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6ZDR80SCKG"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-6ZDR80SCKG', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: #eeeeee;
+      }
+</style>
+<script src="../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="risk.assessr: A Data-Driven Workflow for R Package Validation in Regulated Environments – pharmaverse blog">
+<meta property="og:description" content="In pharmaceutical development, the reliability of statistical and TLF software is a regulatory requirement. This post introduces {risk.assessr}, an open-source, risk-based package assessment tool, and takes a deep dive into how it scores elements of R packages for use in validated environments.">
+<meta property="og:image" content="https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk_assessr.png">
+<meta property="og:site_name" content="pharmaverse blog">
+<meta property="og:image:height" content="180">
+<meta property="og:image:width" content="180">
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">pharmaverse blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/pharmaverse/blog"> <i class="bi bi-github" role="img" aria-label="github">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../session_info.html"> 
+<span class="menu-text">Session Info</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">risk.assessr: A Data-Driven Workflow for R Package Validation in Regulated Environments</h1>
+                  <div>
+        <div class="description">
+          In pharmaceutical development, the reliability of statistical and TLF software is a regulatory requirement. This post introduces {risk.assessr}, an open-source, risk-based package assessment tool, and takes a deep dive into how it scores elements of R packages for use in validated environments.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Technical</div>
+                <div class="quarto-category">Community</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Edward Gillian Hugo Bottois </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 23, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#validating-r-packages-the-risk-based-way" id="toc-validating-r-packages-the-risk-based-way" class="nav-link active" data-scroll-target="#validating-r-packages-the-risk-based-way">Validating R packages, the risk-based way</a>
+  <ul class="collapse">
+  <li><a href="#summary-what-does-risk.assessr-give-you" id="toc-summary-what-does-risk.assessr-give-you" class="nav-link" data-scroll-target="#summary-what-does-risk.assessr-give-you">Summary: What does <code>{risk.assessr}</code> give you?</a></li>
+  <li><a href="#how-a-package-gets-assessed-the-assess_pkg-workflow" id="toc-how-a-package-gets-assessed-the-assess_pkg-workflow" class="nav-link" data-scroll-target="#how-a-package-gets-assessed-the-assess_pkg-workflow">How a package gets assessed: the <code>assess_pkg()</code> workflow</a></li>
+  <li><a href="#deep-dive-1-r-cmd-check-with-three-profiles-and-forbidden-notes" id="toc-deep-dive-1-r-cmd-check-with-three-profiles-and-forbidden-notes" class="nav-link" data-scroll-target="#deep-dive-1-r-cmd-check-with-three-profiles-and-forbidden-notes">Deep dive 1: R CMD check, with three profiles and “forbidden notes”</a>
+  <ul class="collapse">
+  <li><a href="#three-profiles-picked-by-setup_rcmdcheck_args" id="toc-three-profiles-picked-by-setup_rcmdcheck_args" class="nav-link" data-scroll-target="#three-profiles-picked-by-setup_rcmdcheck_args">Three profiles, picked by <code>setup_rcmdcheck_args()</code></a></li>
+  <li><a href="#reclassifying-forbidden-notes-as-errors" id="toc-reclassifying-forbidden-notes-as-errors" class="nav-link" data-scroll-target="#reclassifying-forbidden-notes-as-errors">Reclassifying “forbidden” notes as errors</a></li>
+  </ul></li>
+  <li><a href="#deep-dive-2-get_risk_analysis-rules-you-can-version-control" id="toc-deep-dive-2-get_risk_analysis-rules-you-can-version-control" class="nav-link" data-scroll-target="#deep-dive-2-get_risk_analysis-rules-you-can-version-control">Deep dive 2: <code>get_risk_analysis()</code> — rules you can version-control</a>
+  <ul class="collapse">
+  <li><a href="#creating-your-own-risk-profile" id="toc-creating-your-own-risk-profile" class="nav-link" data-scroll-target="#creating-your-own-risk-profile">Creating your own risk profile</a></li>
+  </ul></li>
+  <li><a href="#deep-dive-3-documentation-metrics-that-look-beyond-the-readme" id="toc-deep-dive-3-documentation-metrics-that-look-beyond-the-readme" class="nav-link" data-scroll-target="#deep-dive-3-documentation-metrics-that-look-beyond-the-readme">Deep dive 3: documentation metrics that look beyond the README</a></li>
+  <li><a href="#deep-dive-4-traceability-matrix-function-type-and-function-status" id="toc-deep-dive-4-traceability-matrix-function-type-and-function-status" class="nav-link" data-scroll-target="#deep-dive-4-traceability-matrix-function-type-and-function-status">Deep dive 4: traceability matrix — function type <em>and</em> function status</a>
+  <ul class="collapse">
+  <li><a href="#classifying-every-flavour-of-r-function" id="toc-classifying-every-flavour-of-r-function" class="nav-link" data-scroll-target="#classifying-every-flavour-of-r-function">Classifying every flavour of R function</a></li>
+  <li><a href="#fine-grained-matrices-by-test-coverage-and-by-function-status" id="toc-fine-grained-matrices-by-test-coverage-and-by-function-status" class="nav-link" data-scroll-target="#fine-grained-matrices-by-test-coverage-and-by-function-status">Fine-grained matrices: by test coverage <em>and</em> by function status</a></li>
+  </ul></li>
+  <li><a href="#deep-dive-5-where-popularity-comes-from" id="toc-deep-dive-5-where-popularity-comes-from" class="nav-link" data-scroll-target="#deep-dive-5-where-popularity-comes-from">Deep dive 5: where popularity comes from</a></li>
+  <li><a href="#deep-dive-6-the-dependency-tree-recursive-risk-made-visible" id="toc-deep-dive-6-the-dependency-tree-recursive-risk-made-visible" class="nav-link" data-scroll-target="#deep-dive-6-the-dependency-tree-recursive-risk-made-visible">Deep dive 6: the dependency tree — recursive risk, made visible</a></li>
+  <li><a href="#reporting-two-artefacts-two-audiences" id="toc-reporting-two-artefacts-two-audiences" class="nav-link" data-scroll-target="#reporting-two-artefacts-two-audiences">Reporting: two artefacts, two audiences</a></li>
+  <li><a href="#final-takeaways" id="toc-final-takeaways" class="nav-link" data-scroll-target="#final-takeaways">Final takeaways</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="risk_assessr.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="220"></p>
+</figure>
+</div>
+<section id="validating-r-packages-the-risk-based-way" class="level1">
+<h1>Validating R packages, the risk-based way</h1>
+<p>In pharmaceutical development, the reliability of statistical and TLF software is a regulatory requirement. For organizations using R in submission environments, this mandate means a rigorous approach to validation is needed. <code>{risk.assessr}</code> is an open-source tool — built by the Sanofi/Cytel Validation team and available on CRAN and <code>pharmaverse</code> — that turns package validation into a structured, data-driven workflow.</p>
+<p>System validation must support three pillars:</p>
+<ul>
+<li><strong>Accuracy</strong> — does the package compute the right answer?</li>
+<li><strong>Reproducibility</strong> — does it compute the same answer, every time, on every machine?</li>
+<li><strong>Traceability</strong> — can you tie each exported function back to a specification, a test, and a result?</li>
+</ul>
+<p>The <a href="https://www.pharmar.org/">R Validation Hub</a> classifies R packages into two tiers when considering accuracy:</p>
+<ul>
+<li><strong>Base and recommended (core) packages</strong> — developed by the R Foundation and shipped with R itself. These represent the highest tier of reliability.</li>
+<li><strong>Contributed open-source packages</strong> — developed by anyone in the community. These vary significantly in accuracy, robustness, and maintenance.</li>
+</ul>
+<p><code>{risk.assessr}</code> assigns each assessed package a quantitative risk profile so that you can decide — with evidence — whether the package is suitable for exploratory work, for a regulatory submission, or should be rejected.</p>
+<section id="summary-what-does-risk.assessr-give-you" class="level2">
+<h2 class="anchored" data-anchor-id="summary-what-does-risk.assessr-give-you">Summary: What does <code>{risk.assessr}</code> give you?</h2>
+<ul>
+<li>A single entry point — <code>risk_assess_pkg()</code> — that downloads a package (or accepts a local <code>.tar.gz</code>), installs it, runs <code>R CMD check</code>, computes test coverage, builds a traceability matrix, and harvests metadata from CRAN, Bioconductor, GitHub, and PubMed.</li>
+<li>A configurable, <strong>rule-based risk engine</strong> (<code>get_risk_analysis()</code>) whose thresholds live in a JSON file (<code>inst/config/risk-definition.json</code>) — meaning your validation criteria are auditable, editable artefacts.</li>
+<li>Two complementary reports:
+<ul>
+<li><code>generate_html_report()</code> — a rich red/yellow/green dashboard for developers and validation engineers.</li>
+<li><code>write_summary_report()</code> — a one-page <strong>Approved / Rejected / Remediation Needed</strong> summary for sign-off, typically triggered by a Validation GitHub Action.</li>
+</ul></li>
+<li>Support for the modern R object system landscape: regular, S3, S4, S7, R6 and ggproto functions are all classified and traced.</li>
+<li>A built-in <strong>dependency tree</strong> (<code>build_dependency_tree()</code>) so that the recursive risk of a package’s imports is visible, not hidden.</li>
+</ul>
+<p>The rest of this post takes a few deep dives into the parts of <code>{risk.assessr}</code> that most directly support a validation decision.</p>
+</section>
+<section id="how-a-package-gets-assessed-the-assess_pkg-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="how-a-package-gets-assessed-the-assess_pkg-workflow">How a package gets assessed: the <code>assess_pkg()</code> workflow</h2>
+<p>Before diving in, it helps to see the shape of the workflow. The user-facing entry point <code>risk_assess_pkg()</code> is a thin wrapper that resolves a package source (a tarball, a CRAN / Bioconductor / internal repo name, or an interactive file chooser), and then hands off to the internal controller function <code>assess_pkg()</code>:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A[risk_assess_pkg&lt;br/&gt;path / package / file chooser] --&gt; B[set_up_pkg&lt;br/&gt;unpack tarball]
+    B --&gt; C[install_package_local]
+    C --&gt; D[assess_pkg]
+    D --&gt; D1[doc_riskmetric&lt;br/&gt;documentation, news, examples]
+    D --&gt; D2[test.assessr::get_package_coverage&lt;br/&gt;test coverage]
+    D --&gt; D3[create_traceability_matrix&lt;br/&gt;exports x docs x tests]
+    D --&gt; D4[run_rcmdcheck + check_forbidden_notes]
+    D --&gt; D5[get_dependencies / get_session_dependencies]
+    D --&gt; D6[check_suggested_exp_funcs]
+    D --&gt; D7[get_host_package + get_github_data&lt;br/&gt;cran_revdep / bioconductor_reverse_deps&lt;br/&gt;get_cran_total_downloads]
+    D1 &amp; D2 &amp; D3 &amp; D4 &amp; D5 &amp; D6 &amp; D7 --&gt; E[get_risk_analysis&lt;br/&gt;apply risk-definition.json]
+    E --&gt; F[results, covr_list, tm_list, check_list, risk_analysis]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Each of those branches produces a slice of evidence; <code>get_risk_analysis()</code> brings them together and applies your risk rules. The next sections walk through the most validation- relevant branches.</p>
+</section>
+<section id="deep-dive-1-r-cmd-check-with-three-profiles-and-forbidden-notes" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-1-r-cmd-check-with-three-profiles-and-forbidden-notes">Deep dive 1: R CMD check, with three profiles and “forbidden notes”</h2>
+<p><code>R CMD check</code> is the largest and most comprehensive check in the R ecosystem — more than 50 individual checks of an R package’s structure, metadata, code, tests, examples and documentation are performed. <code>{risk.assessr}</code> runs it through <code>rcmdcheck::rcmdcheck()</code> that the user can configure: <strong>you choose a check profile</strong>, and <strong>certain notes are reclassified as errors</strong>.</p>
+<section id="three-profiles-picked-by-setup_rcmdcheck_args" class="level3">
+<h3 class="anchored" data-anchor-id="three-profiles-picked-by-setup_rcmdcheck_args">Three profiles, picked by <code>setup_rcmdcheck_args()</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the function lives in R/setup_rcmdcheck_args.R</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">setup_rcmdcheck_args</span>(<span class="at">check_type =</span> <span class="st">"1"</span>, <span class="at">build_vignettes =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><code>check_type</code></th>
+<th>Profile</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>"1"</code></td>
+<td>Basic (default)</td>
+<td><code>--no-examples</code>, <code>--ignore-vignettes</code>, <code>--no-vignettes</code>, <code>--no-manual</code></td>
+</tr>
+<tr class="even">
+<td><code>"2"</code></td>
+<td>Frugal / no-tests</td>
+<td>As <code>"1"</code> plus <code>--no-tests</code>. Used by <code>get_frugal_metrics()</code> for fast scans.</td>
+</tr>
+<tr class="odd">
+<td>anything else</td>
+<td>CRAN-like (<code>--as-cran</code>)</td>
+<td>Mirrors a CRAN submission check; honours <code>build_vignettes</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Every profile also sets <code>_R_CHECK_FORCE_SUGGESTS_=FALSE</code> so a missing Suggests dependency does not fail the check the same way it would on a clean CRAN machine. The check is run with <code>error_on = "never"</code>, because the goal is <em>evidence</em>, not a stop signal — a failed package should still produce a report.</p>
+</section>
+<section id="reclassifying-forbidden-notes-as-errors" class="level3">
+<h3 class="anchored" data-anchor-id="reclassifying-forbidden-notes-as-errors">Reclassifying “forbidden” notes as errors</h3>
+<p>The vanilla <code>R CMD check</code> is famously lenient: several issues that should be deal-breakers in a validated environment land as mere <code>NOTE</code>s. <code>check_forbidden_notes()</code> rescans the notes and promotes the dangerous ones to errors, mimicking a CRAN - style check:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>forbidden_patterns <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"'.*' import not declared from"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Namespace in Imports field not imported from"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"no visible global .+ definition"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In other words, packages that quietly reach into namespaces they didn’t declare, or rely on globals the parser can’t resolve, will be scored as if they had failed outright. The scoring itself is a weighted sum:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># core_metrics.R, run_rcmdcheck()</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sum_vars         <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">notes =</span> <span class="fu">length</span>(notes), <span class="at">warnings =</span> <span class="fu">length</span>(warnings), <span class="at">errors =</span> <span class="fu">length</span>(errors))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>score_weightings <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">notes =</span> <span class="fl">0.10</span>,           <span class="at">warnings =</span> <span class="fl">0.25</span>,            <span class="at">errors =</span> <span class="fl">1.00</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>check_score      <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">min</span>(<span class="fu">sum</span>(score_weightings <span class="sc">*</span> sum_vars), <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The result is a <code>check_score</code> in <code>[0, 1]</code>: <code>1</code> means a perfectly clean check, <code>0</code> means at least one error (or four warnings, or ten notes).</p>
+</section>
+</section>
+<section id="deep-dive-2-get_risk_analysis-rules-you-can-version-control" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-2-get_risk_analysis-rules-you-can-version-control">Deep dive 2: <code>get_risk_analysis()</code> — rules you can version-control</h2>
+<p>Raw metrics are not decisions. <code>get_risk_analysis()</code> turns numbers (and licence strings) into <strong>Low / Medium / High</strong> risk levels, using a config file that ships with the package:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system.file</span>(<span class="st">"config"</span>, <span class="st">"risk-definition.json"</span>, <span class="at">package =</span> <span class="st">"risk.assessr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Each entry in that JSON file maps one <strong>key</strong> in the flattened results to a set of thresholds:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"label"</span><span class="fu">:</span> <span class="st">"code coverage"</span><span class="fu">,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"id"</span><span class="fu">:</span> <span class="st">"code_coverage"</span><span class="fu">,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"key"</span><span class="fu">:</span> <span class="st">"code_coverage"</span><span class="fu">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"thresholds"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">"level"</span><span class="fu">:</span> <span class="st">"high"</span><span class="fu">,</span>   <span class="dt">"max"</span><span class="fu">:</span> <span class="fl">0.6</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">"level"</span><span class="fu">:</span> <span class="st">"medium"</span><span class="fu">,</span> <span class="dt">"max"</span><span class="fu">:</span> <span class="fl">0.8</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">"level"</span><span class="fu">:</span> <span class="st">"low"</span><span class="fu">,</span>    <span class="dt">"max"</span><span class="fu">:</span> <span class="dv">1</span>   <span class="fu">}</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The defaults that ship with <code>{risk.assessr}</code> cover the metrics most validation teams care about:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk dimension</th>
+<th>Key</th>
+<th>Default thresholds (Low / Medium / High)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dependency count</td>
+<td><code>dependencies_count</code></td>
+<td>≤ 20 / ≤ 40 / &gt; 40</td>
+</tr>
+<tr class="even">
+<td>Version deprecation</td>
+<td><code>later_version</code></td>
+<td>≤ 3 later releases / &gt; 3</td>
+</tr>
+<tr class="odd">
+<td>Code coverage</td>
+<td><code>code_coverage</code></td>
+<td>&gt; 80% / 60–80% / ≤ 60%</td>
+</tr>
+<tr class="even">
+<td>Popularity (downloads)</td>
+<td><code>total_download</code></td>
+<td>&gt; 50M / 3.5M–50M / ≤ 3.5M</td>
+</tr>
+<tr class="odd">
+<td>Licence</td>
+<td><code>license</code></td>
+<td>MIT/Apache / GPL/LGPL/Artistic / AGPL, SSPL, NOTAVAILABLE, …</td>
+</tr>
+<tr class="even">
+<td>Reverse dependencies</td>
+<td><code>reverse_dependencies_count</code></td>
+<td>&gt; 15 / 6–15 / ≤ 5</td>
+</tr>
+<tr class="odd">
+<td>Documentation breadth</td>
+<td><code>documentation_score</code></td>
+<td>&gt; 6 indicators / 4–6 / ≤ 3</td>
+</tr>
+<tr class="even">
+<td>Examples + Rd coverage</td>
+<td><code>has_ex_docs_score</code></td>
+<td>&gt; 80% / 60–80% / ≤ 60%</td>
+</tr>
+<tr class="odd">
+<td><code>R CMD check</code></td>
+<td><code>cmd_check</code></td>
+<td>= 1.0 / 0.0–0.8 / 0</td>
+</tr>
+</tbody>
+</table>
+<section id="creating-your-own-risk-profile" class="level3">
+<h3 class="anchored" data-anchor-id="creating-your-own-risk-profile">Creating your own risk profile</h3>
+<p>These defaults are sensible, but users can set their own rules and values. You can override them globally for an R session in one of two ways:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Option A: an in-memory R list</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">risk.assessr.risk_definition =</span> strict_coverage_config)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Option B: point at an external JSON file (recommended for governance)</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">risk.assessr.risk_definition =</span> <span class="st">"config/risk-definition-internal.json"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">risk_assess_pkg</span>(<span class="at">package =</span> <span class="st">"stringr"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(result<span class="sc">$</span>risk_analysis)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Storing the rules in JSON creates an audit trail: your validation policy has a <strong>versioned artefact</strong> that can be examined by reviewers or management.</p>
+</section>
+</section>
+<section id="deep-dive-3-documentation-metrics-that-look-beyond-the-readme" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-3-documentation-metrics-that-look-beyond-the-readme">Deep dive 3: documentation metrics that look beyond the README</h2>
+<p>Good documentation is a leading indicator of long-term reliability. <code>doc_riskmetric()</code> rolls several signals into a single <code>doc_scores</code> list, each of which feeds the risk engine:</p>
+<ul>
+<li><strong>Standard roxygen / Rd documentation.</strong> <code>assess_exported_functions_docs()</code> walks <code>tools::Rd_db()</code>, resolves every exported function to its <code>.Rd</code> page — supporting shared topics via <code>@rdname</code> and multiple <code>\alias{}</code> entries — and produces <code>has_docs_score</code>, the fraction of exported functions that have an Rd page.</li>
+<li><strong>Worked examples.</strong> <code>assess_examples()</code> extracts the <code>\examples{}</code> and <code>\example{}</code> sections (including content wrapped in <code>\dontrun{}</code> and <code>\donttest{}</code>) and reports <code>example_score</code>, the fraction of exported functions that have an example. <code>\dontrun{}</code> blocks still count — what we are measuring is <em>intent to demonstrate</em>, not whether the example runs on a clean CRAN box.</li>
+<li><strong>Family-style documentation.</strong> The HTML report explicitly checks whether exported functions are grouped through roxygen <code>@family</code> tags, surfacing packages that document related functions together (a strong signal of curated APIs).</li>
+<li><strong><code>DESCRIPTION</code> health.</strong> <code>assess_description_file_elements()</code> reports whether the package declares a <code>BugReports</code> URL, a maintainer, a website, and a source-control link. Source control detection is intentionally broad — <code>github.com</code>, <code>gitlab.com</code> (including self-hosted GitLab), Bitbucket, R-Forge, Codeberg, SourceForge, Sourcehut, Bioconductor, and academic <code>.ac.uk</code> / <code>.edu.au</code> URLs all count. If the <code>URL</code> field is empty, <code>BugReports</code> is used as a fallback.</li>
+<li><strong>NEWS, and <em>current</em> NEWS.</strong> <code>assess_news()</code> finds <code>NEWS</code>, <code>NEWS.md</code>, or <code>NEWS.Rd</code> anywhere in the target package (package root, <code>doc/</code>, <code>vignettes/</code>, and recursively under <code>inst/</code>). <code>assess_news_current()</code> then goes one step further and checks that the NEWS file actually mentions the <strong>version under assessment</strong> — catching the classic “the NEWS file exists, but was last updated three releases ago” failure mode.</li>
+<li><strong>Vignettes and codebase size.</strong> <code>assess_vignettes()</code> reports presence; <code>assess_size_codebase()</code> recursively walks <code>R/</code> to give a lines-of-code count (after stripping headers, comments, and blank lines) as a proxy for surface area.</li>
+</ul>
+<p>The composite <code>has_ex_docs_score</code> is just the mean of <code>example_score</code> and <code>has_docs_score</code>, giving a single number for “are exported functions both documented and demonstrated?”.</p>
+</section>
+<section id="deep-dive-4-traceability-matrix-function-type-and-function-status" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-4-traceability-matrix-function-type-and-function-status">Deep dive 4: traceability matrix — function type <em>and</em> function status</h2>
+<p><code>create_traceability_matrix()</code> is an important element for examining packages for <em>accuracy, reproducibility, traceability</em>. For every exported function it produces a row linking:</p>
+<ul>
+<li>the function name (and its class, for methods),</li>
+<li>the function <strong>type</strong> (regular, S3 generic, S3 method, S3 generic+method, S4 generic, S4 method, S7 generic, S7 class, S7 constructor, R6 class, ggproto class, …),</li>
+<li>the function <strong>description</strong> parsed from its Rd,</li>
+<li>the documentation file in <code>man/</code>,</li>
+<li>the source script in <code>R/</code>,</li>
+<li>the per-script test coverage percentage from <code>{test.assessr}</code> / <code>{covr}</code>,</li>
+<li>the test scripts that exercise the function.</li>
+</ul>
+<section id="classifying-every-flavour-of-r-function" class="level3">
+<h3 class="anchored" data-anchor-id="classifying-every-flavour-of-r-function">Classifying every flavour of R function</h3>
+<p><code>get_exports()</code> and <code>classify_function_body()</code> together handle the modern R function types (regular and Object Oriented Programming (OOP) functions. A selection from the production code:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">inherits</span>(obj, <span class="st">"S7_generic"</span>))   <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">name =</span> f, <span class="at">class =</span> <span class="cn">NA</span>, <span class="at">type =</span> <span class="st">"S7 generic"</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">inherits</span>(obj, <span class="st">"S7_class"</span>))     <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">name =</span> f, <span class="at">class =</span> <span class="cn">NA</span>, <span class="at">type =</span> <span class="st">"S7 class"</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">"S7::new</span><span class="sc">\\</span><span class="st">(|S7::new_object</span><span class="sc">\\</span><span class="st">("</span>, body_text))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">name =</span> f, <span class="at">class =</span> <span class="cn">NA</span>, <span class="at">type =</span> <span class="st">"S7 constructor"</span>))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (methods<span class="sc">::</span><span class="fu">isGeneric</span>(generic_clean))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                                   row<span class="sc">$</span>function_type <span class="ot">&lt;-</span> <span class="st">"S4 method, S4 generic"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>S3 methods are parsed straight out of <code>NAMESPACE</code> lines like <code>S3method(print, foo)</code>, and the classifier later upgrades the label if it finds (or fails to find) <code>UseMethod()</code> calls in the body. R6 and ggproto classes have dedicated extractors so that <strong>every method body</strong> — not just the top-level constructor — is available for downstream pattern matching.</p>
+<p>This matters in regulated work because validation auditors rarely accept “exported function” as a single bucket: an S4 generic is documented and tested very differently from an R6 method, and an S7 constructor is something else again.</p>
+<p>The following are examples of traceability matrices report:</p>
+<p>First, an example from ggplot2 version 3.5.1:</p>
+<p><img src="ggplot2-tm-01.png" class="img-fluid"></p>
+<p>This shows 3 functions; each with a different function type.</p>
+<p>Second, an example from ellmer version 0.3.0:</p>
+<p><img src="ellmer-tm.png" class="img-fluid"></p>
+</section>
+<section id="fine-grained-matrices-by-test-coverage-and-by-function-status" class="level3">
+<h3 class="anchored" data-anchor-id="fine-grained-matrices-by-test-coverage-and-by-function-status">Fine-grained matrices: by test coverage <em>and</em> by function status</h3>
+<p>Once the master matrix is built, <code>fine_grained_tms()</code> filters it into seven views, each of which lands in the HTML report as a tab:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>tm_list<span class="sc">$</span>coverage<span class="sc">$</span>high_risk        <span class="co"># coverage_percent &lt;= 60 or NA</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>tm_list<span class="sc">$</span>coverage<span class="sc">$</span>medium_risk      <span class="co"># 60 &lt; coverage_percent &lt; 80</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>tm_list<span class="sc">$</span>coverage<span class="sc">$</span>low_risk         <span class="co"># coverage_percent &gt;= 80</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>tm_list<span class="sc">$</span>function_type<span class="sc">$</span>defunct       <span class="co"># body / docs mention defunct / deprecated / superseded</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>tm_list<span class="sc">$</span>function_type<span class="sc">$</span>imported      <span class="co"># docs / scripts mention "imported"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>tm_list<span class="sc">$</span>function_type<span class="sc">$</span>rexported     <span class="co"># docs / scripts mention "re-exported" / "reexports"</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>tm_list<span class="sc">$</span>function_type<span class="sc">$</span>experimental  <span class="co"># docs / scripts mention "experimental"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The result is a matrix that answers the question a validation reviewer actually asks: not “how many functions are tested?” but <strong>“which functions are tested, which are deprecated, and which are still experimental?”</strong> — separately, per package, on one screen.</p>
+</section>
+</section>
+<section id="deep-dive-5-where-popularity-comes-from" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-5-where-popularity-comes-from">Deep dive 5: where popularity comes from</h2>
+<p>Popularity can provide guidance about packages’ use in general. <code>{risk.assessr}</code> harvests it from four independent sources, so a package with high downloads, active GitHub commits, <em>and</em> peer-reviewed citations earns its rating instead of relying on a single ranking.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 36%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Function(s)</th>
+<th>What it tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CRAN</td>
+<td><code>get_cran_total_downloads()</code>, <code>get_package_download_cran()</code></td>
+<td>Total + daily download counts via <code>cranlogs.r-pkg.org</code>.</td>
+</tr>
+<tr class="even">
+<td>CRAN</td>
+<td><code>cran_revdep()</code> (with cached <code>cran_packages()</code>)</td>
+<td>Reverse dependencies on CRAN.</td>
+</tr>
+<tr class="odd">
+<td>Bioconductor</td>
+<td><code>bioconductor_reverse_deps()</code>, <code>fetch_bioconductor_releases()</code></td>
+<td>Reverse dependencies and release metadata.</td>
+</tr>
+<tr class="even">
+<td>GitHub</td>
+<td><code>get_github_data()</code></td>
+<td>Stars, forks, open issues, commits in the last 30 days, and average issue close time, via the GitHub REST API (PAT-friendly via <code>GITHUB_TOKEN</code>).</td>
+</tr>
+<tr class="odd">
+<td>PubMed</td>
+<td><code>get_pubmed_count()</code>, <code>get_pubmed_by_year()</code></td>
+<td>Citation counts via NCBI E-utilities — useful evidence for statistical / pharmacometric packages.</td>
+</tr>
+</tbody>
+</table>
+<p>A subtle but important detail: <code>cran_packages()</code> is cached for 30 minutes in a package-level environment, so a typical scan does not hammer the CRAN metadata endpoint, and repeated <code>cran_revdep()</code> calls in the same session return identical snapshots — important for reproducible test runs.</p>
+</section>
+<section id="deep-dive-6-the-dependency-tree-recursive-risk-made-visible" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-6-the-dependency-tree-recursive-risk-made-visible">Deep dive 6: the dependency tree — recursive risk, made visible</h2>
+<p>A package is only as safe as its imports. <code>build_dependency_tree()</code> recursively walks the <code>Imports</code> field of a package’s <code>DESCRIPTION</code>, stopping at base / recommended packages or at a user-controlled <code>max_level</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">build_dependency_tree</span>(<span class="st">"ggplot2"</span>, <span class="at">get_license =</span> <span class="cn">TRUE</span>, <span class="at">max_level =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>What you get back is a nested list whose leaves are either <code>"base"</code> (terminal) or another node with <code>version</code> and (optionally) per-package <code>license</code> fields. That recursive licence collection matters: a permissively-licensed top-level package can still drag in a GPL-only dependency several levels down — and <code>{risk.assessr}</code> will provide details in the report.</p>
+<p>For lock-file-driven projects, <code>risk_assess_pkg_lock_files()</code> plays the same role for <code>renv.lock</code> and <code>pak.lock</code>, so a project’s <em>resolved</em> environment can be scored, not just an individual package.</p>
+</section>
+<section id="reporting-two-artefacts-two-audiences" class="level2">
+<h2 class="anchored" data-anchor-id="reporting-two-artefacts-two-audiences">Reporting: two artefacts, two audiences</h2>
+<p><code>{risk.assessr}</code> generates two complementary reports:</p>
+<ul>
+<li><p><strong><code>generate_html_report()</code></strong> — the technical view. Each metric is rendered with a red / yellow / green badge corresponding to High / Medium / Low risk. Reverse-dependency lists, download charts, dependency trees, and the seven traceability matrix tabs are all there.</p></li>
+<li><p><strong><code>write_summary_report()</code></strong> — the one-page sign-off. It renders an <code>Approved</code>, <code>Rejected</code>, or <code>Remediation Needed</code> recommendation, derived from the risk profile, with enough context for a validation engineer to apply critical judgement. Typically driven by a Validation GitHub Action so that every package, every version, leaves a paper trail.</p></li>
+</ul>
+<p>A typical end-to-end call looks like:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(risk.assessr)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Score a CRAN package, with all defaults</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">risk_assess_pkg</span>(<span class="at">package =</span> <span class="st">"stringr"</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Or score a local tarball</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">risk_assess_pkg</span>(<span class="at">path =</span> <span class="st">"path/to/your/package.tar.gz"</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate the dashboard</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_html_report</span>(result, <span class="at">output_dir =</span> <span class="st">"reports"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate the one-page sign-off</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="fu">write_summary_report</span>(result, <span class="at">output_dir =</span> <span class="st">"reports"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="final-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="final-takeaways">Final takeaways</h2>
+<p><code>{risk.assessr}</code> is a <strong>scaffold for evidence-based validation</strong>. Its strengths come from a deliberate set of design choices:</p>
+<ul>
+<li>Run <code>R CMD check</code> with a customisable profile, then upgrade silent-but-dangerous notes into errors.</li>
+<li>Score documentation against multiple metrics, including whether the NEWS file actually mentions <em>the version under review</em>.</li>
+<li>Build a traceability matrix that respects S3, S4, S7, R6 and ggproto — and slices it by both coverage and function status (defunct, imported, re-exported, experimental).</li>
+<li>Aggregate popularity across CRAN, Bioconductor, GitHub, and PubMed.</li>
+<li>Make recursive dependency and licence risk visible.</li>
+<li>Keep the rules that turn metrics into decisions in a versioned JSON file — so the validation policy itself is auditable.</li>
+</ul>
+<p>The result is an audit trail that any validation reviewer can analyse and sign off.</p>
+<p><code>{risk.assessr}</code> is community-driven; if you have ideas, find an edge case, or want to contribute a new metric, please open an issue or a PR on <a href="https://github.com/pharmaverse/risk.assessr/issues">GitHub</a>. We’d love to hear from you.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2026-08-31 20:09:07.251518</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{gillian_hugo_bottois2026,
+  author = {Gillian Hugo Bottois, Edward},
+  title = {Risk.assessr: {A} {Data-Driven} {Workflow} for {R} {Package}
+    {Validation} in {Regulated} {Environments}},
+  date = {2026-06-23},
+  url = {https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-gillian_hugo_bottois2026" class="csl-entry quarto-appendix-citeas" role="listitem">
+Gillian Hugo Bottois, Edward. 2026. <span>“Risk.assessr: A Data-Driven
+Workflow for R Package Validation in Regulated Environments.”</span>
+June 23, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.html">https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.html</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/pharmaverse\.github\.io\/blog");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
