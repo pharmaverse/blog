@@ -53,4 +53,5 @@ RUN apt-get update \
         "admiralophtha", \
         "admiralpeds", \
         "admiralvaccine", \
-        "admiralmetabolic"))'
+        "admiralmetabolic", \
+        "risk.assessr"))'
