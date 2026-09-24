@@ -1,0 +1,169 @@
+---
+title: "Pharmaverse Ethical AI Guidance"
+author:
+  - name: Marcin Dubel
+  - name: Andre Couturier
+  - name: Guy Blate
+description: "Two pillars for responsible AI use in clinical R package development: keeping a qualified human in the loop, and acting as professional stewards of the tools we use, with patient safety as the prime directive."
+# Note that the date below will be auto-updated when the post is merged.
+date: "2026-06-12"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [Community, Technical]
+# Feel free to change the image
+image: "community.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2026-06-12-pharmaverse-ethical"
+```
+
+<!--------------- post begins here ----------------->
+
+**Disclaimer:** This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.
+
+*This is a working draft of guidance prepared for the pharmaverse council on responsible AI use in clinical R package development. It describes **two pillars** — human-in-the-loop and professional stewardship — and what they look like in practice for a pharmaverse maintainer or contributor.*
+
+## The Starting Point: Patient Safety
+
+The software developed and used by the pharmaverse community has the potential to contribute to evidence on the safety and / or effectiveness of a treatment. Therefore, ethical practices are part of our day to day work govern how we use and develop software. We can build on this strong foundation as we enable and adopt AI-assisted technologies which will also bring new requirements and considerations. 
+
+With patient safety as the foundation, the rest of the conversation becomes more straightforward. Working with AI does not require us to invent a new system of ethics. The principles that have always guided professional work in clinical software development still apply: honesty, fairness, responsibility, and respect. What is different is not ethics, but leverage. With AI, a small individual effort can produce a very large impact — in scope, in scale, and in speed. A single developer can rewrite an entire package overnight. A single agentic workflow can review hundreds of pull requests in a day. A single prompt can generate forty pages of meeting notes that nobody will read. The same leverage that lets us fix a backlog of bugs in a weekend also lets us flood our colleagues with low-quality content, reproduce restricted code at scale, or launder authorship through a tool that nobody is auditing.
+
+That asymmetry — a big impact from small effort — is what makes ethical AI use a question worth asking. Note we do not control how these models were trained. The data behind them is largely opaque, and a truly comprehensive claim to "ethical AI" would have to answer for that. What is in our hands is narrower and more concrete: we take models as they come and make sure that what we do with them is as responsible as it can be.
+
+The pharmaverse community works in a post-competitive space whose entire premise is collaboration: shared open-source packages used in regulatory submissions and clinical reporting, built and maintained by people who trust each other to do good work. Patient safety is what that trust ultimately serves. What we build directly is reliable evidence that supports safe and effective decision-making in clinical development, but patient safety is the end it all serves.
+
+Having that goal in mind, in the age of AI it is even more worth highlighting the pharmaverse disclaimer: *"Being listed on our site gives no endorsement of the reliability of any code, it is up to you to assess suitability for your needs."* Every one of us is responsible for the proper use of the software.
+
+## Two Pillars: Human-in-the-Loop and Professional Stewardship
+
+To put patient safety into practice, our approach rests on two pillars. They are not new ideas, but together they describe what "ethical AI use" looks like in practice for a pharmaverse package maintainer or contributor.
+
+- **Human-in-the-loop** — a named, qualified human takes responsibility for the output, validates the result, and introduces AI into a workflow gradually rather than all at once.
+- **Professional stewardship** — we understand the tool we are using, we monitor and evaluate its outputs, and we follow the licensing rules that apply to the code we ship.
+
+Both pillars describe how an individual practitioner relates to the AI tool. Beyond that, AI also reshapes how we relate to each other inside the community — questions of transparency, fairness, and respect for our colleagues' time. Those questions are familiar territory for any professional, and we treat them in their own section below.
+
+### Pillar One: Human-in-the-Loop
+
+#### We take responsibility for the output
+
+When AI generates code, documentation, or a review comment, the human who shipped it owns the result. AI is not an author in any meaningful sense — it is a tool that a human has chosen to use. If something breaks downstream, "the model produced that" is not an answer.
+
+This is, to borrow a useful framing from our discussion, the difference between writing code and managing the production of code. The work has not disappeared. It has shifted: from typing each line to validating, integrating, and standing behind a piece of software whose first draft was written by something else. The standard we apply to AI-assisted work is the standard we would apply to a thoughtful junior engineer's contribution — read it, test it, understand it, and only then merge it.
+
+#### We validate and review
+
+Every AI-generated change that reaches a pharmaverse package must be reviewed and approved by a qualified human before it is merged. This includes code, documentation, changelogs, and review comments. "I built it with one model and validated it with another" is not human-in-the-loop — it is the loop with the human removed.
+
+There is also an obligation in the other direction. It is not ethical to leave known bugs unaddressed, year after year, while the maintainer waits for a pull request from someone else. If AI can help us close out a backlog of issues that would otherwise sit unresolved, that is a legitimate and responsible use of the technology — provided the fixes are reviewed by a human who understands the package.
+
+> "It's not ethical to leave bugs there and not have the time to review them, and then expect that others will correct them." — Andre Couturier
+
+#### We adopt AI step by step
+
+AI adoption in clinical R development is not a binary choice between "no AI" and "full automation." The ethical path is gradual integration. A practical framework for moving along that path:
+
+1. **Start with low-risk tasks:** documentation drafts, code formatting, and boilerplate generation.
+2. **Add AI-assisted review:** use AI to flag potential issues in pull requests, with the human reviewer making the final call.
+3. **Introduce AI for bug resolution:** let the agent propose fixes for known issues, with each fix reviewed by a human before merge.
+4. **Expand to workflow automation:** automate specific, well-defined steps in your CI/CD pipeline.
+5. **Evaluate continuously before going further:** assess whether the current level is performing as expected, and only then expand AI's role.
+
+Different workflows can move at different paces. Documentation and internal tooling can move faster; data-sensitive or regulated steps move more slowly. Throughout, the maintainer controls the pace and decides what to delegate.
+
+We are not at a point where the human can be removed from clinical R development, and we should be honest about that — to ourselves, to our community, and to the regulators and patients who depend on the software we ship. Removing the human is not the goal. Keeping the human meaningfully engaged at the right points in the workflow is.
+
+### Pillar Two: Professional Stewardship
+
+#### We understand the tools we use
+
+Using AI does not exempt anyone from the requirement to be professionally competent. If you are building or maintaining a package with AI assistance, you are responsible for understanding how to evaluate the output, how to write effective prompts, how to design validation sets, and how to recognise when a result is wrong. This is not a one-off skill — it is part of staying current as a developer, in the same way that knowing modern R idioms is part of being a good R developer.
+
+Using AI to produce work you cannot evaluate is itself an ethical failure. The community standard is the same as it has always been: **do not pretend to have skills you do not have**.
+
+#### We monitor and evaluate
+
+Models change. Providers deprecate them. Costs shift, and a workflow that used one model last quarter may quietly switch to another this quarter. A configuration that performed well at launch can degrade six months later because the underlying model has been updated, replaced, or simply retrained on different data.
+
+Ethical AI use therefore means continuous evaluation, not a one-time validation. Establish "golden standard" test sets that define expected outputs for your AI-assisted workflow. Run them regularly, and especially whenever you change models or providers. Document the model versions used in any workflow that contributes to a regulated output. Treat a model swap as a trigger for re-validation, not a transparent substitution.
+
+#### We follow licensing rules
+
+AI code generation introduces a real licensing risk. Models are trained on vast corpora of code, including repositories carrying GPL and other restrictive licences. Generated code may reproduce or closely mirror licensed material, and AI now makes it trivially easy to do at scale things that were previously impractical — such as rewriting a GPL-licensed package with cosmetic modifications and re-releasing it under a permissive licence.
+
+The principle to hold on to: the ease of doing something with AI does not change its ethical or legal status. Treat AI-generated code with the same licence scrutiny you would apply to any third-party contribution, use existing tooling to check compatibility in your dependency chain, and do not use AI to do things you would not have done without it.
+
+## Team Collaboration Ethics
+
+The two pillars describe how an individual relates to the AI tool. AI also reshapes how we relate to each other — to our co-maintainers, our reviewers, our colleagues in clinical teams, and the wider community our software serves. That side of the conversation is not new either. The Project Management Institute formalised four values in its Code of Ethics decades before generative AI existed: responsibility, respect, fairness, and honesty. They predate AI by a long way, and they apply to AI-assisted collaboration just as directly as to any other professional activity. Responsibility is what the two pillars above are about — owning the output of your AI-assisted work and being accountable for what you ship. The other three values translate into three concrete obligations to our colleagues.
+
+### Honesty: be transparent about AI use
+
+Transparency is foundational in an open-source community built on trust. If AI was used to generate, review, or substantially modify a contribution — a pull request, a commit message, a piece of documentation, a meeting summary, a blog post — say so. This is not about stigmatising AI use. It is about preserving the integrity of the collaborative process. When a colleague reads a review comment on their PR, they deserve to know whether they are interacting with a human reviewer or an automated system.
+
+A real example from one of our organisations illustrates the point: a developer set up an agentic bot to reply to code-review comments on their behalf. The bot produced technically correct responses and even committed working fixes. But teammates believed they were communicating with a real person. When the deception came to light, what damaged the team's trust was not the use of AI — it was the lack of transparency. If the team had agreed to use bots for review, that would have been fine.
+
+### Respect: do not generate slop
+
+"AI slop" is what happens when we generate large volumes of unreviewed AI content and pass it on to others: thirty-slide decks for topics that warrant five slides, pull request descriptions so long that the actual change is buried in noise, meeting notes verbose enough that the recipient feeds them back into another AI tool to summarise them. This is disrespectful of colleagues' time, and it is dangerous: errors hide in the middle of walls of generated text.
+
+The standard is the same as for any other professional output: review it yourself before you send it. Configure your prompts to be concise. If you would not want to receive it, do not send it. Apply human-in-the-loop to the things you write, not just to the things you ship.
+
+### Fairness: be vigilant about bias
+
+AI systems are well-documented amplifiers of bias in their training data. In clinical contexts this is not abstract: if AI is used to identify or recruit trial participants, biased data can produce trials that systematically under-represent certain demographic groups, undermining both the science and the equity of the resulting treatment. The same caution applies to hiring tools, CV scoring, and any other AI system whose decisions affect people. Bias assessment should be a mandatory component of any AI system used in patient-facing or trial-design contexts, with human review of demographic representation.
+
+## Code and Documentation: Welcome the Help, Own the Output
+
+We welcome AI assistance for the things it does well: drafting documentation, generating boilerplate, formatting, proposing fixes for known issues, and helping a maintainer move faster on routine work. But the quality bar for a pharmaverse package does not change because AI was used in its development. If anything, AI-assisted work demands more rigorous review, not less, because the cost of generating mediocre code has dropped to zero.
+
+Maintainers should not let AI-generated code become a black box in their own packages. If you cannot explain what a function does and why it is there, you cannot maintain it — and shipping code you do not understand is the inverse of professional stewardship. Documentation, tests, and style standards apply to AI-assisted contributions in exactly the same way they apply to human-written ones.
+
+## Data Access and Security: A Pharma-Specific Imperative
+
+Of all the topics we discussed, the one most specific to pharma is the question of what AI is allowed to see. Two cases need to be distinguished, because the right answer is very different in each.
+
+### Case 1: AI does not need the data
+
+Most code generation does not require access to actual clinical data. Building an application that displays patient information does not require the AI to see patient information — it requires schema, column names, and types. When AI does not need the data, we take the effort to block its access: provide metadata only, develop and test against synthetic datasets, and attach real data only at the production stage, after AI-assisted development is complete. The default posture is restrictive.
+
+### Case 2: AI is the analysis
+
+There is a separate, genuinely interesting frontier where an AI agent has been deliberately designed to see clinical trial data — for example, to detect safety signals, identify protocol-deviation risk, or assess whether the original protocol hypotheses still hold partway through a trial without unblinding the team. This is a logical extension of the interim-analysis and DMC processes that already exist.
+
+Here, the principle inverts: instead of blocking access by default, we engineer access deliberately. That means an explicit data-access scope, security guardrails, audit trails, clear rules about what the agent can and cannot communicate back to the trial team, and human oversight of any decisions or recommendations the agent produces. The difference between a Case 1 and a Case 2 system is not how much data the AI happens to see; it is whether the architecture was designed with that access in mind.
+
+In both cases, the underlying ethic is the same: we know what our AI is doing with data, and we design that access intentionally. That is what professionalism looks like in a regulated environment.
+
+## A Note on This Document Itself
+
+In the spirit of transparency described above, this guidance is itself an example of what working with AI looks like when the principles in this document are applied.
+
+The input was human: a working session of the pharmaverse Council on AI ethics, the recorded transcript of that conversation, a set of key points written from scratch by the lead author, and an earlier draft prepared with AI assistance by a colleague. The synthesis was produced with the assistance of a large language model (Claude Opus 4) operated under explicit instructions to follow the lead author's structure, draw quotations and examples from the transcript, and avoid generating material not grounded in the source discussion. The result was then reviewed and edited by a human author, and — in the form you are reading — will be reviewed and approved by the pharmaverse Council before publication.
+
+This is what we are recommending: a human-led process, supported by AI for the parts AI does well (synthesising long source material into clean prose), with named human authors who take responsibility for the result, transparency about how it was made, and review by qualified peers before it goes out. None of those steps is novel. They are how the community has always produced trustworthy work.
+
+## A Call to Responsible Action
+
+AI is not coming to clinical R development — it is here, and it is being used today across our ecosystem in ways that range from the mundane to the genuinely transformative. The point of this guidance is not to slow that adoption down, and it is not to treat AI as inherently dangerous. It is to make sure that as we integrate these tools into our work, we do so in a way that is worthy of the trust placed in us by the patients, regulators, and clinical teams who depend on what we ship.
+
+The core message is short. The ease of doing something with AI does not make it right. The ethical standards that have always governed professional work — honesty, fairness, responsibility, and respect, with patient safety as the prime directive — apply fully in the age of AI. We keep humans in the loop. We act as professional stewards of the tools we use. And we trust each other, in the open-source spirit that built pharmaverse, to do this carefully and to call each other out, kindly, when we drift.
+
+We welcome feedback, discussion, and contributions from across the community — because the best guidance, like the best packages, will emerge from the same collaborative process that has made our work worth doing.
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
