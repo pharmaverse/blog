@@ -64,7 +64,7 @@
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:23:32.703305</p>
+<p>2026-09-24 03:23:33.019459</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -227,7 +227,7 @@ AI.”</span> June 14, 2026. <a href="https://pharmaverse.github.io/blog/posts/2
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:20:39.280028</p>
+<p>2026-09-24 03:23:59.413686</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-12-pharmaverse-ethical/pharmaverse-ethical-ai-guidance.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -287,7 +287,7 @@ Ethical AI Guidance.”</span> June 12, 2026. <a href="https://pharmaverse.githu
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:22:08.938546</p>
+<p>2026-09-24 03:20:47.48062</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-05-welcome-joe-zhu/welcome-joe-zhu.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -399,7 +399,7 @@ Farrugia, Ross. 2026. <span>“Welcome Joe Zhu.”</span> June 4, 2026. <a href=
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:23:08.275058</p>
+<p>2026-09-24 03:23:42.315744</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-04-17-closing-the-gap-in/closing-the-gap-in-exposure-response-data-a-pharmaverse-framework.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -421,134 +421,6 @@ A Pharmaverse Framework.”</span> April 30, 2026. <a href="https://pharmaverse.
   <guid>https://pharmaverse.github.io/blog/posts/2026-04-17-closing-the-gap-in/closing-the-gap-in-exposure-response-data-a-pharmaverse-framework.html</guid>
   <pubDate>Thu, 30 Apr 2026 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2026-04-17-closing-the-gap-in/pharmaverse_examples.png" medium="image" type="image/png" height="144" width="144"/>
-</item>
-<item>
-  <title>Meet dataviewR: The View() You Always Wanted</title>
-  <dc:creator>Siddhesh Pujari</dc:creator>
-  <dc:creator>Madhan Kumar N</dc:creator>
-  <dc:creator>Gomathi S</dc:creator>
-  <dc:creator>Mackenzie Haight</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<!--------------- typical setup ----------------->
-<!--------------- post begins here ----------------->
-<p>Disclaimer: This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.</p>
-<section id="the-humble-view-and-its-limits" class="level2">
-<h2 class="anchored" data-anchor-id="the-humble-view-and-its-limits">The humble <code>View()</code> and its limits</h2>
-<p><code>View()</code> has served R programmers well for a long time — pass it a data frame, get a spreadsheet-style window. It even has a basic search bar for checking whether a value exists in your data. But the moment you need something more precise — filter by a specific column or combine conditions — you are back in your script.</p>
-<p>Add to that: no side-by-side dataset comparison, no metadata inspection, and no way to carry your exploration into reproducible code. For day-to-day clinical data work — reviewing your clinical datasets, let’s say <code>ADSL</code>, cross-checking subject demographics against lab data in <code>ADLB</code>, doing a QC pass before analysis — these gaps add up.</p>
-</section>
-<section id="what-is-dataviewr" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-dataviewr">What is dataviewR?</h2>
-<p><a href="https://madhankumarnagaraji.github.io/dataviewR/"><code>dataviewR</code></a> is a Shiny-based interactive data viewer that works alongside <code>View()</code> as a companion — not a replacement. It launches directly in your RStudio Viewer pane, requires no Shiny code, and never modifies the datasets passed to it.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">install.packages</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dataviewR"</span>)</span></code></pre></div></div>
-</section>
-<section id="features" class="level2">
-<h2 class="anchored" data-anchor-id="features">Features</h2>
-<p><code>dataviewR</code> offers the following capabilities:</p>
-<ul>
-<li><strong>Interactive Filtering</strong> — apply <code>dplyr</code>-style expressions directly in the app, no script changes needed. Supports <code>%in%</code>, <code>is.na()</code>, <code>grepl()</code>, and compound conditions — the same syntax you already write every day.</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">SEX <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"F"</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> AGE <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">65</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> TRT01P <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Xanomeline High Dose"</span></span></code></pre></div></div>
-<ul>
-<li><strong>Reproducible Code Generation</strong> — hit “Generate R Code” and walk away with ready-to-use <code>dplyr</code> code from your interactions. Your exploration session feeds directly into your scripted workflow.</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/dataview_codegen.png" class="img-fluid figure-img" style="width:60.0%"></p>
-<figcaption>Auto-generated dplyr code from interactive filter and column selections.</figcaption>
-</figure>
-</div>
-<ul>
-<li><strong>Variable Metadata</strong> — inspect variable classes, labels and attributes without writing <code>str()</code> or <code>attr()</code> calls. Particularly useful for clinical datasets where CDISC-style labels are carried as R attributes.</li>
-</ul>
-<p>See all of this in action:</p>
-<video width="100%" controls="" playbackrate="2" onloadedmetadata="this.playbackRate = 2;">
-<source src="dataview_explore.mp4" type="video/mp4">
-</video>
-</section>
-<section id="cross-checking-multiple-datasets" class="level2">
-<h2 class="anchored" data-anchor-id="cross-checking-multiple-datasets">Cross-Checking Multiple Datasets</h2>
-<p>But what if you need to look at more than one dataset at the same time? <code>dataviewR</code> handles that too — pass multiple datasets in a single call and each opens in its own tab within the same session. Switch between them, filter independently, and track a specific subject across datasets — the kind of check that comes up in every safety review.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dataviewR)</span>
-<span id="cb3-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(pharmaverseadam)</span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dataviewer</span>(adsl, adlb)</span></code></pre></div></div>
-<video width="100%" controls="" onloadedmetadata="this.playbackRate = 1.5;">
-<source src="dataview_multidata.mp4" type="video/mp4">
-</video>
-</section>
-<section id="final-thoughts" class="level2">
-<h2 class="anchored" data-anchor-id="final-thoughts">Final Thoughts</h2>
-<p>That is dataviewR in a nutshell. Try it out and share your thoughts on <a href="https://github.com/madhankumarnagaraji/dataviewR">GitHub</a> or <a href="https://pharmaverse.slack.com">pharmaverse Slack</a>!</p>
-<p>Full documentation, vignettes, and clinical dataset examples are available at <a href="https://madhankumarnagaraji.github.io/dataviewR/">madhankumarnagaraji.github.io/dataviewR</a>.</p>
-<!--------------- appendices go here ----------------->
-</section>
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2026-09-24 03:20:20.64659</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{pujari2026,
-  author = {Pujari, Siddhesh and Kumar N, Madhan and S, Gomathi and
-    Haight, Mackenzie},
-  title = {Meet {dataviewR:} {The} {View()} {You} {Always} {Wanted}},
-  date = {2026-03-31},
-  url = {https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-pujari2026" class="csl-entry quarto-appendix-citeas">
-Pujari, Siddhesh, Madhan Kumar N, Gomathi S, and Mackenzie Haight. 2026.
-<span>“Meet dataviewR: The View() You Always Wanted.”</span> March 31,
-2026. <a href="https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html">https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html</a>.
-</div></div></section></div> ]]></description>
-  <category>SDTM</category>
-  <category>ADaM</category>
-  <category>Shiny</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html</guid>
-  <pubDate>Tue, 31 Mar 2026 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/dataviewR-logo.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
   <title>AGENTS.md, {admiral}, and the AI-Assisted Programmer</title>
@@ -694,7 +566,7 @@ font-style: inherit;">- </span>Update NEWS.md for any user-facing function chang
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:21:16.600386</p>
+<p>2026-09-24 03:20:30.987998</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-31-agents-md-admiral-a/agents-md-admiral-and-the-ai-assisted-programmer.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -715,6 +587,134 @@ Programmer.”</span> March 31, 2026. <a href="https://pharmaverse.github.io/blo
   <guid>https://pharmaverse.github.io/blog/posts/2026-03-31-agents-md-admiral-a/agents-md-admiral-and-the-ai-assisted-programmer.html</guid>
   <pubDate>Tue, 31 Mar 2026 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2026-03-31-agents-md-admiral-a/secret_agent.png" medium="image" type="image/png" height="167" width="144"/>
+</item>
+<item>
+  <title>Meet dataviewR: The View() You Always Wanted</title>
+  <dc:creator>Siddhesh Pujari</dc:creator>
+  <dc:creator>Madhan Kumar N</dc:creator>
+  <dc:creator>Gomathi S</dc:creator>
+  <dc:creator>Mackenzie Haight</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>Disclaimer: This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.</p>
+<section id="the-humble-view-and-its-limits" class="level2">
+<h2 class="anchored" data-anchor-id="the-humble-view-and-its-limits">The humble <code>View()</code> and its limits</h2>
+<p><code>View()</code> has served R programmers well for a long time — pass it a data frame, get a spreadsheet-style window. It even has a basic search bar for checking whether a value exists in your data. But the moment you need something more precise — filter by a specific column or combine conditions — you are back in your script.</p>
+<p>Add to that: no side-by-side dataset comparison, no metadata inspection, and no way to carry your exploration into reproducible code. For day-to-day clinical data work — reviewing your clinical datasets, let’s say <code>ADSL</code>, cross-checking subject demographics against lab data in <code>ADLB</code>, doing a QC pass before analysis — these gaps add up.</p>
+</section>
+<section id="what-is-dataviewr" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-dataviewr">What is dataviewR?</h2>
+<p><a href="https://madhankumarnagaraji.github.io/dataviewR/"><code>dataviewR</code></a> is a Shiny-based interactive data viewer that works alongside <code>View()</code> as a companion — not a replacement. It launches directly in your RStudio Viewer pane, requires no Shiny code, and never modifies the datasets passed to it.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">install.packages</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dataviewR"</span>)</span></code></pre></div></div>
+</section>
+<section id="features" class="level2">
+<h2 class="anchored" data-anchor-id="features">Features</h2>
+<p><code>dataviewR</code> offers the following capabilities:</p>
+<ul>
+<li><strong>Interactive Filtering</strong> — apply <code>dplyr</code>-style expressions directly in the app, no script changes needed. Supports <code>%in%</code>, <code>is.na()</code>, <code>grepl()</code>, and compound conditions — the same syntax you already write every day.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">SEX <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> AGE <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">65</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> TRT01P <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Xanomeline High Dose"</span></span></code></pre></div></div>
+<ul>
+<li><strong>Reproducible Code Generation</strong> — hit “Generate R Code” and walk away with ready-to-use <code>dplyr</code> code from your interactions. Your exploration session feeds directly into your scripted workflow.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/dataview_codegen.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<figcaption>Auto-generated dplyr code from interactive filter and column selections.</figcaption>
+</figure>
+</div>
+<ul>
+<li><strong>Variable Metadata</strong> — inspect variable classes, labels and attributes without writing <code>str()</code> or <code>attr()</code> calls. Particularly useful for clinical datasets where CDISC-style labels are carried as R attributes.</li>
+</ul>
+<p>See all of this in action:</p>
+<video width="100%" controls="" playbackrate="2" onloadedmetadata="this.playbackRate = 2;">
+<source src="dataview_explore.mp4" type="video/mp4">
+</video>
+</section>
+<section id="cross-checking-multiple-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="cross-checking-multiple-datasets">Cross-Checking Multiple Datasets</h2>
+<p>But what if you need to look at more than one dataset at the same time? <code>dataviewR</code> handles that too — pass multiple datasets in a single call and each opens in its own tab within the same session. Switch between them, filter independently, and track a specific subject across datasets — the kind of check that comes up in every safety review.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dataviewR)</span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(pharmaverseadam)</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dataviewer</span>(adsl, adlb)</span></code></pre></div></div>
+<video width="100%" controls="" onloadedmetadata="this.playbackRate = 1.5;">
+<source src="dataview_multidata.mp4" type="video/mp4">
+</video>
+</section>
+<section id="final-thoughts" class="level2">
+<h2 class="anchored" data-anchor-id="final-thoughts">Final Thoughts</h2>
+<p>That is dataviewR in a nutshell. Try it out and share your thoughts on <a href="https://github.com/madhankumarnagaraji/dataviewR">GitHub</a> or <a href="https://pharmaverse.slack.com">pharmaverse Slack</a>!</p>
+<p>Full documentation, vignettes, and clinical dataset examples are available at <a href="https://madhankumarnagaraji.github.io/dataviewR/">madhankumarnagaraji.github.io/dataviewR</a>.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2026-09-24 03:23:36.403563</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{pujari2026,
+  author = {Pujari, Siddhesh and Kumar N, Madhan and S, Gomathi and
+    Haight, Mackenzie},
+  title = {Meet {dataviewR:} {The} {View()} {You} {Always} {Wanted}},
+  date = {2026-03-31},
+  url = {https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-pujari2026" class="csl-entry quarto-appendix-citeas">
+Pujari, Siddhesh, Madhan Kumar N, Gomathi S, and Mackenzie Haight. 2026.
+<span>“Meet dataviewR: The View() You Always Wanted.”</span> March 31,
+2026. <a href="https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html">https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html</a>.
+</div></div></section></div> ]]></description>
+  <category>SDTM</category>
+  <category>ADaM</category>
+  <category>Shiny</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.html</guid>
+  <pubDate>Tue, 31 Mar 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2026-03-29-meet-dataviewr-the/dataviewR-logo.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
   <title>Beyond Keywords: How Semantic Search is Unlocking Clinical Code Reuse</title>
@@ -835,7 +835,7 @@ Programmer.”</span> March 31, 2026. <a href="https://pharmaverse.github.io/blo
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:23:05.301527</p>
+<p>2026-09-24 03:22:33.473309</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/beyond_key/beyond__keywords.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -975,7 +975,7 @@ Unlocking Clinical Code Reuse.”</span> March 20, 2026. <a href="https://pharma
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:20:23.910305</p>
+<p>2026-09-24 03:22:26.205427</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-06-pharmaverse-pillar/pharmaverse-pillar-oss.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1049,7 +1049,7 @@ Our 2026 Hackathon Calendar.”</span> March 6, 2026. <a href="https://pharmaver
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:22:07.568832</p>
+<p>2026-09-24 03:22:35.127837</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-26-pharmaverse-pillars/pharmaverse-pillars.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1104,7 +1104,7 @@ Council, Pharmaverse. 2026. <span>“Pharmaverse Pillars.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:21:20.770872</p>
+<p>2026-09-24 03:22:54.14452</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1225,7 +1225,7 @@ council, pharmaverse. 2026. <span>“Welcome, Nick Masel.”</span> February
 </tr>
 <tr class="even">
 <td><code>{rtables}</code></td>
-<td><a href="https://github.com/pharmaverse/rtables">pharmaverse/rtables</a></td>
+<td><a href="https://github.com/insightsengineering/rtables">insightsengineering/rtables</a></td>
 </tr>
 <tr class="odd">
 <td><code>{teal}</code></td>
@@ -1311,7 +1311,7 @@ council, pharmaverse. 2026. <span>“Welcome, Nick Masel.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:23:30.798871</p>
+<p>2026-09-24 03:22:08.948309</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-17-a-star-is-born/a-star-is-born.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1370,7 +1370,7 @@ to the Pharmaverse.”</span> February 17, 2026. <a href="https://pharmaverse.gi
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:23:25.306149</p>
+<p>2026-09-24 03:22:18.499517</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-16-get-ready-for-the-p/get-ready-for-the-phuse-us-connect-pavilions.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1475,7 +1475,7 @@ font-style: inherit;">"pharmaversesdtm"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:23:09.803287</p>
+<p>2026-09-24 03:21:58.589647</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_140_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1848,7 +1848,7 @@ font-style: inherit;">$</span>{{ secrets.GITHUB_TOKEN }}</span></code></pre></di
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:21:59.741194</p>
+<p>2026-09-24 03:22:50.717814</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse_and__containers.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2082,7 +2082,7 @@ font-style: inherit;">"adab"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:22:28.652475</p>
+<p>2026-09-24 03:20:45.715477</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.4.../admiral_14_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2453,7 +2453,7 @@ Pharmaverse.”</span> December 19, 2025. <a href="https://pharmaverse.github.io
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:20:25.39261</p>
+<p>2026-09-24 03:20:54.494016</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2525,7 +2525,7 @@ Tools.”</span> December 18, 2025. <a href="https://pharmaverse.github.io/blog/
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:20:37.925042</p>
+<p>2026-09-24 03:22:10.650734</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2858,7 +2858,7 @@ font-style: inherit;">"admiralneuro"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:23:29.170833</p>
+<p>2026-09-24 03:23:47.879125</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_introducing.../introducing_admiralneuro.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -3190,7 +3190,7 @@ plot</code></pre>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-24 03:23:11.322515</p>
+<p>2026-09-24 03:23:11.606511</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2025-05-12_faster_clinical_trial_reporting.../faster_clinical_trial_reporting.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
