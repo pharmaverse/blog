@@ -115,7 +115,7 @@ Thanks to the community effort, there are already discussions and resolution ava
 
 > There are numerical precision issues, e.g., `round2(2436.845, 2)` returns `2436.84.` Changing `z + 0.5 to z + 0.5 + sqrt(.Machine$double.eps)` seems to work for me. -- Gregor Thomas Jun 24, 2020 at 2:16
 
--   `.Machine$double.eps` is a built-in constant in R that represents the smallest positive floating-point number that can be represented on the system (reference: [Machine Characteristics](https://www.math.ucla.edu/~anderson/rw1001/library/base/html/zMachine.html))
+-   `.Machine$double.eps` is a built-in constant in R that represents the smallest positive floating-point number that can be represented on the system (reference: [Machine Characteristics](https://stat.ethz.ch/R-manual/R-devel/library/base/html/zMachine.html))
 
 -   The expression `+ sqrt(.Machine$double.eps)` is used to add a very small value to mitigate floating-point precision issues.
 
