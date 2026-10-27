@@ -1,0 +1,83 @@
+---
+title: "Roche Open-Source TLG Packages Move to pharmaverse"
+author:
+  - name: Joe Zhu
+  - name: Dony Unardi
+description: "Key clinical reporting and exploration packages, including {rtables}, {tern} and the {teal} framework, have moved from insightsengineering to the pharmaverse GitHub organization. Here is why, and what it means for you."
+# Note that the date below will be auto-updated when the post is merged.
+date: "2026-11-03"
+# Please do not use any non-default categories.
+# You can find the default categories in the repository README.md
+categories: [TLG, Shiny, Community]
+# Feel free to change the image
+image: "nest.png"
+
+---
+
+<!--------------- typical setup ----------------->
+
+```{r setup, include=FALSE}
+long_slug <- "2026-11-03-roche-open-source-t"
+```
+
+<!--------------- post begins here ----------------->
+
+_Written on behalf of the NEST team._
+
+Over the past few months, we have reached an important milestone in our open-source journey: transitioning key clinical reporting and exploratory analysis R packages from the [insightsengineering](https://github.com/insightsengineering) GitHub organization into the [**pharmaverse**](https://github.com/pharmaverse).
+
+The recent migration of the {teal} framework marks another step in this transition, bringing these framework packages under pharmaverse governance.
+
+## Why the Move to pharmaverse?
+
+When we initially incubated these packages under insightsengineering, our primary goal was to modernize clinical reporting workflows and pioneer reproducible, interactive data exploration. However, open source in the pharmaceutical industry is at its most powerful when built **with** the community, not just for it.
+
+Moving these packages directly under the pharmaverse organization:
+
+1. **Breaks Down Barriers to Collaboration:** Moving beyond decision-making led by a single organization allows other companies and community contributors to help shape priorities, roadmaps, and development.
+2. **Harmonizes the Ecosystem:** Consolidating standard clinical data manipulation, table creation, and exploration tools into a unified organization makes it easier for teams across industry sponsors and CROs to adopt, contribute to, and integrate tools.
+3. **Fosters Long-Term Sustainability:** It paves the way for joint ownership, core co-maintainership, and broader industry governance across life-science data science stacks.
+
+## What Packages Have Migrated?
+
+The transition has taken place gradually over the past several months and includes foundational packages spanning tabular reporting, clinical analysis modules, and interactive exploration:
+
+- **Reporting & Tabulation Foundation:**
+  - [formatters](https://github.com/pharmaverse/formatters) — Core rendering engine for ASCII and rich-text table layouts.
+  - [rtables](https://github.com/pharmaverse/rtables) — Tabular summaries and complex multi-level layout generation.
+  - [rlistings](https://github.com/pharmaverse/rlistings) — Clinical listings supporting pagination and display formatting.
+  - [cards](https://github.com/pharmaverse/cards) & [cardx](https://github.com/pharmaverse/cardx) — Analysis results datasets (ARDs) creation and statistical helper utilities.
+- **Analysis & Automation Modules:**
+  - [tern](https://github.com/pharmaverse/tern) — Standard clinical trial summary tables, figures, and listings (TLGs).
+  - [autoslider.core](https://github.com/pharmaverse/autoslider.core) — Automated presentation/slide generation engines.
+- **Interactive Exploration ({teal} ecosystem):**
+  - The entire suite of **{teal} framework core packages** (including [teal](https://github.com/pharmaverse/teal), teal.code, teal.data, teal.widgets, teal.reporter, teal.slice, teal.logger, teal.picks).
+
+## What Changes for Users and Developers?
+
+- **CRAN / Release Users:** **Zero breaking changes.** The repository move does not change existing released package versions. If you install these versions via CRAN or an internal mirror, no changes to your R code are required as a result of the move.
+- **GitHub Remotes & Dev Versions:** GitHub automatically handles redirection for repository moves, but we recommend updating your development remotes and `remotes::install_github()` / `pak::pkg_install()` references from `insightsengineering/<pkg>` to `pharmaverse/<pkg>`:
+
+```{r, eval=FALSE}
+pak::pkg_install("pharmaverse/teal")
+pak::pkg_install("pharmaverse/rtables")
+```
+
+- **Contributing & Issue Tracking:** For the migrated packages, all active issue trackers, feature requests, and discussions are now centralized under `pharmaverse/<repo>`. You are welcome to submit PRs, suggest features, or report bugs directly there.
+
+## Looking Ahead
+
+As these packages become part of pharmaverse, we look forward to broader participation and shared stewardship across the community. We welcome contributions from companies and individuals to help shape their direction and support their continued development.
+
+
+<!--------------- appendices go here ----------------->
+
+```{r, echo=FALSE}
+source("appendix.R")
+insert_appendix(
+  repo_spec = "pharmaverse/blog",
+  name = long_slug,
+  # file_name should be the name of your file
+  file_name = list.files() %>% stringr::str_subset(".qmd") %>% first()
+)
+```
