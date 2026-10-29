@@ -1,0 +1,66 @@
+name: Report to issue
+description: >
+  Keeps one open issue per check in sync with the full (non-PR) runs: opens it
+  when the check fails, refreshes its body while it keeps failing, and closes it
+  once the check passes again. Needs the `issues: write` permission.
+
+inputs:
+  check-name:
+    description: Human-readable name of the check, used in the issue title.
+    required: true
+  status:
+    description: Result of the check, normally `job.status`.
+    required: true
+  report-file:
+    description: Optional file whose content is added to the issue body.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        CHECK_NAME: ${{ inputs.check-name }}
+        STATUS: ${{ inputs.status }}
+        REPORT_FILE: ${{ inputs.report-file }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        set -euo pipefail
+        title="[main] ${CHECK_NAME} check is failing"
+        existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 100 \
+          --search "\"$title\" in:title" --json number,title \
+          | jq -r --arg t "$title" 'map(select(.title == $t)) | .[0].number // empty')
+
+        if [ "$STATUS" = "success" ]; then
+          if [ -n "$existing" ]; then
+            gh issue close "$existing" --repo "$GITHUB_REPOSITORY" \
+              --comment "The ${CHECK_NAME} check passes again on \`main\`: ${RUN_URL}"
+          fi
+          exit 0
+        fi
+        # Leave the issue alone for cancelled runs.
+        [ "$STATUS" = "failure" ] || exit 0
+
+        body="$RUNNER_TEMP/issue-body.md"
+        {
+          echo "The **${CHECK_NAME}** check fails on the full run over \`main\` (triggered by \`${GITHUB_EVENT_NAME}\`)."
+          echo
+          echo "Pull requests only check the files they change, so these problems do not block new posts,"
+          echo "but they should be fixed here. This issue is updated on every failing run and closed"
+          echo "automatically once the check passes."
+          echo
+          echo "Latest failing run: ${RUN_URL}"
+          if [ -n "$REPORT_FILE" ] && [ -s "$REPORT_FILE" ]; then
+            echo
+            # Stay below GitHub's 65536-character issue body limit.
+            head -c 60000 "$REPORT_FILE"
+          fi
+        } > "$body"
+
+        if [ -n "$existing" ]; then
+          gh issue edit "$existing" --repo "$GITHUB_REPOSITORY" --body-file "$body"
+        else
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$body"
+        fi
