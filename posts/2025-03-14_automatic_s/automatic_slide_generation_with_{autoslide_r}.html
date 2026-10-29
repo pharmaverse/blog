@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-cdaacfc258cb6f151192107f105ac881.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-142747f7b47edf831955201bee735964.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-727ddaf110e3f7e9eed0409c8406c853.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -425,15 +425,27 @@ SER:
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">template =</span> <span class="fu">file.path</span>(<span class="fu">system.file</span>(<span class="at">package =</span> <span class="st">"autoslider.core"</span>), <span class="st">"/theme/basic.pptx"</span>),</span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">table_format =</span> autoslider_format</span>
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] " Patient Disposition (Intent to Treat Population)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"</code></pre>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")
+Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population"
-[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)"
-[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)"
-[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)"</code></pre>
+<pre><code>[1] " Patient Disposition (Intent to Treat Population)"</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")
+Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population"</code></pre>
 </div>
 </div>
 </section>
@@ -442,36 +454,36 @@ SER:
 <p>For study-specific outputs not covered by <code>{autoslider.core}</code> functions, you can create custom functions. Custom functions need to return either a <code>{ggplot2}</code> (for plots), <code>{rtables}</code> (for tables), or <code>{rlistings}</code> or <code>data.frame</code> objects (for listings).</p>
 <p>Example custom function:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>lbt06 <span class="ot">&lt;-</span> <span class="cf">function</span>(datasets) {</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  adsl <span class="ot">&lt;-</span> datasets<span class="sc">$</span>adsl <span class="sc">%&gt;%</span> tern<span class="sc">::</span><span class="fu">df_explicit_na</span>()</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  adlb <span class="ot">&lt;-</span> datasets<span class="sc">$</span>adlb <span class="sc">%&gt;%</span> tern<span class="sc">::</span><span class="fu">df_explicit_na</span>()</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  adlb_f <span class="ot">&lt;-</span> adlb <span class="sc">%&gt;%</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(ABLFL <span class="sc">!=</span> <span class="st">"Y"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(AVISIT <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"SCREENING"</span>, <span class="st">"BASELINE"</span>))) <span class="sc">%&gt;%</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">AVISIT =</span> <span class="fu">droplevels</span>(AVISIT)) <span class="sc">%&gt;%</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    formatters<span class="sc">::</span><span class="fu">var_relabel</span>(<span class="at">AVISIT =</span> <span class="st">"Visit"</span>)</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  adlb_f_crp <span class="ot">&lt;-</span> adlb_f <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(PARAMCD <span class="sc">==</span> <span class="st">"CRP"</span>)</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  split_fun <span class="ot">&lt;-</span> rtables<span class="sc">::</span>drop_split_levels</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  lyt <span class="ot">&lt;-</span> rtables<span class="sc">::</span><span class="fu">basic_table</span>(<span class="at">show_colcounts =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    rtables<span class="sc">::</span><span class="fu">split_cols_by</span>(<span class="st">"ARM"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    rtables<span class="sc">::</span><span class="fu">split_rows_by</span>(<span class="st">"AVISIT"</span>, <span class="at">split_fun =</span> split_fun, <span class="at">label_pos =</span> <span class="st">"topleft"</span>, <span class="at">split_label =</span> formatters<span class="sc">::</span><span class="fu">obj_label</span>(adlb_f_crp<span class="sc">$</span>AVISIT)) <span class="sc">%&gt;%</span></span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    tern<span class="sc">::</span><span class="fu">count_abnormal_by_baseline</span>(<span class="st">"ANRIND"</span>, <span class="at">abnormal =</span> <span class="fu">c</span>(<span class="at">Low =</span> <span class="st">"LOW"</span>, <span class="at">High =</span> <span class="st">"HIGH"</span>), <span class="at">.indent_mods =</span> <span class="dv">4</span>L) <span class="sc">%&gt;%</span></span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    tern<span class="sc">::</span><span class="fu">append_varlabels</span>(adlb_f_crp, <span class="st">"ANRIND"</span>, <span class="at">indent =</span> <span class="dv">1</span>L) <span class="sc">%&gt;%</span></span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    rtables<span class="sc">::</span><span class="fu">append_topleft</span>(<span class="st">"    Baseline Status"</span>)</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> rtables<span class="sc">::</span><span class="fu">build_table</span>(<span class="at">lyt =</span> lyt, <span class="at">df =</span> adlb_f_crp, <span class="at">alt_counts_df =</span> adsl) <span class="sc">%&gt;%</span></span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    rtables<span class="sc">::</span><span class="fu">trim_rows</span>()</span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>  result</span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>lbt06 <span class="ot">&lt;-</span> <span class="cf">function</span>(datasets) {</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  adsl <span class="ot">&lt;-</span> datasets<span class="sc">$</span>adsl <span class="sc">%&gt;%</span> tern<span class="sc">::</span><span class="fu">df_explicit_na</span>()</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  adlb <span class="ot">&lt;-</span> datasets<span class="sc">$</span>adlb <span class="sc">%&gt;%</span> tern<span class="sc">::</span><span class="fu">df_explicit_na</span>()</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  adlb_f <span class="ot">&lt;-</span> adlb <span class="sc">%&gt;%</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(ABLFL <span class="sc">!=</span> <span class="st">"Y"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(AVISIT <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"SCREENING"</span>, <span class="st">"BASELINE"</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">AVISIT =</span> <span class="fu">droplevels</span>(AVISIT)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    formatters<span class="sc">::</span><span class="fu">var_relabel</span>(<span class="at">AVISIT =</span> <span class="st">"Visit"</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  adlb_f_crp <span class="ot">&lt;-</span> adlb_f <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(PARAMCD <span class="sc">==</span> <span class="st">"CRP"</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  split_fun <span class="ot">&lt;-</span> rtables<span class="sc">::</span>drop_split_levels</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  lyt <span class="ot">&lt;-</span> rtables<span class="sc">::</span><span class="fu">basic_table</span>(<span class="at">show_colcounts =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    rtables<span class="sc">::</span><span class="fu">split_cols_by</span>(<span class="st">"ARM"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    rtables<span class="sc">::</span><span class="fu">split_rows_by</span>(<span class="st">"AVISIT"</span>, <span class="at">split_fun =</span> split_fun, <span class="at">label_pos =</span> <span class="st">"topleft"</span>, <span class="at">split_label =</span> formatters<span class="sc">::</span><span class="fu">obj_label</span>(adlb_f_crp<span class="sc">$</span>AVISIT)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    tern<span class="sc">::</span><span class="fu">count_abnormal_by_baseline</span>(<span class="st">"ANRIND"</span>, <span class="at">abnormal =</span> <span class="fu">c</span>(<span class="at">Low =</span> <span class="st">"LOW"</span>, <span class="at">High =</span> <span class="st">"HIGH"</span>), <span class="at">.indent_mods =</span> <span class="dv">4</span>L) <span class="sc">%&gt;%</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    tern<span class="sc">::</span><span class="fu">append_varlabels</span>(adlb_f_crp, <span class="st">"ANRIND"</span>, <span class="at">indent =</span> <span class="dv">1</span>L) <span class="sc">%&gt;%</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    rtables<span class="sc">::</span><span class="fu">append_topleft</span>(<span class="st">"    Baseline Status"</span>)</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> rtables<span class="sc">::</span><span class="fu">build_table</span>(<span class="at">lyt =</span> lyt, <span class="at">df =</span> adlb_f_crp, <span class="at">alt_counts_df =</span> adsl) <span class="sc">%&gt;%</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    rtables<span class="sc">::</span><span class="fu">trim_rows</span>()</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>  result</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Testing the custom function:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lbt06</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lbt06</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Visit                                                                                  
   Analysis Reference Range Indicator     A: Drug X        B: Placebo     C: Combination
@@ -526,25 +538,25 @@ WEEK 5 DAY 36
 </div>
 <p>To use the custom function within the <code>{autoslider.core}</code> workflow, ensure it is available in the global environment:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"programs/output_functions.R"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"programs/output_functions.R"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>With the correct <code>specs.yml</code> and <code>filters.yml</code>, integrate the custom function into the general workflow:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>filters <span class="ot">&lt;-</span> <span class="st">"filters.yml"</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>spec_file <span class="ot">&lt;-</span> <span class="st">"specs.yml"</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>filters<span class="sc">::</span><span class="fu">load_filters</span>(filters, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>outputs <span class="ot">&lt;-</span> spec_file <span class="sc">%&gt;%</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_spec</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate_outputs</span>(data) <span class="sc">%&gt;%</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decorate_outputs</span>()</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>outputs<span class="sc">$</span>lbt06_ITT_LBCRP_LBNOBAS</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>filters <span class="ot">&lt;-</span> <span class="st">"filters.yml"</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>spec_file <span class="ot">&lt;-</span> <span class="st">"specs.yml"</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>filters<span class="sc">::</span><span class="fu">load_filters</span>(filters, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>outputs <span class="ot">&lt;-</span> spec_file <span class="sc">%&gt;%</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_spec</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate_outputs</span>(data) <span class="sc">%&gt;%</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decorate_outputs</span>()</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>outputs<span class="sc">$</span>lbt06_ITT_LBCRP_LBNOBAS</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell" data-hide="true">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>outputs <span class="ot">&lt;-</span> spec_file <span class="sc">%&gt;%</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_spec</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate_outputs</span>(data) <span class="sc">%&gt;%</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decorate_outputs</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>outputs <span class="ot">&lt;-</span> spec_file <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_spec</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate_outputs</span>(data) <span class="sc">%&gt;%</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decorate_outputs</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>❯ Running program `t_ds_slide` with suffix 'ITT'.</code></pre>
 </div>
@@ -574,7 +586,7 @@ WEEK 5 DAY 36
 <div class="cell-output cell-output-stderr">
 <pre><code>2000/8400 records matched the filter condition `PARAMCD == 'CRP' &amp; (ABLFL != 'Y' &amp; !(AVISIT %in% c('SCREENING', 'BASELINE')))`.</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>outputs<span class="sc">$</span>lbt06_ITT_LBCRP_LBNOBAS</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>outputs<span class="sc">$</span>lbt06_ITT_LBCRP_LBNOBAS</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An object of class "dVTableTree"
 Slot "tbl":</code></pre>
@@ -637,7 +649,7 @@ WEEK 5 DAY 36
 t_ds footnotes
 Confidential and for internal use only
 GitHub repository: NA
-Git hash: 6abd483ff14792ddbca47367cb32e8dff107e912
+Git hash: d9551f0a6dfac88023bf6f1923d89308d5ec3e87
 
 Slot "titles":
  Patient Disposition (Intent to Treat Population)
@@ -658,29 +670,40 @@ Slot "width":
 </div>
 <p>Generate the slides:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>filepath <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".pptx"</span>)</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_slides</span>(outputs, <span class="at">outfile =</span> filepath)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] " Patient Disposition (Intent to Treat Population)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>filepath <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".pptx"</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_slides</span>(outputs, <span class="at">outfile =</span> filepath)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")
+Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population"
-[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)"
-[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)"
-[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population (cont.)"</code></pre>
+<pre><code>[1] " Patient Disposition (Intent to Treat Population)"</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")
+Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] " Patient Disposition (Intent to Treat Population)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"
-[1] " Patient Disposition (Intent to Treat Population) (cont.)"</code></pre>
+<pre><code>[1] " Patient Demographics and Baseline Characteristics, Intent to Treat Population"</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")
+Warning in m_str_extents(txt_data$txt, fontname = txt_data$font.family, : 'm_str_extents' is deprecated.
+Use 'strings_sizes' instead.
+See help("Deprecated")</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " Patient Disposition (Intent to Treat Population)"</code></pre>
 </div>
 </div>
 <p>We hope this guide helps you get started with <code>{autoslider.core}</code> in pharmaverse. Happy coding!</p>
@@ -697,7 +720,7 @@ Slot "width":
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-09-26 11:58:05.134217</p>
+<p>2026-10-29 15:42:37.85604</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_automatic_s.../automatic_slide_generation_with_%7Bautoslide_r%7D.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
