@@ -101,7 +101,7 @@ font-style: inherit;">"pharmaverse/rtables"</span>)</span></code></pre></div></d
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:41:41.215425</p>
+<p>2026-10-30 12:05:42.720243</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-11-03-roche-open-source-t/roche-open-source-tlg-packages-move-to-pharmaverse.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -122,6 +122,795 @@ Move to Pharmaverse.”</span> November 3, 2026. <a href="https://pharmaverse.gi
   <guid>https://pharmaverse.github.io/blog/posts/2026-11-03-roche-open-source-t/roche-open-source-tlg-packages-move-to-pharmaverse.html</guid>
   <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2026-11-03-roche-open-source-t/nest_hex.png" medium="image" type="image/png" height="166" width="144"/>
+</item>
+<item>
+  <title>risk.assessr: A Data-Driven Workflow for R Package Validation in Regulated Environments</title>
+  <dc:creator>Edward Gillian Hugo Bottois</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk_assessr.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="220"></p>
+</figure>
+</div>
+<section id="validating-r-packages-the-risk-based-way" class="level1">
+<h1>Validating R packages, the risk-based way</h1>
+<p>In pharmaceutical development, the reliability of statistical and TLF software is a regulatory requirement. For organizations using R in submission environments, this mandate means a rigorous approach to validation is needed. <code>{risk.assessr}</code> is an open-source tool — built by the Sanofi/Cytel Validation team and available on CRAN and <code>pharmaverse</code> — that turns package validation into a structured, data-driven workflow.</p>
+<p>System validation must support three pillars:</p>
+<ul>
+<li><strong>Accuracy</strong> — does the package compute the right answer?</li>
+<li><strong>Reproducibility</strong> — does it compute the same answer, every time, on every machine?</li>
+<li><strong>Traceability</strong> — can you tie each exported function back to a specification, a test, and a result?</li>
+</ul>
+<p>The <a href="https://www.pharmar.org/">R Validation Hub</a> classifies R packages into two tiers when considering accuracy:</p>
+<ul>
+<li><strong>Base and recommended (core) packages</strong> — developed by the R Foundation and shipped with R itself. These represent the highest tier of reliability.</li>
+<li><strong>Contributed open-source packages</strong> — developed by anyone in the community. These vary significantly in accuracy, robustness, and maintenance.</li>
+</ul>
+<p><code>{risk.assessr}</code> assigns each assessed package a quantitative risk profile so that you can decide — with evidence — whether the package is suitable for exploratory work, for a regulatory submission, or should be rejected.</p>
+<section id="summary-what-does-risk.assessr-give-you" class="level2">
+<h2 class="anchored" data-anchor-id="summary-what-does-risk.assessr-give-you">Summary: What does <code>{risk.assessr}</code> give you?</h2>
+<ul>
+<li>A single entry point — <code>risk_assess_pkg()</code> — that downloads a package (or accepts a local <code>.tar.gz</code>), installs it, runs <code>R CMD check</code>, computes test coverage, builds a traceability matrix, and harvests metadata from CRAN, Bioconductor, GitHub, and PubMed.</li>
+<li>A configurable, <strong>rule-based risk engine</strong> (<code>get_risk_analysis()</code>) whose thresholds live in a JSON file (<code>inst/config/risk-definition.json</code>) — meaning your validation criteria are auditable, editable artefacts.</li>
+<li>Two complementary reports:
+<ul>
+<li><code>generate_html_report()</code> — a rich red/yellow/green dashboard for developers and validation engineers.</li>
+<li><code>write_summary_report()</code> — a one-page <strong>Approved / Rejected / Remediation Needed</strong> summary for sign-off, typically triggered by a Validation GitHub Action.</li>
+</ul></li>
+<li>Support for the modern R object system landscape: regular, S3, S4, S7, R6 and ggproto functions are all classified and traced.</li>
+<li>A built-in <strong>dependency tree</strong> (<code>build_dependency_tree()</code>) so that the recursive risk of a package’s imports is visible, not hidden.</li>
+</ul>
+<p>The rest of this post takes a few deep dives into the parts of <code>{risk.assessr}</code> that most directly support a validation decision.</p>
+</section>
+<section id="how-a-package-gets-assessed-the-assess_pkg-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="how-a-package-gets-assessed-the-assess_pkg-workflow">How a package gets assessed: the <code>assess_pkg()</code> workflow</h2>
+<p>Before diving in, it helps to see the shape of the workflow. The user-facing entry point <code>risk_assess_pkg()</code> is a thin wrapper that resolves a package source (a tarball, a CRAN / Bioconductor / internal repo name, or an interactive file chooser), and then hands off to the internal controller function <code>assess_pkg()</code>:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A[risk_assess_pkg&lt;br/&gt;path / package / file chooser] --&gt; B[set_up_pkg&lt;br/&gt;unpack tarball]
+    B --&gt; C[install_package_local]
+    C --&gt; D[assess_pkg]
+    D --&gt; D1[doc_riskmetric&lt;br/&gt;documentation, news, examples]
+    D --&gt; D2[test.assessr::get_package_coverage&lt;br/&gt;test coverage]
+    D --&gt; D3[create_traceability_matrix&lt;br/&gt;exports x docs x tests]
+    D --&gt; D4[run_rcmdcheck + check_forbidden_notes]
+    D --&gt; D5[get_dependencies / get_session_dependencies]
+    D --&gt; D6[check_suggested_exp_funcs]
+    D --&gt; D7[get_host_package + get_github_data&lt;br/&gt;cran_revdep / bioconductor_reverse_deps&lt;br/&gt;get_cran_total_downloads]
+    D1 &amp; D2 &amp; D3 &amp; D4 &amp; D5 &amp; D6 &amp; D7 --&gt; E[get_risk_analysis&lt;br/&gt;apply risk-definition.json]
+    E --&gt; F[results, covr_list, tm_list, check_list, risk_analysis]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Each of those branches produces a slice of evidence; <code>get_risk_analysis()</code> brings them together and applies your risk rules. The next sections walk through the most validation- relevant branches.</p>
+</section>
+<section id="deep-dive-1-r-cmd-check-with-three-profiles-and-forbidden-notes" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-1-r-cmd-check-with-three-profiles-and-forbidden-notes">Deep dive 1: R CMD check, with three profiles and “forbidden notes”</h2>
+<p><code>R CMD check</code> is the largest and most comprehensive check in the R ecosystem — more than 50 individual checks of an R package’s structure, metadata, code, tests, examples and documentation are performed. <code>{risk.assessr}</code> runs it through <code>rcmdcheck::rcmdcheck()</code> that the user can configure: <strong>you choose a check profile</strong>, and <strong>certain notes are reclassified as errors</strong>.</p>
+<section id="three-profiles-picked-by-setup_rcmdcheck_args" class="level3">
+<h3 class="anchored" data-anchor-id="three-profiles-picked-by-setup_rcmdcheck_args">Three profiles, picked by <code>setup_rcmdcheck_args()</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># the function lives in R/setup_rcmdcheck_args.R</span></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">setup_rcmdcheck_args</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">check_type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">build_vignettes =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span></code></pre></div></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><code>check_type</code></th>
+<th>Profile</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>"1"</code></td>
+<td>Basic (default)</td>
+<td><code>--no-examples</code>, <code>--ignore-vignettes</code>, <code>--no-vignettes</code>, <code>--no-manual</code></td>
+</tr>
+<tr class="even">
+<td><code>"2"</code></td>
+<td>Frugal / no-tests</td>
+<td>As <code>"1"</code> plus <code>--no-tests</code>. Used by <code>get_frugal_metrics()</code> for fast scans.</td>
+</tr>
+<tr class="odd">
+<td>anything else</td>
+<td>CRAN-like (<code>--as-cran</code>)</td>
+<td>Mirrors a CRAN submission check; honours <code>build_vignettes</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Every profile also sets <code>_R_CHECK_FORCE_SUGGESTS_=FALSE</code> so a missing Suggests dependency does not fail the check the same way it would on a clean CRAN machine. The check is run with <code>error_on = "never"</code>, because the goal is <em>evidence</em>, not a stop signal — a failed package should still produce a report.</p>
+</section>
+<section id="reclassifying-forbidden-notes-as-errors" class="level3">
+<h3 class="anchored" data-anchor-id="reclassifying-forbidden-notes-as-errors">Reclassifying “forbidden” notes as errors</h3>
+<p>The vanilla <code>R CMD check</code> is famously lenient: several issues that should be deal-breakers in a validated environment land as mere <code>NOTE</code>s. <code>check_forbidden_notes()</code> rescans the notes and promotes the dangerous ones to errors, mimicking a CRAN - style check:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">forbidden_patterns <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(</span>
+<span id="cb2-2">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"'.*' import not declared from"</span>,</span>
+<span id="cb2-3">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Namespace in Imports field not imported from"</span>,</span>
+<span id="cb2-4">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"no visible global .+ definition"</span></span>
+<span id="cb2-5">)</span></code></pre></div></div>
+<p>In other words, packages that quietly reach into namespaces they didn’t declare, or rely on globals the parser can’t resolve, will be scored as if they had failed outright. The scoring itself is a weighted sum:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># core_metrics.R, run_rcmdcheck()</span></span>
+<span id="cb3-2">sum_vars         <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">notes =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(notes), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">warnings =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(warnings), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">errors =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(errors))</span>
+<span id="cb3-3">score_weightings <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">notes =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">warnings =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.25</span>,            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">errors =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.00</span>)</span>
+<span id="cb3-4">check_score      <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">min</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(score_weightings <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> sum_vars), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span></code></pre></div></div>
+<p>The result is a <code>check_score</code> in <code>[0, 1]</code>: <code>1</code> means a perfectly clean check, <code>0</code> means at least one error (or four warnings, or ten notes).</p>
+</section>
+</section>
+<section id="deep-dive-2-get_risk_analysis-rules-you-can-version-control" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-2-get_risk_analysis-rules-you-can-version-control">Deep dive 2: <code>get_risk_analysis()</code> — rules you can version-control</h2>
+<p>Raw metrics are not decisions. <code>get_risk_analysis()</code> turns numbers (and licence strings) into <strong>Low / Medium / High</strong> risk levels, using a config file that ships with the package:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system.file</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"config"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"risk-definition.json"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"risk.assessr"</span>)</span></code></pre></div></div>
+<p>Each entry in that JSON file maps one <strong>key</strong> in the flattened results to a set of thresholds:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb5-2">  <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"label"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"code coverage"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb5-3">  <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"id"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"code_coverage"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb5-4">  <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"key"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"code_coverage"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb5-5">  <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"thresholds"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb5-6">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"level"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"high"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span>   <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"max"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.6</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb5-7">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"level"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"medium"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"max"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb5-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"level"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"low"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span>    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"max"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>   <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb5-9">  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb5-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<p>The defaults that ship with <code>{risk.assessr}</code> cover the metrics most validation teams care about:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk dimension</th>
+<th>Key</th>
+<th>Default thresholds (Low / Medium / High)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dependency count</td>
+<td><code>dependencies_count</code></td>
+<td>≤ 20 / ≤ 40 / &gt; 40</td>
+</tr>
+<tr class="even">
+<td>Version deprecation</td>
+<td><code>later_version</code></td>
+<td>≤ 3 later releases / &gt; 3</td>
+</tr>
+<tr class="odd">
+<td>Code coverage</td>
+<td><code>code_coverage</code></td>
+<td>&gt; 80% / 60–80% / ≤ 60%</td>
+</tr>
+<tr class="even">
+<td>Popularity (downloads)</td>
+<td><code>total_download</code></td>
+<td>&gt; 50M / 3.5M–50M / ≤ 3.5M</td>
+</tr>
+<tr class="odd">
+<td>Licence</td>
+<td><code>license</code></td>
+<td>MIT/Apache / GPL/LGPL/Artistic / AGPL, SSPL, NOTAVAILABLE, …</td>
+</tr>
+<tr class="even">
+<td>Reverse dependencies</td>
+<td><code>reverse_dependencies_count</code></td>
+<td>&gt; 15 / 6–15 / ≤ 5</td>
+</tr>
+<tr class="odd">
+<td>Documentation breadth</td>
+<td><code>documentation_score</code></td>
+<td>&gt; 6 indicators / 4–6 / ≤ 3</td>
+</tr>
+<tr class="even">
+<td>Examples + Rd coverage</td>
+<td><code>has_ex_docs_score</code></td>
+<td>&gt; 80% / 60–80% / ≤ 60%</td>
+</tr>
+<tr class="odd">
+<td><code>R CMD check</code></td>
+<td><code>cmd_check</code></td>
+<td>= 1.0 / 0.0–0.8 / 0</td>
+</tr>
+</tbody>
+</table>
+<section id="creating-your-own-risk-profile" class="level3">
+<h3 class="anchored" data-anchor-id="creating-your-own-risk-profile">Creating your own risk profile</h3>
+<p>These defaults are sensible, but users can set their own rules and values. You can override them globally for an R session in one of two ways:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Option A: an in-memory R list</span></span>
+<span id="cb6-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">options</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">risk.assessr.risk_definition =</span> strict_coverage_config)</span>
+<span id="cb6-3"></span>
+<span id="cb6-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Option B: point at an external JSON file (recommended for governance)</span></span>
+<span id="cb6-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">options</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">risk.assessr.risk_definition =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"config/risk-definition-internal.json"</span>)</span>
+<span id="cb6-6"></span>
+<span id="cb6-7">result <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">risk_assess_pkg</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stringr"</span>)</span>
+<span id="cb6-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(result<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>risk_analysis)</span></code></pre></div></div>
+</div>
+<p>Storing the rules in JSON creates an audit trail: your validation policy has a <strong>versioned artefact</strong> that can be examined by reviewers or management.</p>
+</section>
+</section>
+<section id="deep-dive-3-documentation-metrics-that-look-beyond-the-readme" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-3-documentation-metrics-that-look-beyond-the-readme">Deep dive 3: documentation metrics that look beyond the README</h2>
+<p>Good documentation is a leading indicator of long-term reliability. <code>doc_riskmetric()</code> rolls several signals into a single <code>doc_scores</code> list, each of which feeds the risk engine:</p>
+<ul>
+<li><strong>Standard roxygen / Rd documentation.</strong> <code>assess_exported_functions_docs()</code> walks <code>tools::Rd_db()</code>, resolves every exported function to its <code>.Rd</code> page — supporting shared topics via <code>@rdname</code> and multiple <code>\alias{}</code> entries — and produces <code>has_docs_score</code>, the fraction of exported functions that have an Rd page.</li>
+<li><strong>Worked examples.</strong> <code>assess_examples()</code> extracts the <code>\examples{}</code> and <code>\example{}</code> sections (including content wrapped in <code>\dontrun{}</code> and <code>\donttest{}</code>) and reports <code>example_score</code>, the fraction of exported functions that have an example. <code>\dontrun{}</code> blocks still count — what we are measuring is <em>intent to demonstrate</em>, not whether the example runs on a clean CRAN box.</li>
+<li><strong>Family-style documentation.</strong> The HTML report explicitly checks whether exported functions are grouped through roxygen <code>@family</code> tags, surfacing packages that document related functions together (a strong signal of curated APIs).</li>
+<li><strong><code>DESCRIPTION</code> health.</strong> <code>assess_description_file_elements()</code> reports whether the package declares a <code>BugReports</code> URL, a maintainer, a website, and a source-control link. Source control detection is intentionally broad — <code>github.com</code>, <code>gitlab.com</code> (including self-hosted GitLab), Bitbucket, R-Forge, Codeberg, SourceForge, Sourcehut, Bioconductor, and academic <code>.ac.uk</code> / <code>.edu.au</code> URLs all count. If the <code>URL</code> field is empty, <code>BugReports</code> is used as a fallback.</li>
+<li><strong>NEWS, and <em>current</em> NEWS.</strong> <code>assess_news()</code> finds <code>NEWS</code>, <code>NEWS.md</code>, or <code>NEWS.Rd</code> anywhere in the target package (package root, <code>doc/</code>, <code>vignettes/</code>, and recursively under <code>inst/</code>). <code>assess_news_current()</code> then goes one step further and checks that the NEWS file actually mentions the <strong>version under assessment</strong> — catching the classic “the NEWS file exists, but was last updated three releases ago” failure mode.</li>
+<li><strong>Vignettes and codebase size.</strong> <code>assess_vignettes()</code> reports presence; <code>assess_size_codebase()</code> recursively walks <code>R/</code> to give a lines-of-code count (after stripping headers, comments, and blank lines) as a proxy for surface area.</li>
+</ul>
+<p>The composite <code>has_ex_docs_score</code> is just the mean of <code>example_score</code> and <code>has_docs_score</code>, giving a single number for “are exported functions both documented and demonstrated?”.</p>
+</section>
+<section id="deep-dive-4-traceability-matrix-function-type-and-function-status" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-4-traceability-matrix-function-type-and-function-status">Deep dive 4: traceability matrix — function type <em>and</em> function status</h2>
+<p><code>create_traceability_matrix()</code> is an important element for examining packages for <em>accuracy, reproducibility, traceability</em>. For every exported function it produces a row linking:</p>
+<ul>
+<li>the function name (and its class, for methods),</li>
+<li>the function <strong>type</strong> (regular, S3 generic, S3 method, S3 generic+method, S4 generic, S4 method, S7 generic, S7 class, S7 constructor, R6 class, ggproto class, …),</li>
+<li>the function <strong>description</strong> parsed from its Rd,</li>
+<li>the documentation file in <code>man/</code>,</li>
+<li>the source script in <code>R/</code>,</li>
+<li>the per-script test coverage percentage from <code>{test.assessr}</code> / <code>{covr}</code>,</li>
+<li>the test scripts that exercise the function.</li>
+</ul>
+<section id="classifying-every-flavour-of-r-function" class="level3">
+<h3 class="anchored" data-anchor-id="classifying-every-flavour-of-r-function">Classifying every flavour of R function</h3>
+<p><code>get_exports()</code> and <code>classify_function_body()</code> together handle the modern R function types (regular and Object Oriented Programming (OOP) functions. A selection from the production code:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">inherits</span>(obj, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"S7_generic"</span>))   <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">name =</span> f, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">class =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"S7 generic"</span>))</span>
+<span id="cb7-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">inherits</span>(obj, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"S7_class"</span>))     <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">name =</span> f, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">class =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"S7 class"</span>))</span>
+<span id="cb7-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grepl</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"S7::new</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">(|S7::new_object</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">("</span>, body_text))</span>
+<span id="cb7-4">                                   <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">name =</span> f, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">class =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"S7 constructor"</span>))</span>
+<span id="cb7-5"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (methods<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">isGeneric</span>(generic_clean))</span>
+<span id="cb7-6">                                   row<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>function_type <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"S4 method, S4 generic"</span></span></code></pre></div></div>
+<p>S3 methods are parsed straight out of <code>NAMESPACE</code> lines like <code>S3method(print, foo)</code>, and the classifier later upgrades the label if it finds (or fails to find) <code>UseMethod()</code> calls in the body. R6 and ggproto classes have dedicated extractors so that <strong>every method body</strong> — not just the top-level constructor — is available for downstream pattern matching.</p>
+<p>This matters in regulated work because validation auditors rarely accept “exported function” as a single bucket: an S4 generic is documented and tested very differently from an R6 method, and an S7 constructor is something else again.</p>
+<p>The following are examples of traceability matrices report:</p>
+<p>First, an example from ggplot2 version 3.5.1:</p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/ggplot2-tm-01.png" class="img-fluid"></p>
+<p>This shows 3 functions; each with a different function type.</p>
+<p>Second, an example from ellmer version 0.3.0:</p>
+<p><img src="https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/ellmer-tm.png" class="img-fluid"></p>
+</section>
+<section id="fine-grained-matrices-by-test-coverage-and-by-function-status" class="level3">
+<h3 class="anchored" data-anchor-id="fine-grained-matrices-by-test-coverage-and-by-function-status">Fine-grained matrices: by test coverage <em>and</em> by function status</h3>
+<p>Once the master matrix is built, <code>fine_grained_tms()</code> filters it into seven views, each of which lands in the HTML report as a tab:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">tm_list<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>coverage<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>high_risk        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># coverage_percent &lt;= 60 or NA</span></span>
+<span id="cb8-2">tm_list<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>coverage<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>medium_risk      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 60 &lt; coverage_percent &lt; 80</span></span>
+<span id="cb8-3">tm_list<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>coverage<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>low_risk         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># coverage_percent &gt;= 80</span></span>
+<span id="cb8-4"></span>
+<span id="cb8-5">tm_list<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>function_type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>defunct       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># body / docs mention defunct / deprecated / superseded</span></span>
+<span id="cb8-6">tm_list<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>function_type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>imported      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># docs / scripts mention "imported"</span></span>
+<span id="cb8-7">tm_list<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>function_type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>rexported     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># docs / scripts mention "re-exported" / "reexports"</span></span>
+<span id="cb8-8">tm_list<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>function_type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>experimental  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># docs / scripts mention "experimental"</span></span></code></pre></div></div>
+<p>The result is a matrix that answers the question a validation reviewer actually asks: not “how many functions are tested?” but <strong>“which functions are tested, which are deprecated, and which are still experimental?”</strong> — separately, per package, on one screen.</p>
+</section>
+</section>
+<section id="deep-dive-5-where-popularity-comes-from" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-5-where-popularity-comes-from">Deep dive 5: where popularity comes from</h2>
+<p>Popularity can provide guidance about packages’ use in general. <code>{risk.assessr}</code> harvests it from four independent sources, so a package with high downloads, active GitHub commits, <em>and</em> peer-reviewed citations earns its rating instead of relying on a single ranking.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 36%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Function(s)</th>
+<th>What it tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CRAN</td>
+<td><code>get_cran_total_downloads()</code>, <code>get_package_download_cran()</code></td>
+<td>Total + daily download counts via <code>cranlogs.r-pkg.org</code>.</td>
+</tr>
+<tr class="even">
+<td>CRAN</td>
+<td><code>cran_revdep()</code> (with cached <code>cran_packages()</code>)</td>
+<td>Reverse dependencies on CRAN.</td>
+</tr>
+<tr class="odd">
+<td>Bioconductor</td>
+<td><code>bioconductor_reverse_deps()</code>, <code>fetch_bioconductor_releases()</code></td>
+<td>Reverse dependencies and release metadata.</td>
+</tr>
+<tr class="even">
+<td>GitHub</td>
+<td><code>get_github_data()</code></td>
+<td>Stars, forks, open issues, commits in the last 30 days, and average issue close time, via the GitHub REST API (PAT-friendly via <code>GITHUB_TOKEN</code>).</td>
+</tr>
+<tr class="odd">
+<td>PubMed</td>
+<td><code>get_pubmed_count()</code>, <code>get_pubmed_by_year()</code></td>
+<td>Citation counts via NCBI E-utilities — useful evidence for statistical / pharmacometric packages.</td>
+</tr>
+</tbody>
+</table>
+<p>A subtle but important detail: <code>cran_packages()</code> is cached for 30 minutes in a package-level environment, so a typical scan does not hammer the CRAN metadata endpoint, and repeated <code>cran_revdep()</code> calls in the same session return identical snapshots — important for reproducible test runs.</p>
+</section>
+<section id="deep-dive-6-the-dependency-tree-recursive-risk-made-visible" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-6-the-dependency-tree-recursive-risk-made-visible">Deep dive 6: the dependency tree — recursive risk, made visible</h2>
+<p>A package is only as safe as its imports. <code>build_dependency_tree()</code> recursively walks the <code>Imports</code> field of a package’s <code>DESCRIPTION</code>, stopping at base / recommended packages or at a user-controlled <code>max_level</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">tree <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">build_dependency_tree</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ggplot2"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">get_license =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_level =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span></code></pre></div></div>
+</div>
+<p>What you get back is a nested list whose leaves are either <code>"base"</code> (terminal) or another node with <code>version</code> and (optionally) per-package <code>license</code> fields. That recursive licence collection matters: a permissively-licensed top-level package can still drag in a GPL-only dependency several levels down — and <code>{risk.assessr}</code> will provide details in the report.</p>
+<p>For lock-file-driven projects, <code>risk_assess_pkg_lock_files()</code> plays the same role for <code>renv.lock</code> and <code>pak.lock</code>, so a project’s <em>resolved</em> environment can be scored, not just an individual package.</p>
+</section>
+<section id="reporting-two-artefacts-two-audiences" class="level2">
+<h2 class="anchored" data-anchor-id="reporting-two-artefacts-two-audiences">Reporting: two artefacts, two audiences</h2>
+<p><code>{risk.assessr}</code> generates two complementary reports:</p>
+<ul>
+<li><p><strong><code>generate_html_report()</code></strong> — the technical view. Each metric is rendered with a red / yellow / green badge corresponding to High / Medium / Low risk. Reverse-dependency lists, download charts, dependency trees, and the seven traceability matrix tabs are all there.</p></li>
+<li><p><strong><code>write_summary_report()</code></strong> — the one-page sign-off. It renders an <code>Approved</code>, <code>Rejected</code>, or <code>Remediation Needed</code> recommendation, derived from the risk profile, with enough context for a validation engineer to apply critical judgement. Typically driven by a Validation GitHub Action so that every package, every version, leaves a paper trail.</p></li>
+</ul>
+<p>A typical end-to-end call looks like:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(risk.assessr)</span>
+<span id="cb10-2"></span>
+<span id="cb10-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Score a CRAN package, with all defaults</span></span>
+<span id="cb10-4">result <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">risk_assess_pkg</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stringr"</span>)</span>
+<span id="cb10-5"></span>
+<span id="cb10-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Or score a local tarball</span></span>
+<span id="cb10-7">result <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">risk_assess_pkg</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">path =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"path/to/your/package.tar.gz"</span>)</span>
+<span id="cb10-8"></span>
+<span id="cb10-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate the dashboard</span></span>
+<span id="cb10-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_html_report</span>(result, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output_dir =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"reports"</span>)</span>
+<span id="cb10-11"></span>
+<span id="cb10-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate the one-page sign-off</span></span>
+<span id="cb10-13"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_summary_report</span>(result, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output_dir =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"reports"</span>)</span></code></pre></div></div>
+</div>
+</section>
+<section id="final-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="final-takeaways">Final takeaways</h2>
+<p><code>{risk.assessr}</code> is a <strong>scaffold for evidence-based validation</strong>. Its strengths come from a deliberate set of design choices:</p>
+<ul>
+<li>Run <code>R CMD check</code> with a customisable profile, then upgrade silent-but-dangerous notes into errors.</li>
+<li>Score documentation against multiple metrics, including whether the NEWS file actually mentions <em>the version under review</em>.</li>
+<li>Build a traceability matrix that respects S3, S4, S7, R6 and ggproto — and slices it by both coverage and function status (defunct, imported, re-exported, experimental).</li>
+<li>Aggregate popularity across CRAN, Bioconductor, GitHub, and PubMed.</li>
+<li>Make recursive dependency and licence risk visible.</li>
+<li>Keep the rules that turn metrics into decisions in a versioned JSON file — so the validation policy itself is auditable.</li>
+</ul>
+<p>The result is an audit trail that any validation reviewer can analyse and sign off.</p>
+<p><code>{risk.assessr}</code> is community-driven; if you have ideas, find an edge case, or want to contribute a new metric, please open an issue or a PR on <a href="https://github.com/pharmaverse/risk.assessr/issues">GitHub</a>. We’d love to hear from you.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2026-10-30 12:08:24.072946</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{gillian_hugo_bottois2026,
+  author = {Gillian Hugo Bottois, Edward},
+  title = {Risk.assessr: {A} {Data-Driven} {Workflow} for {R} {Package}
+    {Validation} in {Regulated} {Environments}},
+  date = {2026-06-23},
+  url = {https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-gillian_hugo_bottois2026" class="csl-entry quarto-appendix-citeas">
+Gillian Hugo Bottois, Edward. 2026. <span>“Risk.assessr: A Data-Driven
+Workflow for R Package Validation in Regulated Environments.”</span>
+June 23, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.html">https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.html</a>.
+</div></div></section></div> ]]></description>
+  <category>Technical</category>
+  <category>Community</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.html</guid>
+  <pubDate>Tue, 23 Jun 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2026-06-23-risk-assessr-a-data/risk_assessr.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
   <title>Why we still need {admiral} in an age of AI</title>
@@ -176,7 +965,7 @@ Move to Pharmaverse.”</span> November 3, 2026. <a href="https://pharmaverse.gi
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:44:27.436807</p>
+<p>2026-10-30 12:08:41.699891</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -339,7 +1128,7 @@ AI.”</span> June 14, 2026. <a href="https://pharmaverse.github.io/blog/posts/2
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:41:37.051389</p>
+<p>2026-10-30 12:05:38.409328</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-12-pharmaverse-ethical/pharmaverse-ethical-ai-guidance.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -399,7 +1188,7 @@ Ethical AI Guidance.”</span> June 12, 2026. <a href="https://pharmaverse.githu
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:44:39.514407</p>
+<p>2026-10-30 12:08:54.355122</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-05-welcome-joe-zhu/welcome-joe-zhu.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -511,7 +1300,7 @@ Farrugia, Ross. 2026. <span>“Welcome Joe Zhu.”</span> June 4, 2026. <a href=
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:42:20.490016</p>
+<p>2026-10-30 12:06:23.674038</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-04-17-closing-the-gap-in/closing-the-gap-in-exposure-response-data-a-pharmaverse-framework.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -678,7 +1467,7 @@ font-style: inherit;">- </span>Update NEWS.md for any user-facing function chang
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:41:44.910511</p>
+<p>2026-10-30 12:05:46.61692</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-31-agents-md-admiral-a/agents-md-admiral-and-the-ai-assisted-programmer.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -804,7 +1593,7 @@ font-style: inherit;">dataviewer</span>(adsl, adlb)</span></code></pre></div></d
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:42:52.50683</p>
+<p>2026-10-30 12:06:56.513122</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -947,7 +1736,7 @@ Pujari, Siddhesh, Madhan Kumar N, Gomathi S, and Mackenzie Haight. 2026.
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:44:23.795854</p>
+<p>2026-10-30 12:08:37.732724</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/beyond_key/beyond__keywords.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1087,7 +1876,7 @@ Unlocking Clinical Code Reuse.”</span> March 20, 2026. <a href="https://pharma
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:44:31.337156</p>
+<p>2026-10-30 12:08:45.827269</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-06-pharmaverse-pillar/pharmaverse-pillar-oss.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1161,7 +1950,7 @@ Our 2026 Hackathon Calendar.”</span> March 6, 2026. <a href="https://pharmaver
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:42:26.331321</p>
+<p>2026-10-30 12:06:29.748994</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-26-pharmaverse-pillars/pharmaverse-pillars.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1216,7 +2005,7 @@ Council, Pharmaverse. 2026. <span>“Pharmaverse Pillars.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:42:54.283168</p>
+<p>2026-10-30 12:06:58.398202</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1423,7 +2212,7 @@ council, pharmaverse. 2026. <span>“Welcome, Nick Masel.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:42:46.126445</p>
+<p>2026-10-30 12:06:49.968262</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-17-a-star-is-born/a-star-is-born.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1482,7 +2271,7 @@ to the Pharmaverse.”</span> February 17, 2026. <a href="https://pharmaverse.gi
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:41:51.041714</p>
+<p>2026-10-30 12:05:53.062221</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-16-get-ready-for-the-p/get-ready-for-the-phuse-us-connect-pavilions.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1587,7 +2376,7 @@ font-style: inherit;">"pharmaversesdtm"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:44:33.050908</p>
+<p>2026-10-30 12:08:47.596871</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_140_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1960,7 +2749,7 @@ font-style: inherit;">$</span>{{ secrets.GITHUB_TOKEN }}</span></code></pre></di
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:42:11.212745</p>
+<p>2026-10-30 12:06:13.925286</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse_and__containers.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2194,7 +2983,7 @@ font-style: inherit;">"adab"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:41:22.298227</p>
+<p>2026-10-30 12:05:23.044087</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.4.../admiral_14_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2565,7 +3354,7 @@ Pharmaverse.”</span> December 19, 2025. <a href="https://pharmaverse.github.io
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:44:41.227875</p>
+<p>2026-10-30 12:08:56.165304</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse__examples.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2637,7 +3426,7 @@ Tools.”</span> December 18, 2025. <a href="https://pharmaverse.github.io/blog/
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-10-29 15:41:52.554407</p>
+<p>2026-10-30 12:05:54.629038</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2656,341 +3445,6 @@ Farrugia, Ross. 2025. <span>“New Council Members.”</span> October 31,
   <guid>https://pharmaverse.github.io/blog/posts/2025-10-31_new__counci/new__council__members.html</guid>
   <pubDate>Fri, 31 Oct 2025 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2025-10-31_new__counci/pharmaverse.png" medium="image" type="image/png" height="128" width="144"/>
-</item>
-<item>
-  <title>Introducing admiralneuro!</title>
-  <dc:creator>Miles Almond</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2025-09-15-introducing/introducing_admiralneuro.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<!--------------- typical setup ----------------->
-<!--------------- post begins here ----------------->
-<section id="introduction" class="level1">
-<h1>Introduction</h1>
-<p><code>{admiralneuro}</code> joins the family as the latest <code>{admiral}</code> extension package. The package supports neurological disease areas, with the initial release of version 0.1.0 focusing on Alzheimer’s disease.</p>
-<p>The package was born out of a collaboration between Eli Lilly, Roche, Cytel, GSK, and contributors from the wider industry. The package maintainer is Jian Wang (Eli Lilly).</p>
-</section>
-<section id="package-contents" class="level1">
-<h1>Package Contents</h1>
-<p>In the 0.1.0 release, <code>{admiralneuro}</code> provides the following:</p>
-<ul>
-<li>Alzheimer’s-specific SDTM test data - this will be moved to <code>{pharmaversesdtm}</code> for the 0.2.0 release of <code>{admiralneuro}</code>
-<ul>
-<li><a href="https://github.com/pharmaverse/pharmaversesdtm/blob/main/data-raw/dm_neuro.R">DM</a> - Demographics dataset including age-appropriate Alzheimer’s patients</li>
-<li><a href="https://github.com/pharmaverse/pharmaversesdtm/blob/main/data-raw/nv_neuro.R">NV</a> - Neurological exams dataset including amyloid and tau PET scans at baseline and two follow-up visits</li>
-<li><a href="https://github.com/pharmaverse/pharmaversesdtm/blob/main/data-raw/suppnv_neuro.R">SUPPNV</a>- Supplemental neurological exams dataset including reference regions used for SUVR calculations</li>
-<li><a href="https://github.com/pharmaverse/pharmaversesdtm/blob/main/data-raw/ag_neuro.R">AG</a> - Agents dataset including tracer details for amyloid and tau PET scans</li>
-</ul></li>
-<li>A brand-new function admiralneuro::compute_centiloid() that computes Centiloid values based on amyloid PET tracer, SUVR pipeline, and reference region</li>
-<li>Two template programs for <a href="https://github.com/pharmaverse/admiralneuro/blob/main/inst/templates/ad_adapet.R">ADAPET</a> and <a href="https://github.com/pharmaverse/admiralneuro/blob/main/inst/templates/ad_adtpet.R">ADTPET</a></li>
-<li>A corresponding <a href="https://pharmaverse.github.io/admiralneuro/articles/adpet.html">Creating ADTPET and ADAPET Vignette</a></li>
-</ul>
-<section id="compute_centiloid" class="level3">
-<h3 class="anchored" data-anchor-id="compute_centiloid"><code>compute_centiloid()</code></h3>
-<p>The Centiloid scale is a standardized quantitative measure for amyloid PET imaging that allows comparison between different tracers and analysis methods. It is calculated as:</p>
-<p><img src="https://latex.codecogs.com/png.latex?Centiloid%20=%20slope*SUVR%20+%20intercept"></p>
-<p>where SUVR is a patient’s Standardized Uptake Value Ratio.</p>
-<p>The admiralneuro::compute_centiloid() function neatly computes Centiloid values from SUVR values given a specific combination of tracer, SUVR pipeline, and reference region in order to define slope and intercept. Currently, the following combinations of <strong>tracer</strong>, <strong>pipeline</strong>, and <strong>ref_region</strong> are supported:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td>tracer</td>
-<td>pipeline</td>
-<td>ref_region</td>
-<td>slope</td>
-<td>intercept</td>
-</tr>
-<tr class="even">
-<td>18F-Florbetapir</td>
-<td>AVID FBP SUVR PIPELINE</td>
-<td>Whole Cerebellum</td>
-<td>183.07</td>
-<td>-177.26</td>
-</tr>
-<tr class="odd">
-<td>18F-Florbetaben</td>
-<td>AVID FBB SUVR PIPELINE</td>
-<td>Whole Cerebellum</td>
-<td>156.06</td>
-<td>-148.13</td>
-</tr>
-<tr class="even">
-<td>18F-Florbetapir</td>
-<td>BERKELEY FBP SUVR PIPELINE</td>
-<td>Whole Cerebellum</td>
-<td>188.22</td>
-<td>-189.16</td>
-</tr>
-<tr class="odd">
-<td>18F-Florbetaben</td>
-<td>BERKELEY FBB SUVR PIPELINE</td>
-<td>Whole Cerebellum</td>
-<td>157.15</td>
-<td>-151.87</td>
-</tr>
-</tbody>
-</table>
-<p><br>
-Here is an example of the function in action:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(admiral)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(admiralneuro)</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr)</span>
-<span id="cb1-4"></span>
-<span id="cb1-5">adapet_example <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> admiralneuro<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>admiralneuro_adapet <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb1-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(PARAMCD <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"SUVRBFBB"</span>)</span>
-<span id="cb1-7"></span>
-<span id="cb1-8">adapet_example <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> adapet_example <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb1-9">  admiral<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">derive_param_computed</span>(</span>
-<span id="cb1-10">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by_vars =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(</span>
-<span id="cb1-11">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">get_admiral_option</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"subject_keys"</span>),</span>
-<span id="cb1-12">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(ADT, ADY, VISIT)</span>
-<span id="cb1-13">    ),</span>
-<span id="cb1-14">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">parameters =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"SUVRBFBB"</span>),</span>
-<span id="cb1-15">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">set_values_to =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exprs</span>(</span>
-<span id="cb1-16">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">AVAL =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">compute_centiloid</span>(</span>
-<span id="cb1-17">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tracer =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"18F-Florbetaben"</span>,</span>
-<span id="cb1-18">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pipeline =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"BERKELEY FBB SUVR PIPELINE"</span>,</span>
-<span id="cb1-19">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ref_region =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Whole Cerebellum"</span>,</span>
-<span id="cb1-20">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">suvr =</span> AVAL</span>
-<span id="cb1-21">      ),</span>
-<span id="cb1-22">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAMCD =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"CENTLD"</span>,</span>
-<span id="cb1-23">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PARAM =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Centiloid value derived from SUVR pipeline"</span>,</span>
-<span id="cb1-24">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">AVALU =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"CL"</span></span>
-<span id="cb1-25">    )</span>
-<span id="cb1-26">  )</span></code></pre></div></div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 13%">
-<col style="width: 9%">
-<col style="width: 49%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 6%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">USUBJID</th>
-<th style="text-align: left;">PARAMCD</th>
-<th style="text-align: left;">PARAM</th>
-<th style="text-align: left;">VISIT</th>
-<th style="text-align: right;">AVAL</th>
-<th style="text-align: left;">AVALU</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">01-701-1345</td>
-<td style="text-align: left;">CENTLD</td>
-<td style="text-align: left;">Centiloid value derived from SUVR pipeline</td>
-<td style="text-align: left;">BASELINE</td>
-<td style="text-align: right;">186.0025</td>
-<td style="text-align: left;">CL</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">01-701-1345</td>
-<td style="text-align: left;">CENTLD</td>
-<td style="text-align: left;">Centiloid value derived from SUVR pipeline</td>
-<td style="text-align: left;">WEEK 12</td>
-<td style="text-align: right;">206.2748</td>
-<td style="text-align: left;">CL</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">01-701-1360</td>
-<td style="text-align: left;">CENTLD</td>
-<td style="text-align: left;">Centiloid value derived from SUVR pipeline</td>
-<td style="text-align: left;">BASELINE</td>
-<td style="text-align: right;">164.6301</td>
-<td style="text-align: left;">CL</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">01-714-1288</td>
-<td style="text-align: left;">CENTLD</td>
-<td style="text-align: left;">Centiloid value derived from SUVR pipeline</td>
-<td style="text-align: left;">BASELINE</td>
-<td style="text-align: right;">130.6857</td>
-<td style="text-align: left;">CL</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">01-714-1288</td>
-<td style="text-align: left;">CENTLD</td>
-<td style="text-align: left;">Centiloid value derived from SUVR pipeline</td>
-<td style="text-align: left;">WEEK 12</td>
-<td style="text-align: right;">150.9580</td>
-<td style="text-align: left;">CL</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">01-714-1288</td>
-<td style="text-align: left;">CENTLD</td>
-<td style="text-align: left;">Centiloid value derived from SUVR pipeline</td>
-<td style="text-align: left;">WEEK 26</td>
-<td style="text-align: right;">191.6599</td>
-<td style="text-align: left;">CL</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><br>
-Alternatively, the user can specify a custom slope and intercept to the function using the <strong>custom_slope</strong> and <strong>custom_intercept</strong> parameters.</p>
-<p>Note that support for additional combinations of tracers, pipelines, and reference regions may be added in the future as needed. See <a href="https://doi.org/10.1016/j.nicl.2025.103765">Iaccarino, L. et al., 2025</a> for more Centiloid transformation formulas.</p>
-</section>
-<section id="templates-and-vignette" class="level3">
-<h3 class="anchored" data-anchor-id="templates-and-vignette">Templates and Vignette</h3>
-<p>The <code>{admiralneuro}</code> package website contains the <a href="https://pharmaverse.github.io/admiralneuro/articles/adpet.html">Creating ADTPET and ADAPET Vignette</a> which guides users through the creation of both ADTPET (Tau PET) and ADAPET (Amyloid PET) ADaM datasets. This covers the use of the admiralneuro::compute_centiloid() function above, as well as other therapeutic area-specific considerations for these BDS datasets such as derivation of criterion flag variables for Centiloid categories.</p>
-<p>The vignette accompanies the ADTPET and ADAPET template scripts, which can be used as a starting point for creating these ADaM datasets. These scripts can be loaded and saved directly from the R console by running either of the following:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">use_ad_template</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADTPET"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"admiralneuro"</span>)</span></code></pre></div></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">use_ad_template</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ADAPET"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"admiralneuro"</span>)</span></code></pre></div></div>
-</div>
-</section>
-</section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
-<p>We’re excited to share the first release of <code>{admiralneuro}</code>, and we hope it will be a valuable resource for those working in the Alzheimer’s disease space. We look forward to expanding the package in future releases to include alpha-synuclein pathology, a hallmark of Parkinson’s disease that is also found in other neurodegenerative conditions, including Alzheimer’s disease. We’ll also be adding functions to explore olfactory impairment, a fascinating early signal connected to both Parkinson’s disease and Alzheimer’s disease.</p>
-<p>As with all pharmaverse packages, community feedback is not only welcomed but encouraged so that development remains in a direction that is relevant and useful! Please raise your feedback as issues or discussions in our <a href="https://github.com/pharmaverse/admiralneuro">GitHub repository</a> or the <a href="https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A">pharmaverse slack</a>.</p>
-<!--------------- appendices go here ----------------->
-<div class="cell">
-<div class="cell-output-display">
-
-
-</div>
-</div>
-
-
-</section>
-
-<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
-
-<p>2026-10-29 15:42:05.906086</p>
-</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
-
-<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_introducing.../introducing_admiralneuro.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
-</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{almond2025,
-  author = {Almond, Miles},
-  title = {Introducing Admiralneuro!},
-  date = {2025-09-15},
-  url = {https://pharmaverse.github.io/blog/posts/2025-09-15-introducing/introducing_admiralneuro.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-almond2025" class="csl-entry quarto-appendix-citeas">
-Almond, Miles. 2025. <span>“Introducing Admiralneuro!”</span> September
-15, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-09-15-introducing/introducing_admiralneuro.html">https://pharmaverse.github.io/blog/posts/2025-09-15-introducing/introducing_admiralneuro.html</a>.
-</div></div></section></div> ]]></description>
-  <category>ADaM</category>
-  <category>Community</category>
-  <category>Technical</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2025-09-15-introducing/introducing_admiralneuro.html</guid>
-  <pubDate>Mon, 15 Sep 2025 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2025-09-15-introducing/admiralneuro.png" medium="image" type="image/png" height="130" width="144"/>
 </item>
 </channel>
 </rss>
