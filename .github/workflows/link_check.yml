@@ -1,33 +1,76 @@
 name: Links (Fail Fast)
 
+# Pull requests: only the links in files the PR adds or modifies are checked,
+# so links that went stale in old posts don't block new content.
+# main / weekly / manual: every file is checked and failures are reported in an
+# issue, so maintainers learn about links that rot over time.
+
 on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "17 5 * * 1" # Mondays 05:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   linkChecker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up R  # Install R from CRAN
-        uses: r-lib/actions/setup-r@v2
+      - uses: actions/checkout@v6
         with:
-          r-version: '4.3.3' # You can specify a different R version if needed
+          fetch-depth: 2
 
-      - name: Install R packages
+      - name: Select files to check
+        id: files
+        uses: ./.github/actions/target-files
+        with:
+          pattern: '\.(qmd|md|html|rst)$'
+
+      # lychee only parses Markdown links in .md files, so .qmd files are
+      # renamed; "(.mailto:" is fixed so it is not read as a relative path.
+      - name: Prepare files for lychee
+        id: prep
+        if: steps.files.outputs.count != '0'
+        env:
+          LIST: ${{ steps.files.outputs.file }}
         run: |
-          Rscript -e 'install.packages("fs")'
-        shell: bash
-
-      - name: Switch .qmd to .md
-        run: Rscript R/switch.R
-        shell: bash
+          set -euo pipefail
+          args=""
+          while IFS= read -r f; do
+            if [[ "$f" == *.qmd ]]; then
+              sed -i 's/(\.mailto:/(mailto:/g' "$f"
+              mv "$f" "${f%.qmd}.md"
+              f="${f%.qmd}.md"
+            fi
+            args+="$(printf '%q' "$f") "
+          done < "$LIST"
+          echo "args=$args" >> "$GITHUB_OUTPUT"
 
       - name: Link Checker
-        uses: lycheeverse/lychee-action@v1.8.0
+        id: lychee
+        if: steps.files.outputs.count != '0'
+        uses: lycheeverse/lychee-action@v2
         with:
+          # 429 (Too Many Requests) means the link exists but the site throttles us.
+          args: >-
+            --verbose --no-progress
+            --accept '100..=103,200..=299,429'
+            ${{ steps.prep.outputs.args }}
           fail: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          failIfEmpty: false
+
+      - name: Report full-run result in an issue
+        if: always() && github.event_name != 'pull_request'
+        uses: ./.github/actions/report-to-issue
+        with:
+          check-name: Links
+          status: ${{ job.status }}
+          report-file: lychee/out.md

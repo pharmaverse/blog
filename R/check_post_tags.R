@@ -1,5 +1,12 @@
 # Get list of blog posts ----
-posts <- list.files("posts", recursive = TRUE, pattern = "*.qmd")
+# The CI passes a file listing the posts to check (e.g. only those changed in a
+# pull request); otherwise all posts are checked.
+target_files <- Sys.getenv("TARGET_FILES")
+posts <- if (nzchar(target_files)) {
+  sub("^posts/", "", readLines(target_files))
+} else {
+  list.files("posts", recursive = TRUE, pattern = "*.qmd")
+}
 
 # Get vector of allowed tags ----
 source("R/allowed_tags.R")
