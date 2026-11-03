@@ -23,7 +23,7 @@ long_slug <- "2024-07-12_teal_app_development_pharmaverseadam"
 
 Every developer must solve two difficult problems when creating a [Shiny](https://shiny.posit.co/) application (in fact, any application) from the ground up: software architecture and data design. In the world of clinical data analysis, however, much development has been aimed at providing a jump-start approach to creating R/Shiny applications that would take away most of the pain caused by these two problems.
 
-This blog should help you get an idea of how easy it is to get started with the [pharmaverse](https://pharmaverse.org/) ecosystem. We will create an interactive clinical data dashboard using [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) and will use [`{pharmaverseadam}`](https://pharmaverse.github.io/pharmaverseadam/) as the data source.
+This blog should help you get an idea of how easy it is to get started with the [pharmaverse](https://pharmaverse.org/) ecosystem. We will create an interactive clinical data dashboard using [`{teal}`](https://pharmaverse.github.io/teal/latest-tag/) and will use [`{pharmaverseadam}`](https://pharmaverse.github.io/pharmaverseadam/) as the data source.
 
 First, you would need to install the two packages. It is recommended to use [`{pak}`](https://pak.r-lib.org/) to take advantage of parallel downloads and builds (note that you can use it together with [`{renv}`](https://rstudio.github.io/renv/articles/renv.html) for locking dependencies).
 
@@ -33,7 +33,7 @@ pak::pkg_install(c("teal", "pharmaverseadam"))
 
 ## **Building a Simple Teal App**
 
-Next, we would create a simple app - basically following [the official teal guide](https://insightsengineering.github.io/teal/latest-tag/articles/getting-started-with-teal.html), but we will use datasets from the [`{pharmaverseadam}`](https://github.com/pharmaverse/pharmaverseadam) package.
+Next, we would create a simple app - basically following [the official teal guide](https://pharmaverse.github.io/teal/latest-tag/articles/getting-started-with-teal.html), but we will use datasets from the [`{pharmaverseadam}`](https://github.com/pharmaverse/pharmaverseadam) package.
 
 ``` r
 # Step 1: import packages
@@ -60,7 +60,7 @@ shinyApp(app$ui, app$server)
 
 -   **In step 1**, we import libraries to use functions and datasets exported by those.
 
--   **In step 2**, we create a [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) data object that can be used in a [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) app. There are a couple of subtle details here: instead of the default `teal_data()` function, we use a special wrapper around it, designed specifically for clinical trial data - `cdisc_data()`. Its advantage is that it will automatically generate `join_keys()` for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking data names and `join_keys` slots:
+-   **In step 2**, we create a [`{teal}`](https://pharmaverse.github.io/teal/latest-tag/) data object that can be used in a [`{teal}`](https://pharmaverse.github.io/teal/latest-tag/) app. There are a couple of subtle details here: instead of the default `teal_data()` function, we use a special wrapper around it, designed specifically for clinical trial data - `cdisc_data()`. Its advantage is that it will automatically generate `join_keys()` for the datasets that we pass in. Please note, that the dataset names should be all caps. The resulting data object is an s4 class instance, and we can verify that the output is correct by checking data names and `join_keys` slots:
 
 ``` r
 r$> data@datanames
@@ -74,7 +74,7 @@ ADAE: [STUDYID, USUBJID, ASTDTM, AETERM, AESEQ]
   --> ADSL: [STUDYID, USUBJID]
 ```
 
--   **In step 3**, we initialize the [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) app by passing it a data object and adding an example module—it's not much, but it will let us verify that the app works. The output app object is just a list with UI and server functions.
+-   **In step 3**, we initialize the [`{teal}`](https://pharmaverse.github.io/teal/latest-tag/) app by passing it a data object and adding an example module—it's not much, but it will let us verify that the app works. The output app object is just a list with UI and server functions.
 
 -   **Finally step 4** should be familiar to all [Shiny](https://shiny.posit.co/) users - we need to pass the UI and server function from the app object generated at step 3.
 
@@ -101,13 +101,13 @@ join_keys(data) <- default_cdisc_join_keys[datanames(data)]
 
 The recommended method is to generate the data using a within function. However, this method requires manually providing databases using a helper function. We also need to provide `join_keys` ourselves, but given that the data names are standard ADaM names, we can take advantage of a special `default_cdisc_join_keys` object.
 
-It is also worth noting that [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) has its implementation of `within` generic.
+It is also worth noting that [`{teal}`](https://pharmaverse.github.io/teal/latest-tag/) has its implementation of `within` generic.
 
 This is what we will see now when running the application:
 
 ![](images/Asset 3.gif)
 
-Now we have reproducible data. But what about the app itself? Surely, [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) features don't end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:
+Now we have reproducible data. But what about the app itself? Surely, [`{teal}`](https://pharmaverse.github.io/teal/latest-tag/) features don't end here. There is a collection of pre-built shiny modules that can be used in teal applications. We can install them with pak:
 
 ``` r
 pak::pkg_install(
@@ -128,7 +128,7 @@ app <- init(
 )
 ```
 
-This is possible thanks to the magic that [`{teal}`](https://insightsengineering.github.io/teal/latest-tag/) is doing under the hood - passing the data object to each module. And now we will have access to a nice tabular view of the data, and a tool to explore each variable in greater detail.
+This is possible thanks to the magic that [`{teal}`](https://pharmaverse.github.io/teal/latest-tag/) is doing under the hood - passing the data object to each module. And now we will have access to a nice tabular view of the data, and a tool to explore each variable in greater detail.
 
 ![](images/Asset 4.gif)\
 This is great on its own, but as a bonus, we even get the ability to build a report based on some of the modules that we have. For example, we can generate some plots in the variable browser, add them to the report and preview it. Some modules would also add a block of R code showing how to get the exact same data that was used to generate a report card.
