@@ -1,55 +1,87 @@
 name: Spellcheck
+
+# Pull requests: only .qmd files the PR adds or modifies are spellchecked
+# (all files if inst/WORDLIST.txt changes). main / manual: every file is
+# checked and failures are reported in an issue.
+
 on:
   pull_request:
     branches: ['main']
+  push:
+    branches: ['main']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   Spelling:
     runs-on: ubuntu-latest
-    container:
-      image: "rocker/tidyverse:4.3.1"
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Select files to check
+        id: files
+        uses: ./.github/actions/target-files
+        with:
+          pattern: '\.qmd$'
+          full-check-trigger: '^inst/WORDLIST\.txt$'
+
+      - name: Set up R
+        if: steps.files.outputs.count != '0'
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
 
       - name: Install packages
-        run: |
-          if (!require("roxygen2")) install.packages("roxygen2")
-          if (!require("spelling")) install.packages("spelling")
-          if (!require("testthat")) install.packages("testthat")
+        if: steps.files.outputs.count != '0'
+        run: install.packages("spelling")
         shell: Rscript {0}
 
-      - name: Remove links from .qmd files (Bash)
+      - name: Remove links from .qmd files
+        if: steps.files.outputs.count != '0'
+        env:
+          LIST: ${{ steps.files.outputs.file }}
         run: |
-          find . -type f -name "*.qmd" -print0 | while IFS= read -r -d '' file; do
+          while IFS= read -r file; do
               sed -i -E '
                   s/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/\1/g;  # Remove Markdown links, keep text
                   s#https?://[a-zA-Z0-9./?=_-]+(\#[a-zA-Z0-9_-]*)?##g  # Remove standalone URLs, including fragments
               ' "$file"
               echo "Processed: $file"
-          done
+          done < "$LIST"
         shell: bash
 
       - name: Check spelling
+        if: steps.files.outputs.count != '0'
+        env:
+          LIST: ${{ steps.files.outputs.file }}
         run: |
-          library(spelling)
-          library(readr)
-
-          qmd_files <- list.files(pattern = ".*\\.qmd$", recursive = TRUE)
+          qmd_files <- readLines(Sys.getenv("LIST"))
 
           words <- spelling::spell_check_files(
             qmd_files,
-            ignore = read_lines("inst/WORDLIST.txt")
+            ignore = readLines("inst/WORDLIST.txt")
           )
 
           print(words)
 
-          testthat::test_that(desc = "Check spelling", code = {
-            testthat::expect_equal(
-              object = words,
-              expected = spelling::spell_check_files(
-                path = "inst/WORDLIST.txt",
-                ignore = read_lines("inst/WORDLIST.txt")
-              )
+          if (nrow(words) > 0) {
+            stop(
+              "Spelling errors found. Fix them, or add correctly spelled words ",
+              "to inst/WORDLIST.txt (see R/CICD.R).",
+              call. = FALSE
             )
-          })
+          }
         shell: Rscript {0}
+
+      - name: Report full-run result in an issue
+        if: always() && github.event_name != 'pull_request'
+        uses: ./.github/actions/report-to-issue
+        with:
+          check-name: Spellcheck
+          status: ${{ job.status }}

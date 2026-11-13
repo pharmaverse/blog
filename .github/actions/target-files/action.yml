@@ -1,0 +1,68 @@
+name: Target files
+description: >
+  Lists the files a check should run on. On a pull request these are only the
+  files the PR adds or modifies; on any other event (push to main, schedule,
+  manual run) these are all tracked files. Requires actions/checkout with
+  fetch-depth of at least 2 so the PR merge commit's base parent is available.
+
+inputs:
+  pattern:
+    description: Extended regex (grep -E) a file path must match.
+    required: true
+  full-check-trigger:
+    description: >
+      Optional extended regex. If a pull request changes a file matching it,
+      the PR is checked in full mode, e.g. when the list of allowed tags changes.
+    required: false
+    default: ""
+
+outputs:
+  mode:
+    description: "'changed' (PR, only changed files) or 'all' (every tracked file)."
+    value: ${{ steps.list.outputs.mode }}
+  count:
+    description: Number of files selected.
+    value: ${{ steps.list.outputs.count }}
+  file:
+    description: Path to a file listing the selected paths, one per line.
+    value: ${{ steps.list.outputs.file }}
+
+runs:
+  using: composite
+  steps:
+    - id: list
+      shell: bash
+      env:
+        EVENT_NAME: ${{ github.event_name }}
+        PATTERN: ${{ inputs.pattern }}
+        FULL_CHECK_TRIGGER: ${{ inputs.full-check-trigger }}
+      run: |
+        set -euo pipefail
+        list="$RUNNER_TEMP/target-files.txt"
+        mode=all
+
+        if [ "$EVENT_NAME" = "pull_request" ]; then
+          # HEAD is the PR merge commit; its first parent is the base branch,
+          # so this diff is exactly what the PR adds or modifies.
+          git diff --name-only --diff-filter=d HEAD^1 HEAD > "$RUNNER_TEMP/pr-changed.txt"
+          mode=changed
+          if [ -n "$FULL_CHECK_TRIGGER" ] && grep -qE "$FULL_CHECK_TRIGGER" "$RUNNER_TEMP/pr-changed.txt"; then
+            echo "PR changes a file matching '$FULL_CHECK_TRIGGER'; checking all files."
+            mode=all
+          fi
+        fi
+
+        if [ "$mode" = "changed" ]; then
+          grep -E "$PATTERN" "$RUNNER_TEMP/pr-changed.txt" > "$list" || true
+        else
+          git ls-files | grep -E "$PATTERN" > "$list" || true
+        fi
+
+        count=$(wc -l < "$list" | tr -d ' ')
+        echo "Mode: $mode, $count file(s):"
+        cat "$list"
+        {
+          echo "mode=$mode"
+          echo "count=$count"
+          echo "file=$list"
+        } >> "$GITHUB_OUTPUT"
