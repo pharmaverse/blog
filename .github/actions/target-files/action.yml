@@ -51,7 +51,7 @@ runs:
           mode=changed
           # Deleting a trigger file (e.g. inst/WORDLIST.txt) also needs a full
           # check, so triggers are matched before deleted files are dropped.
-          if [ -n "$FULL_CHECK_TRIGGER" ] && git diff --name-only HEAD^1 HEAD | grep -E "$FULL_CHECK_TRIGGER" > /dev/null; then
+          if [ -n "$FULL_CHECK_TRIGGER" ] && git diff --no-renames --name-only HEAD^1 HEAD | grep -E "$FULL_CHECK_TRIGGER" > /dev/null; then
             echo "PR changes a file matching '$FULL_CHECK_TRIGGER'; checking all files."
             mode=all
           fi
