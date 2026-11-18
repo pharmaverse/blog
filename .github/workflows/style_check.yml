@@ -32,7 +32,7 @@ jobs:
           use-public-rspm: true
       - name: Install styler
         if: steps.files.outputs.count != '0'
-        run: install.packages("styler")
+        run: install.packages(c("styler", "knitr"))
         shell: Rscript {0}
       - name: styler version
         if: steps.files.outputs.count != '0'
