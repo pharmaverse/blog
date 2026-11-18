@@ -41,19 +41,25 @@ runs:
         list="$RUNNER_TEMP/target-files.txt"
         mode=all
 
+        # Print non-ASCII paths as-is; by default Git quotes and escapes them,
+        # so they would not match the patterns below.
+        git() { command git -c core.quotePath=false "$@"; }
+
         if [ "$EVENT_NAME" = "pull_request" ]; then
           # HEAD is the PR merge commit; its first parent is the base branch,
-          # so this diff is exactly what the PR adds or modifies.
-          git diff --name-only --diff-filter=d HEAD^1 HEAD > "$RUNNER_TEMP/pr-changed.txt"
+          # so this diff is exactly what the PR adds, modifies or deletes.
           mode=changed
-          if [ -n "$FULL_CHECK_TRIGGER" ] && grep -qE "$FULL_CHECK_TRIGGER" "$RUNNER_TEMP/pr-changed.txt"; then
+          # Deleting a trigger file (e.g. inst/WORDLIST.txt) also needs a full
+          # check, so triggers are matched before deleted files are dropped.
+          if [ -n "$FULL_CHECK_TRIGGER" ] && git diff --name-only HEAD^1 HEAD | grep -E "$FULL_CHECK_TRIGGER" > /dev/null; then
             echo "PR changes a file matching '$FULL_CHECK_TRIGGER'; checking all files."
             mode=all
           fi
         fi
 
         if [ "$mode" = "changed" ]; then
-          grep -E "$PATTERN" "$RUNNER_TEMP/pr-changed.txt" > "$list" || true
+          # Only files that still exist can be checked.
+          git diff --name-only --diff-filter=d HEAD^1 HEAD | grep -E "$PATTERN" > "$list" || true
         else
           git ls-files | grep -E "$PATTERN" > "$list" || true
         fi

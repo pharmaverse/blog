@@ -2,7 +2,7 @@ name: Check post tags
 
 # Pull requests: only posts the PR adds or modifies are checked (all posts if
 # the allowed tags or the check itself change). main / manual: every post is
-# checked and failures are reported in an issue.
+# checked.
 
 on:
   pull_request:
@@ -15,7 +15,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
   Check-post-tags:
@@ -45,9 +44,3 @@ jobs:
           TARGET_FILES: ${{ steps.files.outputs.file }}
         run: source("R/check_post_tags.R")
         shell: Rscript {0}
-      - name: Report full-run result in an issue
-        if: always() && github.event_name != 'pull_request'
-        uses: ./.github/actions/report-to-issue
-        with:
-          check-name: Post tags
-          status: ${{ job.status }}

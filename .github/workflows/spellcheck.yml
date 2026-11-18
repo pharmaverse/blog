@@ -2,7 +2,7 @@ name: Spellcheck
 
 # Pull requests: only .qmd files the PR adds or modifies are spellchecked
 # (all files if inst/WORDLIST.txt changes). main / manual: every file is
-# checked and failures are reported in an issue.
+# checked.
 
 on:
   pull_request:
@@ -13,7 +13,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
   Spelling:
@@ -78,10 +77,3 @@ jobs:
             )
           }
         shell: Rscript {0}
-
-      - name: Report full-run result in an issue
-        if: always() && github.event_name != 'pull_request'
-        uses: ./.github/actions/report-to-issue
-        with:
-          check-name: Spellcheck
-          status: ${{ job.status }}

@@ -2,8 +2,8 @@ name: Links (Fail Fast)
 
 # Pull requests: only the links in files the PR adds or modifies are checked,
 # so links that went stale in old posts don't block new content.
-# main / weekly / manual: every file is checked and failures are reported in an
-# issue, so maintainers learn about links that rot over time.
+# main / weekly / manual: every file is checked, so links that rot over time
+# show up as a failing run on main.
 
 on:
   pull_request:
@@ -18,7 +18,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
   linkChecker:
@@ -55,7 +54,6 @@ jobs:
           echo "args=$args" >> "$GITHUB_OUTPUT"
 
       - name: Link Checker
-        id: lychee
         if: steps.files.outputs.count != '0'
         uses: lycheeverse/lychee-action@v2
         with:
@@ -66,11 +64,3 @@ jobs:
             ${{ steps.prep.outputs.args }}
           fail: true
           failIfEmpty: false
-
-      - name: Report full-run result in an issue
-        if: always() && github.event_name != 'pull_request'
-        uses: ./.github/actions/report-to-issue
-        with:
-          check-name: Links
-          status: ${{ job.status }}
-          report-file: lychee/out.md

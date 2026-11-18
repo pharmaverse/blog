@@ -1,8 +1,7 @@
 name: Style
 
 # Pull requests: only R code files the PR adds or modifies are checked.
-# main / manual: the whole repository is checked and failures are reported in
-# an issue.
+# main / manual: the whole repository is checked.
 
 on:
   pull_request: {branches: ['main']}
@@ -11,7 +10,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
   Style:
@@ -52,9 +50,3 @@ jobs:
             styler::style_file(readLines(Sys.getenv("LIST")), dry = "fail")
           }
         shell: Rscript {0}
-      - name: Report full-run result in an issue
-        if: always() && github.event_name != 'pull_request'
-        uses: ./.github/actions/report-to-issue
-        with:
-          check-name: Style
-          status: ${{ job.status }}
