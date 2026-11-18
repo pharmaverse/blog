@@ -54,6 +54,11 @@ jobs:
 
       - name: Install tinytex
         run: quarto install tool tinytex
+        # Quarto looks up the latest TinyTeX release via the GitHub API. Without
+        # a token the request is rate-limited per runner IP and fails at random
+        # with "403 - Forbidden".
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Sanitize branch name for use as directory/URL slug
         id: branch

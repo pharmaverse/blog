@@ -45,6 +45,11 @@ jobs:
 
       - name: Install tinytex
         run: quarto install tool tinytex
+        # Quarto looks up the latest TinyTeX release via the GitHub API. Without
+        # a token the request is rate-limited per runner IP and fails at random
+        # with "403 - Forbidden".
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Mark repo directory as safe
         run: git config --global --add safe.directory /__w/blog/blog
