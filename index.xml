@@ -47,7 +47,7 @@
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:23:37.751138</p>
+<p>2026-11-26 15:50:54.854447</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-11-05-new__council__member/welcome-kieran-martin.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -122,7 +122,7 @@ Doyle, Orla. 2026. <span>“Welcome Kieran Martin.”</span> November 5,
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:23:29.918847</p>
+<p>2026-11-26 15:53:14.074394</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-11-04-roche-appsilon-teal/roche-appsilon-teal.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -235,7 +235,7 @@ font-style: inherit;">"pharmaverse/rtables"</span>)</span></code></pre></div></d
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:25:03.511689</p>
+<p>2026-11-26 15:50:56.469957</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-11-03-roche-open-source-t/roche-open-source-tlg-packages-move-to-pharmaverse.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -256,6 +256,955 @@ Move to Pharmaverse.”</span> November 3, 2026. <a href="https://pharmaverse.gi
   <guid>https://pharmaverse.github.io/blog/posts/2026-11-03-roche-open-source-t/roche-open-source-tlg-packages-move-to-pharmaverse.html</guid>
   <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2026-11-03-roche-open-source-t/nest_hex.png" medium="image" type="image/png" height="166" width="144"/>
+</item>
+<item>
+  <title>cardinal is on CRAN</title>
+  <dc:creator>Joe Zhu</dc:creator>
+  <link>https://pharmaverse.github.io/blog/posts/2026-09-23-cardinal-is-on-cran/cardinal-is-on-cran.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<!--------------- typical setup ----------------->
+<!--------------- post begins here ----------------->
+<p>A few years ago <a href="https://pharmaverse.github.io/cardinal/">{cardinal}</a> started life as a quarto catalog of copy-paste template scripts — a cross-company effort (Boehringer Ingelheim, Moderna, Roche, Sanofi and friends) to open-source a harmonized set of the FDA safety tables everyone in clinical reporting keeps rebuilding from scratch.</p>
+<p>It just grew up. <strong>cardinal is now on CRAN</strong> — installable, versioned, dependency-managed:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">install.packages</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cardinalfda"</span>)</span></code></pre></div></div>
+</div>
+<p>Yes, the package is <code>cardinalfda</code> on CRAN (plain <code>cardinal</code> was already taken). Same initiative, same website, now a proper release you can pin in a lockfile and trust to still install next year.</p>
+<section id="what-changed-under-the-hood" class="level2">
+<h2 class="anchored" data-anchor-id="what-changed-under-the-hood">What changed under the hood</h2>
+<p>If you looked at cardinal a while back, the tables were <code>{rtables}</code>. That’s no longer the engine. The catalog has moved to the <strong><code>{gtsummary}</code> + <code>{cards}</code>/<code>{cardx}</code> + <code>{crane}</code></strong> stack:</p>
+<ul>
+<li><strong><code>{gtsummary}</code></strong> builds the table,</li>
+<li><strong><code>{cards}</code></strong> / <strong><code>{cardx}</code></strong> build the <strong>ARD</strong> (Analysis Results Dataset) behind it,</li>
+<li><strong><code>{crane}</code></strong> supplies the pharma-specific bits (e.g.&nbsp;<code>tbl_listing()</code> for listings).</li>
+</ul>
+<p>And that middle point is the part I’m most excited about: <strong>every cardinal table now comes with an ARD.</strong> More on that below.</p>
+</section>
+<section id="the-anatomy-of-a-cardinal-template" class="level2">
+<h2 class="anchored" data-anchor-id="the-anatomy-of-a-cardinal-template">The anatomy of a cardinal template</h2>
+<p>The nicest thing about the new layout is that every template tells the same story — and it maps onto how a statistical programmer actually thinks. Each catalog page has the same four tabs: <strong>Table Preview → Setup → Build Table → Build ARD</strong>. Let’s walk FDA Table 2 (Baseline Demographic and Clinical Characteristics, Safety Population) through it.</p>
+<section id="the-ig-the-fda-integrated-guide" class="level3">
+<h3 class="anchored" data-anchor-id="the-ig-the-fda-integrated-guide">1. The IG — the FDA Integrated Guide</h3>
+<p>cardinal’s templates are drawn from the FDA’s <a href="https://www.fda.gov/media/187065/download"><strong>Standard Safety Tables and Figures Integrated Guide</strong></a> (the “IG”), and are indexed by its table numbers — <code>fda-table_02</code> <em>is</em> IG Table 2. The IG is the specification: it says exactly what the table should contain — the rows, the summary statistics, the population, the footnotes. So there’s never any doubt about <em>what</em> the output is supposed to be.</p>
+<p>cardinal is a community-led, cross-company initiative and is not affiliated with or endorsed by the U.S. FDA; it implements the publicly available IG.</p>
+</section>
+<section id="the-output-snapshot-the-preview" class="level3">
+<h3 class="anchored" data-anchor-id="the-output-snapshot-the-preview">2. The output snapshot — the preview</h3>
+<p>Every catalog page opens with a <strong>Table Preview</strong> — a snapshot of the target output, the “here’s what we’re building” picture. It’s the contract between the IG spec and the code.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pharmaverse.github.io/blog/posts/2026-09-23-cardinal-is-on-cran/preview.png" class="img-fluid figure-img"></p>
+<figcaption>FDA Table 2 preview</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-actual-code" class="level3">
+<h3 class="anchored" data-anchor-id="the-actual-code">3. The actual code</h3>
+<p>Then the part programmers came for — the <strong>actual, runnable code</strong>. cardinal ships each IG template as a self-contained script, so nothing is a black box: the template gives you the layout, you supply your ADaM data. Here is the real <code>fda-table_02</code> template, run against the public <code>{pharmaverseadam}</code> ADSL:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb2-2"></span>
+<span id="cb2-3">adsl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pharmaverseadam<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>adsl <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb2-4">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># removing screen failure observations</span></span>
+<span id="cb2-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(TRT01A <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Screen Failure"</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7">tbl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> adsl <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb2-8">  dplyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(SAFFL <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb2-9">  gtsummary<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tbl_summary</span>(</span>
+<span id="cb2-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> dplyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all_of</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TRT01A"</span>),</span>
+<span id="cb2-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">include =</span> dplyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all_of</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SEX"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AGE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"AGEGR1"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ETHNIC"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"RACE"</span>)),</span>
+<span id="cb2-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> gtsummary<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all_continuous</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"continuous2"</span>,</span>
+<span id="cb2-13">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">statistic =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb2-14">      gtsummary<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all_continuous</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(</span>
+<span id="cb2-15">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"{mean} ({sd})"</span>,</span>
+<span id="cb2-16">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"{median} ({min}, {max})"</span></span>
+<span id="cb2-17">      ),</span>
+<span id="cb2-18">      gtsummary<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all_categorical</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"{n} ({p}%)"</span></span>
+<span id="cb2-19">    ),</span>
+<span id="cb2-20">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">AGEGR1 =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Age Group, Years"</span>)</span>
+<span id="cb2-21">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb2-22">  gtsummary<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">add_overall</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">last =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col_label =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"**Total Population**  </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">N = {N}"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb2-23">  gtsummary<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">remove_footnote_header</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">columns =</span> dplyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">everything</span>())</span></code></pre></div></div>
+</div>
+</section>
+<section id="the-real-output" class="level3">
+<h3 class="anchored" data-anchor-id="the-real-output">4. The real output</h3>
+<p>Because the template is real code over real (public) data, the last step is just to print it — and <em>that same table</em> is what you’d drop into your report:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">tbl</span></code></pre></div></div>
+<div class="cell-output-display">
+<div id="kegvvzyhjt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kegvvzyhjt table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#kegvvzyhjt thead, #kegvvzyhjt tbody, #kegvvzyhjt tfoot, #kegvvzyhjt tr, #kegvvzyhjt td, #kegvvzyhjt th {
+  border-style: none;
+}
+
+#kegvvzyhjt p {
+  margin: 0;
+  padding: 0;
+}
+
+#kegvvzyhjt .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#kegvvzyhjt .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#kegvvzyhjt .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#kegvvzyhjt .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#kegvvzyhjt .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#kegvvzyhjt .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#kegvvzyhjt .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#kegvvzyhjt .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#kegvvzyhjt .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#kegvvzyhjt .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#kegvvzyhjt .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#kegvvzyhjt .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#kegvvzyhjt .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#kegvvzyhjt .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#kegvvzyhjt .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kegvvzyhjt .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#kegvvzyhjt .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#kegvvzyhjt .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#kegvvzyhjt .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kegvvzyhjt .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#kegvvzyhjt .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kegvvzyhjt .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#kegvvzyhjt .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kegvvzyhjt .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kegvvzyhjt .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kegvvzyhjt .gt_left {
+  text-align: left;
+}
+
+#kegvvzyhjt .gt_center {
+  text-align: center;
+}
+
+#kegvvzyhjt .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#kegvvzyhjt .gt_font_normal {
+  font-weight: normal;
+}
+
+#kegvvzyhjt .gt_font_bold {
+  font-weight: bold;
+}
+
+#kegvvzyhjt .gt_font_italic {
+  font-style: italic;
+}
+
+#kegvvzyhjt .gt_super {
+  font-size: 65%;
+}
+
+#kegvvzyhjt .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#kegvvzyhjt .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#kegvvzyhjt .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#kegvvzyhjt .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#kegvvzyhjt .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#kegvvzyhjt .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#kegvvzyhjt .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#kegvvzyhjt .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#kegvvzyhjt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="gt_col_headings header">
+<th id="label" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="stat_1" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Placebo</strong><br>
+N = 86</th>
+<th id="stat_2" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Xanomeline High Dose</strong><br>
+N = 72</th>
+<th id="stat_3" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Xanomeline Low Dose</strong><br>
+N = 96</th>
+<th id="stat_0" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Total Population</strong><br>
+N = 254</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Sex</td>
+<td class="gt_row gt_center" headers="stat_1"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_2"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_3"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_0"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;F</td>
+<td class="gt_row gt_center" headers="stat_1">53 (62%)</td>
+<td class="gt_row gt_center" headers="stat_2">35 (49%)</td>
+<td class="gt_row gt_center" headers="stat_3">55 (57%)</td>
+<td class="gt_row gt_center" headers="stat_0">143 (56%)</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;M</td>
+<td class="gt_row gt_center" headers="stat_1">33 (38%)</td>
+<td class="gt_row gt_center" headers="stat_2">37 (51%)</td>
+<td class="gt_row gt_center" headers="stat_3">41 (43%)</td>
+<td class="gt_row gt_center" headers="stat_0">111 (44%)</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Age</td>
+<td class="gt_row gt_center" headers="stat_1"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_2"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_3"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_0"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Mean (SD)</td>
+<td class="gt_row gt_center" headers="stat_1">75 (9)</td>
+<td class="gt_row gt_center" headers="stat_2">74 (8)</td>
+<td class="gt_row gt_center" headers="stat_3">76 (8)</td>
+<td class="gt_row gt_center" headers="stat_0">75 (8)</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Median (Min, Max)</td>
+<td class="gt_row gt_center" headers="stat_1">76 (52, 89)</td>
+<td class="gt_row gt_center" headers="stat_2">76 (56, 88)</td>
+<td class="gt_row gt_center" headers="stat_3">78 (51, 88)</td>
+<td class="gt_row gt_center" headers="stat_0">77 (51, 89)</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Age Group, Years</td>
+<td class="gt_row gt_center" headers="stat_1"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_2"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_3"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_0"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;18-64</td>
+<td class="gt_row gt_center" headers="stat_1">14 (16%)</td>
+<td class="gt_row gt_center" headers="stat_2">11 (15%)</td>
+<td class="gt_row gt_center" headers="stat_3">8 (8.3%)</td>
+<td class="gt_row gt_center" headers="stat_0">33 (13%)</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;&gt;64</td>
+<td class="gt_row gt_center" headers="stat_1">72 (84%)</td>
+<td class="gt_row gt_center" headers="stat_2">61 (85%)</td>
+<td class="gt_row gt_center" headers="stat_3">88 (92%)</td>
+<td class="gt_row gt_center" headers="stat_0">221 (87%)</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Ethnicity</td>
+<td class="gt_row gt_center" headers="stat_1"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_2"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_3"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_0"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;HISPANIC OR LATINO</td>
+<td class="gt_row gt_center" headers="stat_1">3 (3.5%)</td>
+<td class="gt_row gt_center" headers="stat_2">3 (4.2%)</td>
+<td class="gt_row gt_center" headers="stat_3">6 (6.3%)</td>
+<td class="gt_row gt_center" headers="stat_0">12 (4.7%)</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;NOT HISPANIC OR LATINO</td>
+<td class="gt_row gt_center" headers="stat_1">83 (97%)</td>
+<td class="gt_row gt_center" headers="stat_2">69 (96%)</td>
+<td class="gt_row gt_center" headers="stat_3">90 (94%)</td>
+<td class="gt_row gt_center" headers="stat_0">242 (95%)</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Race</td>
+<td class="gt_row gt_center" headers="stat_1"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_2"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_3"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_0"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;AMERICAN INDIAN OR ALASKA NATIVE</td>
+<td class="gt_row gt_center" headers="stat_1">0 (0%)</td>
+<td class="gt_row gt_center" headers="stat_2">1 (1.4%)</td>
+<td class="gt_row gt_center" headers="stat_3">0 (0%)</td>
+<td class="gt_row gt_center" headers="stat_0">1 (0.4%)</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;BLACK OR AFRICAN AMERICAN</td>
+<td class="gt_row gt_center" headers="stat_1">8 (9.3%)</td>
+<td class="gt_row gt_center" headers="stat_2">9 (13%)</td>
+<td class="gt_row gt_center" headers="stat_3">6 (6.3%)</td>
+<td class="gt_row gt_center" headers="stat_0">23 (9.1%)</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;WHITE</td>
+<td class="gt_row gt_center" headers="stat_1">78 (91%)</td>
+<td class="gt_row gt_center" headers="stat_2">62 (86%)</td>
+<td class="gt_row gt_center" headers="stat_3">90 (94%)</td>
+<td class="gt_row gt_center" headers="stat_0">230 (91%)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Prefer not to read the whole script? Every template is also runnable in one line, which sources the shipped script and hands you back the built objects:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">env <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">run_template</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fda-table_02"</span>)</span>
+<span id="cb4-2">env<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>tbl <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># the gtsummary table</span></span>
+<span id="cb4-3">env<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>ard <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># the ARD (see below)</span></span></code></pre></div></div>
+</div>
+</section>
+</section>
+<section id="the-bit-i-like-most-an-ard-falls-out-for-free" class="level2">
+<h2 class="anchored" data-anchor-id="the-bit-i-like-most-an-ard-falls-out-for-free">The bit I like most: an ARD falls out for free</h2>
+<p>An <strong>ARD</strong> (Analysis Results Dataset) is the tidy, machine-readable version of a table — every statistic as a row, before any formatting. It’s the emerging CDISC direction for analysis results, and it’s what makes results reusable, comparable and reviewable rather than locked inside a rendered table.</p>
+<p>With the <code>{cards}</code>-based approach, you don’t build the ARD separately — it’s gathered straight from the table you already made:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">ard <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> gtsummary<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gather_ard</span>(tbl)</span>
+<span id="cb5-2">ard<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>tbl_summary <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb5-3">  dplyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(dplyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">any_of</span>(</span>
+<span id="cb5-4">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"group1"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"group1_level"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"variable"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stat_name"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stat"</span>)</span>
+<span id="cb5-5">  )) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb5-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># An ARD data frame: 8 × 5
+  group1 group1_level variable stat_name   stat
+  &lt;chr&gt;  &lt;list&gt;       &lt;chr&gt;    &lt;chr&gt;     &lt;list&gt;
+1 TRT01A Placebo      SEX      n         53    
+2 TRT01A Placebo      SEX      N         86    
+3 TRT01A Placebo      SEX      p          0.616
+4 TRT01A Placebo      SEX      n         33    
+5 TRT01A Placebo      SEX      N         86    
+6 TRT01A Placebo      SEX      p          0.384
+7 TRT01A Placebo      RACE     n          0    
+8 TRT01A Placebo      RACE     N         86    </code></pre>
+</div>
+</div>
+<p>Same numbers as the table, now as data you can filter, diff against a previous run, or feed into a meta-analysis. Table <em>and</em> ARD, from one template — that’s the direction cardinal is heading.</p>
+</section>
+<section id="try-it-and-come-help" class="level2">
+<h2 class="anchored" data-anchor-id="try-it-and-come-help">Try it, and come help</h2>
+<p>Install it, run a template, and if you spot a table your team builds differently, that’s an invitation — cardinal is a collaboration, and new templates are exactly the kind of contribution the initiative wants. The <a href="https://pharmaverse.github.io/cardinal/">cardinal website</a> has the full catalog, and the <a href="https://pharmaverse.github.io/examples/">pharmaverse examples site</a> is a great next stop for seeing these packages used end to end.</p>
+<!--------------- appendices go here ----------------->
+</section>
+<div class="cell">
+<div class="cell-output-display">
+
+
+</div>
+</div>
+
+
+
+<div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
+
+<p>2026-11-26 15:53:22.674248</p>
+</div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
+
+<p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-09-23-cardinal-is-on-cran/cardinal-is-on-cran.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zhu2026,
+  author = {Zhu, Joe},
+  title = {Cardinal Is on {CRAN}},
+  date = {2026-09-23},
+  url = {https://pharmaverse.github.io/blog/posts/2026-09-23-cardinal-is-on-cran/cardinal-is-on-cran.html},
+  langid = {en}
+}
+</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zhu2026" class="csl-entry quarto-appendix-citeas">
+Zhu, Joe. 2026. <span>“Cardinal Is on CRAN.”</span> September 23, 2026.
+<a href="https://pharmaverse.github.io/blog/posts/2026-09-23-cardinal-is-on-cran/cardinal-is-on-cran.html">https://pharmaverse.github.io/blog/posts/2026-09-23-cardinal-is-on-cran/cardinal-is-on-cran.html</a>.
+</div></div></section></div> ]]></description>
+  <category>TLG</category>
+  <category>Community</category>
+  <guid>https://pharmaverse.github.io/blog/posts/2026-09-23-cardinal-is-on-cran/cardinal-is-on-cran.html</guid>
+  <pubDate>Wed, 23 Sep 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://pharmaverse.github.io/blog/posts/2026-09-23-cardinal-is-on-cran/cardinal.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
   <title>risk.assessr: A Data-Driven Workflow for R Package Validation in Regulated Environments</title>
@@ -1023,7 +1972,7 @@ font-style: inherit;">"reports"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:26:44.480375</p>
+<p>2026-11-26 15:51:42.051822</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-23-risk-assessr-a-data/risk-assessr-a-data.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1099,7 +2048,7 @@ June 23, 2026. <a href="https://pharmaverse.github.io/blog/posts/2026-06-23-risk
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:24:20.992391</p>
+<p>2026-11-26 15:53:05.319272</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-14_admiral_in_age_of_ai/admiral_in_age_of_ai.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1262,7 +2211,7 @@ AI.”</span> June 14, 2026. <a href="https://pharmaverse.github.io/blog/posts/2
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:23:40.722702</p>
+<p>2026-11-26 15:50:39.648908</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-12-pharmaverse-ethical/pharmaverse-ethical-ai-guidance.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1322,7 +2271,7 @@ Ethical AI Guidance.”</span> June 12, 2026. <a href="https://pharmaverse.githu
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:24:10.089535</p>
+<p>2026-11-26 15:53:12.044045</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-06-05-welcome-joe-zhu/welcome-joe-zhu.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1434,7 +2383,7 @@ Farrugia, Ross. 2026. <span>“Welcome Joe Zhu.”</span> June 4, 2026. <a href=
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:23:26.915794</p>
+<p>2026-11-26 15:53:13.100598</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-04-17-closing-the-gap-in/closing-the-gap-in-exposure-response-data-a-pharmaverse-framework.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1561,7 +2510,7 @@ font-style: inherit;">dataviewer</span>(adsl, adlb)</span></code></pre></div></d
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:24:41.70956</p>
+<p>2026-11-26 15:51:39.356022</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-29-meet-dataviewr-the/meet-dataviewr-the-view-you-always-wanted.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1729,7 +2678,7 @@ font-style: inherit;">- </span>Update NEWS.md for any user-facing function chang
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:25:20.288404</p>
+<p>2026-11-26 15:52:41.390154</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-31-agents-md-admiral-a/agents-md-admiral-and-the-ai-assisted-programmer.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -1870,7 +2819,7 @@ Programmer.”</span> March 31, 2026. <a href="https://pharmaverse.github.io/blo
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:23:57.021268</p>
+<p>2026-11-26 15:51:44.197244</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/beyond_key/beyond__keywords.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2010,7 +2959,7 @@ Unlocking Clinical Code Reuse.”</span> March 20, 2026. <a href="https://pharma
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:25:06.717491</p>
+<p>2026-11-26 15:53:20.932483</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-03-06-pharmaverse-pillar/pharmaverse-pillar-oss.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2084,7 +3033,7 @@ Our 2026 Hackathon Calendar.”</span> March 6, 2026. <a href="https://pharmaver
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:24:13.481862</p>
+<p>2026-11-26 15:52:42.428751</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-26-pharmaverse-pillars/pharmaverse-pillars.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2139,7 +3088,7 @@ Council, Pharmaverse. 2026. <span>“Pharmaverse Pillars.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:24:43.460032</p>
+<p>2026-11-26 15:53:24.867155</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_new__counci.../new__council__members.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2346,7 +3295,7 @@ council, pharmaverse. 2026. <span>“Welcome, Nick Masel.”</span> February
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:25:01.851142</p>
+<p>2026-11-26 15:52:53.104081</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-17-a-star-is-born/a-star-is-born.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2405,7 +3354,7 @@ to the Pharmaverse.”</span> February 17, 2026. <a href="https://pharmaverse.gi
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:25:45.724992</p>
+<p>2026-11-26 15:51:43.265598</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/2026-02-16-get-ready-for-the-p/get-ready-for-the-phuse-us-connect-pavilions.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2510,7 +3459,7 @@ font-style: inherit;">"pharmaversesdtm"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:23:36.136867</p>
+<p>2026-11-26 15:52:57.993956</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_my__blog/pharmaversesdtm_140_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -2883,7 +3832,7 @@ font-style: inherit;">$</span>{{ secrets.GITHUB_TOKEN }}</span></code></pre></di
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:24:18.692793</p>
+<p>2026-11-26 15:50:53.609562</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_pharmaverse.../pharmaverse_and__containers.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -3117,7 +4066,7 @@ font-style: inherit;">"adab"</span>)</span></code></pre></div></div>
 
 <div id="quarto-appendix" class="default"><section id="last-updated" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Last updated</h2><div class="quarto-appendix-contents">
 
-<p>2026-11-17 16:26:40.635977</p>
+<p>2026-11-26 15:51:35.700868</p>
 </div></section><section id="details" class="level2 appendix"><h2 class="anchored quarto-appendix-heading">Details</h2><div class="quarto-appendix-contents">
 
 <p><a href="https://github.com/pharmaverse/blog/tree/main/posts/zzz_DO_NOT_EDIT_admiral_1.4.../admiral_14_release.qmd">Source</a>, <a href="https://pharmaverse.github.io/blog/session_info.html">Session info</a></p>
@@ -3136,282 +4085,6 @@ Dickinson, Jeff, Ben Straub, and Edoardo Mancini. 2026. <span>“Admiral
   <guid>https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral_14_release.html</guid>
   <pubDate>Thu, 15 Jan 2026 00:00:00 GMT</pubDate>
   <media:content url="https://pharmaverse.github.io/blog/posts/2026-01-15_admiral_14/admiral.png" medium="image" type="image/png" height="152" width="144"/>
-</item>
-<item>
-  <title>Introducing docorator to the pharmaverse</title>
-  <dc:creator>Becca Krouse</dc:creator>
-  <link>https://pharmaverse.github.io/blog/posts/2025-12-19_introducing/introducing_docorator.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<!--------------- typical setup ----------------->
-<!--------------- post begins here ----------------->
-<p>Disclaimer: This blog contains opinions that are of the authors alone and do not necessarily reflect the strategy of their respective organizations.</p>
-<p>We are pleased to introduce a new addition to the pharmaverse: <code>{docorator}</code>, an R package developed by GSK to facilitate the creation of production displays within pharma workflows. If you’ve ever spent hours perfecting a table or figure, only to wrestle with adding compliant headers, footers, and perfect margins for a polished product, <code>{docorator}</code> might be for you.</p>
-<p>For full documentation, visit the website here: <a href="https://gsk-biostatistics.github.io/docorator/">https://gsk-biostatistics.github.io/docorator/</a></p>
-<section id="what-is-docorator" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-docorator">What is <code>docorator</code>?</h2>
-<p>The package name, <code>{docorator}</code>, signifies its core functionality: <strong>decorate</strong> and <strong>output</strong>. The package takes TLGs generated by popular R packages such as <code>{gt}</code> (and by extension <code>{tfrmt}</code> and <code>{gtsummary}</code>) and <code>{ggplot2}</code> and “decorates” them with custom headers, footers, etc. in production-ready outputs.</p>
-<p>The <code>{docorator}</code> package is built on a foundation of reproducibility and flexibility through its multi-rendering framework. While the primary and most robust rendering engine is PDF (leveraging Rmarkdown/Quarto and LaTeX internally), basic RTF support is also available, with the underlying framework designed for expansion to other output formats in the future.</p>
-</section>
-<section id="how-docorator-complements-the-pharmaverse" class="level2">
-<h2 class="anchored" data-anchor-id="how-docorator-complements-the-pharmaverse">How <code>docorator</code> complements the pharmaverse</h2>
-<p>This package can be considered complementary to the pharmaverse packages <code>{clinify}</code> and <code>{gridify}</code>. It offers an additional option for R users seeking to meet organizational requirements for specific output types, as well as standardized headers, footers, margins, and sizing. A key feature of <code>{docorator}</code> is its PDF support with embedded table values. By rendering to PDF via RMarkdown/Quarto and LaTeX, the displayed values become embedded within the PDF document, which enhance traceability. For <code>{gt}</code> tables specifically, automated table scaling (i.e.&nbsp;column resizing) is applied by default to assist with fitting the display to the available space.</p>
-</section>
-<section id="example-pdf-render" class="level2">
-<h2 class="anchored" data-anchor-id="example-pdf-render">Example: PDF render</h2>
-<p>The process of rendering a display involves two main steps:</p>
-<ol type="1">
-<li><p><strong>Create a <code>docorator</code> object:</strong> This step uses the <code>as_docorator()</code> function to add headers, footers, and other styling elements.</p></li>
-<li><p><strong>Render an output</strong>: A simple function call generates the final document.</p></li>
-</ol>
-<p>Below is an illustrative example:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># This code assumes a display object called `t_demog` has been created</span></span>
-<span id="cb1-2">t_demog <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb1-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as_docorator</span>(</span>
-<span id="cb1-4">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">display_name =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"t_demog"</span>,</span>
-<span id="cb1-5">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">display_loc =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"path/to/output/folder"</span>,</span>
-<span id="cb1-6">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">header =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyhead</span>(</span>
-<span id="cb1-7">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyrow</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">left =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Study ABC123"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">center =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">right =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">doc_pagenum</span>()),</span>
-<span id="cb1-8">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyrow</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">left =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Safety Population"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">center =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">right =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>),</span>
-<span id="cb1-9">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyrow</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">left =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">center =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Demographic Summary"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">right =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>)</span>
-<span id="cb1-10">    ),</span>
-<span id="cb1-11">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">footer =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyfoot</span>(</span>
-<span id="cb1-12">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyrow</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">left =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"path/to/t_demog.R"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">right =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">doc_datetime</span>())</span>
-<span id="cb1-13">    )</span>
-<span id="cb1-14">  ) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb1-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">render_pdf</span>()</span></code></pre></div></div>
-<p>Note that headers and footers are specified via the <code>header</code> and <code>footer</code> arguments using the <code>fancyhead()</code> and <code>fancyfoot()</code> functions, respectively. These functions, inspired by (and for PDF, powered by) the <a href="https://ctan.mirrors.hoobly.com/macros/latex/contrib/fancyhdr/fancyhdr.pdf"><code>fancyhdr</code></a> LaTeX library, allow users to flexibly add multiple rows of headers and/or footers with left, center, and/or right aligned text. Rows of headers/footers are added via the <code>fancyrow()</code> function which has arguments for where the custom text should be added.</p>
-<p>Here’s the result:</p>
-<p><img src="https://pharmaverse.github.io/blog/posts/2025-12-19_introducing/demog_tbl.png" class="img-fluid" alt="Demographic table">.</p>
-</section>
-<section id="example-multiple-renders" class="level2">
-<h2 class="anchored" data-anchor-id="example-multiple-renders">Example: multiple renders</h2>
-<p>In pharma, it’s very common for displays to be utilized across multiple reports, presentations, and various downstream systems. <code>{docorator}</code> is engineered for reuse, offering several powerful features:</p>
-<ol type="1">
-<li><strong>Multi-render capability:</strong> Users can render to multiple output types using pipeable syntax.</li>
-</ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Continuing from the previous example:</span></span>
-<span id="cb2-2">t_demog <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb2-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as_docorator</span>(</span>
-<span id="cb2-4">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">display_name =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"t_demog"</span>,</span>
-<span id="cb2-5">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">display_loc =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"path/to/output/folder"</span>,</span>
-<span id="cb2-6">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">header =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyhead</span>(</span>
-<span id="cb2-7">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyrow</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">left =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Study ABC123"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">center =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">right =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">doc_pagenum</span>()),</span>
-<span id="cb2-8">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyrow</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">left =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Safety Population"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">center =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">right =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>),</span>
-<span id="cb2-9">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyrow</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">left =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">center =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Demographic Summary"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">right =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>)</span>
-<span id="cb2-10">    ),</span>
-<span id="cb2-11">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">footer =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyfoot</span>(</span>
-<span id="cb2-12">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fancyrow</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">left =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"path/to/t_demog.R"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">right =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">doc_datetime</span>())</span>
-<span id="cb2-13">    )</span>
-<span id="cb2-14">  ) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb2-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">render_pdf</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb2-16">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">render_rtf</span>() <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># This will generate both PDF and RTF outputs</span></span></code></pre></div></div>
-<ol start="2" type="1">
-<li><strong>The <code>docorator</code> object artifact:</strong></li>
-</ol>
-<p>Executing <code>as_docorator()</code> does not immediately render your display. Instead, it creates a <code>docorator</code> object that stores all relevant display information in an <code>.rds</code> file. This object serves as an artifact for future rendering or other downstream requirements. For the above example, <code>t_demog.rds</code> will be saved in the folder “path/to/output/folder” alongside the “t_demog.pdf” and “t_demog.rtf” output documents.</p>
-</section>
-<section id="a-note-on-latex-dependencies" class="level2">
-<h2 class="anchored" data-anchor-id="a-note-on-latex-dependencies">A note on LaTeX dependencies</h2>
-<p>As noted in its README, <code>{docorator}</code> requires a LaTeX installation for PDF rendering. If using <code>{tinytex}</code>, the <code>TinyTeX</code> bundle is recommended, which can be installed via the following code:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">tinytex<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">install_tinytex</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">bundle =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"TinyTeX"</span>)</span></code></pre></div></div>
-</section>
-<section id="get-in-touch" class="level2">
-<h2 class="anchored" data-anchor-id="get-in-touch">Get in touch!</h2>
-<p>We encourage you to try <code>{docorator}</code> and provide any suggestions or report problems via the GitHub <a href="https://github.com/GSK-Biostatistics/docorator/issues">issues</a>.</p>
-
-
-</section>
-
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div></div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{krouse2025,
-  author = {Krouse, Becca},
-  title = {Introducing Docorator to the Pharmaverse},
-  date = {2025-12-19},
-  url = {https://pharmaverse.github.io/blog/posts/2025-12-19_introducing/introducing_docorator.html},
-  langid = {en}
-}
-</code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-krouse2025" class="csl-entry quarto-appendix-citeas">
-Krouse, Becca. 2025. <span>“Introducing Docorator to the
-Pharmaverse.”</span> December 19, 2025. <a href="https://pharmaverse.github.io/blog/posts/2025-12-19_introducing/introducing_docorator.html">https://pharmaverse.github.io/blog/posts/2025-12-19_introducing/introducing_docorator.html</a>.
-</div></div></section></div> ]]></description>
-  <category>TLG</category>
-  <guid>https://pharmaverse.github.io/blog/posts/2025-12-19_introducing/introducing_docorator.html</guid>
-  <pubDate>Fri, 19 Dec 2025 00:00:00 GMT</pubDate>
-  <media:content url="https://pharmaverse.github.io/blog/posts/2025-12-19_introducing/docorator_hex.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 </channel>
 </rss>
