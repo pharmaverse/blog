@@ -58,23 +58,30 @@ After that you can go wild, but we do ask that it is kept short!
 
 **Step 2:** Branch off `main`
 
-**Step 3:** Create a new Blog Post skeleton using the `create_blog_post.R` script in the `R/` folder.
+**Step 3:** Create a new Blog Post skeleton using the `create_blogpost.R` script in the `R/` folder.
 
 -   Open the `create_blogpost.R` file.
 
 -   Source the script `help_create_blogpost.R` from within the `create_blogpost.R` file.
 
--   Enter your information into the `create_post` function. For the post date, feel free to put a placeholder date as it will be automatically replaced once the post is merged onto `main`.
-    Please note that we do not currently allow users to specify their own categories (or `tags`), so you must choose (possibly  several) from this list: `c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Community", "Conferences", "Submissions", "Technical")`.
+-   Enter your information into the `create_post` function.
+    For the post date, use the date you plan to publish: it is not updated automatically when the post is merged onto `main`.
+    Please note that we do not currently allow users to specify their own categories (or `tags`), so you must choose (possibly several) from the `allowed_tags` vector in `R/allowed_tags.R`, which `create_blogpost.R` prints for you.
+    At the moment, these are: `c("Metadata", "SDTM", "ADaM", "TLG", "Shiny", "Python", "Community", "Conferences", "Submissions", "Technical", "DEI", "Logging")`.
 
 -   Running that function will create a subfolder with a quarto file (`*.qmd`) in the `posts/` folder.
-    The folder will be named `zzz_DO_NOT_EDIT_<your post name>`, and the `zzz_DO_NOT_EDIT` portion of the folder name
-    will also be automatically replaced once the post is merged onto `main`.
+    The folder will be named `<post date>-<your post name>`, shortened to 30 characters (for example `2026-11-03-roche-open-source-t`).
+
+-   Check the YAML header of the new `*.qmd` file.
+    `create_post` currently keeps only the first author and does not accept the `"Python"`, `"DEI"` or `"Logging"` tags, so add any further authors (one `- name:` line each) and those tags to `categories` by hand.
+
+-   If your publication date changes, rename the folder and update `date` in the YAML header and `long_slug` in the setup chunk to match.
 
 -   Open the newly created folder and start working within the `*.qmd` file.
 
 **Step 4:** After you have finished your Blog Post, open the `CICD.R` file in the `R/` folder.
 Run the script line by line to first check the spelling in your post and then to make sure your code is compatible with our code-style.
+Fix any genuine typos before running the lines that add the remaining flagged words to `inst/WORDLIST.txt`.
 
 **Step 5:** Push to your branch, create a Pull Request, and review the Spirit of the Blog Post in the Pull Request Template.
 
@@ -124,7 +131,7 @@ install.packages(
     "admiralvaccine",
     "admiralmetabolic",
     "autoslider.core",
-    "filters"
+    "filters",
     "logrx"
   )
 )
