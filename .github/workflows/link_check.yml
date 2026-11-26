@@ -29,5 +29,12 @@ jobs:
         uses: lycheeverse/lychee-action@v1.8.0
         with:
           fail: true
+          # github.com rate-limits the runner with transient 503s when hundreds of
+          # links are checked at once; accept 429/503 and lower concurrency
+          args: >-
+            --verbose --no-progress
+            --accept 200,201,202,203,204,206,429,503
+            --max-concurrency 16
+            './**/*.md' './**/*.html'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
